@@ -1,19 +1,13 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-// import { fetchProfileAction } from "redux/action/profileAction";
-// import { getCompanies } from "redux/slice/coSlice";
-// import { AppDispatch } from "redux/store";
-// import Cookies from "js-cookie";
-// import { capitalizeFirstLetter } from "utils/Common";
 
- const AuthLayout = () => {
+
+const AuthLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const authpath = [
-    "/login",
-  ];
+
 
   // // To change the title.
   const { pathname } = useLocation();
@@ -60,28 +54,11 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
   const path = window.location.pathname;
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    console.log("🚀 ~ useEffect ~ token:", token)
     // const firstLogin = localStorage.getItem("isFirstLogin")
     if (token) {
-      // dispatch(fetchProfileAction())
-      //   .unwrap()
-
-      //   .catch((error) => {
-      //     if (error.responseStatus === 401) {
-      //       navigate("/access-denied");
-      //     } else if (
-      //       !(path === "/forgot-password" || path === "/reset-password")
-      //     ) {
-      //       navigate("/login"); //For Verify Email
-      //     }
-      //   });
-
       if (path === "/login") {
         navigate("/app/dashboard");  // /app/dashboard
       }
-      // if (firstLogin === "true") {
-      //   navigate("/");
-      // }
     } else {
       if (
         !(
@@ -93,7 +70,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
         navigate("/login"); //For Verify Email
       }
     }
-  }, []);
+  }, [pathname]);
 
   return <Outlet />;
 };

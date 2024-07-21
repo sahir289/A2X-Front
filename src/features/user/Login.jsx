@@ -21,7 +21,6 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(INITIAL_ERROR_OBJ);
   const [loginObj, setLoginObj] = useState(INITIAL_LOGIN_OBJ);
-  console.log("🚀 ~ Login ~ loginObj:", loginObj)
 
 
 
@@ -37,7 +36,6 @@ function Login() {
       setLoading(true);
       // Call API to check user credentials and save token in localstorage
       const resp = postApi('/login', loginObj).then((res) => {
-        console.log("🚀 ~ resp ~ res?.data?.data:", res?.data?.data)
         localStorage.setItem("accessToken", res?.data?.data);
         navigate("/app/dashboard");
 

@@ -52,18 +52,18 @@ const Page404 = lazy(() => import('./pages/protected/404'));
 
 initializeApp();
 
-const token = checkAuth();
-console.log("🚀 ~ token:", token);
+// const token = checkAuth();
+// console.log("🚀 ~ token:", token);
 
 function App() {
   return (
     <Router>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          <Route path="/login" element={<Login />} />
 
           {/* Authenticated Routes */}
           <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
             <Route path="/app/*" element={<Layout />} />
           </Route>
 

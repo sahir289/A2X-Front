@@ -12,11 +12,9 @@ function InputText({
   updateFormValue,
   updateType,
 }) {
-  console.log("🚀 ~ updateType:", updateType)
   const [value, setValue] = useState(defaultValue);
 
   const updateInputValue = (val) => {
-    console.log("🚀 ~ updateInputValue ~ val:", val)
     setValue(val);
     updateFormValue({ updateType, value: val });
   };
