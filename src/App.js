@@ -63,7 +63,7 @@ function App() {
 
           {/* Authenticated Routes */}
           <Route element={<AuthLayout />}>
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
             <Route path="/app/*" element={<Layout />} />
           </Route>
 

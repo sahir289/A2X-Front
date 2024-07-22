@@ -92,15 +92,11 @@ const routes = [
     submenu: [
 
       {
-        path: '/app/settlements/transaction',
+        path: '/app/user/roles',
         icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
-        name: 'Transactions', // name that appear in Sidebar
+        name: 'Roles', // name that appear in Sidebar
       },
-      {
-        path: '/app/settlements/account',
-        icon: <UserCircleIcon className={submenuIconClasses} />,
-        name: 'Account',
-      }
+     
     ]
   },
 

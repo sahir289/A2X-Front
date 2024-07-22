@@ -54,10 +54,9 @@ const AuthLayout = () => {
   const path = window.location.pathname;
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    // const firstLogin = localStorage.getItem("isFirstLogin")
     if (token) {
-      if (path === "/login") {
-        navigate("/app/dashboard");  // /app/dashboard
+      if (path === "/") {
+        navigate("/app/dashboard");
       }
     } else {
       if (
@@ -67,7 +66,7 @@ const AuthLayout = () => {
           path === "/on-boarding"
         )
       ) {
-        navigate("/login"); //For Verify Email
+        navigate("/"); //For Verify Email
       }
     }
   }, [pathname]);
