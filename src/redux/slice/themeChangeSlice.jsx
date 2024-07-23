@@ -7,8 +7,6 @@ export const themeChangeSlice = createSlice({
   },
   reducers: {
     setThemeColor: (state, action) => {
-      console.log("🚀 ~ state:", state)
-      console.log("🚀 ~ action:", action)
       state.themeColorChange = action.payload;
     },
   },

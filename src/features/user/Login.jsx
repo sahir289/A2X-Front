@@ -4,6 +4,7 @@ import logo from "../../assets/Images/logo.png";
 import InputText from "../../components/Input/InputText";
 import ErrorText from "../../components/Typography/ErrorText";
 import { postApi } from "../../redux/api";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 function Login() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function Login() {
         navigate("/app/dashboard");
 
       }).catch((err) => {
-        console.log("🚀 ~ resp ~ err:", err)
+        NotificationManager.error(err?.response?.data?.error?.message,err?.response?.status );
       }).finally(() => {
 
         setLoading(false);
@@ -55,7 +56,7 @@ function Login() {
   };
 
   const toggleRememberMe = (e) => {
-    console.log("object");
+    // console.log("object");
   };
 
   return (
@@ -109,6 +110,7 @@ function Login() {
           </div>
         </div>
       </div>
+      <NotificationContainer />
     </div>
   );
 }

@@ -7,7 +7,6 @@ const apiConfig = (flag = false) => {
 
 
   if (localStorage.getItem('accessToken')) {
-    console.log("🚀 ~ apiConfig ~ localStorage.getItem('accessToken'):", localStorage.getItem('accessToken'))
     return {
       headers: {
         Authorization: `bearer ${localStorage.getItem('accessToken')}`,
