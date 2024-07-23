@@ -96,7 +96,7 @@ const routes = [
         icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
         name: 'Roles', // name that appear in Sidebar
       },
-     
+
     ]
   },
 

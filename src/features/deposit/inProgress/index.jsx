@@ -133,7 +133,7 @@ function InProgress() {
 
   return (
     <>
-      <div className='bg-white p-4'>
+      {/* <div className='bg-white p-4'>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 w-full">
           <InputText
             labelTitle="Payin UUID"
@@ -215,7 +215,7 @@ function InProgress() {
           <button className='btn btn-sm btn-primary' onClick={filterData}>Submit</button>
           <button className='btn border btn-sm'>Collapse</button>
         </div>
-      </div>
+      </div> */}
 
       <TitleCard title="Recent Transactions" topMargin="mt-2" TopSideButtons={<TopSideButtons />}>
         {/* Team Member list in table format loaded constant */}
