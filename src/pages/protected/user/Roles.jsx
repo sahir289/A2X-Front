@@ -1,8 +1,8 @@
 import React from 'react'
-
+import RolesComponent from '../../../components/Roles'
 const Roles = () => {
   return (
-    <div>Roles</div>
+    <div><RolesComponent /></div>
   )
 }
 
