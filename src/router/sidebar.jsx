@@ -1,7 +1,8 @@
 /** Icons are imported separatly to reduce build time */
 import { ArrowRightCircleIcon, ArrowTrendingUpIcon, ArrowUturnLeftIcon, BanknotesIcon, BuildingLibraryIcon, CheckBadgeIcon, CurrencyDollarIcon, GlobeAltIcon, TrashIcon, UserCircleIcon } from '@heroicons/react/16/solid'
-import { CreditCardIcon, UsersIcon } from '@heroicons/react/24/outline'
+import { CreditCardIcon, UsersIcon,UserGroupIcon } from '@heroicons/react/24/outline'
 import Squares2X2Icon from '@heroicons/react/24/outline/Squares2X2Icon'
+// import { UserGroupIcon } from "@heroicons/24/outline";
 
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
@@ -54,7 +55,12 @@ const routes = [
         path: '/app/withdrawal/completed',
         icon: <CheckBadgeIcon className={submenuIconClasses} />,
         name: 'Completed',
-      }
+      },
+      {
+        path: '/app/withdrawal/all',
+        icon: <GlobeAltIcon className={submenuIconClasses} />,
+        name: 'All',
+      },
     ]
   },
   {
@@ -63,15 +69,15 @@ const routes = [
     name: 'Settlements', // name that appear in Sidebar
     submenu: [
 
+      // {
+      //   path: '/app/settlements/transaction',
+      //   icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
+      //   name: 'Transactions', // name that appear in Sidebar
+      // },
       {
-        path: '/app/settlements/transaction',
-        icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
-        name: 'Transactions', // name that appear in Sidebar
-      },
-      {
-        path: '/app/settlements/account',
+        path: '/app/settlements',
         icon: <UserCircleIcon className={submenuIconClasses} />,
-        name: 'Account',
+        name: 'Accounts',
       }
     ]
   },
@@ -81,7 +87,7 @@ const routes = [
     name: 'Merchant',
   },
   {
-    path: '/app/bank/accounts',
+    path: '/app/bank-accounts',
     icon: <BuildingLibraryIcon className={iconClasses} />,
     name: 'Bank Accounts',
   },
@@ -92,8 +98,8 @@ const routes = [
     submenu: [
 
       {
-        path: '/app/user/roles',
-        icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
+        path: '/app/user',
+        icon: <UserGroupIcon className={submenuIconClasses} />, // icon component
         name: 'Roles', // name that appear in Sidebar
       },
 
