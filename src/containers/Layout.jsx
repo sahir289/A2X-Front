@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import { removeNotificationMessage } from "../redux/slice/headerSlice.jsx"
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import WebSockets from "../components/WebSockets/WebSockets.jsx"
 // import ModalLayout from "./ModalLayout"
 
 function Layout() {
@@ -23,6 +24,7 @@ function Layout() {
 
   return (
     <>
+      <WebSockets />  {/*  to get the message from backend when the api is hit. */}
       { /* Left drawer - containing page content and side bar (always open) */}
       <div className="drawer  lg:drawer-open">
         <input id="left-sidebar-drawer" type="checkbox" className="drawer-toggle" />
