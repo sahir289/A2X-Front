@@ -10,3 +10,15 @@ export function formatDate(inputDate) {
 
   return `${day}/${month}/${year} at ${hours}:${minutes}:${seconds}`;
 }
+
+
+export function formatCurrency(amount) {
+  // Convert the amount to a number if it's not already
+  const numberAmount = Number(amount);
+
+  // Use toFixed to ensure two decimal places
+  const formattedAmount = numberAmount.toFixed(2);
+
+  // Add the currency symbol
+  return `₹${formattedAmount}`;
+}

@@ -1,45 +1,5 @@
-import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
 import { useEffect, useState } from "react"
-import TitleCard from '../../../components/Cards/TitleCard'
-import SearchBar from "../../../components/Input/SearchBar"
 import TableComponent from '../components/Table'
-import InputText from '../components/inputText'
-
-const TopSideButtons = ({ applyFilter, applySearch }) => {
-
-  const [filterParam, setFilterParam] = useState("")
-  const [searchText, setSearchText] = useState("")
-
-  const showFiltersAndApply = (params) => {
-    applyFilter(params)
-    setFilterParam(params)
-  }
-
-  const removeAppliedFilter = () => {
-    setFilterParam("")
-    setSearchText("")
-  }
-
-  useEffect(() => {
-    if (searchText === "") {
-      removeAppliedFilter()
-    } else {
-      applySearch(searchText)
-    }
-  }, [searchText])
-
-  return (
-    <div className="inline-block float-right">
-      <SearchBar searchText={searchText} styleClass="mr-4" setSearchText={setSearchText} />
-      {filterParam !== "" && (
-        <button onClick={() => removeAppliedFilter()} className="btn btn-xs mr-2 btn-active btn-ghost normal-case">
-          {filterParam}
-          <XMarkIcon className="w-4 ml-2" />
-        </button>
-      )}
-    </div>
-  )
-}
 
 function InProgress() {
   const [formData, setFormData] = useState({
@@ -217,12 +177,12 @@ function InProgress() {
         </div>
       </div> */}
 
-      <TitleCard title="Recent Transactions" topMargin="mt-2" TopSideButtons={<TopSideButtons />}>
+      {/* <TitleCard title="Recent Transactions" topMargin="mt-2" TopSideButtons={<TopSideButtons />}> */}
         {/* Team Member list in table format loaded constant */}
         <div className="overflow-x-auto w-full">
           <TableComponent data={filteredData} />
         </div>
-      </TitleCard>
+      {/* </TitleCard> */}
     </>
   )
 }
