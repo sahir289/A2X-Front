@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import {formatDate} from '../../../../src/utils/utils.js'
 import {Input} from 'antd';
 
-const TableComponent = ({ data,filterValues,setFilterValues }) => {
+const TableComponent = ({ data, filterValues, setFilterValues, tableChangeHandler, totalRecords, currentPage, pageSize }) => {
 
   // const handleCopy = (values) => {
   //   navigator.clipboard.writeText(values);
@@ -16,7 +16,14 @@ const TableComponent = ({ data,filterValues,setFilterValues }) => {
   }
 
   return (
-    <Table dataSource={data} rowKey="id">
+    <Table dataSource={data} rowKey="id" onChange={tableChangeHandler} pagination={{
+      total: totalRecords,
+      current: currentPage,
+      pageSize: pageSize,
+      showSizeChanger: false,
+      // onShowSizeChange: pageSizeHandler,
+      pageSizeOptions: [10, 20, 50, 100, 200],
+    }}>
 
       <Column
         title={<>
