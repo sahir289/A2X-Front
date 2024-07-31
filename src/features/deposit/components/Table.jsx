@@ -39,7 +39,7 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
     // pageSize: pageSize,
     // total: data.totalRecords, // Adjust according to your data structure
     showSizeChanger: true,
-    pageSizeOptions: ['10', '20', '50'],
+    pageSizeOptions: [ '20', '50','100'],
     // onChange: (page, size) => handleTableChange({ current: page, pageSize: size }),
     // onShowSizeChange: (current, size) => handleTableChange({ current, pageSize: size }),
     showTotal: (total) => `Total ${total} items`,
@@ -56,6 +56,7 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
 
         </div>
       </div>
+
       <Table
         dataSource={data}
         rowKey="id"
@@ -85,10 +86,9 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
             <span className='mb-2' >Amount</span>
             <br />
             <Input
-              // value={filterValues?.amount}
-              disabled
-              style={{ backgroundColor: "#fafafa", border: 'none', cursor: 'auto' }}
-            // onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
+              value={filterValues?.amount}
+              style={{ backgroundColor: "#fafafa", cursor: 'auto' }}
+            onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
             />
           </>}
           dataIndex="amount"
