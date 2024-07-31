@@ -1,9 +1,20 @@
-import React from 'react'
 
-const Accounts = () => {
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import All from '../../../features/settlement/index.jsx'
+import { setPageTitle } from '../../../redux/slice/headerSlice.jsx'
+
+function Accounts() {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "Settlements" }))
+  }, [])
+
+
   return (
-    <div>Accounts</div>
+    <All />
   )
 }
 
-export default Accounts
+export default Accounts;
