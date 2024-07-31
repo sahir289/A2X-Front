@@ -55,7 +55,7 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
     )
 }
 
-export const Columns = (merchantOptions, filters, onChange) => {
+export const Columns = (merchantOptions, filters, onChange, updateSettlementStatus) => {
     return (
         <>
             <Column
@@ -101,7 +101,7 @@ export const Columns = (merchantOptions, filters, onChange) => {
                 ellipsis
                 render={(v, r, i) => {
                     if (i) {
-                        return `$${v}`;
+                        return `₹${v}`;
                     }
                     return <ColumnSearch name="amount" onChange={onChange} filters={filters} />;
                 }}
@@ -151,14 +151,14 @@ export const Columns = (merchantOptions, filters, onChange) => {
             />
             <Column
                 title='Ref.'
-                dataIndex='reference_id'
+                dataIndex='refrence_id'
                 width="200px"
                 ellipsis
                 render={(v, r, i) => {
                     if (i) {
                         return v;
                     }
-                    return <ColumnSearch name="reference_id" onChange={onChange} filters={filters} />;
+                    return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} />;
                 }}
             />
             <Column
@@ -168,7 +168,27 @@ export const Columns = (merchantOptions, filters, onChange) => {
                     if (!i) {
                         return null;
                     }
-                    return <Button> Reset </Button>;
+                    if (r.status == "INITIATED") {
+                        return (
+                            <Button
+                                className="bg-green-600 hover:!bg-green-600"
+                                type="primary"
+                                onClick={() => updateSettlementStatus({
+                                    record: r,
+                                    approve: true,
+                                })}
+                            >
+                                Approve
+                            </Button>
+                        )
+                    }
+                    return (
+                        <Button onClick={() => updateSettlementStatus({
+                            record: r,
+                            reset: true,
+                        })}>
+                            Reset
+                        </Button>);
                 }}
             />
         </>

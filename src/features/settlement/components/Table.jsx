@@ -26,18 +26,15 @@ export const walletOptions = ["WALLET1", "WALLET2"]
     label: el.toLowerCase(),
   }))
 
-const Table = ({ loading, data, merchantOptions, filters, onFilterChange }) => {
+const Table = ({ loading, data, merchantOptions, filters, onFilterChange, updateSettlementStatus }) => {
   return (
     <AntTable
       rowKey="id"
       dataSource={[{}, ...(Array.isArray(data) ? data : [])]}
       pagination={false}
       loading={loading}
-      rowSelection={{
-        type: "checkbox",
-      }}
     >
-      {Columns(merchantOptions, filters, onFilterChange)}
+      {Columns(merchantOptions, filters, onFilterChange, updateSettlementStatus)}
     </AntTable>
   )
 }

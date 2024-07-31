@@ -1,7 +1,7 @@
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Pagination, Select } from 'antd';
 import { useEffect, useRef, useState } from "react";
-import { getApi, postApi } from "../../redux/api";
+import { getApi, postApi, putApi } from "../../redux/api";
 import { getQueryFromObject } from "../../utils/utils";
 import TableComponent, { methodOptions, walletOptions } from './components/Table';
 
@@ -9,12 +9,14 @@ import TableComponent, { methodOptions, walletOptions } from './components/Table
 export default function Settlement() {
 
   const [form] = Form.useForm();
+  const [modal, contextHolder] = Modal.useModal();
   const method = Form.useWatch("method", form);
   const timer = useRef(null);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
-  const [merchants, setMerchants] = useState([])
+  const [merchants, setMerchants] = useState([]);
+  const [editSettlement, setEditSettlement] = useState(null);
   const [settlements, setSettlements] = useState({
     data: [],
     total: 0,
@@ -130,6 +132,47 @@ export default function Settlement() {
     })
   }
 
+  const updateSettlementStatus = (data) => {
+    if (data.reset) {
+      return handleResetSettlement(data.record?.id);
+    }
+
+    if (data.approve) {
+      setEditSettlement(data.record);
+      return;
+    }
+  }
+
+  const handleResetSettlement = async (id) => {
+    const isReset = await modal.confirm({
+      title: "Confirmation",
+      type: "confirm",
+      content: "Are you to reset the settlement",
+    });
+
+    if (isReset) {
+      handelUpdateSettlement({
+        status: "INITIATED"
+      }, id);
+    }
+  }
+
+  const handelUpdateSettlement = async (data, id) => {
+    try {
+      const settlementId = editSettlement?.id || id;
+      if (!settlementId) {
+        return;
+      }
+      setIsLoading(true);
+      await putApi(`/update-settlement/${settlementId}`, data);
+      setEditSettlement(null);
+      handleGetSettlements();
+    } catch (err) {
+      setIsLoading(false);
+      console.log("ERROR", err);
+    }
+  }
+
 
   const merchantOptions = merchants
     .map(el => ({
@@ -147,6 +190,7 @@ export default function Settlement() {
 
   return (
     <section className=''>
+      {contextHolder}
       <div className='bg-white rounded-[8px] p-[8px]'>
         <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
           <p className='text-lg font-medium p-[5px]'>Settlement List</p>
@@ -171,6 +215,7 @@ export default function Settlement() {
             merchantOptions={merchantOptions}
             filters={filters}
             onFilterChange={onFilterChange}
+            updateSettlementStatus={updateSettlementStatus}
           />
         </div>
         <div className='flex justify-end mt-[10px]'>
@@ -180,9 +225,31 @@ export default function Settlement() {
             current={pagination.page}
             showTotal={handleShowTotal}
             onChange={handlePageChange}
+            showSizeChanger
           />
         </div>
       </div>
+
+      <Modal
+        title="Approve"
+        open={!!editSettlement}
+        onCancel={() => setEditSettlement(null)}
+        footer={false}
+        destroyOnClose
+      >
+        <Form layout="vertical" onFinish={handelUpdateSettlement}>
+          <Form.Item name="refrence_id" label="UTR Number" rules={RequiredRule}>
+            <Input size="large" />
+          </Form.Item>
+          <Button
+            type="primary"
+            className="bg-green-600 hover:!bg-green-600"
+            htmlType="submit"
+          >
+            Approve
+          </Button>
+        </Form>
+      </Modal>
 
       <Modal title="Add Settlement" onCancel={handleToggleModal} open={open} footer={false}>
         <Form
