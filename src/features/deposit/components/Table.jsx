@@ -234,9 +234,9 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
           render={(value) => {
             console.log("🚀 ~ TableComponent ~ value:", value)
             return (
-              <span>
+              <span>  
                 {<Tag
-                  color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : '#FF6600'}
+                  color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value ==='INITIATED' ? 'grey' : '#FF6600'}
                   key={value}
                   icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
                 >
