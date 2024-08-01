@@ -6,11 +6,8 @@ import { formatCurrency, formatDate } from '../../../utils/utils';
 import { ExclamationCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import { CopyOutlined } from '@ant-design/icons';
 
-const TableComponent = ({ data, filterValues, setFilterValues }) => {
-  console.log("🚀 ~ TableComponent ~ data:", data)
-
+const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler }) => {
   const handleCopy = (values) => {
-    console.log("🚀 ~ handleCopy ~ values:", values)
     navigator.clipboard.writeText(values);
   };
 
@@ -19,29 +16,24 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
   };
 
   const getMerchantCode = (record) => {
-    console.log("🚀 ~ getMerchantCode ~ record:", record)
     return record?.Merchant?.code || 'N/A'; // Safely access nested property
   };
 
   const getBankCode = (record) => {
-    console.log("🚀 ~ getBankCode ~ record:", record?.Merchant?.Merchant_Bank)
     return record?.Merchant?.Merchant_Bank[0]?.bankAccount?.bank_name || 'N/A'; // Safely access nested property
   };
 
   const lastLogIn = (record) => {
-    console.log("🚀 ~ lastLogIn ~ lastLogIn:", record?.Merchant)
     return formatDate(record?.Merchant?.updatedAt) || 'N/A'; // Safely access nested property
   };
 
 
   const paginationConfig = {
-    // current: currentPage,
-    // pageSize: pageSize,
-    // total: data.totalRecords, // Adjust according to your data structure
+    current: currentPage,
+    pageSize: pageSize,
+    total: totalRecords, // Adjust according to your data structure
     showSizeChanger: true,
-    pageSizeOptions: [ '20', '50','100'],
-    // onChange: (page, size) => handleTableChange({ current: page, pageSize: size }),
-    // onShowSizeChange: (current, size) => handleTableChange({ current, pageSize: size }),
+    pageSizeOptions: ['20', '50', '100'],
     showTotal: (total) => `Total ${total} items`,
   };
   return (
@@ -58,6 +50,7 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
       </div>
 
       <Table
+        onChange={tableChangeHandler}
         dataSource={data}
         rowKey="id"
         scroll={{
@@ -67,6 +60,20 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
         className='font-serif'
         pagination={paginationConfig}
       >
+        <Column
+          title={<>
+            <span>Sno.</span>
+            <br />
+            <Input
+              value={filterValues?.sno}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'sno')}
+            />
+          </>}
+          dataIndex="sno"
+          key="sno"
+          className="bg-white"
+          width={"3%"}
+        />
         <Column
           title={<>
             <span>Code</span>
@@ -88,7 +95,7 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
             <Input
               value={filterValues?.amount}
               style={{ backgroundColor: "#fafafa", cursor: 'auto' }}
-            onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
             />
           </>}
           dataIndex="amount"
@@ -112,7 +119,7 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
           className="bg-white"
           width={"4%"}
           render={(text) => (
-            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={handleCopy(text)} /> </>
+            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
           )}
         />
         <Column
@@ -184,7 +191,7 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
           className="bg-white"
           width={"10%"}
           render={(text) => (
-            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={handleCopy(text)} /> </>
+            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
           )}
 
         />
@@ -232,11 +239,10 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
           className="bg-white"
           width={"2%"}
           render={(value) => {
-            console.log("🚀 ~ TableComponent ~ value:", value)
             return (
-              <span>  
+              <span>
                 {<Tag
-                  color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value ==='INITIATED' ? 'grey' : '#FF6600'}
+                  color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : '#FF6600'}
                   key={value}
                   icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
                 >
