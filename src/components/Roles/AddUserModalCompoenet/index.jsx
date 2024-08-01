@@ -4,10 +4,12 @@ import InputText from '../../Input/InputText'
 import { Select } from 'antd'
 import SelectDropdown from '../../Input/SelectDropdown'
 import ErrorText from '../../Typography/ErrorText'
+import { postApi, getApi } from '../../../redux/api'
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 const AddUserModal = (props) => {
 
-  const {isAddUserModalOpen,handleOk,handleCancel}=props
+  const { isAddUserModalOpen, handleOk, handleCancel, fetchUsersData }=props
   const INITIAL_USER_OBJ = {
     userName: "",
     password: "",
@@ -27,6 +29,7 @@ const AddUserModal = (props) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(INITIAL_ERROR_OBJ);
   const [userObj, setUserObj] = useState(INITIAL_USER_OBJ);
+  const [merchantCodeOptions,setMerchantCodeOptions]=useState([])
 
   const submitForm = (e) => {
     e.preventDefault();
@@ -40,22 +43,30 @@ const AddUserModal = (props) => {
       return setErrorMessage({ ...errorMessage, passwordERR: "Password is required!" });
     if (userObj.role.trim() === "")
       return setErrorMessage({ ...errorMessage, roleERR: "Role is required!" });
-    if (userObj.merchantCode.trim() === "" )
+    if ((userObj.role.trim() === "MERCHANT" || userObj.role.trim() === "OPERATIONS") &&userObj.merchantCode.trim() === "" )
       return setErrorMessage({ ...errorMessage, merchantCodeERR: "Merchant Code is required!" });
 
     else {
       setLoading(true);
+      if (userObj.role !== "MERCHANT" || userObj.role !== "OPERATIONS"){
+        delete userObj['merchantCode']
+      }
+      else{
+        userObj['code'] = userObj.merchantCode
+        delete userObj['merchantCode']
+      }
       // Call API to check user credentials and save token in localstorage
-      // const resp = postApi('/login', loginObj).then((res) => {
-      //   localStorage.setItem("accessToken", res?.data?.data);
-      //   navigate("/app/dashboard");
+      const resp = postApi('/create-user', userObj).then((res) => {
+        // localStorage.setItem("accessToken", res?.data?.data);
+        // navigate("/app/dashboard");
 
-      // }).catch((err) => {
-      //   NotificationManager.error(err?.response?.data?.error?.message, err?.response?.status);
-      // }).finally(() => {
-
-      //   setLoading(false);
-      // })
+      }).catch((err) => {
+        NotificationManager.error(err?.response?.data?.error?.message, err?.response?.status);
+      }).finally(() => {
+        fetchUsersData()
+        setLoading(false);
+        handleCancel()
+      })
 
     }
   };
@@ -67,10 +78,33 @@ const AddUserModal = (props) => {
 
   useEffect(()=>{
     if(isAddUserModalOpen){
+    console.log("SETTING VALUES")
     setErrorMessage(INITIAL_ERROR_OBJ)
     setUserObj(INITIAL_USER_OBJ)
     }
-  },[isAddUserModalOpen])
+  }, [isAddUserModalOpen])
+
+  const fetchMerchantData = async () => {
+    try {
+      const merchantApiRes = await getApi('/getall-merchant')
+
+      const dropdownOptions = merchantApiRes?.data?.data?.merchants?.map(merchant => ({
+        label: merchant.code,
+        value: merchant.code
+      }));
+      setMerchantCodeOptions(dropdownOptions)
+
+    } catch (error) {
+      console.log(error)
+    }
+    finally {
+    }
+
+  }
+
+  useEffect(()=>{
+    fetchMerchantData()
+  },[])
   return (
    <>
       <Modal title="Add User" open={isAddUserModalOpen} onOk={handleOk} onCancel={handleCancel} footer={[]}>
@@ -117,15 +151,12 @@ const AddUserModal = (props) => {
           updateFormValue={updateFormValue}
         />
          {<ErrorText styleClass="mt-8">{errorMessage?.roleERR}</ErrorText>}
-       {userObj?.role==="MERCHANT"&& <> <SelectDropdown
+        {(userObj?.role === "MERCHANT" || userObj?.role === "OPERATIONS") && <> <SelectDropdown
           defaultValue={userObj.merchantCode}
           updateType="merchantCode"
           containerStyle="mt-4"
           labelTitle="Merchant Code"
-          options={[
-            { label: 'vendor', value: 'VENDOR' },
-            { label: 'merchant', value: 'MERCHANT' }
-          ]}
+          options={merchantCodeOptions}
           updateFormValue={updateFormValue}
         />
 

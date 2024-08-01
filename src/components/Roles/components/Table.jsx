@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import {formatDate} from '../../../../src/utils/utils.js'
 import {Input} from 'antd';
 
-const TableComponent = ({ data, filterValues, setFilterValues, tableChangeHandler, totalRecords, currentPage, pageSize }) => {
+const TableComponent = ({ data, handleUserStatusChange, filterValues, setFilterValues, tableChangeHandler, totalRecords, currentPage, pageSize }) => {
 
   // const handleCopy = (values) => {
   //   navigator.clipboard.writeText(values);
@@ -13,6 +13,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, tableChangeHandle
 
   const handleFilterValuesChange=(value,filedName)=>{
     setFilterValues((prev)=>({...prev,[filedName]:value}))
+  }
+  const handleStatusChange = (e, data) => {
+    console.log("first jj",e)
+    console.log("first jj", data)
+    handleUserStatusChange({id:data.id,status:e})
   }
 
   return (
@@ -70,10 +75,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, tableChangeHandle
         key="isEnabled"
         className="bg-white"
         width={"15%"}
-        render={(value)=>{
+        render={(value,data)=>{
           return <>
           <Switch
           defaultValue={value?true :false}
+          onChange={(e)=>{handleStatusChange(e,data)}}
           >
 
           </Switch>
