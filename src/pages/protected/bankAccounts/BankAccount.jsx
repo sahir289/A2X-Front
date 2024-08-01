@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import All from "../../../features/bankAccounts/All";
+import { setPageTitle } from "../../../redux/slice/headerSlice";
 
 const BankAccount = () => {
-  return (
-    <div>BankAccount</div>
-  )
-}
+  const dispatch = useDispatch();
 
-export default BankAccount
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "All Data" }));
+  }, []);
+
+  return <All />;
+};
+
+export default BankAccount;

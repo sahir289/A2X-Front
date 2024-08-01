@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Accounts = () => {
-  return (
-    <div>Accounts</div>
-  )
-}
+  return <div>BankAccount</div>;
+};
 
-export default Accounts
+export default Accounts;
