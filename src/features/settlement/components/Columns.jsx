@@ -1,0 +1,198 @@
+import { Button, Input, Select, Tag } from "antd";
+import Column from "antd/es/table/Column";
+import { methodOptions, statusOptions } from "./Table";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+
+const STATUS_BG = {
+    SUCCESS: 'bg-green-600',
+    ASSIGNED: 'bg-orange-400',
+    DROPPED: 'bg-red-600',
+}
+
+const renderStatusTag = (status) => {
+    let color = '';
+    switch (status) {
+        case 'INITIATED':
+            color = 'grey';
+            break;
+        case 'SUCCESS':
+            color = 'green';
+            break;
+        // Add other statuses and colors as needed
+        default:
+            color = 'default'; // Fallback color
+    }
+    return <Tag color={color} icon={status === "INITIATED" && <ExclamationCircleOutlined />}>{status}</Tag>
+};
+
+const ColumnSearch = ({ name, filters, onChange, ...props }) => {
+    return (
+        <Input
+            {...props}
+            value={filters[name]}
+            name={name}
+            className='w-full'
+            onChange={(e) => {
+                onChange(name, e.target.value)
+            }}
+            allowClear
+        />
+    )
+}
+
+const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
+    return (
+        <Select
+            {...props}
+            name={name}
+            options={options}
+            className='w-full'
+            value={filters[name]}
+            onChange={(v) => {
+                onChange(name, v)
+            }}
+            allowClear
+        />
+    )
+}
+
+export const Columns = (merchantOptions, filters, onChange, updateSettlementStatus) => {
+    return (
+        <>
+            <Column
+                title='ID'
+                dataIndex='id'
+                ellipsis
+                width="100px"
+                render={(v, r, i) => {
+                    if (i) {
+                        return v;
+                    }
+                    return <ColumnSearch name="id" min="1" onChange={onChange} filters={filters} />;
+                }}
+            />
+            <Column
+                title='Merchant'
+                dataIndex='Merchant'
+                width="130px"
+                ellipsis
+                render={(v, r, i) => {
+                    if (i) {
+                        return v?.code;
+                    }
+                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters} />;
+                }}
+            />
+            <Column
+                title='Status'
+                dataIndex='status'
+                width="120px"
+                ellipsis
+                render={(v, r, i) => {
+                    if (i) {
+                        return renderStatusTag(v)
+                    }
+                    return <ColumnSelect name="status" options={statusOptions} onChange={onChange} filters={filters} />
+                }}
+            />
+            <Column
+                title='Amount'
+                dataIndex='amount'
+                width="100px"
+                ellipsis
+                render={(v, r, i) => {
+                    if (i) {
+                        return `₹${v}`;
+                    }
+                    return <ColumnSearch name="amount" onChange={onChange} filters={filters} />;
+                }}
+            />
+            <Column
+                title='Bank Details'
+                dataIndex='acc_no'
+                width="250px"
+                ellipsis
+                render={(v, r, i) => {
+                    if (i) {
+                        return (
+                            <div>
+                                <p>{r?.acc_name}</p>
+                                <p>{r?.acc_no}</p>
+                                <p>{r?.ifsc}</p>
+                            </div>
+                        );
+                    }
+                    return <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />;
+                }}
+            />
+            <Column
+                title='Method'
+                dataIndex='method'
+                width="120px"
+                ellipsis
+                render={(v, r, i) => {
+                    if (i) {
+                        if (typeof v !== "string") {
+                            return;
+                        }
+                        const f = v.charAt(0);
+                        const l = v.slice(1).toLowerCase();
+                        return f + l;
+                    }
+                    return <ColumnSelect name="method" options={methodOptions} onChange={onChange} filters={filters} />
+                }
+                }
+            />
+            <Column
+                title='Last Updated (IST)'
+                dataIndex='updatedAt'
+                width="140px"
+                ellipsis
+                render={(v) => v ? new Date(v).toDateString() : null}
+            />
+            <Column
+                title='Ref.'
+                dataIndex='refrence_id'
+                width="200px"
+                ellipsis
+                render={(v, r, i) => {
+                    if (i) {
+                        return v;
+                    }
+                    return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} />;
+                }}
+            />
+            <Column
+                title='Option'
+                width="110px"
+                render={(v, r, i) => {
+                    if (!i) {
+                        return null;
+                    }
+                    if (r.status == "INITIATED") {
+                        return (
+                            <Button
+                                className="bg-green-600 hover:!bg-green-600"
+                                type="primary"
+                                onClick={() => updateSettlementStatus({
+                                    record: r,
+                                    approve: true,
+                                })}
+                            >
+                                Approve
+                            </Button>
+                        )
+                    }
+                    return (
+                        <Button onClick={() => updateSettlementStatus({
+                            record: r,
+                            reset: true,
+                        })}>
+                            Reset
+                        </Button>);
+                }}
+            />
+        </>
+    )
+}
