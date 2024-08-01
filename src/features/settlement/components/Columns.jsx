@@ -1,6 +1,8 @@
-import { Button, Input, Select } from "antd";
+import { Button, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import { methodOptions, statusOptions } from "./Table";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
 
 const STATUS_BG = {
     SUCCESS: 'bg-green-600',
@@ -8,21 +10,21 @@ const STATUS_BG = {
     DROPPED: 'bg-red-600',
 }
 
-const StatusRender = ({ v }) => {
-    if (typeof v !== "string") {
-        return
+const renderStatusTag = (status) => {
+    let color = '';
+    switch (status) {
+        case 'INITIATED':
+            color = 'grey';
+            break;
+        case 'SUCCESS':
+            color = 'green';
+            break;
+        // Add other statuses and colors as needed
+        default:
+            color = 'default'; // Fallback color
     }
-    const bg = STATUS_BG[v];
-    const f = v.charAt(0);
-    const l = v.slice(1).toLowerCase();
-    return (
-        <div className='flex items-center gap-1'>
-            <div className={`${bg} w-[5px] h-[5px] rounded-full`} />
-            {f}{l}
-        </div>
-    )
-}
-
+    return <Tag color={color} icon={status === "INITIATED" && <ExclamationCircleOutlined />}>{status}</Tag>
+};
 
 const ColumnSearch = ({ name, filters, onChange, ...props }) => {
     return (
@@ -89,7 +91,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                 ellipsis
                 render={(v, r, i) => {
                     if (i) {
-                        return <StatusRender v={v} />
+                        return renderStatusTag(v)
                     }
                     return <ColumnSelect name="status" options={statusOptions} onChange={onChange} filters={filters} />
                 }}
