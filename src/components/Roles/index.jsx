@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import TableComponent from './components/Table'
 import axios from 'axios';
-import { getApi } from '../../redux/api';
+import { getApi, putApi } from '../../redux/api';
 import TableHeaderCompennet from './TableHeader';
 import AddUserModal from './AddUserModalCompoenet';
 
@@ -18,7 +18,7 @@ const RolesComponent = () => {
 
   const [isAddUserModalOpen,setIsAddUserModalOpen]=useState(false)
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
 
   useEffect(()=>{
@@ -60,15 +60,31 @@ const RolesComponent = () => {
     // );
     // setSortField(sorter.field);
   };
+
+  const handleUserStatusChange=async(data)=>{
+    setIsFetchUsersLoading(true)
+    try {
+      const usersApiRes = await putApi('/update-status', { id:data.id,status:data.status })
+
+    } catch (error) {
+      console.log(error)
+    }
+    finally {
+      setIsFetchUsersLoading(false)
+      fetchUsersData()
+    }
+
+  }
   return (<>
     <div style={{marginBottom:'10px',fontWeight:400}}>Roles</div>
     <TableHeaderCompennet setIsAddUserModalOpen={setIsAddUserModalOpen}/>
     <div className="overflow-x-auto w-full">
       <TableComponent data={tableData} totalRecords={totalRecords}
         currentPage={currentPage}
+        handleUserStatusChange={handleUserStatusChange}
         pageSize={pageSize} filterValues={filterValues} tableChangeHandler={tableChangeHandler} setFilterValues={setFilterValues }/>
     </div>
-    <AddUserModal isAddUserModalOpen={isAddUserModalOpen} handleOk={handleOk} handleCancel={handleCancel}/>
+    <AddUserModal isAddUserModalOpen={isAddUserModalOpen} handleOk={handleOk} handleCancel={handleCancel} fetchUsersData={fetchUsersData }/>
   </>
 
   )
