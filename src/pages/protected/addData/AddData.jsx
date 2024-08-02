@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import All from "../../../features/addData/All";
+import { setPageTitle } from "../../../redux/slice/headerSlice";
 
 const AddData = () => {
-  return (
-    <div>AddData</div>
-  )
-}
+  const dispatch = useDispatch();
 
-export default AddData
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "All Data" }));
+  }, []);
+
+  return <All />;
+};
+
+export default AddData;
