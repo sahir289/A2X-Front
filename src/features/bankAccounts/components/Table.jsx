@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Input, Switch, Table, Tooltip } from "antd";
+import { Button, Empty, Input, Switch, Table, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { getApi } from "../../../redux/api";
@@ -20,7 +20,7 @@ const TableComponent = ({
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [isAddMerchantModalOpen, setIsAddMerchantModalOpen] = useState(false);
   const [allMerchants, setAllMerchants] = useState([]);
-  const [UpdateRecord, setUpdateRecord] = useState(null);
+  const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
 
   const handleCopy = (values) => {
@@ -86,7 +86,7 @@ const TableComponent = ({
 
     const deleteData = {
       bankAccountId: record?.id,
-      merchantId: record?.merchant?.map((merchant) => merchant?.merchant?.id),
+      merchantId: record?.merchant?.map((merchant) => merchant?.id),
       ac_name: record?.ac_name,
     };
 
@@ -207,7 +207,7 @@ const TableComponent = ({
         <Column
           title={
             <>
-              Limts
+              Limits
               <br />
               <Input
                 disabled
@@ -219,7 +219,7 @@ const TableComponent = ({
               />
             </>
           }
-          dataIndex="limmts"
+          dataIndex="limits"
           key="limits"
           className="bg-white"
           width={"4%"}
@@ -379,6 +379,7 @@ const TableComponent = ({
           className="bg-white"
           width={"6%"}
           render={(text, record) => {
+            console.log(record, "record434343434", text);
             return (
               <div className="whitespace-nowrap flex gap-2">
                 <Tooltip
@@ -387,11 +388,10 @@ const TableComponent = ({
                   title={
                     <div className="flex flex-col gap-1 text-black p-2">
                       <div className="font-bold">Merchant List</div>
-                      {record?.merchant?.map((merchant) => (
-                        <p key={merchant?.merchant?.id}>
-                          {merchant?.merchant?.code}
-                        </p>
-                      ))}
+                      {(!!record?.merchant &&
+                        record?.merchant?.map((merchant) => (
+                          <p key={merchant?.id}>{merchant?.code}</p>
+                        ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                     </div>
                   }
                 >
@@ -418,7 +418,7 @@ const TableComponent = ({
       </Table>
 
       <UpdateMerchant
-        record={UpdateRecord}
+        record={updateRecord}
         allMerchants={allMerchants}
         isAddMerchantModalOpen={isAddMerchantModalOpen}
         setIsAddMerchantModalOpen={setIsAddMerchantModalOpen}

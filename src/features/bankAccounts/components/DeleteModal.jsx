@@ -17,13 +17,10 @@ const DeleteModal = ({
 
   const handleOk = async () => {
     setIsLoading(true);
-    console.log("record delete", record);
     const formData = {
       bankAccountId: record?.bankAccountId,
       merchantId: record?.merchantId,
     };
-
-    console.log("formData", formData);
 
     try {
       const deleteBankMerchant = await deleteApiWithData(
@@ -42,8 +39,6 @@ const DeleteModal = ({
           setDeletedId(record?.merchantId);
         }
       }
-
-      console.log("deleteBankMerchant", deleteBankMerchant);
     } catch (error) {
       console.log(error);
     } finally {

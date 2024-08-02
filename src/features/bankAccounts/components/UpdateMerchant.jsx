@@ -15,6 +15,7 @@ const UpdateMerchant = ({
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [deletedId, setDeletedId] = useState(null);
   const [newMerchant, setNewMerchant] = useState(null);
+  const [form] = Form.useForm();
 
   const handleModalOk = () => {
     setIsAddMerchantModalOpen(false);
@@ -37,6 +38,8 @@ const UpdateMerchant = ({
         await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
 
         handleTableChange({ current: 1, pageSize: 10 });
+
+        form.resetFields();
       }
     } catch (error) {
       console.log(error);
@@ -58,8 +61,8 @@ const UpdateMerchant = ({
   const deleteMerchant = (merchant) => {
     const deleteData = {
       bankAccountId: record?.id,
-      merchantId: merchant?.merchant?.id,
-      merchantCode: merchant?.merchant.code,
+      merchantId: merchant?.id,
+      merchantCode: merchant?.code,
     };
     setDeleteRecord(deleteData);
     setIsDeletePanelOpen(true);
@@ -68,7 +71,7 @@ const UpdateMerchant = ({
   useEffect(() => {
     if (deletedId) {
       const updatedMerchant = record?.merchant?.filter(
-        (merchant) => merchant?.merchant?.id !== deletedId
+        (merchant) => merchant?.id !== deletedId
       );
       record.merchant = updatedMerchant;
     }
@@ -77,9 +80,9 @@ const UpdateMerchant = ({
   useEffect(() => {
     if (newMerchant) {
       if (record.merchant) {
-        record.merchant.push({ merchant: newMerchant });
+        record.merchant.push(newMerchant);
       } else {
-        record.merchant = [{ merchant: newMerchant }];
+        record.merchant = [newMerchant];
       }
     }
   }, [newMerchant]);
@@ -102,8 +105,8 @@ const UpdateMerchant = ({
       >
         <div className="flex flex-col gap-2">
           {record?.merchant?.map((merchant) => (
-            <div key={merchant?.merchant?.id} className="flex justify-between">
-              <div>{merchant?.merchant?.code}</div>
+            <div key={merchant?.id} className="flex justify-between">
+              <div>{merchant?.code}</div>
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
@@ -116,6 +119,7 @@ const UpdateMerchant = ({
           ))}
         </div>
         <Form
+          form={form}
           name="edit_merchant"
           onFinish={onUpdateMerchant}
           autoComplete="off"
