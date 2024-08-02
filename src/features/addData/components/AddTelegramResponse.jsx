@@ -37,7 +37,7 @@ const AddTelegramResponse = ({
     console.log(formData, "formData");
 
     try {
-      const AddData = await postApi("/create-message?isFront=true", formData);
+      const AddData = await postApi("/create-message", formData);
 
       console.log(AddData, "post");
       if (AddData.status === 201) {
@@ -88,7 +88,7 @@ const AddTelegramResponse = ({
             ]}
           >
             <Select className="flex flex-1">
-              <Select.Option value="success">Success</Select.Option>
+              <Select.Option value="/success">Success</Select.Option>
             </Select>
           </Form.Item>
 

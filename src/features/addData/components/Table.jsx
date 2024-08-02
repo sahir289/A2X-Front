@@ -13,32 +13,17 @@ const TableComponent = ({
   isFetchBanksLoading,
 }) => {
   const [isAddModelOpen, setIsAddModelOpen] = useState(false);
-  const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
-  const [isAddMerchantModalOpen, setIsAddMerchantModalOpen] = useState(false);
-  const [allMerchants, setAllMerchants] = useState([]);
-  const [updateRecord, setUpdateRecord] = useState(null);
-  const [deleteRecord, setDeleteRecord] = useState(null);
-
-  const handleCopy = (values) => {
-    console.log("🚀 ~ handleCopy ~ values:", values);
-    navigator.clipboard.writeText(values);
-  };
 
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
 
-  const lastLogIn = (record) => {
-    console.log("🚀 ~ lastLogIn ~ lastLogIn:", record?.Merchant);
-    return formatDate(record?.updatedAt) || "N/A";
-  };
-
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
-    pageSize: data?.pagination?.pageSize ?? 15,
+    pageSize: data?.pagination?.pageSize ?? 20,
     total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50"],
+    pageSizeOptions: [ "20", "50","100"],
     onChange: (page, size) =>
       handleTableChange({ current: page, pageSize: size }),
     onShowSizeChange: (current, size) =>
@@ -50,40 +35,12 @@ const TableComponent = ({
     setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
   };
 
-  const showModal = async (record) => {
-    setIsAddMerchantModalOpen(true);
-
-    setUpdateRecord(record);
-
-    try {
-      const merchant = await getApi("/getall-merchant", {
-        page: 1,
-        pageSize: 10000,
-      });
-
-      setAllMerchants(merchant?.data?.data?.merchants);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteBank = async (record) => {
-    setIsDeletePanelOpen(true);
-
-    const deleteData = {
-      bankAccountId: record?.id,
-      merchantId: record?.merchant?.map((merchant) => merchant?.id),
-      ac_name: record?.ac_name,
-    };
-
-    setDeleteRecord(deleteData);
-  };
 
   return (
     <>
       <div className="font-serif pt-3 flex bg-zinc-50 rounded-lg">
         <div className=" w-full h-16  pb-3">
-          <p className="pt-4 ps-4 text-xl ">Telegram Response</p>
+          <p className="pt-4 ps-4 text-xl "> Response</p>
         </div>
         <div className="pt-2 flex">
           <Button
@@ -125,7 +82,8 @@ const TableComponent = ({
                 className="flex flex-1"
                 onChange={(value) => handleFilterValuesChange(value, "status")}
               >
-                <Select.Option value="success">Success</Select.Option>
+                <Select.Option value="">Select</Select.Option>
+                <Select.Option value="/success">Success</Select.Option>
               </Select>
             </>
           }
