@@ -18,12 +18,14 @@ function All() {
     merchantOrderId: '',
     merchantCode: '',
     userId: '',
+    userSubmittedUtr:'',
     utr: '',
     payInId: '',
     dur: '',
     bank: '',
     status: '',
-    pageSize:20   // initial size
+    pageSize:20,   // initial size
+    page :1,  // initial size
   })
   const [isFetchUsersLoading, setIsFetchUsersLoading] = useState(false)
 
@@ -36,9 +38,10 @@ function All() {
   useEffect(() => {
     setFilterValues(prevValues => ({
       ...prevValues,
-      pageSize
+      pageSize,
+      page:currentPage
     }));
-  }, [pageSize]);
+  }, [pageSize,currentPage]);
 
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true)

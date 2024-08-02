@@ -1,12 +1,15 @@
-import { Button, Input, Table, Tag } from 'antd';
+import { Button, Input, Modal, Select, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
-import React from 'react';
+import React, { useState } from 'react';
 import { PlusIcon, Reload, Reloader } from '../../../utils/constants';
 import { formatCurrency, formatDate } from '../../../utils/utils';
 import { ExclamationCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import { CopyOutlined } from '@ant-design/icons';
 
 const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
   };
@@ -27,6 +30,15 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     return formatDate(record?.Merchant?.updatedAt) || 'N/A'; // Safely access nested property
   };
 
+  const handleImageClick = (imageUrl) => {
+    setSelectedImageUrl(imageUrl);
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setSelectedImageUrl(null);
+  };
 
   const paginationConfig = {
     current: currentPage,
@@ -36,6 +48,18 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     pageSizeOptions: ['20', '50', '100'],
     showTotal: (total) => `Total ${total} items`,
   };
+
+
+  const statusOptions = [
+    { value: '', label: 'Select' },
+    { value: 'INITIATED', label: 'INITIATED' },
+    { value: 'ASSIGNED', label: 'ASSIGNED' },
+    { value: 'SUCCESS', label: 'SUCCESS' },
+    { value: 'DROPPED', label: 'DROPPED' },
+    { value: 'DUPLICATE', label: 'DUPLICATE' },
+    { value: 'DISPUTE', label: 'DISPUTE' },
+    { value: 'IMG_PENDING', label: 'IMG_PENDING' },
+  ];
   return (
     <>
       <div className='font-serif pt-3 flex bg-zinc-50 rounded-lg'>
@@ -54,8 +78,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         dataSource={data}
         rowKey="id"
         scroll={{
-          // y: 240,
-          x: "120vw"
+          x: "2200px"
         }}
         className='font-serif'
         pagination={paginationConfig}
@@ -72,7 +95,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="sno"
           key="sno"
           className="bg-white"
-          width={"3%"}
+          width={"24px"}
         />
         <Column
           title={<>
@@ -86,7 +109,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="upi_short_code"
           key="upi_short_code"
           className="bg-white"
-          width={"3%"}
+          width={"24px"}
         />
         <Column
           title={<>
@@ -94,16 +117,14 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <br />
             <Input
               value={filterValues?.amount}
-              style={{ backgroundColor: "#fafafa", cursor: 'auto' }}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
             />
           </>}
           dataIndex="amount"
           key="amount"
           className="bg-white"
-          width={"3%"}
+          width={"24px"}
           render={(value) => formatCurrency(value)}
-
         />
         <Column
           title={<>
@@ -117,7 +138,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="merchant_order_id"
           key="merchant_order_id"
           className="bg-white"
-          width={"4%"}
+          width={"150px"}
           render={(text) => (
             <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
           )}
@@ -136,7 +157,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="Merchant"
           key="merchant_code"
           className="bg-white"
-          width={"4%"}
+          width={"150px"}
           render={(text, record) => (
             <>
               {getMerchantCode(record)}
@@ -160,7 +181,22 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="user_id"
           key="user_id"
           className="bg-white"
-          width={"4%"}
+          width={"100px"}
+        />
+        <Column
+          title={<>
+            <span>User Submitted utr</span>
+            <br />
+            <Input
+              value={filterValues?.userSubmittedUtr}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'userSubmittedUtr')}
+            />
+          </>}
+          dataIndex="user_submitted_utr"
+          key="user_submitted_utr"
+          className="bg-white"
+          width={"124px"}
+          render={(text) => text || '--'}
         />
         <Column
           title={<>
@@ -174,7 +210,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="utr"
           key="utr"
           className="bg-white"
-          width={"4%"}
+          width={"14px"}
           render={(text) => text || '--'}
         />
         <Column
@@ -189,7 +225,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="id" // Adjust according to actual data structure
           key="id"
           className="bg-white"
-          width={"10%"}
+          width={"304px"}
           render={(text) => (
             <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
           )}
@@ -207,7 +243,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="duration" // Adjust according to actual data structure
           key="duration"
           className="bg-white"
-          width={"3%"}
+          width={"24px"}
           render={(text) => text || '--'}
         />
         <Column
@@ -222,48 +258,82 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="Merchant" // Adjust according to actual data structure
           key="bank"
           className="bg-white"
-          width={"5%"}
+          width={"24px"}
           render={(text, record) => getBankCode(record)}
         />
         <Column
           title={<>
             <span>Status</span>
             <br />
-            <Input
+            <Select
               value={filterValues?.status}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'status')}
+              onChange={(value) => handleFilterValuesChange(value, 'status')}
+              style={{ width: '90%' }}
+              options={statusOptions}
             />
           </>}
           dataIndex="status"
           key="status"
           className="bg-white"
-          width={"2%"}
-          render={(value) => {
-            return (
-              <span>
-                {<Tag
-                  color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : '#FF6600'}
-                  key={value}
-                  icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
-                >
-                  {value}
-                </Tag>}
-              </span>
-            )
-
-          }
-          }
-        //
+          width={"14px"}
+          render={(value) => (
+            <span>
+              <Tag
+                color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : '#FF6600'}
+                key={value}
+                icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
+              >
+                {value}
+              </Tag>
+            </span>
+          )}
         />
         <Column
           title="Last logged in (IST)"
           dataIndex="Merchant"
           key="Merchant"
           className="bg-white"
-          width={"6%"}
+          width={"24px"}
           render={(text, record) => lastLogIn(record)}
         />
-      </Table>
+        <Column
+          title={<>
+            <span>Image</span>
+            <br />
+            <Input
+              disabled
+              className='outline-none border-none'
+              style={{ backgroundColor: "#fafafa", cursor: 'auto' }}
+            />
+          </>}
+          dataIndex="user_submitted_image"
+          key="user_submitted_image"
+          className="bg-white"
+          width={"24px"}
+          render={(imageUrl) => (
+            <>
+              {imageUrl !== null &&
+                <img
+                  src={`${process.env.REACT_APP_WS_URL}/${imageUrl}`}
+                  alt="thumbnail"
+                  className="thumbnail w-10 h-10"
+                  onClick={() => handleImageClick(`${process.env.REACT_APP_WS_URL}/${imageUrl}`)}
+                />
+              }
+            </>
+
+          )}
+        />
+      </Table >
+
+
+      <Modal open={isModalVisible} footer={null} onCancel={handleModalClose}>
+        <img
+          src={selectedImageUrl}
+          alt="Enlarged"
+          style={{ width: '50%' }}
+        />
+      </Modal>
     </>
   );
 };
