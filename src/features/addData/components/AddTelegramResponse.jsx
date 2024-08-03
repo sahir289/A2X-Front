@@ -87,7 +87,7 @@ const AddTelegramResponse = ({
               },
             ]}
           >
-            <Select className="flex flex-1" defaultValue='/success'>
+            <Select className="flex flex-1" >
               <Select.Option value="/success">Success</Select.Option>
             </Select>
           </Form.Item>
