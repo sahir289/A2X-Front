@@ -29,7 +29,7 @@ const AddTelegramResponse = ({
   const onFinish = async (values) => {
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${values.amount_code} ${values.utr}`,
+        text: `${values.status} ${values.amount} ${values.amount_code ?? "nill"} ${values.utr} ${values.is_used}`,
       },
     };
 
@@ -86,7 +86,7 @@ const AddTelegramResponse = ({
               },
             ]}
           >
-            <Select className="flex flex-1">
+            <Select className="flex flex-1" >
               <Select.Option value="/success">Success</Select.Option>
             </Select>
           </Form.Item>
@@ -109,7 +109,7 @@ const AddTelegramResponse = ({
             name="amount_code"
             rules={[
               {
-                required: true,
+                // required: true,
                 message: "Please input your amount code!",
               },
               {

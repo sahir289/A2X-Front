@@ -14,6 +14,7 @@ function All() {
   const [filterValues, setFilterValues] = useState({
     sno: '',
     upiShortCode: '',
+    confirmed:'',
     amount: '',
     merchantOrderId: '',
     merchantCode: '',
@@ -31,7 +32,6 @@ function All() {
 
   // const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)  for modal
   useEffect(() => {
-
     fetchUsersData()
   }, [filterValues,currentPage])
 
@@ -87,6 +87,8 @@ function All() {
           currentPage={currentPage}
           pageSize={pageSize}
           tableChangeHandler={tableChangeHandler}
+          fetchUsersData={fetchUsersData}
+          allTable ={true}
         />
       </div>
     </>
