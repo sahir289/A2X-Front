@@ -72,7 +72,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v;
+            return v || '-';
           }
           return <ColumnSearch name="merchant_order_id" onChange={onChange} filters={filters} />;
         }}
@@ -84,7 +84,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v?.code;
+            return v?.code || '-';
           }
           return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters} />;
         }}
@@ -96,7 +96,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v;
+            return v || '-';
           }
           return <ColumnSearch name="user_id" onChange={onChange} filters={filters} />;
         }}
@@ -108,7 +108,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return renderStatusTag(v)
+            return renderStatusTag(v || '-')
           }
           return <ColumnSelect name="status" options={statusOptions} onChange={onChange} filters={filters} />
         }}
@@ -120,7 +120,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return `₹${v}`;
+            return v ? `₹${v}` : '-';
           }
           return <ColumnSearch name="amount" onChange={onChange} filters={filters} />;
         }}
@@ -134,7 +134,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
           ellipsis
           render={(v, r, i) => {
             if (i) {
-              return `₹${v}`;
+              return v ? `₹${v}` : '-';
             }
             return <ColumnSearch name="commission" onChange={onChange} filters={filters} />;
           }}
@@ -168,7 +168,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
           ellipsis
           render={(v, r, i) => {
             if (i) {
-              return v;
+              return v || '-';
             }
             return <ColumnSearch name="utr_id" onChange={onChange} filters={filters} />;
           }}
@@ -181,7 +181,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v;
+            return v || '-';
           }
           return <ColumnSearch name="id" onChange={onChange} filters={filters} />;
         }}
@@ -191,7 +191,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         dataIndex='updatedAt'
         width="140px"
         ellipsis
-        render={(v) => v ? new Date(v).toDateString() : null}
+        render={(v) => v ? new Date(v).toDateString() : '-'}
       />
       <Column
         title='Option'
