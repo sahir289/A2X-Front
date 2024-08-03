@@ -1,7 +1,7 @@
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import { methodOptions, statusOptions } from "./Table";
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 
 const STATUS_BG = {

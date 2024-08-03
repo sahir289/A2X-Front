@@ -1,8 +1,9 @@
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Pagination, Select } from 'antd';
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { getApi, postApi, putApi } from "../../redux/api";
-import { getQueryFromObject } from "../../utils/utils";
+import { getQueryFromObject, RequiredRule } from "../../utils/utils";
 import TableComponent, { methodOptions, walletOptions } from './components/Table';
 
 
@@ -15,7 +16,6 @@ export default function Settlement() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
-  const [merchants, setMerchants] = useState([]);
   const [editSettlement, setEditSettlement] = useState(null);
   const [settlements, setSettlements] = useState({
     data: [],
@@ -28,9 +28,9 @@ export default function Settlement() {
   })
 
   const { data, total } = settlements;
+  const merchants = useSelector(state => state.merchant.data);
 
   useEffect(() => {
-    handleGetMerchants();
     handleGetSettlements();
   }, []);
 
@@ -71,7 +71,6 @@ export default function Settlement() {
         data: data?.data || [],
         total: data?.totalRecords || 0,
       })
-      setIsLoading(false);
     } catch (err) {
       console.log("ERROR", err);
     } finally {
@@ -79,14 +78,6 @@ export default function Settlement() {
     }
   }
 
-  const handleGetMerchants = async () => {
-    try {
-      const res = await getApi("/getall-merchant");
-      setMerchants(res.data?.data?.merchants || []);
-    } catch (err) {
-
-    }
-  }
 
   const handleToggleModal = () => {
     setOpen(!open);
@@ -181,12 +172,7 @@ export default function Settlement() {
     }))
 
   const labelCol = { span: 6 };
-  const RequiredRule = [
-    {
-      required: true,
-      message: "${label} is Required!",
-    }
-  ]
+
 
   return (
     <section className=''>

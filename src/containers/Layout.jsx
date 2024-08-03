@@ -1,12 +1,14 @@
-import PageContent from "./PageContent.jsx"
+import { useDispatch, useSelector } from 'react-redux'
 import LeftSidebar from "./LeftSidebar"
-import { useSelector, useDispatch } from 'react-redux'
+import PageContent from "./PageContent.jsx"
 // import RightSidebar from './RightSidebar'
 import { useEffect } from "react"
-import { removeNotificationMessage } from "../redux/slice/headerSlice.jsx"
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import 'react-notifications/lib/notifications.css';
+import { NotificationContainer, NotificationManager } from 'react-notifications'
+import 'react-notifications/lib/notifications.css'
 import WebSockets from "../components/WebSockets/WebSockets.jsx"
+import { getApi } from '../redux/api.jsx'
+import { removeNotificationMessage } from "../redux/slice/headerSlice.jsx"
+import { initMerchants } from "../redux/slice/merchantSlice.jsx"
 // import ModalLayout from "./ModalLayout"
 
 function Layout() {
@@ -21,6 +23,19 @@ function Layout() {
       dispatch(removeNotificationMessage())
     }
   }, [newNotificationMessage])
+
+  useEffect(() => {
+    handelGetMerchants();
+  }, []);
+
+  const handelGetMerchants = async () => {
+    try {
+      const res = await getApi("/getall-merchant");
+      if (Array.isArray(res.data?.data?.merchants)) {
+        dispatch(initMerchants(res.data.data.merchants));
+      }
+    } catch (err) { }
+  }
 
   return (
     <>

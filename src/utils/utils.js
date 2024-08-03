@@ -32,3 +32,29 @@ export const getQueryFromObject = (obj = {}) => {
   }
   return `?${queryParams.join("&")}`
 }
+
+export const statusOptions = [
+  { value: '', label: 'Select' },
+  { value: 'INITIATED', label: 'INITIATED' },
+  { value: 'ASSIGNED', label: 'ASSIGNED' },
+  { value: 'SUCCESS', label: 'SUCCESS' },
+  { value: 'DROPPED', label: 'DROPPED' },
+  { value: 'DUPLICATE', label: 'DUPLICATE' },
+  { value: 'DISPUTE', label: 'DISPUTE' },
+  { value: 'IMG_PENDING', label: 'IMG_PENDING' },
+];
+
+export const reasonOptions = ["Insufficient Fund", "Invalid Bank Details", "Other"].map(el => ({ value: el, label: el }));
+
+
+export const RequiredRule = [
+  {
+    required: true,
+    message: "${label} is Required!",
+  }
+]
+
+
+export const parseErrorFromAxios = (err) => {
+  return err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || "Unknown Error";
+}
