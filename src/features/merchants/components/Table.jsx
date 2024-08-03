@@ -94,6 +94,7 @@ const TableComponent = ({
           key="balance"
           className="bg-white"
           width={"4%"}
+          render={(value) => formatCurrency(value)}
         />
         <Column
           title="Payin"
