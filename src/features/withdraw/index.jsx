@@ -226,15 +226,15 @@ const Withdraw = ({ type }) => {
         destroyOnClose
       >
         <Form layout="vertical" onFinish={updateWithdraw}>
-          <Form.Item>
-            <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
-              onChange={handleSelectUTRMethod}
-              defaultValue={selectedUTRMethod}
-            />
-          </Form.Item>
           {
             selectedUTRMethod === 'manual' && editWithdraw?.key == "approve" &&
             <>
+              <Form.Item>
+                <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
+                  onChange={handleSelectUTRMethod}
+                  defaultValue={selectedUTRMethod}
+                />
+              </Form.Item>
               <Form.Item name="utr_id" label="UTR Number" rules={RequiredRule}>
                 <Input />
               </Form.Item>
