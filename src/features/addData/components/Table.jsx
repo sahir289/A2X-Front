@@ -1,9 +1,8 @@
 import { Button, Input, Select, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
-import { getApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
-import { formatDate } from "../../../utils/utils";
+import { formatCurrency } from "../../../utils/utils";
 import AddTelegramResponse from "./AddTelegramResponse";
 
 const TableComponent = ({
@@ -23,7 +22,7 @@ const TableComponent = ({
     pageSize: data?.pagination?.pageSize ?? 20,
     total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
-    pageSizeOptions: [ "20", "50","100"],
+    pageSizeOptions: ["20", "50", "100"],
     onChange: (page, size) =>
       handleTableChange({ current: page, pageSize: size }),
     onShowSizeChange: (current, size) =>
@@ -34,7 +33,6 @@ const TableComponent = ({
   const handleTableChange = ({ current, pageSize }) => {
     setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
   };
-
 
   return (
     <>
@@ -67,7 +65,7 @@ const TableComponent = ({
         rowKey={(item) => item.id}
         scroll={{
           // y: 240,
-          x: "120vw",
+          x: "70vw",
         }}
         className="font-serif"
         loading={isFetchBanksLoading}
@@ -79,7 +77,7 @@ const TableComponent = ({
               <span className="whitespace-nowrap">Status </span>
               <br />
               <Select
-                className="flex flex-1"
+                className="flex"
                 onChange={(value) => handleFilterValuesChange(value, "status")}
               >
                 <Select.Option value="">Select</Select.Option>
@@ -90,7 +88,7 @@ const TableComponent = ({
           dataIndex="status"
           key="status"
           className="bg-white"
-          width={"2%"}
+          width={"1%"}
         />
         <Column
           title={
@@ -108,7 +106,8 @@ const TableComponent = ({
           dataIndex="amount"
           key="amount"
           className="bg-white"
-          width={"2%"}
+          width={"1%"}
+          render={(text) => formatCurrency(text)}
         />
         <Column
           title={
@@ -126,7 +125,7 @@ const TableComponent = ({
           dataIndex="amount_code"
           key="amount_code"
           className="bg-white"
-          width={"2%"}
+          width={"1%"}
         />
         <Column
           title={
@@ -144,7 +143,7 @@ const TableComponent = ({
           dataIndex="utr"
           key="utr"
           className="bg-white"
-          width={"2%"}
+          width={"1%"}
         />
         <Column
           title={
@@ -164,7 +163,7 @@ const TableComponent = ({
           dataIndex="is_used"
           key="is_used"
           className="bg-white"
-          width={"2%"}
+          width={"1%"}
           render={(text) => {
             return <Tag color={text ? "green" : "red"}>{`${text}`}</Tag>;
           }}

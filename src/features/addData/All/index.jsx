@@ -14,15 +14,9 @@ function All() {
   });
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
   useEffect(() => {
-    const getData = setTimeout(() => {
-      fetchUsersData();
-    }, 1000);
-
-    return () => clearTimeout(getData);
-  }, [filterValues]);
+    fetchUsersData();
+  }, []);
 
   const fetchUsersData = async () => {
     setIsFetchBanksLoading(true);
@@ -38,13 +32,6 @@ function All() {
     }
   };
 
-  const handleOk = () => {
-    setIsAddModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsAddModalOpen(false);
-  };
   return (
     <div className="">
       <TableComponent

@@ -22,6 +22,8 @@ const DeleteModal = ({
       merchantId: record?.merchantId,
     };
 
+    console.log(record, "record from delete");
+
     try {
       const deleteBankMerchant = await deleteApiWithData(
         "/delete-bank-merchant",

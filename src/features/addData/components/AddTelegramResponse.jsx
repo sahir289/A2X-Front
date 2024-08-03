@@ -6,7 +6,6 @@ import {
   Modal,
   notification,
   Select,
-  Switch,
 } from "antd";
 import React from "react";
 import { postApi } from "../../../redux/api";
@@ -30,7 +29,7 @@ const AddTelegramResponse = ({
   const onFinish = async (values) => {
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${values.amount_code} ${values.utr} ${values.is_used}`,
+        text: `${values.status} ${values.amount} ${values.amount_code} ${values.utr}`,
       },
     };
 
@@ -145,20 +144,6 @@ const AddTelegramResponse = ({
             ]}
           >
             <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Is Used"
-            name="is_used"
-            valuePropName="checked"
-            rules={[
-              {
-                required: true,
-                message: "Please input your is used!",
-              },
-            ]}
-          >
-            <Switch />
           </Form.Item>
 
           <div className="flex flex-row gap-2 float-right">
