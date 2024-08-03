@@ -15,6 +15,7 @@ const Withdraw = ({ type }) => {
   const [addLoading, setAddLoading] = useState(false);
   const [addWithdraw, setAddWithdraw] = useState(false);
   const [editWithdraw, setEditWithdraw] = useState(null);
+  const [selectedUTRMethod, setSelectedUTRMethod] = useState('manual');
   const [withdraws, setWithdraws] = useState({
     data: [],
     total: 0,
@@ -168,6 +169,12 @@ const Withdraw = ({ type }) => {
       label: el.code
     }))
 
+  //Select UTR Method
+  const handleSelectUTRMethod = (selectedMethod) => {
+    setSelectedUTRMethod(selectedMethod);
+  };
+
+
   return (
     <section>
       {contextHolder}
@@ -219,8 +226,14 @@ const Withdraw = ({ type }) => {
         destroyOnClose
       >
         <Form layout="vertical" onFinish={updateWithdraw}>
+          <Form.Item>
+            <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
+              onChange={handleSelectUTRMethod}
+              defaultValue={selectedUTRMethod}
+            />
+          </Form.Item>
           {
-            editWithdraw?.key == "approve" &&
+            selectedUTRMethod === 'manual' && editWithdraw?.key == "approve" &&
             <>
               <Form.Item name="utr_id" label="UTR Number" rules={RequiredRule}>
                 <Input />
@@ -230,7 +243,7 @@ const Withdraw = ({ type }) => {
           {
             editWithdraw?.key == "reject" &&
             <>
-              <Form.Item name="reject_reason" label="Reason" rules={RequiredRule}>
+              <Form.Item name="rejected_reason" label="Reason" rules={RequiredRule}>
                 <Select
                   options={reasonOptions}
                 />
