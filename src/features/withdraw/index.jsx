@@ -227,14 +227,17 @@ const Withdraw = ({ type }) => {
       >
         <Form layout="vertical" onFinish={updateWithdraw}>
           {
-            selectedUTRMethod === 'manual' && editWithdraw?.key == "approve" &&
+            editWithdraw?.key == "approve" &&
             <>
-              <Form.Item>
-                <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
-                  onChange={handleSelectUTRMethod}
-                  defaultValue={selectedUTRMethod}
-                />
-              </Form.Item>
+              {
+                selectedUTRMethod === 'manual' &&
+                <Form.Item>
+                  <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
+                    onChange={handleSelectUTRMethod}
+                    defaultValue={selectedUTRMethod}
+                  />
+                </Form.Item>
+              }
               <Form.Item name="utr_id" label="UTR Number" rules={RequiredRule}>
                 <Input />
               </Form.Item>
