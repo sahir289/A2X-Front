@@ -3,7 +3,7 @@ import { Button, Form, Input, Modal, Pagination, Select } from 'antd';
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { getApi, postApi, putApi } from "../../redux/api";
-import { getQueryFromObject, RequiredRule } from "../../utils/utils";
+import { getQueryFromObject, reasonOptions, RequiredRule } from "../../utils/utils";
 import TableComponent, { methodOptions, walletOptions } from './components/Table';
 
 
@@ -128,10 +128,10 @@ export default function Settlement() {
       return handleResetSettlement(data.record?.id);
     }
 
-    if (data.approve) {
-      setEditSettlement(data.record);
-      return;
-    }
+    setEditSettlement({
+      ...data.record,
+      key: data.key
+    });
   }
 
   const handleResetSettlement = async (id) => {
@@ -217,22 +217,32 @@ export default function Settlement() {
       </div>
 
       <Modal
-        title="Approve"
+        title="Settlement"
         open={!!editSettlement}
         onCancel={() => setEditSettlement(null)}
         footer={false}
         destroyOnClose
       >
         <Form layout="vertical" onFinish={handelUpdateSettlement}>
-          <Form.Item name="refrence_id" label="UTR Number" rules={RequiredRule}>
-            <Input size="large" />
-          </Form.Item>
+          {
+            editSettlement?.key == "approve" ?
+              <Form.Item name="refrence_id" label="UTR Number" rules={RequiredRule}>
+                <Input size="large" />
+              </Form.Item> :
+              <Form.Item name="rejected_reason" label="Reason" rules={RequiredRule}>
+                <Select
+                  options={reasonOptions}
+                />
+              </Form.Item>
+          }
           <Button
             type="primary"
             className="bg-green-600 hover:!bg-green-600"
             htmlType="submit"
           >
-            Approve
+            {
+              editSettlement?.key == "approve" ? "Approve" : "Reject"
+            }
           </Button>
         </Form>
       </Modal>

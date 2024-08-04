@@ -1,5 +1,5 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Input, Select, Tag } from "antd";
+import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import { methodOptions, statusOptions } from "./Table";
 
@@ -172,16 +172,27 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     }
                     if (r.status == "INITIATED") {
                         return (
-                            <Button
-                                className="bg-green-600 hover:!bg-green-600"
+                            <Dropdown.Button
                                 type="primary"
-                                onClick={() => updateSettlementStatus({
-                                    record: r,
-                                    approve: true,
-                                })}
+                                menu={{
+                                    items: [
+                                        {
+                                            key: 'approve',
+                                            label: 'Approve',
+                                        },
+                                        {
+                                            key: 'reject',
+                                            label: 'Reject',
+                                        },
+                                    ],
+                                    onClick: (info) => updateSettlementStatus({
+                                        record: r,
+                                        ...info,
+                                    }),
+                                }}
                             >
                                 Approve
-                            </Button>
+                            </Dropdown.Button>
                         )
                     }
                     return (
