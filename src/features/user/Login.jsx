@@ -1,10 +1,10 @@
 import { useState } from "react";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/Images/logo.png";
 import InputText from "../../components/Input/InputText";
 import ErrorText from "../../components/Typography/ErrorText";
 import { postApi } from "../../redux/api";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 function Login() {
   const navigate = useNavigate();
@@ -36,16 +36,18 @@ function Login() {
     else {
       setLoading(true);
       // Call API to check user credentials and save token in localstorage
-      const resp = postApi('/login', loginObj).then((res) => {
-        localStorage.setItem("accessToken", res?.data?.data);
-        navigate("/app/dashboard");
+      const resp = postApi('/login', loginObj)
+        .then((res) => {
+          if (res.error) {
+            NotificationManager.error(res.error.message, "error");
+            return;
+          }
+          localStorage.setItem("accessToken", res?.data?.data);
+          navigate("/app/dashboard");
 
-      }).catch((err) => {
-        NotificationManager.error(err?.response?.data?.error?.message,err?.response?.status );
-      }).finally(() => {
-
-        setLoading(false);
-      })
+        }).finally(() => {
+          setLoading(false);
+        })
 
     }
   };

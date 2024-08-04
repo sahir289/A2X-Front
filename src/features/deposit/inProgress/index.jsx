@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
-import { getApi } from '../../../redux/api'
-import TableComponent from '../components/Table'
+import { useEffect, useState } from "react";
+import { getApi } from '../../../redux/api';
+import TableComponent from '../components/Table';
 
 
 function InProgress() {
@@ -46,19 +46,15 @@ function InProgress() {
 
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true)
-    try {
-      const payInDataRes = await getApi('/get-payInData', filterValues)
-
-      setTableData(payInDataRes?.data?.data?.payInData)
-      setTotalRecords(payInDataRes?.data?.data?.totalRecords)
-      console.log("first", payInDataRes?.data?.data?.totalRecords)
-
-    } catch (error) {
-      console.log(error)
+    const payInDataRes = await getApi('/get-payInData', filterValues)
+    setIsFetchUsersLoading(false)
+    if (payInDataRes.error) {
+      return;
     }
-    finally {
-      setIsFetchUsersLoading(false)
-    }
+
+    setTableData(payInDataRes?.data?.data?.payInData)
+    setTotalRecords(payInDataRes?.data?.data?.totalRecords)
+    console.log("first", payInDataRes?.data?.data?.totalRecords)
 
   }
   // for modal

@@ -62,5 +62,8 @@ export const RequiredRule = [
 
 
 export const parseErrorFromAxios = (err) => {
-  return err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || "Unknown Error";
+  return {
+    error: err,
+    message: err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || "Unknown Error",
+  };
 }

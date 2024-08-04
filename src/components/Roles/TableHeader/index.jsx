@@ -2,10 +2,9 @@ import { Button } from 'antd';
 import React from 'react';
 
 const TableHeaderCompennet = ({ setIsAddUserModalOpen }) => {
-  console.log("dddd", setIsAddUserModalOpen)
   return (<>
     <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>AdminUsers List</span>
-      <Button onClick={()=>{setIsAddUserModalOpen(true);console.log("llll")}}>add</Button>
+      <Button onClick={() => { setIsAddUserModalOpen(true); console.log("llll") }}>add</Button>
     </div>
   </>
   )

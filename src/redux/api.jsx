@@ -1,4 +1,5 @@
 import axios from "axios";
+import { parseErrorFromAxios } from "../utils/utils";
 
 
 const endPoint = process.env.REACT_APP_BASE_URL;
@@ -23,12 +24,15 @@ export const getApi = async (url, params) => {
       params: params,
       ...apiConfig(),
     });
-    return response;
+    return {
+      data: response.data,
+      error: null,
+    };
   } catch (err) {
     if (err?.response?.data?.error?.name) {
       localStorage.clear();
     }
-    // return err;
+    return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 
@@ -42,12 +46,15 @@ export const getApi = async (url, params) => {
 export const postApi = async (url, apiData, flag) => {
   try {
     const response = await axios.post(`${endPoint}${url}`, apiData, apiConfig(flag));
-    return response;
+    return {
+      data: response.data,
+      error: null,
+    };
   } catch (err) {
     if (err?.response?.data?.error?.name) {
       localStorage.clear();
     }
-    // return { data: null, error: err };
+    return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 
@@ -61,12 +68,15 @@ export const postApi = async (url, apiData, flag) => {
 export const putApi = async (url, apiData, flag) => {
   try {
     const response = await axios.put(`${endPoint}${url}`, apiData, apiConfig(flag));
-    return response;
+    return {
+      data: response.data,
+      error: null,
+    };
   } catch (err) {
     if (err?.response?.data?.error?.name) {
       localStorage.clear();
     }
-    // return { data: null, error: err };
+    return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 
@@ -76,12 +86,15 @@ export const putApi = async (url, apiData, flag) => {
 export const patchApi = async (url, apiData, flag) => {
   try {
     const response = await axios.patch(`${endPoint}${url}`, apiData, apiConfig(flag));
-    return response;
+    return {
+      data: response.data,
+      error: null,
+    };
   } catch (err) {
     if (err?.response?.data?.error?.name) {
       localStorage.clear();
     }
-    // return { data: null, error: err };
+    return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 
@@ -105,13 +118,22 @@ export const putApiNoHeader = async (url, apiData) => {
           Authorization: `bearer ${localStorage.getItem('accessToken')}`,
         },
       });
-      return { data: response.data, error: null };
+      return {
+        data: response.data,
+        error: null,
+      };
     } else {
-      return { data: null, error: "No access token available" };
+      return {
+        data: null,
+        error: {
+          error: null,
+          message: "No access token available",
+        }
+      };
     }
   } catch (err) {
     console.log("🚀 ~ putApiNoHeader ~ err:", err)
-    // return { data: null, error: err };
+    return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 
@@ -122,12 +144,15 @@ export const putApiNoHeader = async (url, apiData) => {
 export const deleteApi = async (url) => {
   try {
     const response = await axios.delete(`${endPoint}${url}`, apiConfig());
-    return response;
+    return {
+      data: response.data,
+      error: null,
+    };
   } catch (err) {
     if (err?.response?.data?.error?.name) {
       localStorage.clear();
     }
-    // return { data: null, error: err };
+    return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 
@@ -143,12 +168,15 @@ export const deleteApiWithData = async (url, apiData) => {
       data: apiData,
       ...apiConfig(),
     });
-    return response;
+    return {
+      data: response.data,
+      error: null,
+    };
   } catch (err) {
     if (err?.response?.data?.error?.name) {
       localStorage.clear();
     }
-    // return { data: null, error: err };
+    return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 

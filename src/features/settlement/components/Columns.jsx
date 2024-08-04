@@ -174,6 +174,10 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                         return (
                             <Dropdown.Button
                                 type="primary"
+                                onClick={() => updateSettlementStatus({
+                                    record: r,
+                                    key: "approve",
+                                })}
                                 menu={{
                                     items: [
                                         {

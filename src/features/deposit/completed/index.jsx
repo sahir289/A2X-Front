@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
-import { getApi } from '../../../redux/api'
-import TableComponent from '../components/Table'
+import { useEffect, useState } from "react";
+import { getApi } from '../../../redux/api';
+import TableComponent from '../components/Table';
 
 
 function Completed() {
@@ -14,19 +14,19 @@ function Completed() {
   const [filterValues, setFilterValues] = useState({
     sno: '',
     upiShortCode: '',
-    confirmed:'',
+    confirmed: '',
     amount: '',
     merchantOrderId: '',
     merchantCode: '',
     userId: '',
-    userSubmittedUtr:'',
+    userSubmittedUtr: '',
     utr: '',
     payInId: '',
     dur: '',
     bank: '',
     status: 'SUCCESS',
-    pageSize:20,   // initial size
-    page :1,  // initial size
+    pageSize: 20,   // initial size
+    page: 1,  // initial size
   })
   const [isFetchUsersLoading, setIsFetchUsersLoading] = useState(false)
 
@@ -35,32 +35,26 @@ function Completed() {
   useEffect(() => {
 
     fetchUsersData()
-  }, [filterValues,currentPage])
+  }, [filterValues, currentPage])
 
   useEffect(() => {
     setFilterValues(prevValues => ({
       ...prevValues,
       pageSize,
-      page:currentPage
+      page: currentPage
     }));
-  }, [pageSize,currentPage]);
+  }, [pageSize, currentPage]);
 
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true)
-    try {
-      const payInDataRes = await getApi('/get-payInData', filterValues)
-
-      setTableData(payInDataRes?.data?.data?.payInData)
-      setTotalRecords(payInDataRes?.data?.data?.totalRecords)
-      console.log("first", payInDataRes?.data?.data?.totalRecords)
-
-    } catch (error) {
-      console.log(error)
+    const payInDataRes = await getApi('/get-payInData', filterValues)
+    setIsFetchUsersLoading(false)
+    if (payInDataRes.error) {
+      return;
     }
-    finally {
-      setIsFetchUsersLoading(false)
-    }
-
+    setTableData(payInDataRes?.data?.data?.payInData)
+    setTotalRecords(payInDataRes?.data?.data?.totalRecords)
+    console.log("first", payInDataRes?.data?.data?.totalRecords)
   }
   // for modal
   // const handleOk = () => {
@@ -90,7 +84,7 @@ function Completed() {
           pageSize={pageSize}
           tableChangeHandler={tableChangeHandler}
           fetchUsersData={fetchUsersData}
-          completedTable = {true}
+          completedTable={true}
         />
       </div>
     </>

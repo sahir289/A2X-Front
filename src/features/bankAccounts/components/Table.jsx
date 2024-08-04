@@ -66,19 +66,16 @@ const TableComponent = ({
 
   const showModal = async (record) => {
     setIsAddMerchantModalOpen(true);
-
     setUpdateRecord(record);
-
-    try {
-      const merchant = await getApi("/getall-merchant", {
-        page: 1,
-        pageSize: 10000,
-      });
-
-      setAllMerchants(merchant?.data?.data?.merchants);
-    } catch (error) {
-      console.log(error);
+    const merchant = await getApi("/getall-merchant", {
+      page: 1,
+      pageSize: 10000,
+    });
+    if (merchant.error) {
+      return;
     }
+
+    setAllMerchants(merchant?.data?.data?.merchants);
   };
 
   const deleteBank = async (record) => {
@@ -101,7 +98,7 @@ const TableComponent = ({
         </div>
         <div className="pt-2 flex">
           <Button
-            className="mr-3 flex bg-green-600 text-white"
+            className="mr-3 flex text-white"
             icon={<PlusIcon />}
             onClick={() => setIsAddBankAccountModelOpen(true)}
           >

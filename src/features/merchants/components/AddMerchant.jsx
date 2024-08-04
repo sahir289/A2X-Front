@@ -45,24 +45,18 @@ const AddMerchant = ({
     };
 
     console.log(formData, "formData");
-
-    try {
-      const AddMerchant = await postApi("/create-merchant", formData);
-
-      console.log(AddMerchant, "post");
-      if (AddMerchant.status === 201) {
-        setIsAddModelOpen(false);
-        handleTableChange({ current: 1, pageSize: 10 });
-        form.resetFields();
-      }
-    } catch (error) {
-      console.log(error);
+    const AddMerchant = await postApi("/create-merchant", formData);
+    if (AddMerchant.error) {
       api.error({
-        description: `Error: ${
-          error?.response?.data?.error?.message ?? "Oops! Something went wrong"
-        }`,
+        description: `Error: ${AddMerchant.error.message}`,
       });
+      return
     }
+
+    console.log(AddMerchant, "post");
+    setIsAddModelOpen(false);
+    handleTableChange({ current: 1, pageSize: 10 });
+    form.resetFields();
   };
 
   return (
