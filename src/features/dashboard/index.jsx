@@ -70,6 +70,9 @@ function Dashboard() {
       const payInOutData = await getApi(
         `/get-payInDataMerchant?merchantCode=${selectedMerchantCode}`
       );
+      if (payInOutData.error) {
+        return;
+      }
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;

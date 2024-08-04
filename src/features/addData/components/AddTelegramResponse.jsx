@@ -36,26 +36,18 @@ const AddTelegramResponse = ({
     };
 
     console.log(formData, "formData");
-
-    try {
-      const AddData = await postApi("/create-message", formData);
-
-      console.log(AddData, "post");
-      if (AddData.status === 201) {
-        setIsAddModelOpen(false);
-        handleTableChange({ current: 1, pageSize: 10 });
-        form.resetFields();
-      }
-    } catch (error) {
-      console.log(error);
+    const AddData = await postApi("/create-message", formData);
+    if (AddData.error) {
       api.error({
-        description: `Error: ${
-          error?.response?.data?.error?.message ??
-          error?.response?.data?.message ??
-          "Oops! Something went wrong"
-        }`,
+        description: `Error: ${AddData.error.message}`,
       });
+      return;
     }
+
+    console.log(AddData, "post");
+    setIsAddModelOpen(false);
+    handleTableChange({ current: 1, pageSize: 10 });
+    form.resetFields();
   };
 
   return (

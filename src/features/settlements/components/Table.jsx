@@ -50,7 +50,7 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
           <p className='pt-4 ps-4 text-xl '>Enquiry Form</p>
         </div>
         <div className='pt-2 flex'>
-          <Button className='mr-3 flex bg-green-600 text-white' icon={<PlusIcon />}><p>New Payment Link</p></Button>
+          <Button className='mr-3 flex  text-white' icon={<PlusIcon />}><p>New Payment Link</p></Button>
           <Button className='mr-5 hover:bg-slate-300' icon={<Reload />} />
 
         </div>

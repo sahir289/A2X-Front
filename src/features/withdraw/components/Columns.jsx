@@ -204,6 +204,10 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
             return (
               <Dropdown.Button
                 type="primary"
+                onClick={() => updateWithdraw({
+                  record: r,
+                  key: "approve",
+                })}
                 menu={{
                   items: [
                     {
