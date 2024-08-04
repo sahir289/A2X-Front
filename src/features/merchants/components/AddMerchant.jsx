@@ -11,6 +11,27 @@ import {
 import React from "react";
 import { postApi } from "../../../redux/api";
 
+const selectBefore = (name) => {
+  return (
+    <Form.Item
+      name={name}
+      noStyle
+      rules={[
+        {
+          required: true,
+          message: "Please select protocol",
+        },
+      ]}
+      defaultValue="http://"
+    >
+      <Select>
+        <Select.Option value="http://">http://</Select.Option>
+        <Select.Option value="https://">https://</Select.Option>
+      </Select>
+    </Form.Item>
+  );
+};
+
 const AddMerchant = ({
   isAddModelOpen,
   setIsAddModelOpen,
@@ -79,6 +100,8 @@ const AddMerchant = ({
           form={form}
           name="add_merchant"
           className="py-5"
+          labelAlign="left"
+          labelCol={{ span: 8 }}
           onFinish={onFinish}
           autoComplete="off"
           initialValues={{
@@ -101,131 +124,87 @@ const AddMerchant = ({
             <Input />
           </Form.Item>
 
-          <div className="flex gap-2">
-            <Form.Item
-              label="Url"
-              name="site_url_protocol"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your return url",
-                },
-              ]}
-            >
-              <Select>
-                <Select.Option value="http://">http://</Select.Option>
-                <Select.Option value="https://">https://</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="site_url"
-              className="flex-1 place-content-end"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your site url",
-                },
-              ]}
-            >
-              <Input placeholder="example.com" />
-            </Form.Item>
-          </div>
+          <Form.Item
+            label="Site"
+            name="site_url"
+            rules={[
+              {
+                required: true,
+                message: "Please input your site url",
+              },
+            ]}
+          >
+            <Input
+              addonBefore={selectBefore("site_url_protocol")}
+              placeholder="example.com"
+            />
+          </Form.Item>
 
-          <div className="flex gap-2">
-            <Form.Item
-              label="Return"
-              name="return_url_protocol"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your return url",
-                },
-              ]}
-            >
-              <Select>
-                <Select.Option value="http://">http://</Select.Option>
-                <Select.Option value="https://">https://</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="return_url"
-              className="flex-1 place-content-end"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your return url",
-                },
-              ]}
-            >
-              <Input placeholder="example.com" />
-            </Form.Item>
-          </div>
+          <Form.Item
+            label="Return"
+            name="return_url"
+            rules={[
+              {
+                required: true,
+                message: "Please input your return url",
+              },
+            ]}
+          >
+            <Input
+              addonBefore={selectBefore("return_url_protocol")}
+              placeholder="example.com"
+            />
+          </Form.Item>
 
-          <div className="flex gap-2">
-            <Form.Item
-              label="Callback"
-              name="notify_url_protocol"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your return url",
-                },
-              ]}
-            >
-              <Select>
-                <Select.Option value="http://">http://</Select.Option>
-                <Select.Option value="https://">https://</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="notify_url"
-              className="flex-1 place-content-end"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your callback url",
-                },
-              ]}
-            >
-              <Input placeholder="example.com" />
-            </Form.Item>
-          </div>
+          <Form.Item
+            label="Callback"
+            name="notify_url"
+            rules={[
+              {
+                required: true,
+                message: "Please input your callback url",
+              },
+            ]}
+          >
+            <Input
+              addonBefore={selectBefore("notify_url_protocol")}
+              placeholder="example.com"
+            />
+          </Form.Item>
 
-          <div className="grid grid-rows-1 grid-cols-2 gap-2">
-            <Form.Item
-              label="Min Payin"
-              name="min_payin"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your min payin!",
-                },
-                {
-                  type: "number",
-                  message: "Please input a valid number!",
-                },
-              ]}
-            >
-              <InputNumber className="w-full" />
-            </Form.Item>
+          <Form.Item
+            label="Min Payin"
+            name="min_payin"
+            rules={[
+              {
+                required: true,
+                message: "Please input your min payin!",
+              },
+              {
+                type: "number",
+                message: "Please input a valid number!",
+              },
+            ]}
+          >
+            <InputNumber className="w-full" />
+          </Form.Item>
 
-            <Form.Item
-              label="Max Payin"
-              name="max_payin"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your max payin!",
-                },
-                {
-                  type: "number",
-                  message: "Please input a valid number!",
-                },
-              ]}
-            >
-              <InputNumber className="w-full" />
-            </Form.Item>
-          </div>
+          <Form.Item
+            label="Max Payin"
+            name="max_payin"
+            rules={[
+              {
+                required: true,
+                message: "Please input your max payin!",
+              },
+              {
+                type: "number",
+                message: "Please input a valid number!",
+              },
+            ]}
+          >
+            <InputNumber className="w-full" />
+          </Form.Item>
 
           <Form.Item
             label="Commission"
@@ -244,41 +223,39 @@ const AddMerchant = ({
             <InputNumber className="w-full" />
           </Form.Item>
 
-          <div className="grid grid-rows-1 grid-cols-2 gap-2">
-            <Form.Item
-              label="Min Payout"
-              name="min_payout"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your min payin!",
-                },
-                {
-                  type: "number",
-                  message: "Please input a valid number!",
-                },
-              ]}
-            >
-              <InputNumber className="w-full" />
-            </Form.Item>
+          <Form.Item
+            label="Min Payout"
+            name="min_payout"
+            rules={[
+              {
+                required: true,
+                message: "Please input your min payin!",
+              },
+              {
+                type: "number",
+                message: "Please input a valid number!",
+              },
+            ]}
+          >
+            <InputNumber className="w-full" />
+          </Form.Item>
 
-            <Form.Item
-              label="Max Payout"
-              name="max_payout"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your max payin!",
-                },
-                {
-                  type: "number",
-                  message: "Please input a valid number!",
-                },
-              ]}
-            >
-              <InputNumber className="w-full" />
-            </Form.Item>
-          </div>
+          <Form.Item
+            label="Max Payout"
+            name="max_payout"
+            rules={[
+              {
+                required: true,
+                message: "Please input your max payin!",
+              },
+              {
+                type: "number",
+                message: "Please input a valid number!",
+              },
+            ]}
+          >
+            <InputNumber className="w-full" />
+          </Form.Item>
 
           <Form.Item
             label="Payout Commission"

@@ -77,6 +77,8 @@ const AddBankAccount = ({
           name="add_bank_account"
           className="py-5"
           onFinish={onFinish}
+          labelAlign="left"
+          labelCol={{ span: 11 }}
           autoComplete="off"
           initialValues={{
             status: true,

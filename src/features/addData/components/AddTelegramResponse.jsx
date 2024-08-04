@@ -29,7 +29,9 @@ const AddTelegramResponse = ({
   const onFinish = async (values) => {
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${values.amount_code ?? "nill"} ${values.utr} ${values.is_used}`,
+        text: `${values.status} ${values.amount} ${
+          values.amount_code ?? "nill"
+        } ${values.utr} ${values.is_used}`,
       },
     };
 
@@ -70,6 +72,8 @@ const AddTelegramResponse = ({
           form={form}
           name="add_data"
           className="py-5"
+          labelAlign="left"
+          labelCol={{ span: 6 }}
           onFinish={onFinish}
           autoComplete="off"
           initialValues={{
@@ -86,7 +90,7 @@ const AddTelegramResponse = ({
               },
             ]}
           >
-            <Select className="flex flex-1" >
+            <Select className="flex flex-1">
               <Select.Option value="/success">Success</Select.Option>
             </Select>
           </Form.Item>

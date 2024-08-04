@@ -31,10 +31,28 @@ function Dashboard() {
   const [payInOutData, setPayInOutData] = useState([]);
   const [depositData, setDepositData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
+  const [interval, setInterval] = useState("15d");
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+  });
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setDateRange({
+      startDate: new Date(new Date().setDate(new Date().getDate() - 15)),
+      endDate: new Date(),
+    });
+  }, []);
 
   const updateDashboardPeriod = (newRange) => {
     // Dashboard range changed, write code to refresh your values
+    console.log(newRange, "newRange");
+    setDateRange({
+      startDate: new Date(newRange.startDate),
+      endDate: new Date(newRange.endDate),
+    });
+    setInterval("");
     dispatch(
       showNotification({
         message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
@@ -191,11 +209,25 @@ function Dashboard() {
       </div>
 
       {/** ---------------------- Different charts ------------------------- */}
-      <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-        {/* <LineChart /> */}
-        <BarChart title={`Deposit`} data={depositData} />
-        <BarChart title={`Withdraw`} data={withdrawData} />
-      </div>
+      {/* <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6"> */}
+      {/* <LineChart /> */}
+      <BarChart
+        title={`Deposit`}
+        data={depositData}
+        interval={interval}
+        setInterval={setInterval}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+      />
+      <BarChart
+        title={`Withdraw`}
+        data={withdrawData}
+        interval={interval}
+        setInterval={setInterval}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+      />
+      {/* </div> */}
 
       {/** ---------------------- Different stats content 2 ------------------------- */}
 

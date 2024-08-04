@@ -22,17 +22,25 @@ ChartJS.register(
   Legend
 );
 
-function BarChart({ title, data }) {
+function BarChart({
+  title,
+  data,
+  interval,
+  setInterval,
+  dateRange,
+  setDateRange,
+}) {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [{ label: "", data: [], backgroundColor: "" }],
   });
-  const [interval, setInterval] = useState("15d");
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        // position: "top",
         display: false,
       },
       tooltip: {
@@ -45,50 +53,66 @@ function BarChart({ title, data }) {
     },
   };
 
-  const getLastIntervals = (interval) => {
+  const getDateRangeLabels = (startDate, endDate) => {
     const result = [];
-    const now = new Date();
+    const currentDate = new Date(startDate);
 
-    switch (interval) {
-      case "15d":
-        for (let i = 14; i >= 0; i--) {
-          const date = new Date();
-          date.setDate(now.getDate() - i);
-          result.push(date.toISOString().split("T")[0]);
-        }
-        break;
-
-      case "7d":
-        for (let i = 6; i >= 0; i--) {
-          const date = new Date();
-          date.setDate(now.getDate() - i);
-          result.push(date.toISOString().split("T")[0]);
-        }
-        break;
-
-      case "12h":
-        for (let i = 11; i >= 0; i--) {
-          const date = new Date();
-          date.setHours(now.getHours() - i);
-          result.push(date.toISOString());
-        }
-        break;
-
-      default:
-        throw new Error("Unsupported interval");
+    if (
+      startDate.toISOString().split("T")[0] ===
+      endDate.toISOString().split("T")[0]
+    ) {
+      for (let i = 0; i < 24; i++) {
+        const date = new Date(startDate);
+        date.setHours(i);
+        result.push(date.toISOString());
+      }
+    } else {
+      while (currentDate <= endDate) {
+        result.push(new Date(currentDate).toISOString().split("T")[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
     }
 
     return result;
   };
 
-  const labels = getLastIntervals(interval);
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours || 12; // the hour '0' should be '12'
+    const minutesStr = minutes < 10 ? "0" + minutes : minutes;
+    return `${hours}:${minutesStr} ${ampm}`;
+  };
+
+  const labels = getDateRangeLabels(dateRange.startDate, dateRange.endDate).map(
+    (date) => {
+      if (
+        interval === "12h" ||
+        dateRange.startDate.toISOString().split("T")[0] ===
+          dateRange.endDate.toISOString().split("T")[0]
+      ) {
+        return formatTime(date);
+      }
+      return date;
+    }
+  );
 
   useEffect(() => {
     if (data && data.length > 0) {
       const currentData = labels.map((date) => {
         let dayData;
-        if (interval === "12h") {
-          dayData = data.filter((item) => item.updatedAt === date);
+        if (
+          interval === "12h" ||
+          dateRange.startDate.toISOString().split("T")[0] ===
+            dateRange.endDate.toISOString().split("T")[0]
+        ) {
+          dayData = data.filter(
+            (item) =>
+              new Date(item.updatedAt).getHours() === new Date(date).getHours()
+          );
         } else {
           dayData = data.filter(
             (item) => item.updatedAt.split("T")[0] === date
@@ -98,36 +122,54 @@ function BarChart({ title, data }) {
           (sum, item) => sum + parseFloat(item.amount),
           0
         );
-
-        return total;
+        return { total, count: dayData.length };
       });
+
+      const amounts = currentData.map((item) => item.total);
+      const counts = currentData.reduce((sum, item) => sum + item.count, 0);
 
       setChartData({
         labels,
         datasets: [
           {
             label: "Amount",
-            data: currentData,
+            data: amounts,
             backgroundColor: "rgba(53, 162, 235, 1)",
           },
         ],
       });
+
+      setTotalAmount(amounts.reduce((sum, item) => sum + item, 0));
+      setTotalCount(counts);
     } else {
       setChartData({
         labels,
         datasets: [
           {
             label: "Amount",
-            data: Array(labels.length).fill(0), // Ensure there is data for each label
+            data: Array(labels.length).fill(0),
             backgroundColor: "rgba(53, 162, 235, 1)",
           },
         ],
       });
+      setTotalAmount(0);
+      setTotalCount(0);
     }
-  }, [data, interval]);
+  }, [data, interval, dateRange]);
 
   const onChange = (e) => {
     setInterval(e.target.value);
+    if (e.target.value !== "12h" && e.target.value === "15d") {
+      setDateRange({
+        startDate: new Date(new Date().setDate(new Date().getDate() - 15)),
+        endDate: new Date(),
+      });
+    } else if (e.target.value !== "12h" && e.target.value === "7d") {
+      setDateRange({
+        startDate: new Date(new Date().setDate(new Date().getDate() - 7)),
+        endDate: new Date(),
+      });
+    }
   };
 
   return (
@@ -136,14 +178,12 @@ function BarChart({ title, data }) {
         <div className="flex justify-between">
           <h4 className="text-lg font-semibold">{title}</h4>
           <p className="text-sm text-gray-500">
-            {formatCurrency(
-              data.reduce((sum, item) => sum + parseFloat(item.amount), 0)
-            )}
+            {formatCurrency(totalAmount)}
             <br />
             Amount
           </p>
           <p className="text-sm text-gray-500">
-            {data.length}
+            {totalCount}
             <br />
             Count
           </p>
@@ -151,13 +191,19 @@ function BarChart({ title, data }) {
       }
     >
       <Flex vertical gap="middle" className="mb-2">
-        <Radio.Group onChange={onChange} defaultValue="15d">
+        <Radio.Group
+          optionType="button"
+          buttonStyle="solid"
+          onChange={onChange}
+          defaultValue={interval}
+          value={interval}
+        >
           <Radio.Button value="15d">15D</Radio.Button>
           <Radio.Button value="7d">7D</Radio.Button>
           <Radio.Button value="12h">12H</Radio.Button>
         </Radio.Group>
       </Flex>
-      <Bar options={options} data={chartData} />
+      <Bar options={options} data={chartData} height="30px" width="100%" />
     </TitleCard>
   );
 }
