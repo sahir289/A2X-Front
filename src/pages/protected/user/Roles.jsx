@@ -1,9 +1,18 @@
 import React from 'react'
 import RolesComponent from '../../../components/Roles'
+import { useContext } from 'react';
+import { PermissionContext } from '../../../components/AuthLayout/AuthLayout.jsx';
+
 const Roles = () => {
+  const AllowedRoles=["A"]
+  const context=useContext(PermissionContext)
+
   return (
-    <div><RolesComponent /></div>
-  )
+    <>
+      {AllowedRoles.includes(context.role)  &&<div><RolesComponent /></div>}
+    </>
+  );
+
 }
 
 export default Roles

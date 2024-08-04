@@ -26,7 +26,7 @@ export const getApi = async (url, params) => {
     return response;
   } catch (err) {
     if (err?.response?.data?.error?.name) {
-      localStorage.clear();
+      // localStorage.clear();
     }
     // return err;
   }
@@ -45,7 +45,7 @@ export const postApi = async (url, apiData, flag) => {
     return response;
   } catch (err) {
     if (err?.response?.data?.error?.name) {
-      localStorage.clear();
+      // localStorage.clear();
     }
     // return { data: null, error: err };
   }
@@ -63,8 +63,8 @@ export const putApi = async (url, apiData, flag) => {
     const response = await axios.put(`${endPoint}${url}`, apiData, apiConfig(flag));
     return response;
   } catch (err) {
-    if (err?.response?.data?.error?.name) {
-      localStorage.clear();
+    if (err?.response?.data?.error?.name==="") {
+      // localStorage.clear();
     }
     // return { data: null, error: err };
   }
@@ -79,7 +79,7 @@ export const patchApi = async (url, apiData, flag) => {
     return response;
   } catch (err) {
     if (err?.response?.data?.error?.name) {
-      localStorage.clear();
+      // localStorage.clear();
     }
     // return { data: null, error: err };
   }
@@ -125,7 +125,7 @@ export const deleteApi = async (url) => {
     return response;
   } catch (err) {
     if (err?.response?.data?.error?.name) {
-      localStorage.clear();
+      // localStorage.clear();
     }
     // return { data: null, error: err };
   }
@@ -146,7 +146,7 @@ export const deleteApiWithData = async (url, apiData) => {
     return response;
   } catch (err) {
     if (err?.response?.data?.error?.name) {
-      localStorage.clear();
+      // localStorage.clear();
     }
     // return { data: null, error: err };
   }
