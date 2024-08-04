@@ -14,7 +14,7 @@ const AddUserModal = (props) => {
     userName: "",
     password: "",
     fullName:"",
-    role:"VENDOR",
+    role:"MERCHANT",
     merchantCode:""
   };
 
@@ -78,7 +78,6 @@ const AddUserModal = (props) => {
 
   useEffect(()=>{
     if(isAddUserModalOpen){
-    console.log("SETTING VALUES")
     setErrorMessage(INITIAL_ERROR_OBJ)
     setUserObj(INITIAL_USER_OBJ)
     }
@@ -141,7 +140,7 @@ const AddUserModal = (props) => {
           containerStyle="mt-4"
           labelTitle="Role"
           options={[
-            { label: 'vendor', value: 'VENDOR' },
+            // { label: 'vendor', value: 'VENDOR' },
             { label: 'merchant', value: 'MERCHANT' },
             { label: 'customerService', value: 'CUSTOMER_SERVICE' },
             { label: 'transactions', value: 'TRANSACTIONS' },

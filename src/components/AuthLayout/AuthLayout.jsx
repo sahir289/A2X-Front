@@ -1,16 +1,28 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { createContext, useState } from 'react';
+import {jwtDecode} from 'jwt-decode'
 
 
+export const PermissionContext = createContext ({
+  role: null,
+  userName: null,
+  userId: null,
+  code:null
+});
 const AuthLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [userId,setUserId]=useState('')
+  const [userName, setUserName] = useState('')
+  const [role, setRole] = useState('')
 
 
 
   // // To change the title.
   const { pathname } = useLocation();
+  const token = localStorage.getItem("accessToken");
   // useEffect(() => {
   //   const token = Cookies.get("accessToken");
   //   const check = window.location.pathname.split("/").reverse();
@@ -53,7 +65,6 @@ const AuthLayout = () => {
 
   const path = window.location.pathname;
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
     if (token) {
       if (path === "/") {
         navigate("/app/dashboard");
@@ -70,8 +81,39 @@ const AuthLayout = () => {
       }
     }
   }, [pathname]);
+useEffect(()=>{
+  if (token) {
+    try {
+      const userData = jwtDecode(token);
+      if (userData) {
+        setRole(userData?.role);
+        setUserId(userData?.id);
+        setUserName(userData?.userName);
+      }
+    } catch (error) {
+      localStorage.removeItem('accessToken');
+      navigate('/login');
+    }
+  }
+}, [token])
 
-  return <Outlet />;
+  const permissionHandle=(userId,userName,role)=>{
+    setUserId(userId)
+    setUserName(userName)
+    setRole(role)
+
+  }
+
+  return <PermissionContext.Provider
+    value={{
+      userId,
+      userName,
+      role,
+      permissionHandle
+    }}
+  >
+    <Outlet />
+  </PermissionContext.Provider>;
 };
 
 export default AuthLayout
