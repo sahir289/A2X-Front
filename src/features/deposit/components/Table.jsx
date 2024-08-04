@@ -1,14 +1,22 @@
-import { Button, Input, Modal, Select, Table, Tag } from 'antd';
+import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlusIcon, Reload, Reloader } from '../../../utils/constants';
 import { formatCurrency, formatDate } from '../../../utils/utils';
 import { ExclamationCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import { CopyOutlined } from '@ant-design/icons';
+import { getApi, postApi } from '../../../redux/api';
 
-const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler }) => {
+const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler, allTable, completedTable, inProgressTable, fetchUsersData }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [merchants, setMerchants] = useState([]);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
+  console.log("🚀 ~ TableComponent ~ open:", open)
+  console.log("🚀 ~ TableComponent ~ selectedRecord:", selectedRecord)
+  const [form] = Form.useForm();
 
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
@@ -30,14 +38,16 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     return formatDate(record?.Merchant?.updatedAt) || 'N/A'; // Safely access nested property
   };
 
-  const handleImageClick = (imageUrl) => {
+  const handleImageClick = (imageUrl, record) => {
     setSelectedImageUrl(imageUrl);
+    setSelectedRecord(record); // Store the selected record data
     setIsModalVisible(true);
   };
 
   const handleModalClose = () => {
     setIsModalVisible(false);
     setSelectedImageUrl(null);
+    form.resetFields()
   };
 
   const paginationConfig = {
@@ -58,19 +68,98 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     { value: 'DROPPED', label: 'DROPPED' },
     { value: 'DUPLICATE', label: 'DUPLICATE' },
     { value: 'DISPUTE', label: 'DISPUTE' },
+    { value: 'PENDING', label: 'PENDING' },
     { value: 'IMG_PENDING', label: 'IMG_PENDING' },
   ];
+
+  const handleUtrSubmit = async (values) => {
+    console.log("🚀 ~ handleUtrSubmit ~ val:", values?.utrNumber)
+    const data = {
+      usrSubmittedUtr: values?.utrNumber,
+      code: selectedRecord?.upi_short_code,
+      amount: selectedRecord?.amount,
+      isFront: true,
+      filePath: selectedRecord?.user_submitted_image
+    }
+    const utrRes = await postApi(`/process/${selectedRecord?.id}`, data).then((res) => {
+      console.log(res, "qwerty")
+    }).catch((err) => {
+      console.log(err)
+    }).finally(() => {
+      setIsModalVisible(false);
+      form.resetFields()
+    })
+  }
+
+  const handleToggleModal = () => {
+    setOpen(!open);
+    form.resetFields();
+  };
+
+
+  const handleGetMerchants = async () => {
+    try {
+      const res = await getApi("/getall-merchant");
+      setMerchants(res.data?.data?.merchants || []);
+    } catch (err) {
+      console.log("🚀 ~ handleGetMerchants ~ err:", err)
+
+    }
+  }
+
+  useEffect(() => {
+    handleGetMerchants();
+  }, []);
+
+  const merchantOptions = merchants
+    .map(el => ({
+      value: el.code,
+      label: el.code
+    }))
+
+  const labelCol = { span: 10 };
+  const RequiredRule = [
+    {
+      required: true,
+      message: "${label} is Required!",
+    }
+  ]
+
+  const handleSubmit = async (data) => {
+    // try {
+    //   setAddLoading(true);
+    //   await postApi("/create-settlement", data);
+    //   handleToggleModal();
+    //   getSettlementList();
+    // } catch (err) {
+    //   const errorMessage = err?.response?.data?.error?.message || err.message;
+    //   alert(errorMessage);
+    // } finally {
+    //   setAddLoading(false);
+    // }
+  }
+
   return (
     <>
       <div className='font-serif pt-3 flex bg-zinc-50 rounded-lg'>
         <div className=' w-full h-16  pb-3'>
-          <p className='pt-4 ps-4 text-xl '>In Progress</p>
+          <p className='pt-4 ps-4 text-xl '>{allTable === true ? "All" : completedTable === true ? "Confirmed" : inProgressTable === true ? "In Progress" : "Dropped"}</p>
         </div>
-        <div className='pt-2 flex'>
-          <Button className='mr-3 flex bg-green-600 text-white' icon={<PlusIcon />}><p>New Payment Link</p></Button>
-          <Button className='mr-5 hover:bg-slate-300' icon={<Reload />} />
 
+        <div className='pt-2 flex'>
+          {(allTable === true || inProgressTable === true) &&
+            <Button
+              className='mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white'
+              icon={<PlusIcon />}
+              onClick={handleToggleModal}
+            >
+              <p>New Payment Link</p>
+            </Button>
+          }
+          <Button className='mr-5 hover:bg-slate-300' icon={<Reload />} onClick={fetchUsersData} />
         </div>
+
+
       </div>
 
       <Table
@@ -113,6 +202,39 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         />
         <Column
           title={<>
+            <span className='mb-2' >Confirmed</span>
+            <br />
+            <Input
+              value={filterValues?.confirmed}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'confirmed')}
+            />
+          </>}
+          dataIndex="confirmed"
+          key="confirmed"
+          className="bg-white"
+          width={"24px"}
+          render={(value) => formatCurrency(value)}
+        />
+        {completedTable === true &&
+          <Column
+            title={<>
+              <span className='mb-2' >Commission</span>
+              <br />
+              <Input
+                disabled
+                className='outline-none border-none'
+                style={{ backgroundColor: "#fafafa", cursor: 'auto' }}
+              />
+            </>}
+            dataIndex="payin_commission"
+            key="payin_commission"
+            className="bg-white"
+            width={"24px"}
+            render={(value) => formatCurrency(value)}
+          />}
+
+        <Column
+          title={<>
             <span className='mb-2' >Amount</span>
             <br />
             <Input
@@ -125,6 +247,34 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           className="bg-white"
           width={"24px"}
           render={(value) => formatCurrency(value)}
+        />
+        <Column
+          title={<>
+            <span>Status</span>
+            <br />
+            <Select
+              value={filterValues?.status}
+              onChange={(value) => handleFilterValuesChange(value, 'status')}
+              style={{ width: '90%' }}
+              options={statusOptions}
+              disabled={allTable === true ? false : true}
+            />
+          </>}
+          dataIndex="status"
+          key="status"
+          className="bg-white"
+          width={"14px"}
+          render={(value) => (
+            <span>
+              <Tag
+                color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : value === "PENDING" ? "yellow" : value === "DROPPED" ? "red" : '#FF6600'}
+                key={value}
+                icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
+              >
+                {value}
+              </Tag>
+            </span>
+          )}
         />
         <Column
           title={<>
@@ -261,33 +411,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           width={"24px"}
           render={(text, record) => getBankCode(record)}
         />
-        <Column
-          title={<>
-            <span>Status</span>
-            <br />
-            <Select
-              value={filterValues?.status}
-              onChange={(value) => handleFilterValuesChange(value, 'status')}
-              style={{ width: '90%' }}
-              options={statusOptions}
-            />
-          </>}
-          dataIndex="status"
-          key="status"
-          className="bg-white"
-          width={"14px"}
-          render={(value) => (
-            <span>
-              <Tag
-                color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : '#FF6600'}
-                key={value}
-                icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
-              >
-                {value}
-              </Tag>
-            </span>
-          )}
-        />
+
         <Column
           title="Last logged in (IST)"
           dataIndex="Merchant"
@@ -296,7 +420,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           width={"24px"}
           render={(text, record) => lastLogIn(record)}
         />
-        <Column
+        {allTable === true && <Column
           title={<>
             <span>Image</span>
             <br />
@@ -310,29 +434,116 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           key="user_submitted_image"
           className="bg-white"
           width={"24px"}
-          render={(imageUrl) => (
+          render={(imageUrl, record) => (
             <>
               {imageUrl !== null &&
                 <img
                   src={`${process.env.REACT_APP_WS_URL}/${imageUrl}`}
                   alt="thumbnail"
                   className="thumbnail w-10 h-10"
-                  onClick={() => handleImageClick(`${process.env.REACT_APP_WS_URL}/${imageUrl}`)}
+                  onClick={() => handleImageClick(`${process.env.REACT_APP_WS_URL}/${imageUrl}`, record)}
                 />
               }
             </>
 
           )}
-        />
+        />}
+
       </Table >
 
-
+      {/* Image Modal */}
       <Modal open={isModalVisible} footer={null} onCancel={handleModalClose}>
         <img
           src={selectedImageUrl}
           alt="Enlarged"
           style={{ width: '50%' }}
         />
+        <Form layout='vertical'
+          onFinish={handleUtrSubmit}
+          className='mt-3 mb-2'
+          style={{ backgroundColor: "#f7f7f7" }}
+        >
+          <Form.Item
+            label={
+              <span className='font-bold font-serif'>
+                Add Utr here
+              </span>
+            }
+            name="utrNumber"
+            rules={[
+              { required: true, message: 'Please enter UTR no' },
+              { pattern: /^\d{12}$/, message: 'UTR number must be exactly 12 digits' }
+            ]}
+            className='ps-6 w-full'
+            style={{ backgroundColor: "#f7f7f7" }}
+          >
+            <div className='flex justify-between w-full'>
+              <Input
+                className="w-52 mb-3"
+                type="number"
+                name="utrNumber"
+
+              />
+              <Button
+                type='primary'
+                size='middle'
+                htmlType='submit'
+                className='pe-5 mr-2 w-[132px] mb-3'
+              >
+                Submit
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Payment Link */}
+      <Modal
+        title="New Payment link"
+        onCancel={handleToggleModal}
+        open={open}
+
+        footer={false}>
+        <Form
+          form={form}
+          className='pt-[10px]'
+          labelAlign='left'
+          labelCol={labelCol}
+          onFinish={handleSubmit}
+        >
+          <Form.Item
+            name="code"
+            label="Merchant"
+            rules={RequiredRule}
+          >
+            <Select
+              options={merchantOptions}
+            />
+          </Form.Item>
+          <Form.Item
+            name="userId"
+            label="User Id"
+            rules={RequiredRule}
+          >
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item
+            label="One time payment link ? : "
+            name="paymentLink"
+          >
+            <Switch />
+          </Form.Item>
+
+          <div className='flex justify-end'>
+            <Button type='primary'
+              loading={addLoading}
+              htmlType='submit'
+              className='bg-green-600 hover:!bg-green-500'
+            >
+              Create
+            </Button>
+          </div>
+        </Form>
       </Modal>
     </>
   );

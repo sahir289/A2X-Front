@@ -4,7 +4,7 @@ import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { getApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
-import { formatDate } from "../../../utils/utils";
+import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
@@ -226,7 +226,8 @@ const TableComponent = ({
           render={(text, record) => {
             return (
               <>
-                {record?.min_payin} - {record?.max_payin}
+                {formatCurrency(record?.min_payin)} -{" "}
+                {formatCurrency(record?.max_payin)}
               </>
             );
           }}
@@ -268,6 +269,7 @@ const TableComponent = ({
           key="balance"
           className="bg-white"
           width={"3%"}
+          render={(value) => formatCurrency(value)}
         />
         <Column
           title={

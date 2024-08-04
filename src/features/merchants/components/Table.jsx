@@ -2,6 +2,7 @@ import { Button, Switch, Table } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
+import { formatCurrency } from "../../../utils/utils";
 import AddMerchant from "./AddMerchant";
 
 const TableComponent = ({
@@ -11,10 +12,6 @@ const TableComponent = ({
   isFetchBanksLoading,
 }) => {
   const [isAddModelOpen, setIsAddModelOpen] = useState(false);
-
-  const handleFilterValuesChange = (value, fieldName) => {
-    setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
-  };
 
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
@@ -75,7 +72,7 @@ const TableComponent = ({
           dataIndex="code"
           key="code"
           className="bg-white"
-          width={"3%"}
+          width={"1%"}
         />
         <Column
           title="Site"
@@ -89,7 +86,7 @@ const TableComponent = ({
           dataIndex="api_key"
           key="api_key"
           className="bg-white"
-          width={"4%"}
+          width={"12%"}
         />
         <Column
           title="Balance"
@@ -97,6 +94,7 @@ const TableComponent = ({
           key="balance"
           className="bg-white"
           width={"4%"}
+          render={(value) => formatCurrency(value)}
         />
         <Column
           title="Payin"
@@ -107,7 +105,8 @@ const TableComponent = ({
           render={(text, record) => {
             return (
               <>
-                {record?.min_payin} - {record?.max_payin}
+                {formatCurrency(record?.min_payin)} -{" "}
+                {formatCurrency(record?.max_payin)}
               </>
             );
           }}
@@ -117,7 +116,7 @@ const TableComponent = ({
           dataIndex="payin_commission"
           key="payin_commission"
           className="bg-white"
-          width={"3%"}
+          width={"2%"}
           render={(text) => {
             return <>{text} %</>;
           }}
@@ -131,7 +130,8 @@ const TableComponent = ({
           render={(text, record) => {
             return (
               <>
-                {record?.min_payout} - {record?.max_payout}
+                {formatCurrency(record?.min_payout)} -{" "}
+                {formatCurrency(record?.max_payout)}
               </>
             );
           }}
@@ -141,7 +141,7 @@ const TableComponent = ({
           dataIndex="payout_commission"
           key="payout_commission"
           className="bg-white"
-          width={"5%"}
+          width={"2%"}
           render={(text) => {
             return <>{text} %</>;
           }}

@@ -13,6 +13,11 @@ export function formatDate(inputDate) {
 
 
 export function formatCurrency(amount) {
+  // Check if the amount is null or undefined
+  if (amount == null) {
+    return '₹0.00';
+  }
+
   // Convert the amount to a number if it's not already
   const numberAmount = Number(amount);
 
@@ -22,6 +27,7 @@ export function formatCurrency(amount) {
   // Add the currency symbol
   return `₹${formattedAmount}`;
 }
+
 
 export const getQueryFromObject = (obj = {}) => {
   const queryParams = [];
