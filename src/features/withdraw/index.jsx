@@ -15,7 +15,7 @@ const Withdraw = ({ type }) => {
   const [addLoading, setAddLoading] = useState(false);
   const [addWithdraw, setAddWithdraw] = useState(false);
   const [editWithdraw, setEditWithdraw] = useState(null);
-  const [selectedUTRMethod, setSelectedUTRMethod] = useState('manual');
+  const [selectedUTRMethod, setSelectedUTRMethod] = useState();
   const [withdraws, setWithdraws] = useState({
     data: [],
     total: 0,
@@ -87,7 +87,7 @@ const Withdraw = ({ type }) => {
     if (data.reset) {
       return handleResetWithdraws(data.record.id);
     }
-
+    setSelectedUTRMethod("manual");
     setEditWithdraw({
       ...data.record,
       key: data.key,
@@ -229,18 +229,19 @@ const Withdraw = ({ type }) => {
           {
             editWithdraw?.key == "approve" &&
             <>
+
+              <Form.Item name="method" label="Method">
+                <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
+                  onChange={handleSelectUTRMethod}
+                  defaultValue={selectedUTRMethod}
+                />
+              </Form.Item>
               {
                 selectedUTRMethod === 'manual' &&
-                <Form.Item>
-                  <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
-                    onChange={handleSelectUTRMethod}
-                    defaultValue={selectedUTRMethod}
-                  />
+                <Form.Item name="utr_id" label="UTR Number" rules={RequiredRule}>
+                  <Input />
                 </Form.Item>
               }
-              <Form.Item name="utr_id" label="UTR Number" rules={RequiredRule}>
-                <Input />
-              </Form.Item>
             </>
           }
           {

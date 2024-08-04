@@ -1,7 +1,7 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import { statusOptions } from '../../../utils/utils';
+import { formatCurrency, statusOptions } from '../../../utils/utils';
 
 const renderStatusTag = (status) => {
   let color = '';
@@ -72,7 +72,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v || '-';
+            return v;
           }
           return <ColumnSearch name="merchant_order_id" onChange={onChange} filters={filters} />;
         }}
@@ -84,7 +84,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v?.code || '-';
+            return v?.code;
           }
           return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters} />;
         }}
@@ -96,7 +96,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v || '-';
+            return v;
           }
           return <ColumnSearch name="user_id" onChange={onChange} filters={filters} />;
         }}
@@ -104,11 +104,11 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
       <Column
         title='Status'
         dataIndex='status'
-        width="120px"
+        width="140px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return renderStatusTag(v || '-')
+            return renderStatusTag(v)
           }
           return <ColumnSelect name="status" options={statusOptions} onChange={onChange} filters={filters} />
         }}
@@ -120,7 +120,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v ? `₹${v}` : '-';
+            return formatCurrency(v);
           }
           return <ColumnSearch name="amount" onChange={onChange} filters={filters} />;
         }}
@@ -134,7 +134,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
           ellipsis
           render={(v, r, i) => {
             if (i) {
-              return v ? `₹${v}` : '-';
+              return formatCurrency(v);
             }
             return <ColumnSearch name="commission" onChange={onChange} filters={filters} />;
           }}
@@ -181,7 +181,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v || '-';
+            return v;
           }
           return <ColumnSearch name="id" onChange={onChange} filters={filters} />;
         }}
