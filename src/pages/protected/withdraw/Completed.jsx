@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
+import { PermissionContext } from '../../../components/AuthLayout/AuthLayout.jsx';
 import { useDispatch } from 'react-redux';
 import Withdraw from '../../../features/withdraw/index.jsx';
 import { setPageTitle } from '../../../redux/slice/headerSlice.jsx';
@@ -10,10 +11,12 @@ const Completed = () => {
   useEffect(() => {
     dispatch(setPageTitle({ title: "Completed" }))
   }, [])
+  const AllowedRoles = ["MERCHANT", "ADMIN", "OPERATIONS"]
+  const context = useContext(PermissionContext)
 
   return (
     <>
-      <Withdraw type="Completed" />
+      {AllowedRoles.includes(context.role) && <Withdraw type="Completed" />}
     </>
   )
 }
