@@ -19,9 +19,9 @@ const MerchantCodeSelectBox = ({
 
     const merchantCodes = await getApi("/getall-merchant");
     if (merchantCodes.error) {
-      setMerchantCodeOptions([]);
       return;
     }
+    setMerchantCodeOptions([]);
 
     merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
       setMerchantCodeOptions((prev) => [
