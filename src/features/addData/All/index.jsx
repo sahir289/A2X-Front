@@ -16,7 +16,7 @@ function All() {
 
   useEffect(() => {
     fetchUsersData();
-  }, []);
+  }, [filterValues]);
 
   const fetchUsersData = async () => {
     setIsFetchBanksLoading(true);
