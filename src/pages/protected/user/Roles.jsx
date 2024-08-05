@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { PermissionContext } from '../../../components/AuthLayout/AuthLayout.jsx';
 
 const Roles = () => {
-  const AllowedRoles=["ADMIN"]
+  const AllowedRoles=["ADMIN","MERCHANT"]
   const context=useContext(PermissionContext)
 
   return (
