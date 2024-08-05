@@ -16,22 +16,24 @@ const AddTelegramResponse = ({
   handleTableChange,
 }) => {
   const [api, contextHolder] = notification.useNotification();
+  const [form] = Form.useForm();
+
   const handleModalOk = () => {
     setIsAddModelOpen(false);
+    form.resetFields();
   };
 
   const handleModalCancel = () => {
     setIsAddModelOpen(false);
+    form.resetFields();
   };
 
-  const [form] = Form.useForm();
 
   const onFinish = async (values) => {
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${
-          values.amount_code ?? "nill"
-        } ${values.utr} ${values.is_used}`,
+        text: `${values.status} ${values.amount} ${values.amount_code ?? "nill"
+          } ${values.utr} ${values.is_used}`,
       },
     };
 

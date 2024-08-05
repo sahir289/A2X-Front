@@ -23,6 +23,7 @@ const MerchantCodeSelectBox = ({
       return;
     }
 
+    setMerchantCodeOptions([]);
     merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
       setMerchantCodeOptions((prev) => [
         ...prev,

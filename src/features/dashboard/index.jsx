@@ -46,8 +46,6 @@ function Dashboard() {
   }, []);
 
   const updateDashboardPeriod = (newRange) => {
-    // Dashboard range changed, write code to refresh your values
-    console.log(newRange, "newRange");
     setDateRange({
       startDate: new Date(newRange.startDate),
       endDate: new Date(newRange.endDate),

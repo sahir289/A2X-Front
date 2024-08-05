@@ -32,16 +32,6 @@ const TableComponent = ({
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
 
-  const getMerchantCode = (record) => {
-    console.log("🚀 ~ getMerchantCode ~ record:", record);
-    return record?.Merchant?.code || "N/A"; // Safely access nested property
-  };
-
-  const getBankCode = (record) => {
-    console.log("🚀 ~ getBankCode ~ record:", record?.Merchant?.Merchant_Bank);
-    return record?.Merchant?.Merchant_Bank[0]?.bankAccount?.bank_name || "N/A"; // Safely access nested property
-  };
-
   const lastLogIn = (record) => {
     console.log("🚀 ~ lastLogIn ~ lastLogIn:", record?.Merchant);
     return formatDate(record?.updatedAt) || "N/A"; // Safely access nested property
@@ -83,7 +73,7 @@ const TableComponent = ({
 
     const deleteData = {
       bankAccountId: record?.id,
-      merchantId: record?.merchant?.map((merchant) => merchant?.id),
+      merchantId: record?.merchants?.map((merchant) => merchant?.id),
       ac_name: record?.ac_name,
     };
 
@@ -377,8 +367,7 @@ const TableComponent = ({
           key="merchants"
           className="bg-white"
           width={"6%"}
-          render={(text, record) => {
-            console.log(record, "record434343434", text);
+          render={(_, record) => {
             return (
               <div className="whitespace-nowrap flex gap-2">
                 <Tooltip
@@ -387,8 +376,8 @@ const TableComponent = ({
                   title={
                     <div className="flex flex-col gap-1 text-black p-2">
                       <div className="font-bold">Merchant List</div>
-                      {(!!record?.merchant &&
-                        record?.merchant?.map((merchant) => (
+                      {(record?.merchants?.length > 0 &&
+                        record?.merchants?.map((merchant) => (
                           <p key={merchant?.id}>{merchant?.code}</p>
                         ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                     </div>

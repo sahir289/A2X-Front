@@ -16,15 +16,18 @@ const AddBankAccount = ({
   handleTableChange,
 }) => {
   const [api, contextHolder] = notification.useNotification();
+  const [form] = Form.useForm();
+
   const handleModalOk = () => {
     setIsAddBankAccountModelOpen(false);
+    form.resetFields();
   };
 
   const handleModalCancel = () => {
     setIsAddBankAccountModelOpen(false);
+    form.resetFields();
   };
 
-  const [form] = Form.useForm();
 
   const onFinish = async (values) => {
     const formData = {
