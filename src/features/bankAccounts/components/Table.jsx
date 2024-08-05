@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Empty, Input, Switch, Table, Tooltip } from "antd";
+import { Button, Divider, Empty, Input, Switch, Table, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { getApi } from "../../../redux/api";
@@ -81,8 +81,8 @@ const TableComponent = ({
   };
 
   return (
-    <>
-      <div className="font-serif pt-3 flex bg-zinc-50 rounded-lg">
+    <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
+      <div className="flex">
         <div className=" w-full h-16  pb-3">
           <p className="pt-4 ps-4 text-xl ">Enquiry Form</p>
         </div>
@@ -106,6 +106,7 @@ const TableComponent = ({
           />
         </div>
       </div>
+      <Divider />
       <Table
         dataSource={data.bankAccRes}
         rowKey={(item) => item.id}
@@ -113,7 +114,7 @@ const TableComponent = ({
           // y: 240,
           x: "120vw",
         }}
-        className="font-serif"
+        className="font-serif px-3"
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
       >
@@ -422,7 +423,7 @@ const TableComponent = ({
         displayItem={`${deleteRecord?.ac_name}?`}
         handleTableChange={handleTableChange}
       />
-    </>
+    </div>
   );
 };
 
