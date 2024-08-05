@@ -98,7 +98,7 @@ function Dashboard() {
 
       payOutData?.forEach((data) => {
         payOutAmount += Number(data.amount);
-        payOutCommission += Number(data.payout_commission);
+        payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
         payOutcount += 1;
       });
 
