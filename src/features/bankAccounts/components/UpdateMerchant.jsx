@@ -31,31 +31,27 @@ const UpdateMerchant = ({
       merchantId: values?.merchantId,
     };
 
-    try {
-      const addBankMerchant = await postApi("/add-bank-merchant", formData);
 
-      if (addBankMerchant.status === 201) {
-        await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
-
-        handleTableChange({ current: 1, pageSize: 10 });
-
-        form.resetFields();
-      }
-    } catch (error) {
-      console.log(error);
+    const addBankMerchant = await postApi("/add-bank-merchant", formData);
+    if (addBankMerchant.error) {
+      return;
     }
+
+    await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
+
+    handleTableChange({ current: 1, pageSize: 10 });
+
+    form.resetFields();
+
   };
 
   const getBankMerchant = async (id) => {
-    try {
-      const getMerchantBank = await getApi("/get-merchant", { id });
-
-      if (getMerchantBank.status === 200) {
-        setNewMerchant(getMerchantBank.data.data);
-      }
-    } catch (error) {
-      console.log(error);
+    const getMerchantBank = await getApi("/get-merchant", { id });
+    if (getMerchantBank.error) {
+      return;
     }
+
+    setNewMerchant(getMerchantBank.data.data);
   };
 
   const deleteMerchant = (merchant) => {

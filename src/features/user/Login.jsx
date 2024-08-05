@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/Images/logo.png";
 import InputText from "../../components/Input/InputText";
 import ErrorText from "../../components/Typography/ErrorText";
 import { postApi } from "../../redux/api";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,9 +25,11 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState(INITIAL_ERROR_OBJ);
   const [loginObj, setLoginObj] = useState(INITIAL_LOGIN_OBJ);
 
+  const contex=useContext(PermissionContext)
 
 
-  const submitForm = (e) => {
+
+  const submitForm = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
@@ -36,10 +40,17 @@ function Login() {
     else {
       setLoading(true);
       // Call API to check user credentials and save token in localstorage
-      const resp = postApi('/login', loginObj).then((res) => {
+      const resp =await  postApi('/login', loginObj).then((res) => {
+        if (res?.data?.statusCode===200){
         localStorage.setItem("accessToken", res?.data?.data);
+        const userData = jwtDecode(res?.data?.data);
+        contex.permissionHandle(userData?.id, userData?.userName, userData?.role)
         navigate("/app/dashboard");
 
+        }
+        else{
+          NotificationManager.error("Fail to login",401);
+        }
       }).catch((err) => {
         NotificationManager.error(err?.response?.data?.error?.message,err?.response?.status );
       }).finally(() => {

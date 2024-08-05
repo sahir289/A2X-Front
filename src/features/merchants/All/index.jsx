@@ -16,16 +16,12 @@ function All() {
 
   const fetchUsersData = async () => {
     setIsFetchBanksLoading(true);
-    try {
-      const backAccount = await getApi("/getall-merchant", filterValues);
-
-      console.log("first", backAccount);
-      setTableData(backAccount?.data?.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsFetchBanksLoading(false);
+    const backAccount = await getApi("/getall-merchant", filterValues);
+    setIsFetchBanksLoading(false);
+    if (backAccount.error) {
+      return;
     }
+    setTableData(backAccount?.data?.data);
   };
 
   return (

@@ -16,7 +16,6 @@ const DeleteModal = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOk = async () => {
-    setIsLoading(true);
     const formData = {
       bankAccountId: record?.bankAccountId,
       merchantId: record?.merchantId,
@@ -24,29 +23,28 @@ const DeleteModal = ({
 
     console.log(record, "record from delete");
 
-    try {
-      const deleteBankMerchant = await deleteApiWithData(
-        "/delete-bank-merchant",
-        formData
-      );
+    setIsLoading(true);
+    const deleteBankMerchant = await deleteApiWithData(
+      "/delete-bank-merchant",
+      formData
+    );
+    setIsLoading(false);
 
-      if (deleteBankMerchant.status === 200) {
-        handleTableChange({ current: 1, pageSize: 10 });
-
-        if (
-          deleteBankMerchant.data.data.count &&
-          deleteBankMerchant.data.data.count === 1 &&
-          !Array.isArray(record?.merchantId)
-        ) {
-          setDeletedId(record?.merchantId);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setIsDeletePanelOpen(false);
+    if (deleteBankMerchant.error) {
+      return;
     }
+
+    handleTableChange({ current: 1, pageSize: 10 });
+
+    if (
+      deleteBankMerchant.data.data.count &&
+      deleteBankMerchant.data.data.count === 1 &&
+      !Array.isArray(record?.merchantId)
+    ) {
+      setDeletedId(record?.merchantId);
+    }
+    setIsDeletePanelOpen(false);
+
   };
 
   const handleCancel = () => {

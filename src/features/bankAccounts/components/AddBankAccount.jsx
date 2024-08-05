@@ -44,22 +44,16 @@ const AddBankAccount = ({
       balance: 0,
     };
 
-    try {
-      const AddBankAcc = await postApi("/create-bank", formData);
-
-      if (AddBankAcc.status === 201) {
-        setIsAddBankAccountModelOpen(false);
-        handleTableChange({ current: 1, pageSize: 10 });
-        form.resetFields();
-      }
-    } catch (error) {
-      console.log(error);
+    const AddBankAcc = await postApi("/create-bank", formData);
+    if (AddBankAcc.error) {
       api.error({
-        description: `Error: ${
-          error?.response?.data?.error?.message ?? "Oops! Something went wrong"
-        }`,
+        description: `Error: ${AddBankAcc.error.message}`,
       });
+      return
     }
+    setIsAddBankAccountModelOpen(false);
+    handleTableChange({ current: 1, pageSize: 10 });
+    form.resetFields();
   };
 
   return (

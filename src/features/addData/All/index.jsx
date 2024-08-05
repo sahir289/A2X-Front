@@ -20,16 +20,14 @@ function All() {
 
   const fetchUsersData = async () => {
     setIsFetchBanksLoading(true);
-    try {
-      const botMessage = await getApi("/get-message", filterValues);
-
-      console.log("first", botMessage);
-      setTableData(botMessage?.data?.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsFetchBanksLoading(false);
+    const botMessage = await getApi("/get-message", filterValues);
+    setIsFetchBanksLoading(false);
+    if (botMessage.error) {
+      console.log(botMessage.error);
+      return;
     }
+    console.log("first", botMessage);
+    setTableData(botMessage?.data?.data);
   };
 
   return (

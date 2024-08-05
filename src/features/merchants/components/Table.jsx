@@ -38,7 +38,7 @@ const TableComponent = ({
         </div>
         <div className="pt-2 flex">
           <Button
-            className="mr-3 flex bg-green-600 text-white"
+            className="mr-3 flex text-white"
             icon={<PlusIcon />}
             onClick={() => setIsAddModelOpen(true)}
           >

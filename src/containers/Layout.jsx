@@ -29,12 +29,13 @@ function Layout() {
   }, []);
 
   const handelGetMerchants = async () => {
-    try {
-      const res = await getApi("/getall-merchant");
-      if (Array.isArray(res.data?.data?.merchants)) {
-        dispatch(initMerchants(res.data.data.merchants));
-      }
-    } catch (err) { }
+    const res = await getApi("/getall-merchant");
+    if (res.error) {
+      return;
+    }
+    if (Array.isArray(res.data?.data?.merchants)) {
+      dispatch(initMerchants(res.data.data.merchants));
+    }
   }
 
   return (

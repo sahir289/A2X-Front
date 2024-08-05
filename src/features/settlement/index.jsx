@@ -1,5 +1,5 @@
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Pagination, Select } from 'antd';
+import { Button, Form, Input, Modal, notification, Pagination, Select } from 'antd';
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { getApi, postApi, putApi } from "../../redux/api";
@@ -10,6 +10,7 @@ import TableComponent, { methodOptions, walletOptions } from './components/Table
 export default function Settlement() {
 
   const [form] = Form.useForm();
+  const [api, notificationContext] = notification.useNotification();
   const [modal, contextHolder] = Modal.useModal();
   const method = Form.useWatch("method", form);
   const timer = useRef(null);
@@ -24,7 +25,7 @@ export default function Settlement() {
   const [filters, setFilters] = useState({});
   const [pagination, setPagination] = useState({
     page: 1,
-    take: 10,
+    take: 20,
   })
 
   const { data, total } = settlements;
@@ -39,7 +40,7 @@ export default function Settlement() {
     // if anything changes in filters
     setPagination({
       page: 1,
-      take: 10,
+      take: 20,
     })
   }, [filters]);
 
@@ -62,20 +63,18 @@ export default function Settlement() {
   }
 
   const getSettlementList = async (queryObj) => {
+    const query = getQueryFromObject(queryObj);
     setIsLoading(true);
-    try {
-      const query = getQueryFromObject(queryObj);
-      const res = await getApi(`/getall-settlement${query}`);
-      const data = res.data.data;
-      setSettlements({
-        data: data?.data || [],
-        total: data?.totalRecords || 0,
-      })
-    } catch (err) {
-      console.log("ERROR", err);
-    } finally {
-      setIsLoading(false);
+    const res = await getApi(`/getall-settlement${query}`);
+    setIsLoading(false);
+    if (res.error) {
+      return;
     }
+    const data = res.data.data;
+    setSettlements({
+      data: data?.data || [],
+      total: data?.totalRecords || 0,
+    })
   }
 
 
@@ -103,17 +102,17 @@ export default function Settlement() {
   }
 
   const handleSubmit = async (data) => {
-    try {
-      setAddLoading(true);
-      await postApi("/create-settlement", data);
-      handleToggleModal();
-      getSettlementList();
-    } catch (err) {
-      const errorMessage = err?.response?.data?.error?.message || err.message;
-      alert(errorMessage);
-    } finally {
-      setAddLoading(false);
+
+    setAddLoading(true);
+    const res = await postApi("/create-settlement", data);
+    setAddLoading(false);
+    if (res.error) {
+      api.error({ description: res.error.message });
+      return;
     }
+    handleToggleModal();
+    getSettlementList();
+
   }
 
   const onFilterChange = async (name, value) => {
@@ -149,19 +148,18 @@ export default function Settlement() {
   }
 
   const handelUpdateSettlement = async (data, id) => {
-    try {
-      const settlementId = editSettlement?.id || id;
-      if (!settlementId) {
-        return;
-      }
-      setIsLoading(true);
-      await putApi(`/update-settlement/${settlementId}`, data);
-      setEditSettlement(null);
-      handleGetSettlements();
-    } catch (err) {
-      setIsLoading(false);
-      console.log("ERROR", err);
+    const settlementId = editSettlement?.id || id;
+    if (!settlementId) {
+      return;
     }
+    setIsLoading(true);
+    const res = await putApi(`/update-settlement/${settlementId}`, data);
+    setIsLoading(false);
+    if (res.error) {
+      return;
+    }
+    setEditSettlement(null);
+    handleGetSettlements();
   }
 
 
@@ -177,6 +175,7 @@ export default function Settlement() {
   return (
     <section className=''>
       {contextHolder}
+      {notificationContext}
       <div className='bg-white rounded-[8px] p-[8px]'>
         <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
           <p className='text-lg font-medium p-[5px]'>Settlement List</p>
@@ -185,7 +184,6 @@ export default function Settlement() {
               icon={<PlusOutlined />}
               type='primary'
               onClick={handleToggleModal}
-              className="bg-green-600 hover:!bg-green-600"
             >
               New Settlement
             </Button>
@@ -211,6 +209,7 @@ export default function Settlement() {
             current={pagination.page}
             showTotal={handleShowTotal}
             onChange={handlePageChange}
+            pageSizeOptions={[20, 50, 100]}
             showSizeChanger
           />
         </div>
@@ -237,7 +236,6 @@ export default function Settlement() {
           }
           <Button
             type="primary"
-            className="bg-green-600 hover:!bg-green-600"
             htmlType="submit"
           >
             {

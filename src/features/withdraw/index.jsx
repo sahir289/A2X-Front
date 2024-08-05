@@ -1,15 +1,16 @@
 import { PlusOutlined, RedoOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Modal, Pagination, Select } from 'antd';
+import { Button, Form, Input, Modal, notification, Pagination, Select } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getApi, postApi, putApi } from '../../redux/api';
-import { RequiredRule, getQueryFromObject, parseErrorFromAxios, reasonOptions } from '../../utils/utils';
+import { getQueryFromObject, reasonOptions, RequiredRule } from '../../utils/utils';
 import Table from './components/Table';
 
 const Withdraw = ({ type }) => {
 
   const timer = useRef(null);
   const [modal, contextHolder] = Modal.useModal();
+  const [api, notificationContext] = notification.useNotification();
   const [filters, setFilters] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
@@ -22,7 +23,7 @@ const Withdraw = ({ type }) => {
   })
   const [pagination, setPagination] = useState({
     page: 1,
-    take: 10,
+    take: 20,
   })
 
   const merchants = useSelector(state => state.merchant.data);
@@ -30,7 +31,7 @@ const Withdraw = ({ type }) => {
   useEffect(() => {
     setPagination({
       page: 1,
-      take: 10,
+      take: 20,
     })
   }, [filters]);
 
@@ -57,27 +58,24 @@ const Withdraw = ({ type }) => {
   }
 
   const getPayoutList = async (queryObj) => {
-    setIsLoading(true);
-    try {
-      const queryObject = {
-        ...queryObj
-      }
-      if (!queryObject.status) {
-        queryObject.status = type == "In Progress" ? "INITIATED" : type == "Completed" ? "SUCCESS" : "";
-      }
-      console.log(queryObject.status, queryObject)
-      const query = getQueryFromObject(queryObject);
-      const res = await getApi(`/getall-payout${query}`);
-      const data = res.data.data;
-      setWithdraws({
-        data: data?.data || [],
-        total: data?.totalRecords || 0,
-      })
-    } catch (err) {
-      console.log("ERROR", err);
-    } finally {
-      setIsLoading(false);
+    const queryObject = {
+      ...queryObj
     }
+    if (!queryObject.status) {
+      queryObject.status = type == "In Progress" ? "INITIATED" : type == "Completed" ? "SUCCESS" : "";
+    }
+    const query = getQueryFromObject(queryObject);
+    setIsLoading(true);
+    const res = await getApi(`/getall-payout${query}`);
+    setIsLoading(false);
+    if (res.error) {
+      return;
+    }
+    const data = res.data.data;
+    setWithdraws({
+      data: data?.data || [],
+      total: data?.totalRecords || 0,
+    })
   }
 
   const handleUpdateWithdraw = async (data) => {
@@ -95,19 +93,18 @@ const Withdraw = ({ type }) => {
   }
 
   const updateWithdraw = async (data, id) => {
-    try {
-      const withdrawId = editWithdraw?.id || id;
-      if (!withdrawId) {
-        return;
-      }
-      setIsLoading(true);
-      await putApi(`/update-payout/${withdrawId}`, data);
-      setEditWithdraw(null);
-      handleGetWithdraws();
-    } catch (err) {
-      setIsLoading(false);
-      console.log("ERROR", err);
+    const withdrawId = editWithdraw?.id || id;
+    if (!withdrawId) {
+      return;
     }
+    setIsLoading(true);
+    const res = await putApi(`/update-payout/${withdrawId}`, data);
+    setIsLoading(false);
+    if (res.error) {
+      return;
+    }
+    setEditWithdraw(null);
+    handleGetWithdraws();
   }
 
   const handleResetWithdraws = async (id) => {
@@ -150,17 +147,15 @@ const Withdraw = ({ type }) => {
   }
 
   const handleSubmit = async (data) => {
-    try {
-      setAddLoading(true);
-      const res = await postApi("/create-payout", data);
-      handleToggleModal();
-      handleGetWithdraws();
-    } catch (err) {
-      const msg = parseErrorFromAxios(err);
-      alert(msg);
-    } finally {
-      setAddLoading(false);
+    setAddLoading(true);
+    const res = await postApi("/create-payout", data);
+    setAddLoading(false);
+    if (res.error) {
+      api.error({ description: res.error.message });
+      return;
     }
+    handleToggleModal();
+    handleGetWithdraws();
   }
 
   const merchantOptions = merchants
@@ -178,6 +173,7 @@ const Withdraw = ({ type }) => {
   return (
     <section>
       {contextHolder}
+      {notificationContext}
       <div className='bg-white rounded-[8px] p-[8px]'>
         <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
           <p className='text-lg font-medium p-[5px]'>Withdraws {type}</p>
@@ -186,7 +182,6 @@ const Withdraw = ({ type }) => {
               icon={<PlusOutlined />}
               type='primary'
               onClick={handleToggleModal}
-              className="bg-green-600 hover:!bg-green-600"
             >
               New Payout
             </Button>
@@ -213,6 +208,7 @@ const Withdraw = ({ type }) => {
             current={pagination.page}
             showTotal={handleShowTotal}
             onChange={handlePageChange}
+            pageSizeOptions={[20, 50, 100]}
             showSizeChanger
           />
         </div>
@@ -256,7 +252,6 @@ const Withdraw = ({ type }) => {
           }
           <Button
             type="primary"
-            className="bg-green-600 hover:!bg-green-600"
             htmlType="submit"
           >
             {

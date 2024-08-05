@@ -44,18 +44,14 @@ function All() {
 
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true)
-    try {
-      const payInDataRes = await getApi('/get-payInData', filterValues)
-
-      setTableData(payInDataRes?.data?.data?.payInData)
-      console.log("first", payInDataRes)
-
-    } catch (error) {
-      console.log(error)
+    const payInDataRes = await getApi('/get-payInData', filterValues)
+    setIsFetchUsersLoading(false)
+    if (payInDataRes.error) {
+      return;
     }
-    finally {
-      setIsFetchUsersLoading(false)
-    }
+
+    setTableData(payInDataRes?.data?.data?.payInData)
+    console.log("first", payInDataRes)
 
   }
 

@@ -16,22 +16,22 @@ const MerchantCodeSelectBox = ({
   }, []);
 
   const fetchMerchantData = async () => {
-    try {
-      const merchantCodes = await getApi("/getall-merchant");
 
+    const merchantCodes = await getApi("/getall-merchant");
+    if (merchantCodes.error) {
       setMerchantCodeOptions([]);
-      merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
-        setMerchantCodeOptions((prev) => [
-          ...prev,
-          {
-            value: merchant.code,
-            label: merchant.code,
-          },
-        ]);
-      });
-    } catch (error) {
-      console.log(error);
+      return;
     }
+
+    merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
+      setMerchantCodeOptions((prev) => [
+        ...prev,
+        {
+          value: merchant.code,
+          label: merchant.code,
+        },
+      ]);
+    });
   };
 
   return (

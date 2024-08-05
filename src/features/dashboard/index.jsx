@@ -70,6 +70,9 @@ function Dashboard() {
       const payInOutData = await getApi(
         `/get-payInDataMerchant?merchantCode=${selectedMerchantCode}`
       );
+      if (payInOutData.error) {
+        return;
+      }
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
@@ -95,7 +98,7 @@ function Dashboard() {
 
       payOutData?.forEach((data) => {
         payOutAmount += Number(data.amount);
-        payOutCommission += Number(data.payout_commission);
+        payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
         payOutcount += 1;
       });
 

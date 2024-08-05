@@ -3,16 +3,27 @@ import { useDispatch } from 'react-redux';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import routes from '../router/sidebar.jsx';
 import SidebarSubmenu from './SidebarSubmenu.jsx';
+import { useContext, useEffect, useState } from 'react';
+import { PermissionContext } from '../components/AuthLayout/AuthLayout.jsx';
 
 function LeftSidebar() {
   const location = useLocation();
+  const [filteredRoutes, setFilteredRoutes] = useState(routes)
 
   const dispatch = useDispatch()
-
+  const context = useContext(PermissionContext)
 
   const close = (e) => {
     document.getElementById('left-sidebar-drawer').click()
   }
+  useEffect(() => {
+    const filterRoutes = routes.filter(route => {
+      if (context.role === "MERCHANT" && (route.name === "Settlements")) return false;
+      // if (context?.role !== "MERCHANT" && route.name === "Dashboard") return false;
+      return true;
+    });
+    setFilteredRoutes(filterRoutes)
+  }, [routes, context])
 
   return (
     <div className="drawer-side  z-30  ">
@@ -26,7 +37,7 @@ function LeftSidebar() {
 
           <Link to={'/app/welcome'}><img className="mask mask-squircle w-10" src="/logo192.png" alt="A2X-PAY logo" />A2X-PAY</Link> </li>
         {
-          routes.map((route, k) => {
+          filteredRoutes.map((route, k) => {
             return (
               <li className="" key={k}>
                 {

@@ -1,11 +1,10 @@
+import { CopyOutlined, ExclamationCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
 import React, { useEffect, useState } from 'react';
-import { PlusIcon, Reload, Reloader } from '../../../utils/constants';
-import { formatCurrency, formatDate } from '../../../utils/utils';
-import { ExclamationCircleOutlined, SyncOutlined } from '@ant-design/icons';
-import { CopyOutlined } from '@ant-design/icons';
 import { getApi, postApi } from '../../../redux/api';
+import { PlusIcon, Reload } from '../../../utils/constants';
+import { formatCurrency, formatDate } from '../../../utils/utils';
 
 const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler, allTable, completedTable, inProgressTable, fetchUsersData }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -81,14 +80,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       isFront: true,
       filePath: selectedRecord?.user_submitted_image
     }
-    const utrRes = await postApi(`/process/${selectedRecord?.id}`, data).then((res) => {
-      console.log(res, "qwerty")
-    }).catch((err) => {
-      console.log(err)
-    }).finally(() => {
-      setIsModalVisible(false);
-      form.resetFields()
-    })
+    const utrRes = await postApi(`/process/${selectedRecord?.id}`, data)
+      .finally(() => {
+        setIsModalVisible(false);
+        form.resetFields()
+      })
   }
 
   const handleToggleModal = () => {
@@ -98,13 +94,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
 
   const handleGetMerchants = async () => {
-    try {
-      const res = await getApi("/getall-merchant");
-      setMerchants(res.data?.data?.merchants || []);
-    } catch (err) {
-      console.log("🚀 ~ handleGetMerchants ~ err:", err)
-
+    const res = await getApi("/getall-merchant");
+    if (res.error) {
+      return;
     }
+    setMerchants(res.data?.data?.merchants || []);
   }
 
   useEffect(() => {
@@ -149,7 +143,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         <div className='pt-2 flex'>
           {(allTable === true || inProgressTable === true) &&
             <Button
-              className='mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white'
+              className='mr-3 flex  text-white hover:!text-white'
               icon={<PlusIcon />}
               onClick={handleToggleModal}
             >
@@ -538,7 +532,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Button type='primary'
               loading={addLoading}
               htmlType='submit'
-              className='bg-green-600 hover:!bg-green-500'
             >
               Create
             </Button>
