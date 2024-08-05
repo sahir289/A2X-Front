@@ -1,6 +1,6 @@
 /** Icons are imported separatly to reduce build time */
-import { ArrowRightCircleIcon, ArrowTrendingUpIcon, ArrowUturnLeftIcon, BanknotesIcon, BuildingLibraryIcon, CheckBadgeIcon, CurrencyDollarIcon, GlobeAltIcon, TrashIcon, UserCircleIcon } from '@heroicons/react/16/solid'
-import { CreditCardIcon, UsersIcon, UserGroupIcon, DocumentPlusIcon } from '@heroicons/react/24/outline'
+import { ArrowRightCircleIcon, ArrowTrendingUpIcon, BanknotesIcon, BuildingLibraryIcon, CheckBadgeIcon, CurrencyDollarIcon, ExclamationTriangleIcon, GlobeAltIcon, TrashIcon, UserCircleIcon } from '@heroicons/react/16/solid'
+import { CreditCardIcon, DocumentPlusIcon, UserGroupIcon, UsersIcon } from '@heroicons/react/24/outline'
 import Squares2X2Icon from '@heroicons/react/24/outline/Squares2X2Icon'
 
 const iconClasses = `h-6 w-6`
@@ -111,6 +111,24 @@ const routes = [
       },
 
     ]
+  },
+  {
+    path: '',
+    icon: <ExclamationTriangleIcon className={`${iconClasses} inline`} />, // icon component
+    name: 'Reports', // name that appear in Sidebar
+    submenu: [
+      {
+        path: '/app/payin',
+        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
+        name: 'Payins', // name that appear in Sidebar
+      },
+      {
+        path: '/app/payout',
+        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
+        name: 'Payouts', // name that appear in Sidebar
+      },
+
+    ],
   },
 
 

@@ -15,6 +15,8 @@ const BankAccounts = lazy(() => import("../pages/protected/bankAccounts/BankAcco
 const WithdrawAll = lazy(() => import("../pages/protected/withdraw/All"))
 const WithdrawCompleted = lazy(() => import("../pages/protected/withdraw/Completed"))
 const WithdrawInProgress = lazy(() => import("../pages/protected/withdraw/InProgress"))
+const Payin = lazy(() => import("../pages/protected/reports/Payin"))
+const Payout = lazy(() => import("../pages/protected/reports/Payout"))
 
 
 const routes = [
@@ -79,6 +81,14 @@ const routes = [
   {
     path: '/user',
     component: UserRoles,
+  },
+  {
+    path: '/payin',
+    component: Payin,
+  },
+  {
+    path: '/payout',
+    component: Payout,
   },
 
 

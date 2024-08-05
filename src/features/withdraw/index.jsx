@@ -27,7 +27,9 @@ const Withdraw = ({ type }) => {
   })
 
   const merchants = useSelector(state => state.merchant.data);
-
+  useEffect(() => {
+    handleGetWithdraws();
+  }, [])
   useEffect(() => {
     setPagination({
       page: 1,
