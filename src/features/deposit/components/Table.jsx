@@ -160,7 +160,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         <div className='pt-2 flex'>
           {(allTable === true || inProgressTable === true) &&
             <Button
-              className='mr-3 flex  text-white hover:!text-white'
+              className='mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white'
               icon={<PlusIcon />}
               onClick={handleToggleModal}
             >
@@ -578,7 +578,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           {paymentUrl}
         </div>
       </Modal>
-      
+
       <NotificationContainer />
     </>
   );
