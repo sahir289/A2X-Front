@@ -39,6 +39,11 @@ export const getQueryFromObject = (obj = {}) => {
   return `?${queryParams.join("&")}`
 }
 
+export function invalidText(value) {
+  return (
+    value == null || value == undefined || value.toString().trim().length == 0
+  );
+}
 export const statusOptions = [
   { value: '', label: 'Select' },
   { value: 'INITIATED', label: 'INITIATED' },
