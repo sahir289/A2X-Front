@@ -1,9 +1,15 @@
+import { notification } from 'antd';
+import { json2csv } from 'json-2-csv';
 import React, { useState } from 'react';
 import { getApi } from '../../redux/api';
+import { formatDate } from '../../utils/utils';
 import PayDesign from './index';
+
 
 const PayoutComponent = () => {
   const [loading, setLoading] = useState(false);
+  const [api, notificationContext] = notification.useNotification();
+
   //handlePayInFunction
   const handlePayOut = async (data) => {
     const startDate = data.range[0];
@@ -15,10 +21,48 @@ const PayoutComponent = () => {
     }
     setLoading(true);
     const res = await getApi('/get-all-payouts', completeData);
+    if (res.error) {
+      api.error({ description: res.error.message });
+      return;
+    }
+    if (!res.data.data?.length) {
+      api.warning({ description: 'No data found!' });
+      return;
+    }
+    const formatSetting = res.data.data.map((el) => ({
+      'ID': el.sno || '',
+      'Status': el.status || '',
+      'User Amount': el.amount || '',
+      'Commission': el.payout_commision || '',
+      'UTR': el.utr_id || '',
+      'Merchant': el?.Merchant?.code || '',
+      'Merchant Order Id': el.merchant_order_id || '',
+      'User': el.user_id || '',
+      'Account Number': el.acc_no || '',
+      'Account Holder Name': el.acc_holder_name || '',
+      'IFSC': el.ifsc_code || '',
+      'Initiated At': formatDate(el.createdAt) || '',
+      'Confirmed At': formatDate(el.updatedAt) || '',
+    }))
+    try {
+      const csv = await json2csv(formatSetting);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute('download', 'payouts.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error converting data to CSV:', error);
+    }
+
     setLoading(false);
   }
   return (
     <>
+      {notificationContext}
       <PayDesign handleFinish={handlePayOut} title='Payouts' loading={loading} />
     </>
   )

@@ -50,6 +50,21 @@ export const statusOptions = [
   { value: 'IMG_PENDING', label: 'IMG_PENDING' },
 ];
 
+//Pay out status options list.
+export const payoutInOutStatusOptions = [
+  { value: 'INITIATED', label: 'INITIATED' },
+  { value: 'SUCCESS', label: 'SUCCESS' },
+  { value: 'FAILED', label: 'FAILED' },
+]
+
+//With draw all status options list.
+export const WithDrawAllOptions = [
+  { value: 'INITIATED', label: 'INITIATED' },
+  { value: 'SUCCESS', label: 'SUCCESS' },
+  { value: 'FAILED', label: 'FAILED' },
+  { value: 'REVERSED', label: 'REVERSED' },
+
+]
 export const reasonOptions = ["Insufficient Fund", "Invalid Bank Details", "Other"].map(el => ({ value: el, label: el }));
 
 

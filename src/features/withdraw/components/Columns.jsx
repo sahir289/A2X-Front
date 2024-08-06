@@ -1,7 +1,7 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import { formatCurrency, statusOptions } from '../../../utils/utils';
+import { formatCurrency, WithDrawAllOptions } from '../../../utils/utils';
 
 const renderStatusTag = (status) => {
   let color = '';
@@ -110,7 +110,7 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
           if (i) {
             return renderStatusTag(v)
           }
-          return <ColumnSelect name="status" options={statusOptions} onChange={onChange} filters={filters} />
+          return <ColumnSelect name="status" options={WithDrawAllOptions} onChange={onChange} filters={filters} />
         }}
       />
       <Column
