@@ -5,6 +5,11 @@ import React, { useEffect, useState } from 'react';
 import { getApi, postApi } from '../../../redux/api';
 import { PlusIcon, Reload } from '../../../utils/constants';
 import { formatCurrency, formatDate } from '../../../utils/utils';
+import { CheckBadgeIcon } from "@heroicons/react/24/outline";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+
+
+
 
 const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler, allTable, completedTable, inProgressTable, fetchUsersData }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -13,12 +18,13 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [open, setOpen] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
-  console.log("🚀 ~ TableComponent ~ open:", open)
-  console.log("🚀 ~ TableComponent ~ selectedRecord:", selectedRecord)
   const [form] = Form.useForm();
+  const [paymentUrlModal, setPaymentUrlModal] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState('')
 
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
+    NotificationManager.success("Copied to clipboard")
   };
 
   const handleFilterValuesChange = (value, fieldName) => {
@@ -72,7 +78,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   ];
 
   const handleUtrSubmit = async (values) => {
-    console.log("🚀 ~ handleUtrSubmit ~ val:", values?.utrNumber)
     const data = {
       usrSubmittedUtr: values?.utrNumber,
       code: selectedRecord?.upi_short_code,
@@ -91,7 +96,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     setOpen(!open);
     form.resetFields();
   };
-
 
   const handleGetMerchants = async () => {
     const res = await getApi("/getall-merchant");
@@ -119,18 +123,31 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     }
   ]
 
-  const handleSubmit = async (data) => {
-    // try {
-    //   setAddLoading(true);
-    //   await postApi("/create-settlement", data);
-    //   handleToggleModal();
-    //   getSettlementList();
-    // } catch (err) {
-    //   const errorMessage = err?.response?.data?.error?.message || err.message;
-    //   alert(errorMessage);
-    // } finally {
-    //   setAddLoading(false);
-    // }
+  const handleSubmit = (data) => {
+    if (data?.paymentLink === undefined || data?.paymentLink === false) {
+      const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`
+      setPaymentUrl(unlimitedUrl)
+      handleToggleModal()
+      setPaymentUrlModal(true);
+      handleCopy(unlimitedUrl)
+
+    } else {
+
+      const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y`).then((res) => {
+        console.log(res?.data?.data?.payInUrl, "payment url")
+        setPaymentUrl(res?.data?.data?.payInUrl)
+        handleToggleModal()
+        setPaymentUrlModal(true);
+        handleCopy(res?.data?.data?.payInUrl)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+
+  }
+
+  const handleCancel = () => {
+    setPaymentUrlModal(false)
   }
 
   return (
@@ -143,7 +160,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         <div className='pt-2 flex'>
           {(allTable === true || inProgressTable === true) &&
             <Button
-              className='mr-3 flex  text-white hover:!text-white'
+              className='mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white'
               icon={<PlusIcon />}
               onClick={handleToggleModal}
             >
@@ -496,7 +513,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         title="New Payment link"
         onCancel={handleToggleModal}
         open={open}
-
         footer={false}>
         <Form
           form={form}
@@ -538,6 +554,32 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           </div>
         </Form>
       </Modal>
+
+      {/* Payment Url model */}
+      <Modal
+        title={
+          <div className='flex'>
+            <CheckBadgeIcon className="h-6 w-6 text-green-500" />
+            &nbsp;&nbsp; Payment Link
+          </div>
+        }
+        open={paymentUrlModal}
+        closable={false}
+        // onOk={handleCancel}
+        onCancel={handleCancel}
+        width="40rem" // Use the width property directly
+        footer={[
+          <Button key="ok" type="primary" onClick={handleCancel}>
+            Ok
+          </Button>
+        ]}
+      >
+        <div className='ps-10' style={{ width: "42rem" }}>
+          {paymentUrl}
+        </div>
+      </Modal>
+
+      <NotificationContainer />
     </>
   );
 };

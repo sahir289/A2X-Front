@@ -38,11 +38,11 @@ const TableComponent = ({
         </div>
         <div className="pt-2 flex">
           <Button
-            className="mr-3 flex text-white"
+            className="mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white"
             icon={<PlusIcon />}
             onClick={() => setIsAddModelOpen(true)}
           >
-            <p>New</p>
+            <p>Add Merchant</p>
           </Button>
           <AddMerchant
             isAddModelOpen={isAddModelOpen}
