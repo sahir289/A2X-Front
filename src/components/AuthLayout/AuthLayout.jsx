@@ -17,6 +17,7 @@ const AuthLayout = () => {
   const [userId,setUserId]=useState('')
   const [userName, setUserName] = useState('')
   const [role, setRole] = useState('')
+  const [code,setCode]=useState('')
 
 
 
@@ -89,6 +90,7 @@ useEffect(()=>{
         setRole(userData?.role);
         setUserId(userData?.id);
         setUserName(userData?.userName);
+        setCode(userData?.code)
       }
     } catch (error) {
       localStorage.removeItem('accessToken');
@@ -97,10 +99,11 @@ useEffect(()=>{
   }
 }, [token])
 
-  const permissionHandle=(userId,userName,role)=>{
+  const permissionHandle=(userId,userName,role,code)=>{
     setUserId(userId)
     setUserName(userName)
     setRole(role)
+    setCode(code)
 
   }
 
@@ -109,6 +112,7 @@ useEffect(()=>{
       userId,
       userName,
       role,
+      code,
       permissionHandle
     }}
   >
