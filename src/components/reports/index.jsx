@@ -2,11 +2,10 @@ import { DownloadOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Form, Select } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { payoutInOutStatusOptions } from '../../utils/utils';
 
 const { RangePicker } = DatePicker;
 
-const PayDesign = ({ handleFinish, title, loading }) => {
+const PayDesign = ({ handleFinish, title, loading, statusOptions }) => {
   const merchantCodes = useSelector((state) => state.merchant.data)
   //make options list
   const merchantOptions = merchantCodes.map((el) => ({
@@ -29,7 +28,7 @@ const PayDesign = ({ handleFinish, title, loading }) => {
           label="Status"
           rules={[{ required: true, message: "Please select status!" }]}
         >
-          <Select placeholder="Please select" options={payoutInOutStatusOptions} />
+          <Select placeholder="Please select" options={statusOptions} />
         </Form.Item>
         <div className='my-2 px-3 py-2 rounded shadow-md'>
           <Form.Item

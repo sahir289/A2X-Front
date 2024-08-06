@@ -2,8 +2,9 @@ import { notification } from 'antd';
 import { json2csv } from 'json-2-csv';
 import React, { useState } from 'react';
 import { getApi } from '../../redux/api';
-import { formatDate } from '../../utils/utils';
+import { formatDate, statusOptions } from '../../utils/utils';
 import PayDesign from './index';
+
 const PayinComponent = () => {
   const [loading, setLoading] = useState(false);
   const [api, notificationContext] = notification.useNotification();
@@ -19,6 +20,7 @@ const PayinComponent = () => {
     }
     setLoading(true);
     const res = await getApi('/get-all-payins', completeData);
+    setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
       return;
@@ -47,15 +49,14 @@ const PayinComponent = () => {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      link.setAttribute('download', 'payouts.csv');
+      const fileName = `payin-${data.status}-${Date.now()}`.toLowerCase();
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error converting data to CSV:', error);
     }
-
-    setLoading(false);
 
   }
   const getBankCode = (record) => {
@@ -64,7 +65,12 @@ const PayinComponent = () => {
   return (
     <>
       {notificationContext}
-      <PayDesign handleFinish={handlePayIn} title='Payins' loading={loading} />
+      <PayDesign
+        handleFinish={handlePayIn}
+        title='Payins'
+        loading={loading}
+        statusOptions={statusOptions}
+      />
     </>
   )
 }

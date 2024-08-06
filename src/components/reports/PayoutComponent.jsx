@@ -2,7 +2,7 @@ import { notification } from 'antd';
 import { json2csv } from 'json-2-csv';
 import React, { useState } from 'react';
 import { getApi } from '../../redux/api';
-import { formatDate } from '../../utils/utils';
+import { formatDate, payoutInOutStatusOptions } from '../../utils/utils';
 import PayDesign from './index';
 
 
@@ -21,6 +21,7 @@ const PayoutComponent = () => {
     }
     setLoading(true);
     const res = await getApi('/get-all-payouts', completeData);
+    setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
       return;
@@ -50,7 +51,8 @@ const PayoutComponent = () => {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      link.setAttribute('download', 'payouts.csv');
+      const fileName = `payout-${data.status}-${Date.now()}`.toLowerCase();
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -58,12 +60,16 @@ const PayoutComponent = () => {
       console.error('Error converting data to CSV:', error);
     }
 
-    setLoading(false);
   }
   return (
     <>
       {notificationContext}
-      <PayDesign handleFinish={handlePayOut} title='Payouts' loading={loading} />
+      <PayDesign
+        handleFinish={handlePayOut}
+        title='Payouts'
+        loading={loading}
+        statusOptions={payoutInOutStatusOptions}
+      />
     </>
   )
 }
