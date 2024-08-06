@@ -50,7 +50,6 @@ const AddMerchant = ({
     form.resetFields();
   };
 
-
   const onFinish = async (values) => {
     const formData = {
       code: values.code,
@@ -73,12 +72,12 @@ const AddMerchant = ({
       api.error({
         description: `Error: ${AddMerchant.error.message}`,
       });
-      return
+      return;
     }
 
     console.log(AddMerchant, "post");
     setIsAddModelOpen(false);
-    handleTableChange({ current: 1, pageSize: 10 });
+    handleTableChange({ current: 1, pageSize: 20 });
     form.resetFields();
   };
 

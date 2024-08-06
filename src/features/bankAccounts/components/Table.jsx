@@ -39,10 +39,10 @@ const TableComponent = ({
 
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
-    pageSize: data?.pagination?.pageSize ?? 15,
+    pageSize: data?.pagination?.pageSize ?? 20,
     total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50"],
+    pageSizeOptions: ["20", "50", "100"],
     onChange: (page, size) =>
       handleTableChange({ current: page, pageSize: size }),
     onShowSizeChange: (current, size) =>
@@ -102,7 +102,7 @@ const TableComponent = ({
           <Button
             className="mr-5 hover:bg-slate-300"
             icon={<Reload />}
-            onClick={() => handleTableChange({ current: 1, pageSize: 10 })}
+            onClick={() => handleTableChange({ current: 1, pageSize: 20 })}
           />
         </div>
       </div>

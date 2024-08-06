@@ -33,7 +33,6 @@ const UpdateMerchant = ({
       merchantId: values?.merchantId,
     };
 
-
     const addBankMerchant = await postApi("/add-bank-merchant", formData);
     if (addBankMerchant.error) {
       return;
@@ -41,10 +40,9 @@ const UpdateMerchant = ({
 
     await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
 
-    handleTableChange({ current: 1, pageSize: 10 });
+    handleTableChange({ current: 1, pageSize: 20 });
 
     form.resetFields();
-
   };
 
   const getBankMerchant = async (id) => {

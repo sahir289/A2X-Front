@@ -14,6 +14,7 @@ const TableComponent = ({
   const [isAddModelOpen, setIsAddModelOpen] = useState(false);
 
   const handleFilterValuesChange = (value, fieldName) => {
+    console.log(value, fieldName);
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
 
@@ -48,7 +49,7 @@ const TableComponent = ({
             <Button
               className="mr-5 hover:bg-slate-300"
               icon={<Reload />}
-              onClick={() => handleTableChange({ current: 1, pageSize: 10 })}
+              onClick={() => handleTableChange({ current: 1, pageSize: 20 })}
             />
           </div>
         </div>

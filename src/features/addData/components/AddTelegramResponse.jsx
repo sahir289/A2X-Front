@@ -25,8 +25,8 @@ const AddTelegramResponse = ({ handleTableChange }) => {
     }
 
     console.log(AddData, "post");
-    handleTableChange({ current: 1, pageSize: 10 });
-    form.resetFields();
+    handleTableChange({ current: 1, pageSize: 20 });
+    // form.resetFields();
   };
 
   const resetForm = () => {
@@ -111,6 +111,10 @@ const AddTelegramResponse = ({ handleTableChange }) => {
             {
               max: 12,
               message: "Maximum 12 characters required",
+            },
+            {
+              type: "number",
+              message: "Only numbers allowed",
             },
           ]}
         >

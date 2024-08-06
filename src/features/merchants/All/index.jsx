@@ -6,7 +6,7 @@ function All() {
   const [tableData, setTableData] = useState([]);
   const [filterValues, setFilterValues] = useState({
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
   });
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
 

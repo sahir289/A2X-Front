@@ -28,7 +28,6 @@ const AddBankAccount = ({
     form.resetFields();
   };
 
-
   const onFinish = async (values) => {
     const formData = {
       upi_id: values.upi_id,
@@ -52,10 +51,10 @@ const AddBankAccount = ({
       api.error({
         description: `Error: ${AddBankAcc.error.message}`,
       });
-      return
+      return;
     }
     setIsAddBankAccountModelOpen(false);
-    handleTableChange({ current: 1, pageSize: 10 });
+    handleTableChange({ current: 1, pageSize: 20 });
     form.resetFields();
   };
 
