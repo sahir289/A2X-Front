@@ -112,13 +112,13 @@ const AddTelegramResponse = ({ handleTableChange }) => {
               max: 12,
               message: "Maximum 12 characters required",
             },
-            {
-              type: "number",
-              message: "Only numbers allowed",
-            },
+            // {
+            //   type: "number",
+            //   message: "Only numbers allowed",
+            // },
           ]}
         >
-          <Input />
+          <Input  type="number"/>
         </Form.Item>
 
         <div className="flex flex-row justify-end items-end gap-1">
