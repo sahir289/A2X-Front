@@ -16,13 +16,11 @@ const PayoutComponent = () => {
     setLoading(true);
     const res = await getApi('/get-all-payouts', completeData);
     setLoading(false);
-    console.log(res);
-
   }
   return (
-    <div className='h-full'>
+    <>
       <PayDesign handleFinish={handlePayOut} title='Payouts' loading={loading} />
-    </div>
+    </>
   )
 }
 
