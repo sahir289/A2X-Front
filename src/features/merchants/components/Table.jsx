@@ -1,4 +1,4 @@
-import { Button, Switch, Table } from "antd";
+import { Button, Divider, Switch, Table } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
@@ -15,10 +15,10 @@ const TableComponent = ({
 
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
-    pageSize: data?.pagination?.pageSize ?? 15,
+    pageSize: data?.pagination?.pageSize ?? 20,
     total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50"],
+    pageSizeOptions: ["20", "50", "100"],
     onChange: (page, size) =>
       handleTableChange({ current: page, pageSize: size }),
     onShowSizeChange: (current, size) =>
@@ -31,8 +31,8 @@ const TableComponent = ({
   };
 
   return (
-    <>
-      <div className="font-serif pt-3 flex bg-zinc-50 rounded-lg">
+    <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
+      <div className="flex">
         <div className=" w-full h-16  pb-3">
           <p className="pt-4 ps-4 text-xl ">Merchants</p>
         </div>
@@ -52,10 +52,11 @@ const TableComponent = ({
           <Button
             className="mr-5 hover:bg-slate-300"
             icon={<Reload />}
-            onClick={() => handleTableChange({ current: 1, pageSize: 10 })}
+            onClick={() => handleTableChange({ current: 1, pageSize: 20 })}
           />
         </div>
       </div>
+      <Divider />
       <Table
         dataSource={data.merchants}
         rowKey={(item) => item.id}
@@ -63,7 +64,7 @@ const TableComponent = ({
           // y: 240,
           x: "120vw",
         }}
-        className="font-serif"
+        className="font-serif px-3"
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
       >
@@ -157,7 +158,7 @@ const TableComponent = ({
           }}
         />
       </Table>
-    </>
+    </div>
   );
 };
 

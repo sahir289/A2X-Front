@@ -7,22 +7,30 @@ const MerchantCodeSelectBox = ({
   setSelectedMerchantCode,
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
+
   const handleChange = (value) => {
+    localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
     setSelectedMerchantCode(value);
   };
 
   useEffect(() => {
+    const storedMerchantCode = localStorage.getItem("selectedMerchantCode");
+    if (storedMerchantCode) {
+      setSelectedMerchantCode(JSON.parse(storedMerchantCode));
+    } else {
+      setSelectedMerchantCode([]);
+    }
     fetchMerchantData();
   }, []);
 
   const fetchMerchantData = async () => {
-
     const merchantCodes = await getApi("/getall-merchant");
     if (merchantCodes.error) {
       return;
     }
     setMerchantCodeOptions([]);
 
+    setMerchantCodeOptions([]); // clear the options to avoid duplication
     merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
       setMerchantCodeOptions((prev) => [
         ...prev,
@@ -50,6 +58,7 @@ const MerchantCodeSelectBox = ({
               width: "98%",
             }}
             options={merchantCodeOptions}
+            value={selectedMerchantCode}
           />
         </div>
       </div>

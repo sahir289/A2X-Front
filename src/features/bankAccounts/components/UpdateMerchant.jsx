@@ -19,10 +19,12 @@ const UpdateMerchant = ({
 
   const handleModalOk = () => {
     setIsAddMerchantModalOpen(false);
+    form.resetFields();
   };
 
   const handleModalCancel = () => {
     setIsAddMerchantModalOpen(false);
+    form.resetFields();
   };
 
   const onUpdateMerchant = async (values) => {
@@ -31,7 +33,6 @@ const UpdateMerchant = ({
       merchantId: values?.merchantId,
     };
 
-
     const addBankMerchant = await postApi("/add-bank-merchant", formData);
     if (addBankMerchant.error) {
       return;
@@ -39,10 +40,9 @@ const UpdateMerchant = ({
 
     await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
 
-    handleTableChange({ current: 1, pageSize: 10 });
+    handleTableChange({ current: 1, pageSize: 20 });
 
     form.resetFields();
-
   };
 
   const getBankMerchant = async (id) => {
@@ -66,19 +66,19 @@ const UpdateMerchant = ({
 
   useEffect(() => {
     if (deletedId) {
-      const updatedMerchant = record?.merchant?.filter(
+      const updatedMerchant = record?.merchants?.filter(
         (merchant) => merchant?.id !== deletedId
       );
-      record.merchant = updatedMerchant;
+      record.merchants = updatedMerchant;
     }
   }, [deletedId]);
 
   useEffect(() => {
     if (newMerchant) {
-      if (record.merchant) {
-        record.merchant.push(newMerchant);
+      if (record.merchants) {
+        record.merchants.push(newMerchant);
       } else {
-        record.merchant = [newMerchant];
+        record.merchants = [newMerchant];
       }
     }
   }, [newMerchant]);
@@ -100,7 +100,7 @@ const UpdateMerchant = ({
         ]}
       >
         <div className="flex flex-col gap-2">
-          {record?.merchant?.map((merchant) => (
+          {record?.merchants?.map((merchant) => (
             <div key={merchant?.id} className="flex justify-between">
               <div>{merchant?.code}</div>
               <Button

@@ -5,7 +5,8 @@ import TableComponent from "../components/Table";
 function All() {
   const [tableData, setTableData] = useState([]);
   const [filterValues, setFilterValues] = useState({
-    status: "",
+    sno: "",
+    status: "/success",
     amount: "",
     amount_code: "",
     utr: "",

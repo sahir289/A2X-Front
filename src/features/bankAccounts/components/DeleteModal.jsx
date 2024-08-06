@@ -21,8 +21,6 @@ const DeleteModal = ({
       merchantId: record?.merchantId,
     };
 
-    console.log(record, "record from delete");
-
     setIsLoading(true);
     const deleteBankMerchant = await deleteApiWithData(
       "/delete-bank-merchant",
@@ -34,7 +32,7 @@ const DeleteModal = ({
       return;
     }
 
-    handleTableChange({ current: 1, pageSize: 10 });
+    handleTableChange({ current: 1, pageSize: 20 });
 
     if (
       deleteBankMerchant.data.data.count &&
@@ -44,7 +42,6 @@ const DeleteModal = ({
       setDeletedId(record?.merchantId);
     }
     setIsDeletePanelOpen(false);
-
   };
 
   const handleCancel = () => {

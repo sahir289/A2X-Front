@@ -9,7 +9,7 @@ function All() {
     ac_no: "",
     upi_id: "",
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
   });
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
 

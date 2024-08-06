@@ -38,18 +38,19 @@ const AddMerchant = ({
   handleTableChange,
 }) => {
   const [api, contextHolder] = notification.useNotification();
+  const [form] = Form.useForm();
+
   const handleModalOk = () => {
     setIsAddModelOpen(false);
+    form.resetFields();
   };
 
   const handleModalCancel = () => {
     setIsAddModelOpen(false);
+    form.resetFields();
   };
 
-  const [form] = Form.useForm();
-
   const onFinish = async (values) => {
-    console.log(values, "values");
     const formData = {
       code: values.code,
       site_url: `${values.site_url_protocol}${values.site_url}`,
@@ -71,12 +72,12 @@ const AddMerchant = ({
       api.error({
         description: `Error: ${AddMerchant.error.message}`,
       });
-      return
+      return;
     }
 
     console.log(AddMerchant, "post");
     setIsAddModelOpen(false);
-    handleTableChange({ current: 1, pageSize: 10 });
+    handleTableChange({ current: 1, pageSize: 20 });
     form.resetFields();
   };
 

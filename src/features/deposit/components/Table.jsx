@@ -36,7 +36,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   };
 
   const getBankCode = (record) => {
-    return record?.Merchant?.Merchant_Bank[0]?.bankAccount?.bank_name || 'N/A'; // Safely access nested property
+    console.log("🚀 ~ getBankCode ~ record:", record?.Merchant?.Merchant_Bank)
+    return  'N/A'; // Safely access nested property
   };
 
   const lastLogIn = (record) => {
@@ -416,11 +417,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
               onChange={(e) => handleFilterValuesChange(e.target.value, 'bank')}
             />
           </>}
-          dataIndex="Merchant" // Adjust according to actual data structure
-          key="bank"
+          dataIndex="bank_name" // Adjust according to actual data structure
+          key="bank_name"
           className="bg-white"
           width={"24px"}
-          render={(text, record) => getBankCode(record)}
+          // render={(text, record) => getBankCode(record)}
         />
 
         <Column

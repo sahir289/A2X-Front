@@ -49,6 +49,14 @@ function BarChart({
             return formatCurrency(data.raw);
           },
         },
+        titleFont: {
+          size: 16,
+          weight: "bold",
+        },
+        bodyFont: {
+          size: 14,
+          weight: "bold",
+        },
       },
     },
   };
@@ -60,7 +68,7 @@ function BarChart({
     if (
       interval === "12h" ||
       startDate.toISOString().split("T")[0] ===
-      endDate.toISOString().split("T")[0]
+        endDate.toISOString().split("T")[0]
     ) {
       // If the interval is "12h" or the start and end dates are the same, create hourly labels
       const hoursInterval = interval === "12h" ? 1 : 2; // 1-hour intervals for 12h and 2-hour intervals for the same date
@@ -101,7 +109,7 @@ function BarChart({
     if (
       interval === "12h" ||
       dateRange.startDate.toISOString().split("T")[0] ===
-      dateRange.endDate.toISOString().split("T")[0]
+        dateRange.endDate.toISOString().split("T")[0]
     ) {
       return formatTime(date); // Format time as human-readable
     }
@@ -115,14 +123,14 @@ function BarChart({
         if (
           interval === "12h" ||
           dateRange.startDate.toISOString().split("T")[0] ===
-          dateRange.endDate.toISOString().split("T")[0]
+            dateRange.endDate.toISOString().split("T")[0]
         ) {
           dayData = data.filter(
             (item) =>
               new Date(item.updatedAt).getHours() ===
-              new Date(date).getHours() &&
+                new Date(date).getHours() &&
               new Date(item.updatedAt).toISOString().split("T")[0] ===
-              new Date(date).toISOString().split("T")[0]
+                new Date(date).toISOString().split("T")[0]
           );
         } else {
           dayData = data.filter(

@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Empty, Input, Switch, Table, Tooltip } from "antd";
+import { Button, Divider, Empty, Input, Switch, Table, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { getApi } from "../../../redux/api";
@@ -32,16 +32,6 @@ const TableComponent = ({
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
 
-  const getMerchantCode = (record) => {
-    console.log("🚀 ~ getMerchantCode ~ record:", record);
-    return record?.Merchant?.code || "N/A"; // Safely access nested property
-  };
-
-  const getBankCode = (record) => {
-    console.log("🚀 ~ getBankCode ~ record:", record?.Merchant?.Merchant_Bank);
-    return record?.Merchant?.Merchant_Bank[0]?.bankAccount?.bank_name || "N/A"; // Safely access nested property
-  };
-
   const lastLogIn = (record) => {
     console.log("🚀 ~ lastLogIn ~ lastLogIn:", record?.Merchant);
     return formatDate(record?.updatedAt) || "N/A"; // Safely access nested property
@@ -49,10 +39,10 @@ const TableComponent = ({
 
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
-    pageSize: data?.pagination?.pageSize ?? 15,
+    pageSize: data?.pagination?.pageSize ?? 20,
     total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50"],
+    pageSizeOptions: ["20", "50", "100"],
     onChange: (page, size) =>
       handleTableChange({ current: page, pageSize: size }),
     onShowSizeChange: (current, size) =>
@@ -83,7 +73,7 @@ const TableComponent = ({
 
     const deleteData = {
       bankAccountId: record?.id,
-      merchantId: record?.merchant?.map((merchant) => merchant?.id),
+      merchantId: record?.merchants?.map((merchant) => merchant?.id),
       ac_name: record?.ac_name,
     };
 
@@ -91,8 +81,8 @@ const TableComponent = ({
   };
 
   return (
-    <>
-      <div className="font-serif pt-3 flex bg-zinc-50 rounded-lg">
+    <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
+      <div className="flex">
         <div className=" w-full h-16  pb-3">
           <p className="pt-4 ps-4 text-xl ">Enquiry Form</p>
         </div>
@@ -112,10 +102,11 @@ const TableComponent = ({
           <Button
             className="mr-5 hover:bg-slate-300"
             icon={<Reload />}
-            onClick={() => handleTableChange({ current: 1, pageSize: 10 })}
+            onClick={() => handleTableChange({ current: 1, pageSize: 20 })}
           />
         </div>
       </div>
+      <Divider />
       <Table
         dataSource={data.bankAccRes}
         rowKey={(item) => item.id}
@@ -123,7 +114,7 @@ const TableComponent = ({
           // y: 240,
           x: "120vw",
         }}
-        className="font-serif"
+        className="font-serif px-3"
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
       >
@@ -377,8 +368,7 @@ const TableComponent = ({
           key="merchants"
           className="bg-white"
           width={"6%"}
-          render={(text, record) => {
-            console.log(record, "record434343434", text);
+          render={(_, record) => {
             return (
               <div className="whitespace-nowrap flex gap-2">
                 <Tooltip
@@ -387,8 +377,8 @@ const TableComponent = ({
                   title={
                     <div className="flex flex-col gap-1 text-black p-2">
                       <div className="font-bold">Merchant List</div>
-                      {(!!record?.merchant &&
-                        record?.merchant?.map((merchant) => (
+                      {(record?.merchants?.length > 0 &&
+                        record?.merchants?.map((merchant) => (
                           <p key={merchant?.id}>{merchant?.code}</p>
                         ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                     </div>
@@ -433,7 +423,7 @@ const TableComponent = ({
         displayItem={`${deleteRecord?.ac_name}?`}
         handleTableChange={handleTableChange}
       />
-    </>
+    </div>
   );
 };
 

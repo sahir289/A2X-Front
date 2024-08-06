@@ -27,7 +27,7 @@ const statsData = [
 ];
 
 function Dashboard() {
-  const [selectedMerchantCode, setSelectedMerchantCode] = useState("");
+  const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
   const [payInOutData, setPayInOutData] = useState([]);
   const [depositData, setDepositData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
@@ -46,8 +46,6 @@ function Dashboard() {
   }, []);
 
   const updateDashboardPeriod = (newRange) => {
-    // Dashboard range changed, write code to refresh your values
-    console.log(newRange, "newRange");
     setDateRange({
       startDate: new Date(newRange.startDate),
       endDate: new Date(newRange.endDate),
@@ -67,9 +65,11 @@ function Dashboard() {
 
   const fetchPayInDataMerchant = async () => {
     try {
-      const payInOutData = await getApi(
-        `/get-payInDataMerchant?merchantCode=${selectedMerchantCode}`
-      );
+      let query = selectedMerchantCode
+        .map((code) => "merchantCode=" + encodeURIComponent(code))
+        .join("&");
+
+      const payInOutData = await getApi(`/get-payInDataMerchant?${query}`);
       if (payInOutData.error) {
         return;
       }
@@ -84,22 +84,22 @@ function Dashboard() {
 
       let payInAmount = 0;
       let payInCommission = 0;
-      let payIncount = 0;
+      let payInCount = 0;
       let payOutAmount = 0;
       let payOutCommission = 0;
-      let payOutcount = 0;
+      let payOutCount = 0;
       let settlementAmount = 0;
 
       payInData?.forEach((data) => {
         payInAmount += Number(data.amount);
         payInCommission += Number(data.payin_commission);
-        payIncount += 1;
+        payInCount += 1;
       });
 
       payOutData?.forEach((data) => {
         payOutAmount += Number(data.amount);
         payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
-        payOutcount += 1;
+        payOutCount += 1;
       });
 
       settlementData?.forEach((data) => {
@@ -111,22 +111,22 @@ function Dashboard() {
           title: "Deposit",
           value: payInAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
-          count: payIncount,
+          count: payInCount,
         },
         {
           title: "Deposit %",
-          value: parseFloat(payInAmount * (payInCommission / 100)).toFixed(2),
+          value: payInCommission,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Withdraw",
           value: payOutAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
-          count: payOutcount,
+          count: payOutCount,
         },
         {
           title: "Withdraw %",
-          value: parseFloat(payOutAmount * (payOutCommission / 100)).toFixed(2),
+          value: payOutCommission,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -176,31 +176,41 @@ function Dashboard() {
                     {data.title === "Deposit" && (
                       <div className="flex justify-between">
                         <p>Deposit</p>
-                        <p>{formatCurrency(data.value)}</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
                       </div>
                     )}
                     {data.title === "Withdraw" && (
                       <div className="flex justify-between">
                         <p>Withdraw</p>
-                        <p>{formatCurrency(data.value)}</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
                       </div>
                     )}
                     {data.title === "Withdraw %" && (
                       <div className="flex justify-between">
                         <p>Commission</p>
-                        <p>{formatCurrency(data.value)}</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
                       </div>
                     )}
                     {data.title === "Settlement" && (
                       <div className="flex justify-between">
                         <p>Settlement</p>
-                        <p>{formatCurrency(data.value)}</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
                       </div>
                     )}
                     {data.title === "Net Balance" && (
                       <div className="flex justify-between">
                         <p>Net Balance</p>
-                        <p>{formatCurrency(data.value)}</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
                       </div>
                     )}
                   </div>
