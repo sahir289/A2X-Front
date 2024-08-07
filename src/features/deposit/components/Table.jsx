@@ -36,7 +36,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   };
 
   const getBankCode = (record) => {
-    console.log("🚀 ~ getBankCode ~ record:", record?.Merchant?.Merchant_Bank)
     return 'N/A'; // Safely access nested property
   };
 
@@ -135,7 +134,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     } else {
 
       const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y`).then((res) => {
-        console.log(res?.data?.data?.payInUrl, "payment url")
         setPaymentUrl(res?.data?.data?.payInUrl)
         handleToggleModal()
         setPaymentUrlModal(true);

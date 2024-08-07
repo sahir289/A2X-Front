@@ -25,10 +25,9 @@ function All() {
     const botMessage = await getApi("/get-message", filterValues);
     setIsFetchBanksLoading(false);
     if (botMessage.error) {
-      console.log(botMessage.error);
+
       return;
     }
-    console.log("first", botMessage);
     setTableData(botMessage?.data?.data);
   };
 

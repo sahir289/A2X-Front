@@ -51,7 +51,6 @@ function All() {
     }
 
     setTableData(payInDataRes?.data?.data?.payInData)
-    console.log("first", payInDataRes)
 
   }
 

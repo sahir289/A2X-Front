@@ -22,7 +22,6 @@ const RolesComponent = () => {
     const usersApiRes = await getApi("/getall-users", filterValues);
     setIsFetchUsersLoading(false);
     if (usersApiRes.error) {
-      console.log(usersApiRes.error);
       return;
     }
     setTableData(usersApiRes?.data?.data);

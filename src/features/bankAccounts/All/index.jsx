@@ -25,7 +25,6 @@ function All() {
       return;
     }
 
-    console.log("first", backAccount);
     setTableData(backAccount?.data?.data);
   };
 

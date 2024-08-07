@@ -31,9 +31,7 @@ function Dropped() {
   const [isFetchUsersLoading, setIsFetchUsersLoading] = useState(false)
 
   // const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)  for modal
-  console.log("🚀 ~ Completed ~ filterValues:", filterValues)
   useEffect(() => {
-
     fetchUsersData()
   }, [filterValues, currentPage])
 
@@ -54,20 +52,10 @@ function Dropped() {
     }
     setTableData(payInDataRes?.data?.data?.payInData)
     setTotalRecords(payInDataRes?.data?.data?.totalRecords)
-    console.log("first", payInDataRes?.data?.data?.totalRecords)
   }
-  // for modal
-  // const handleOk = () => {
-  //   setIsAddUserModalOpen(false)
-  // }
-
-  // const handleCancel = () => {
-  //   setIsAddUserModalOpen(false)
-  // }
 
 
   const tableChangeHandler = (pagination) => {
-    console.log(" kk", pagination)
     setTotalRecords(pagination.total);
     setCurrentPage(pagination.current);
     setPageSize(pagination.pageSize);

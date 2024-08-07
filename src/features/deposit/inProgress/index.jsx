@@ -54,21 +54,11 @@ function InProgress() {
 
     setTableData(payInDataRes?.data?.data?.payInData)
     setTotalRecords(payInDataRes?.data?.data?.totalRecords)
-    console.log("first", payInDataRes?.data?.data?.totalRecords)
 
   }
-  // for modal
-  // const handleOk = () => {
-  //   setIsAddUserModalOpen(false)
-  // }
-
-  // const handleCancel = () => {
-  //   setIsAddUserModalOpen(false)
-  // }
 
 
   const tableChangeHandler = (pagination) => {
-    console.log(" kk", pagination)
     setTotalRecords(pagination.total);
     setCurrentPage(pagination.current);
     setPageSize(pagination.pageSize);

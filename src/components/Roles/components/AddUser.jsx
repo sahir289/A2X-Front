@@ -21,7 +21,6 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
     if (merchantApiRes.error) {
-      console.log(merchantApiRes.error);
       return;
     }
 
@@ -57,7 +56,6 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       code: values.code,
     };
 
-    console.log(formData, "formData");
     const addUser = await postApi("/create-user", formData);
     if (addUser.error) {
       api.error({
@@ -65,8 +63,6 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       });
       return;
     }
-
-    console.log(addUser, "post");
     setIsAddModelOpen(false);
     handleTableChange({ current: 1, pageSize: 20 });
     form.resetFields();

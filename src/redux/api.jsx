@@ -132,7 +132,6 @@ export const putApiNoHeader = async (url, apiData) => {
       };
     }
   } catch (err) {
-    console.log("🚀 ~ putApiNoHeader ~ err:", err)
     return { data: null, error: parseErrorFromAxios(err) };
   }
 };

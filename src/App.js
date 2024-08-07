@@ -11,9 +11,6 @@ const Page404 = lazy(() => import('./pages/protected/404'));
 
 initializeApp();
 
-// const token = checkAuth();
-// console.log("🚀 ~ token:", token);
-
 function App() {
   return (
     <Router>

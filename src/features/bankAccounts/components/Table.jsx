@@ -24,7 +24,6 @@ const TableComponent = ({
   const [deleteRecord, setDeleteRecord] = useState(null);
 
   const handleCopy = (values) => {
-    console.log("🚀 ~ handleCopy ~ values:", values);
     navigator.clipboard.writeText(values);
   };
 
@@ -33,7 +32,6 @@ const TableComponent = ({
   };
 
   const lastLogIn = (record) => {
-    console.log("🚀 ~ lastLogIn ~ lastLogIn:", record?.Merchant);
     return formatDate(record?.updatedAt) || "N/A"; // Safely access nested property
   };
 

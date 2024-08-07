@@ -6,10 +6,7 @@ import { PlusIcon, Reload } from '../../../utils/constants';
 import { formatDate } from '../../../utils/utils';
 
 const TableComponent = ({ data, filterValues, setFilterValues }) => {
-  console.log("🚀 ~ TableComponent ~ data Settlements:", data)
-
   const handleCopy = (values) => {
-    console.log("🚀 ~ handleCopy ~ values:", values)
     navigator.clipboard.writeText(values);
   };
 
@@ -17,18 +14,8 @@ const TableComponent = ({ data, filterValues, setFilterValues }) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
 
-  const getMerchantCode = (record) => {
-    console.log("🚀 ~ getMerchantCode ~ record:", record)
-    return record?.Merchant?.code || 'N/A'; // Safely access nested property
-  };
-
-  const getBankCode = (record) => {
-    console.log("🚀 ~ getBankCode ~ record:", record?.Merchant?.Merchant_Bank)
-    return record?.Merchant?.Merchant_Bank[0]?.bankAccount?.bank_name || 'N/A'; // Safely access nested property
-  };
 
   const lastLogIn = (record) => {
-    console.log("🚀 ~ lastLogIn ~ lastLogIn:", record?.Merchant)
     return formatDate(record?.Merchant?.updatedAt) || 'N/A'; // Safely access nested property
   };
 
