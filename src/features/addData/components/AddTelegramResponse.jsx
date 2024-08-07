@@ -15,7 +15,6 @@ const AddTelegramResponse = ({ handleTableChange }) => {
       },
     };
 
-    console.log(formData, "formData");
     const AddData = await postApi("/create-message", formData);
     if (AddData.error) {
       api.error({

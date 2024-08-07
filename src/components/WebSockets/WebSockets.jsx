@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 
 const socket = io(process.env.REACT_APP_WS_URL);
 
-const WebSockets = () => {
+const WebSockets = ({fetchUsersData}) => {
   useEffect(() => {
     socket.on('connect', () => {
       console.log('Connected to the server');
@@ -15,6 +15,7 @@ const WebSockets = () => {
     socket.on('new-entry', (data) => {
       console.log('New entry received:', data);
       // Handle the new entry data
+      fetchUsersData()
     });
 
     socket.on('broadcast-message', (data) => {

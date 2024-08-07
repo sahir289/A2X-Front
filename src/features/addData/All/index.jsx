@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
+import WebSockets from "../../../components/WebSockets/WebSockets";
 
 function All() {
   const [tableData, setTableData] = useState([]);
@@ -33,6 +34,7 @@ function All() {
 
   return (
     <div className="">
+       <WebSockets fetchUsersData={fetchUsersData} /> {/*  to get the message from backend when the api is hit. */}
       <TableComponent
         data={tableData}
         filterValues={filterValues}
