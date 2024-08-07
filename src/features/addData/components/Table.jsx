@@ -1,6 +1,6 @@
-import { Button, Divider, Input, Select, Table, Tag } from "antd";
+import { Button, Input, Select, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import React, { useState } from "react";
+import React from "react";
 import { Reload } from "../../../utils/constants";
 import { formatCurrency } from "../../../utils/utils";
 import AddTelegramResponse from "./AddTelegramResponse";
@@ -11,10 +11,7 @@ const TableComponent = ({
   setFilterValues,
   isFetchBanksLoading,
 }) => {
-  const [isAddModelOpen, setIsAddModelOpen] = useState(false);
-
   const handleFilterValuesChange = (value, fieldName) => {
-    console.log(value, fieldName);
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
 
@@ -53,7 +50,6 @@ const TableComponent = ({
             />
           </div>
         </div>
-        <Divider />
         <Table
           dataSource={data.botRes}
           rowKey={(item) => item.id}

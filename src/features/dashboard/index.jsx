@@ -136,7 +136,11 @@ function Dashboard() {
         },
         {
           title: "Net Balance",
-          value: payInAmount - payOutAmount,
+          // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
+          value:
+            payInAmount -
+            (payOutAmount + (payInCommission + payOutCommission)) -
+            settlementAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
       ]);

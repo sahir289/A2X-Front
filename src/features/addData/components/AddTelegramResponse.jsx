@@ -26,7 +26,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
 
     console.log(AddData, "post");
     handleTableChange({ current: 1, pageSize: 20 });
-    // form.resetFields();
+    form.resetFields();
   };
 
   const resetForm = () => {
@@ -105,20 +105,16 @@ const AddTelegramResponse = ({ handleTableChange }) => {
               message: "Please input your UTR!",
             },
             {
-              min: 12,
-              message: "Minimum 12 characters required",
+              pattern: /^\d{12}$/,
+              message: "Please input 12 digit UTR!",
             },
             {
-              max: 12,
-              message: "Maximum 12 characters required",
+              pattern: /^(?:\d*)$/,
+              message: "Please input only numbers!",
             },
-            // {
-            //   type: "number",
-            //   message: "Only numbers allowed",
-            // },
           ]}
         >
-          <Input  type="number"/>
+          <Input />
         </Form.Item>
 
         <div className="flex flex-row justify-end items-end gap-1">

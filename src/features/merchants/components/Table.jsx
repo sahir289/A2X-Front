@@ -1,4 +1,4 @@
-import { Button, Divider, Switch, Table } from "antd";
+import { Button, Switch, Table } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
@@ -56,7 +56,6 @@ const TableComponent = ({
           />
         </div>
       </div>
-      <Divider />
       <Table
         dataSource={data.merchants}
         rowKey={(item) => item.id}

@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Divider, Empty, Input, Switch, Table, Tooltip } from "antd";
+import { Button, Empty, Input, Switch, Table, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { getApi } from "../../../redux/api";
@@ -106,7 +106,6 @@ const TableComponent = ({
           />
         </div>
       </div>
-      <Divider />
       <Table
         dataSource={data.bankAccRes}
         rowKey={(item) => item.id}

@@ -10,7 +10,7 @@ const MerchantCodeSelectBox = ({
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
 
-  const context = useContext(PermissionContext)
+  const context = useContext(PermissionContext);
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
@@ -26,46 +26,44 @@ const MerchantCodeSelectBox = ({
     }
   }, [storedMerchantCode]);
 
-  useEffect(()=>{
-    if (context?.code && !invalidText(context?.code)){
-      const selectedValue=[context?.code]
-      localStorage.setItem("selectedMerchantCode", JSON.stringify(selectedValue));
+  useEffect(() => {
+    if (context?.code && !invalidText(context?.code)) {
+      const selectedValue = [context?.code];
+      localStorage.setItem(
+        "selectedMerchantCode",
+        JSON.stringify(selectedValue)
+      );
     }
-      fetchMerchantData();
-
-  },[])
+    fetchMerchantData();
+  }, []);
 
   const fetchMerchantData = async () => {
     const merchantCodes = await getApi("/getall-merchant");
     if (merchantCodes.error) {
       return;
     }
-    setMerchantCodeOptions([]);
-    setMerchantCodeOptions([]); // clear the options to avoid duplication
+
     if (context?.code && !invalidText(context?.code)) {
-      merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
-        if (merchant.code===context.code){
-        setMerchantCodeOptions((prev) => [
-          ...prev,
-          {
-            value: merchant.code,
-            label: merchant.code,
-          },
-        ]);
-      }
-      });
-    }
-    else{
-    merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
-      setMerchantCodeOptions((prev) => [
-        ...prev,
-        {
-          value: merchant.code,
+      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
+        (merchant) => {
+          if (merchant.code === context.code) {
+            return {
+              label: merchant.code,
+              value: merchant.code,
+            };
+          }
+        }
+      );
+      setMerchantCodeOptions(formattedMerchantCodes);
+    } else {
+      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
+        (merchant) => ({
           label: merchant.code,
-        },
-      ]);
-    });
-  }
+          value: merchant.code,
+        })
+      );
+      setMerchantCodeOptions(formattedMerchantCodes);
+    }
   };
 
   return (
