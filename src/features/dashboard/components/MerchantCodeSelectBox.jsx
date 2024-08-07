@@ -1,6 +1,8 @@
 import { Select } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getApi } from "../../../redux/api";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { invalidText } from "../../../utils/utils";
 
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
@@ -8,20 +10,30 @@ const MerchantCodeSelectBox = ({
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
 
+  const context = useContext(PermissionContext)
+
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
     setSelectedMerchantCode(value);
   };
 
+  const storedMerchantCode = localStorage.getItem("selectedMerchantCode");
   useEffect(() => {
-    const storedMerchantCode = localStorage.getItem("selectedMerchantCode");
     if (storedMerchantCode) {
       setSelectedMerchantCode(JSON.parse(storedMerchantCode));
     } else {
       setSelectedMerchantCode([]);
     }
-    fetchMerchantData();
-  }, []);
+  }, [storedMerchantCode]);
+
+  useEffect(()=>{
+    if (context?.code && !invalidText(context?.code)){
+      const selectedValue=[context?.code]
+      localStorage.setItem("selectedMerchantCode", JSON.stringify(selectedValue));
+    }
+      fetchMerchantData();
+
+  },[])
 
   const fetchMerchantData = async () => {
     const merchantCodes = await getApi("/getall-merchant");
@@ -29,8 +41,21 @@ const MerchantCodeSelectBox = ({
       return;
     }
     setMerchantCodeOptions([]);
-
     setMerchantCodeOptions([]); // clear the options to avoid duplication
+    if (context?.code && !invalidText(context?.code)) {
+      merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
+        if (merchant.code===context.code){
+        setMerchantCodeOptions((prev) => [
+          ...prev,
+          {
+            value: merchant.code,
+            label: merchant.code,
+          },
+        ]);
+      }
+      });
+    }
+    else{
     merchantCodes?.data?.data?.merchants?.forEach((merchant) => {
       setMerchantCodeOptions((prev) => [
         ...prev,
@@ -40,6 +65,7 @@ const MerchantCodeSelectBox = ({
         },
       ]);
     });
+  }
   };
 
   return (

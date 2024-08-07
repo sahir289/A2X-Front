@@ -44,7 +44,7 @@ function Login() {
         if (res?.data?.statusCode===200){
         localStorage.setItem("accessToken", res?.data?.data);
         const userData = jwtDecode(res?.data?.data);
-        contex.permissionHandle(userData?.id, userData?.userName, userData?.role)
+        contex.permissionHandle(userData?.id, userData?.userName, userData?.role,userData?.code)
         navigate("/app/dashboard");
 
         }

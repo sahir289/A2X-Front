@@ -14,7 +14,7 @@ const AddUserModal = (props) => {
     password: "",
     fullName:"",
     role:"MERCHANT",
-    merchantCode:""
+    code:""
   };
 
   const INITIAL_ERROR_OBJ = {
@@ -42,17 +42,15 @@ const AddUserModal = (props) => {
       return setErrorMessage({ ...errorMessage, passwordERR: "Password is required!" });
     if (userObj.role.trim() === "")
       return setErrorMessage({ ...errorMessage, roleERR: "Role is required!" });
-    if ((userObj.role.trim() === "MERCHANT" || userObj.role.trim() === "OPERATIONS") && userObj.merchantCode.trim() === "")
+    if ((userObj.role.trim() === "MERCHANT" || userObj.role.trim() === "OPERATIONS") && userObj.code.trim() === "")
       return setErrorMessage({ ...errorMessage, merchantCodeERR: "Merchant Code is required!" });
 
     else {
-      if (userObj.role !== "MERCHANT" || userObj.role !== "OPERATIONS") {
-        delete userObj['merchantCode']
-      }
-      else {
-        userObj['code'] = userObj.merchantCode
-        delete userObj['merchantCode']
-      }
+
+      // if (userObj.role !== "MERCHANT" || userObj.role !== "OPERATIONS") {
+      //   delete userObj['code']
+      // }
+      // console.log("USER", finalData)
       // Call API to check user credentials and save token in localstorage
       setLoading(true);
       postApi('/create-user', userObj)
@@ -60,6 +58,8 @@ const AddUserModal = (props) => {
           // localStorage.setItem("accessToken", res?.data?.data);
           // navigate("/app/dashboard");
           if (res.error) {
+
+            setLoading(false);
             NotificationManager.error(res.error.message, "Error");
             return;
           }
@@ -146,8 +146,8 @@ const AddUserModal = (props) => {
         />
         {<ErrorText styleClass="mt-8">{errorMessage?.roleERR}</ErrorText>}
         {(userObj?.role === "MERCHANT" || userObj?.role === "OPERATIONS") && <> <SelectDropdown
-          defaultValue={userObj.merchantCode}
-          updateType="merchantCode"
+          defaultValue={userObj.code}
+          updateType="code"
           containerStyle="mt-4"
           labelTitle="Merchant Code"
           options={merchantCodeOptions}

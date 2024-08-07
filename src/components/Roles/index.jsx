@@ -26,7 +26,7 @@ const RolesComponent = () => {
 
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true)
-    const usersApiRes = await getApi('/getall-users', { filterValues, pageSize, page: currentPage })
+    const usersApiRes = await getApi('/getall-users', { ...filterValues, pageSize, page: currentPage })
     setIsFetchUsersLoading(false)
     if (usersApiRes.error) {
       console.log(usersApiRes.error)
@@ -34,7 +34,6 @@ const RolesComponent = () => {
     }
     setTableData(usersApiRes?.data?.data?.users)
     setTotalRecords(usersApiRes?.data?.data?.totalRecords)
-    console.log("first", usersApiRes)
 
   }
 
