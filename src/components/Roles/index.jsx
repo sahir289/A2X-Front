@@ -68,7 +68,7 @@ const RolesComponent = () => {
   }
   return (<>
     <div style={{ marginBottom: '10px', fontWeight: 400 }}>Roles</div>
-    <TableHeaderCompennet setIsAddUserModalOpen={setIsAddUserModalOpen} />
+    <TableHeaderCompennet setIsAddUserModalOpen={setIsAddUserModalOpen} setFilterValues={setFilterValues} />
     <div className="overflow-x-auto w-full">
       <TableComponent data={tableData} totalRecords={totalRecords}
         currentPage={currentPage}

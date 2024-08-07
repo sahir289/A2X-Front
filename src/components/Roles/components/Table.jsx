@@ -1,9 +1,7 @@
-import { CopyOutlined } from '@ant-design/icons';
-import { Button, ConfigProvider, Switch, Table, Tag } from 'antd';
+import { Input, Switch, Table } from 'antd';
 import Column from 'antd/es/table/Column';
-import React, { useEffect, useState } from 'react';
-import {formatDate} from '../../../../src/utils/utils.js'
-import {Input} from 'antd';
+import React from 'react';
+import { formatDate } from '../../../../src/utils/utils.js';
 
 const TableComponent = ({ data, handleUserStatusChange, filterValues, setFilterValues, tableChangeHandler, totalRecords, currentPage, pageSize }) => {
 
@@ -11,13 +9,13 @@ const TableComponent = ({ data, handleUserStatusChange, filterValues, setFilterV
   //   navigator.clipboard.writeText(values);
   // };
 
-  const handleFilterValuesChange=(value,filedName)=>{
-    setFilterValues((prev)=>({...prev,[filedName]:value}))
+  const handleFilterValuesChange = (value, filedName) => {
+    setFilterValues((prev) => ({ ...prev, [filedName]: value }))
   }
   const handleStatusChange = (e, data) => {
-    console.log("first jj",e)
+    console.log("first jj", e)
     console.log("first jj", data)
-    handleUserStatusChange({id:data.id,status:e})
+    handleUserStatusChange({ id: data.id, status: e })
   }
 
   return (
@@ -36,7 +34,9 @@ const TableComponent = ({ data, handleUserStatusChange, filterValues, setFilterV
           <br />
           <Input
             value={filterValues.name}
-            onChange={(e)=>{handleFilterValuesChange(e.target.value,'name')}}/>
+            onChange={(e) => { handleFilterValuesChange(e.target.value, 'name') }}
+            allowClear
+          />
         </>}
         dataIndex="fullName"
         key="fullName"
@@ -49,7 +49,9 @@ const TableComponent = ({ data, handleUserStatusChange, filterValues, setFilterV
           <br />
           <Input
             value={filterValues.userName}
-            onChange={(e) => { handleFilterValuesChange(e.target.value, 'userName') }} />
+            onChange={(e) => { handleFilterValuesChange(e.target.value, 'userName') }}
+            allowClear
+          />
         </>}
         dataIndex="userName"
         key="userName"
@@ -75,14 +77,14 @@ const TableComponent = ({ data, handleUserStatusChange, filterValues, setFilterV
         key="isEnabled"
         className="bg-white"
         width={"15%"}
-        render={(value,data)=>{
+        render={(value, data) => {
           return <>
-          <Switch
-          defaultValue={value?true :false}
-          onChange={(e)=>{handleStatusChange(e,data)}}
-          >
+            <Switch
+              defaultValue={value ? true : false}
+              onChange={(e) => { handleStatusChange(e, data) }}
+            >
 
-          </Switch>
+            </Switch>
           </>
         }}
       />

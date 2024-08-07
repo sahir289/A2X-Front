@@ -51,7 +51,7 @@ const PayoutComponent = () => {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      const fileName = `payout-${data.status}-${Date.now()}`.toLowerCase();
+      const fileName = `payout-${data.status}-${formatDate(Date.now())}`.toLowerCase();
       link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();

@@ -36,7 +36,7 @@ const PayinComponent = () => {
       'UTR': el.utr || '',
       'Received Amount': el.confirmed || '',
       'Status': el.status || '',
-      'Bank': getBankCode(el) || '',
+      'Bank': el.bank_name || '',
       'Merchant': el?.Merchant?.code || '',
       'User': el.user_id || '',
       'Merchant Order Id': el.merchant_order_id || '',
@@ -49,7 +49,7 @@ const PayinComponent = () => {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      const fileName = `payin-${data.status}-${Date.now()}`.toLowerCase();
+      const fileName = `payin-${data.status}-${formatDate(Date.now())}`.toLowerCase();
       link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();

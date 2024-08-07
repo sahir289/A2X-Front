@@ -1,12 +1,12 @@
 import { CopyOutlined, ExclamationCircleOutlined, SyncOutlined } from '@ant-design/icons';
+import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
 import React, { useEffect, useState } from 'react';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { getApi, postApi } from '../../../redux/api';
 import { PlusIcon, Reload } from '../../../utils/constants';
 import { formatCurrency, formatDate } from '../../../utils/utils';
-import { CheckBadgeIcon } from "@heroicons/react/24/outline";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 
 
@@ -37,7 +37,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
   const getBankCode = (record) => {
     console.log("🚀 ~ getBankCode ~ record:", record?.Merchant?.Merchant_Bank)
-    return  'N/A'; // Safely access nested property
+    return 'N/A'; // Safely access nested property
   };
 
   const lastLogIn = (record) => {
@@ -150,29 +150,39 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const handleCancel = () => {
     setPaymentUrlModal(false)
   }
+  //reset search fields
+  const handleResetSearchFields = () => {
+    setFilterValues({ status: allTable ? '' : filterValues?.status || '' });
+  }
 
   return (
     <>
       <div className='font-serif pt-3 flex bg-zinc-50 rounded-lg'>
-        <div className=' w-full h-16  pb-3'>
-          <p className='pt-4 ps-4 text-xl '>{allTable === true ? "All" : completedTable === true ? "Confirmed" : inProgressTable === true ? "In Progress" : "Dropped"}</p>
+        <div className='w-full h-16 pb-3'>
+          <p className='pt-4 ps-4 text-xl'>
+            {allTable === true ? "All" : completedTable === true ? "Confirmed" : inProgressTable === true ? "In Progress" : "Dropped"}
+          </p>
         </div>
 
-        <div className='pt-2 flex'>
-          {(allTable === true || inProgressTable === true) &&
-            <Button
-              className='mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white'
-              icon={<PlusIcon />}
-              onClick={handleToggleModal}
-            >
-              <p>New Payment Link</p>
-            </Button>
-          }
+        <div className='pt-2 flex items-start'>
+          <div className={`flex flex-col ${!(allTable || inProgressTable) ? 'mr-2' : ''}`}>
+            <>
+              {(allTable === true || inProgressTable === true) && (
+                <Button
+                  className='mr-3 mb-2 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white'
+                  icon={<PlusIcon />}
+                  onClick={handleToggleModal}
+                >
+                  <p>New Payment Link</p>
+                </Button>
+              )}
+              <Button className={`${!(allTable || inProgressTable) ? 'w-full' : 'w-[175px]'}`} onClick={handleResetSearchFields}>Reset</Button>
+            </>
+          </div>
           <Button className='mr-5 hover:bg-slate-300' icon={<Reload />} onClick={fetchUsersData} />
         </div>
-
-
       </div>
+
 
       <Table
         onChange={tableChangeHandler}
@@ -191,6 +201,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.sno}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'sno')}
+              allowClear
             />
           </>}
           dataIndex="sno"
@@ -205,6 +216,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.upiShortCode}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'upiShortCode')}
+              allowClear
             />
           </>}
           dataIndex="upi_short_code"
@@ -219,6 +231,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.confirmed}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'confirmed')}
+              allowClear
             />
           </>}
           dataIndex="confirmed"
@@ -236,6 +249,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
                 disabled
                 className='outline-none border-none'
                 style={{ backgroundColor: "#fafafa", cursor: 'auto' }}
+                allowClear
               />
             </>}
             dataIndex="payin_commission"
@@ -252,6 +266,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.amount}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
+              allowClear
             />
           </>}
           dataIndex="amount"
@@ -270,6 +285,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
               style={{ width: '90%' }}
               options={statusOptions}
               disabled={allTable === true ? false : true}
+              allowClear
             />
           </>}
           dataIndex="status"
@@ -295,6 +311,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.merchantOrderId}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'merchantOrderId')}
+              allowClear
             />
           </>}
           dataIndex="merchant_order_id"
@@ -313,6 +330,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
               <Input
                 value={filterValues?.merchantCode}
                 onChange={(e) => handleFilterValuesChange(e.target.value, 'merchantCode')}
+                allowClear
               />
             </>
           }
@@ -338,6 +356,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.userId}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'userId')}
+              allowClear
             />
           </>}
           dataIndex="user_id"
@@ -352,6 +371,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.userSubmittedUtr}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'userSubmittedUtr')}
+              allowClear
             />
           </>}
           dataIndex="user_submitted_utr"
@@ -367,6 +387,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.utr}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'utr')}
+              allowClear
             />
           </>}
           dataIndex="utr"
@@ -382,6 +403,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.payInId}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'payInId')}
+              allowClear
             />
           </>}
           dataIndex="id" // Adjust according to actual data structure
@@ -400,6 +422,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.dur}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'dur')}
+              allowClear
             />
           </>}
           dataIndex="duration" // Adjust according to actual data structure
@@ -415,13 +438,14 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.bank}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'bank')}
+              allowClear
             />
           </>}
           dataIndex="bank_name" // Adjust according to actual data structure
           key="bank_name"
           className="bg-white"
           width={"24px"}
-          // render={(text, record) => getBankCode(record)}
+        // render={(text, record) => getBankCode(record)}
         />
 
         <Column
