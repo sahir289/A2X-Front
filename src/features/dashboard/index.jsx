@@ -28,7 +28,41 @@ const statsData = [
 
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
-  const [payInOutData, setPayInOutData] = useState([]);
+  const [payInOutData, setPayInOutData] = useState([
+        {
+          title: "Deposit",
+          value: 0,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: 0,
+        },
+        {
+          title: "Deposit %",
+          value: 0,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Withdraw",
+          value: 0,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: 0,
+        },
+        {
+          title: "Withdraw %",
+          value: 0,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Settlement",
+          value: 0,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Net Balance",
+          // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
+          value: 0,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+  ]);
   const [depositData, setDepositData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
   const [interval, setInterval] = useState("15d");
