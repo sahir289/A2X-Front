@@ -66,7 +66,6 @@ const AddMerchant = ({
       balance: Number(0).toPrecision(3),
     };
 
-    console.log(formData, "formData");
     const AddMerchant = await postApi("/create-merchant", formData);
     if (AddMerchant.error) {
       api.error({
@@ -75,7 +74,6 @@ const AddMerchant = ({
       return;
     }
 
-    console.log(AddMerchant, "post");
     setIsAddModelOpen(false);
     handleTableChange({ current: 1, pageSize: 20 });
     form.resetFields();

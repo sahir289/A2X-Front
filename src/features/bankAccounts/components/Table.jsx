@@ -24,7 +24,6 @@ const TableComponent = ({
   const [deleteRecord, setDeleteRecord] = useState(null);
 
   const handleCopy = (values) => {
-    console.log("🚀 ~ handleCopy ~ values:", values);
     navigator.clipboard.writeText(values);
   };
 
@@ -33,7 +32,6 @@ const TableComponent = ({
   };
 
   const lastLogIn = (record) => {
-    console.log("🚀 ~ lastLogIn ~ lastLogIn:", record?.Merchant);
     return formatDate(record?.updatedAt) || "N/A"; // Safely access nested property
   };
 
@@ -79,6 +77,10 @@ const TableComponent = ({
 
     setDeleteRecord(deleteData);
   };
+  //reset filter from search fields
+  const handleResetSearchFields = () => {
+    setFilterValues({});
+  }
 
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
@@ -87,18 +89,21 @@ const TableComponent = ({
           <p className="pt-4 ps-4 text-xl ">Enquiry Form</p>
         </div>
         <div className="pt-2 flex">
-          <Button
-            className="mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white"
-            icon={<PlusIcon />}
-            onClick={() => setIsAddBankAccountModelOpen(true)}
-          >
-            <p>Add Bank Account</p>
-          </Button>
-          <AddBankAccount
-            isAddBankAccountModelOpen={isAddBankAccountModelOpen}
-            setIsAddBankAccountModelOpen={setIsAddBankAccountModelOpen}
-            handleTableChange={handleTableChange}
-          />
+          <div>
+            <Button
+              className="mr-3 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white"
+              icon={<PlusIcon />}
+              onClick={() => setIsAddBankAccountModelOpen(true)}
+            >
+              <p>Add Bank Account</p>
+            </Button>
+            <AddBankAccount
+              isAddBankAccountModelOpen={isAddBankAccountModelOpen}
+              setIsAddBankAccountModelOpen={setIsAddBankAccountModelOpen}
+              handleTableChange={handleTableChange}
+            />
+            <Button className='mt-2 w-[175px]' onClick={handleResetSearchFields}>Reset</Button>
+          </div>
           <Button
             className="mr-5 hover:bg-slate-300"
             icon={<Reload />}
@@ -127,6 +132,7 @@ const TableComponent = ({
                 onChange={(e) =>
                   handleFilterValuesChange(e.target.value, "ac_name")
                 }
+                allowClear
               />
             </>
           }
@@ -174,6 +180,7 @@ const TableComponent = ({
                 onChange={(e) =>
                   handleFilterValuesChange(e.target.value, "ac_no")
                 }
+                allowClear
               />
             </>
           }
@@ -229,6 +236,7 @@ const TableComponent = ({
                 onChange={(e) =>
                   handleFilterValuesChange(e.target.value, "upi_id")
                 }
+                allowClear
               />
             </>
           }

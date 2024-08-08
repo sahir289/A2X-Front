@@ -170,7 +170,10 @@ export default function Settlement() {
     }))
 
   const labelCol = { span: 6 };
-
+  //reset search fields
+  const handleResetSearchFields = () => {
+    setFilters({})
+  }
 
   return (
     <section className=''>
@@ -179,14 +182,17 @@ export default function Settlement() {
       <div className='bg-white rounded-[8px] p-[8px]'>
         <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
           <p className='text-lg font-medium p-[5px]'>Settlement List</p>
-          <div className='flex items-center gap-4 max-[500px]:justify-end'>
-            <Button
-              icon={<PlusOutlined />}
-              type='primary'
-              onClick={handleToggleModal}
-            >
-              New Settlement
-            </Button>
+          <div className='flex items-start gap-4 max-[500px]:justify-end'>
+            <div className='flex flex-col items-start'>
+              <Button
+                icon={<PlusOutlined />}
+                type='primary'
+                onClick={handleToggleModal}
+              >
+                New Settlement
+              </Button>
+              <Button className='mt-2 w-full' onClick={handleResetSearchFields}>Reset</Button>
+            </div>
             <Button type="text" className='rounded-full h-[40px] w-[40px] p-[0px]' onClick={() => handleGetSettlements({ ...pagination, ...filters })}>
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>

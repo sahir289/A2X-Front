@@ -19,16 +19,12 @@ const TableComponent = ({
   // };
 
   const handleStatusChange = (e, data) => {
-    console.log("first jj", e);
-    console.log("first jj", data);
     handleUserStatusChange({ id: data.id, status: e });
   };
 
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
-
-  console.log(data, "ddf")
 
   const paginationConfig = {
     current: data?.totalRecords?.page ?? 1,

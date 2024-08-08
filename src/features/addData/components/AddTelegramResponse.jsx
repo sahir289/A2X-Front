@@ -23,7 +23,6 @@ const AddTelegramResponse = ({ handleTableChange }) => {
       return;
     }
 
-    console.log(AddData, "post");
     handleTableChange({ current: 1, pageSize: 20 });
     form.resetFields();
   };

@@ -8,19 +8,11 @@ const WebSockets = ({fetchUsersData}) => {
     socket.on('connect', () => {
       console.log('Connected to the server');
     });
-    socket.on('1', (data) => {
-      console.log('New entry received:', data);
-      // Handle the new entry data
-    });
+    
     socket.on('new-entry', (data) => {
       console.log('New entry received:', data);
       // Handle the new entry data
       fetchUsersData()
-    });
-
-    socket.on('broadcast-message', (data) => {
-      console.log('Broadcast message received:', data);
-      // Handle the broadcast message
     });
 
     socket.on('disconnect', () => {

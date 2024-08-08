@@ -170,6 +170,10 @@ const Withdraw = ({ type }) => {
   const handleSelectUTRMethod = (selectedMethod) => {
     setSelectedUTRMethod(selectedMethod);
   };
+  //reset search fields
+  const handleResetSearchFields = () => {
+    setFilters({})
+  }
 
 
   return (
@@ -179,15 +183,18 @@ const Withdraw = ({ type }) => {
       <div className='bg-white rounded-[8px] p-[8px]'>
         <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
           <p className='text-lg font-medium p-[5px]'>Withdraws {type}</p>
-          <div className='flex items-center gap-4 max-[500px]:justify-end'>
-            <Button
-              icon={<PlusOutlined />}
-              type='primary'
-              onClick={handleToggleModal}
-            >
-              New Payout
-            </Button>
-            <Button type="text" className='rounded-full h-[40px] w-[40px] p-[0px]' onClick={() => handleGetWithdraws({ ...pagination, ...filters })}>
+          <div className='flex items-start gap-4 max-[500px]:justify-end'>
+            <div className='flex flex-col items-start'>
+              <Button
+                icon={<PlusOutlined />}
+                type='primary'
+                onClick={handleToggleModal}
+              >
+                New Payout
+              </Button>
+              <Button className='mt-2 w-full' onClick={handleResetSearchFields}>Reset</Button>
+            </div>
+            <Button type="text" className='rounded-full h-[40px] w-[40px] p-[0px] flex items-center justify-center' onClick={() => handleGetWithdraws({ ...pagination, ...filters })}>
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
           </div>

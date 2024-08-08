@@ -31,6 +31,10 @@ const TableComponent = ({
   const handleTableChange = ({ current, pageSize }) => {
     setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
   };
+  //reset search fields
+  const handleResetSearchFields = () => {
+    setFilterValues({})
+  }
 
   return (
     <>
@@ -42,7 +46,8 @@ const TableComponent = ({
           <div className=" w-full h-12  pb-3">
             <p className="pt-4 ps-4 text-xl "> Response</p>
           </div>
-          <div className="pt-2 flex">
+          <div className="pt-2 flex items-center gap-2">
+            <Button className='' onClick={handleResetSearchFields}>Reset</Button>
             <Button
               className="mr-5 hover:bg-slate-300"
               icon={<Reload />}
@@ -71,6 +76,7 @@ const TableComponent = ({
                   onChange={(e) =>
                     handleFilterValuesChange(e.target.value, "sno")
                   }
+                  allowClear
                 />
               </>
             }
@@ -90,6 +96,7 @@ const TableComponent = ({
                   onChange={(value) =>
                     handleFilterValuesChange(value, "status")
                   }
+                  allowClear
                 >
                   <Select.Option value="">Select</Select.Option>
                   <Select.Option value="/success">Success</Select.Option>
@@ -111,6 +118,7 @@ const TableComponent = ({
                   onChange={(e) =>
                     handleFilterValuesChange(e.target.value, "amount")
                   }
+                  allowClear
                 />
               </>
             }
@@ -130,6 +138,7 @@ const TableComponent = ({
                   onChange={(e) =>
                     handleFilterValuesChange(e.target.value, "amount_code")
                   }
+                  allowClear
                 />
               </>
             }
@@ -148,6 +157,7 @@ const TableComponent = ({
                   onChange={(e) =>
                     handleFilterValuesChange(e.target.value, "utr")
                   }
+                  allowClear
                 />
               </>
             }
