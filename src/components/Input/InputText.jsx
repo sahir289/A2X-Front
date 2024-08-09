@@ -34,7 +34,7 @@ function InputText({
             onChange={(e) => updateInputValue(e.target.value)}
             className="input  input-bordered w-full "
             iconRender={(visible) =>
-              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined style={{ color: 'white' }} />
+              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined  />
             }
           />
         ) : (
