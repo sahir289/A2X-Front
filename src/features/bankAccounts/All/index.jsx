@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getApi } from "../../../redux/api";
+import { getApi, putApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
 
 function All() {
@@ -14,10 +14,10 @@ function All() {
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
 
   useEffect(() => {
-    fetchUsersData();
+    fetchBankData();
   }, [filterValues]);
 
-  const fetchUsersData = async () => {
+  const fetchBankData = async () => {
     setIsFetchBanksLoading(true);
     const backAccount = await getApi("/getall-bank", filterValues);
     setIsFetchBanksLoading(false);
@@ -28,6 +28,20 @@ function All() {
     setTableData(backAccount?.data?.data);
   };
 
+  const handleStatusChange = async (data) => {
+    setIsFetchBanksLoading(true);
+    const BankApiRes = await putApi("/update-bank-states", {
+      id: data.id,
+      fieldName: data.fieldName,
+      value: data.value,
+    });
+    setIsFetchBanksLoading(false);
+    if (BankApiRes.error) {
+      return;
+    }
+    fetchBankData();
+  };
+
   return (
     <div className="">
       <TableComponent
@@ -35,6 +49,7 @@ function All() {
         filterValues={filterValues}
         setFilterValues={setFilterValues}
         isFetchBanksLoading={isFetchBanksLoading}
+        handleStatusChange={handleStatusChange}
       />
     </div>
   );

@@ -14,6 +14,7 @@ const TableComponent = ({
   filterValues,
   setFilterValues,
   isFetchBanksLoading,
+  handleStatusChange,
 }) => {
   const [isAddBankAccountModelOpen, setIsAddBankAccountModelOpen] =
     useState(false);
@@ -80,7 +81,7 @@ const TableComponent = ({
   //reset filter from search fields
   const handleResetSearchFields = () => {
     setFilterValues({});
-  }
+  };
 
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
@@ -102,7 +103,12 @@ const TableComponent = ({
               setIsAddBankAccountModelOpen={setIsAddBankAccountModelOpen}
               handleTableChange={handleTableChange}
             />
-            <Button className='mt-2 w-[175px]' onClick={handleResetSearchFields}>Reset</Button>
+            <Button
+              className="mt-2 w-[175px]"
+              onClick={handleResetSearchFields}
+            >
+              Reset
+            </Button>
           </div>
           <Button
             className="mr-5 hover:bg-slate-300"
@@ -285,8 +291,19 @@ const TableComponent = ({
           key="is_qr"
           className="bg-white"
           width={"3%"}
-          render={(text, record) => {
-            return <Switch checked={record?.is_qr} />;
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_qr",
+                    value: e,
+                  });
+                }}
+              />
+            );
           }}
         />
         <Column
@@ -308,8 +325,19 @@ const TableComponent = ({
           key="is_bank"
           className="bg-white"
           width={"5%"}
-          render={(text, record) => {
-            return <Switch checked={record?.is_bank} />;
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_bank",
+                    value: e,
+                  });
+                }}
+              />
+            );
           }}
         />
         <Column
@@ -331,8 +359,19 @@ const TableComponent = ({
           key="is_enabled"
           className="bg-white"
           width={"2%"}
-          render={(_, record) => {
-            return <Switch checked={record?.is_enabled} />;
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_enabled",
+                    value: e,
+                  });
+                }}
+              />
+            );
           }}
         />
         <Column
