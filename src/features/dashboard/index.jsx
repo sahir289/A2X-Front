@@ -29,39 +29,44 @@ const statsData = [
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
   const [payInOutData, setPayInOutData] = useState([
-        {
-          title: "Deposit",
-          value: 0,
-          icon: <UserGroupIcon className="w-8 h-8" />,
-          count: 0,
-        },
-        {
-          title: "Deposit %",
-          value: 0,
-          icon: <UserGroupIcon className="w-8 h-8" />,
-        },
-        {
-          title: "Withdraw",
-          value: 0,
-          icon: <UserGroupIcon className="w-8 h-8" />,
-          count: 0,
-        },
-        {
-          title: "Withdraw %",
-          value: 0,
-          icon: <UserGroupIcon className="w-8 h-8" />,
-        },
-        {
-          title: "Settlement",
-          value: 0,
-          icon: <UserGroupIcon className="w-8 h-8" />,
-        },
-        {
-          title: "Net Balance",
-          // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
-          value: 0,
-          icon: <UserGroupIcon className="w-8 h-8" />,
-        },
+    {
+      title: "Deposit",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+      count: 0,
+    },
+    {
+      title: "Deposit %",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+    },
+    {
+      title: "Withdraw",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+      count: 0,
+    },
+    {
+      title: "Withdraw %",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+    },
+    {
+      title: "Commission",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+    },
+    {
+      title: "Settlement",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+    },
+    {
+      title: "Net Balance",
+      // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+    },
   ]);
   const [depositData, setDepositData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
@@ -164,6 +169,11 @@ function Dashboard() {
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
+          title: "Commission",
+          value: payInCommission + payOutCommission,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
           title: "Settlement",
           value: settlementAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
@@ -196,6 +206,7 @@ function Dashboard() {
         <div className="grid grid-row-1 md:grid-cols-2 gap-6">
           {payInOutData.map((data, index) => {
             return (
+              data.title !== "Commission" &&
               data.title !== "Net Balance" &&
               data.title !== "Settlement" && (
                 <DashboardStats key={index} {...data} colorIndex={index} />
@@ -227,7 +238,7 @@ function Dashboard() {
                         </p>
                       </div>
                     )}
-                    {data.title === "Withdraw %" && (
+                    {data.title === "Commission" && (
                       <div className="flex justify-between">
                         <p>Commission</p>
                         <p className="font-bold">

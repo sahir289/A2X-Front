@@ -15,34 +15,62 @@ const UpdateMerchant = ({
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [deletedId, setDeletedId] = useState(null);
   const [newMerchant, setNewMerchant] = useState(null);
+  const [selectedMerchant, setSelectedMerchant] = useState([]);
   const [form] = Form.useForm();
-
-  const handleModalOk = () => {
-    setIsAddMerchantModalOpen(false);
-    form.resetFields();
-  };
 
   const handleModalCancel = () => {
     setIsAddMerchantModalOpen(false);
+    setSelectedMerchant([]);
     form.resetFields();
   };
 
-  const onUpdateMerchant = async (values) => {
-    const formData = {
-      bankAccountId: record?.id,
-      merchantId: values?.merchantId,
-    };
+  const handleSelectMerchant = async (values) => {
+    setSelectedMerchant((prev) => [
+      ...prev,
+      {
+        id: values?.merchantId,
+        code: allMerchants.find(
+          (merchant) => merchant?.id === values?.merchantId
+        )?.code,
+      },
+    ]);
+    form.resetFields();
+  };
 
-    const addBankMerchant = await postApi("/add-bank-merchant", formData);
-    if (addBankMerchant.error) {
+  const deleteSelectedMerchant = (merchant) => {
+    setSelectedMerchant((prev) =>
+      prev.filter((prevMerchant) => prevMerchant?.id !== merchant?.id)
+    );
+  };
+
+  const onUpdateMerchant = async () => {
+    const formData = selectedMerchant.map((merchant) => ({
+      bankAccountId: record?.id,
+      merchantId: merchant?.id,
+    }));
+
+    if (formData.length === 0) {
       return;
     }
 
-    await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
+    for (const element of formData) {
+      if (!element?.merchantId) {
+        return;
+      }
+
+      const addBankMerchant = await postApi("/add-bank-merchant", element);
+      if (addBankMerchant.error) {
+        return;
+      }
+
+      await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
+
+      setSelectedMerchant((prev) =>
+        prev.filter((prevMerchant) => prevMerchant?.id !== element?.merchantId)
+      );
+    }
 
     handleTableChange({ current: 1, pageSize: 20 });
-
-    form.resetFields();
   };
 
   const getBankMerchant = async (id) => {
@@ -88,13 +116,12 @@ const UpdateMerchant = ({
       <Modal
         title="Merchant List"
         open={isAddMerchantModalOpen}
-        onOk={handleModalOk}
         onCancel={handleModalCancel}
         footer={[
           <Button key="back" onClick={handleModalCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={handleModalOk}>
+          <Button key="submit" type="primary" onClick={onUpdateMerchant}>
             Update
           </Button>,
         ]}
@@ -117,9 +144,9 @@ const UpdateMerchant = ({
         <Form
           form={form}
           name="edit_merchant"
-          onFinish={onUpdateMerchant}
+          onFinish={handleSelectMerchant}
           autoComplete="off"
-          className="flex gap-2 py-5"
+          className="flex gap-2 py-2"
         >
           <Form.Item
             name="merchantId"
@@ -140,10 +167,21 @@ const UpdateMerchant = ({
                   .toLowerCase()
                   .localeCompare((optionB?.label ?? "").toLowerCase())
               }
-              options={allMerchants?.map((merchant) => ({
-                value: merchant?.id,
-                label: merchant?.code,
-              }))}
+              options={allMerchants
+                ?.filter((filter) => {
+                  return (
+                    !record?.merchants?.find(
+                      (merchant) => merchant?.id === filter?.id
+                    ) &&
+                    !selectedMerchant?.find(
+                      (merchant) => merchant?.id === filter?.id
+                    )
+                  );
+                })
+                ?.map((merchant) => ({
+                  value: merchant?.id,
+                  label: merchant?.code,
+                }))}
             />
           </Form.Item>
           <Form.Item>
@@ -152,6 +190,35 @@ const UpdateMerchant = ({
             </Button>
           </Form.Item>
         </Form>
+        {selectedMerchant?.length > 0 && (
+          <>
+            <div className="flex justify-between">
+              <div>Selected Merchants</div>
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                title="Delete"
+                onClick={() => {
+                  setSelectedMerchant([]);
+                }}
+              />
+            </div>
+            <hr />
+          </>
+        )}
+        {selectedMerchant?.map((merchant) => (
+          <div key={merchant?.id} className="flex justify-between">
+            <div>{merchant?.code}</div>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+              title="Delete"
+              onClick={() => {
+                deleteSelectedMerchant(merchant);
+              }}
+            />
+          </div>
+        ))}
       </Modal>
       <DeleteModal
         record={deleteRecord}
