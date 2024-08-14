@@ -1,17 +1,18 @@
 import { Button, Form, Input, InputNumber, notification, Select } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { postApi } from "../../../redux/api";
 
 const AddTelegramResponse = ({ handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
+  const [isLoading, setIsLoading] = useState(false)
 
   const onFinish = async (values) => {
+    setIsLoading(true)
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${
-          values.amount_code ?? "nill"
-        } ${values.utr}`,
+        text: `${values.status} ${values.amount} ${values.amount_code ?? "nill"
+          } ${values.utr}`,
       },
     };
 
@@ -22,6 +23,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
       });
       return;
     }
+    setIsLoading(false)
 
     handleTableChange({ current: 1, pageSize: 20 });
     form.resetFields();
@@ -122,7 +124,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={isLoading}>
               Add Data
             </Button>
           </Form.Item>
