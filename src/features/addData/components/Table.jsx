@@ -186,7 +186,7 @@ const TableComponent = ({
             className="bg-white"
             width={"1%"}
             render={(text) => {
-              return <Tag color={text ? "green" : "red"}>{`${text}`}</Tag>;
+              return <Tag color={text ? "green" : "red"}>{`${text=== true ? "Used" : "Un-Used"}`}</Tag>;
             }}
           />
         </Table>
