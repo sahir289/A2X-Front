@@ -113,7 +113,7 @@ const Withdraw = ({ type }) => {
     const isReset = await modal.confirm({
       title: "Confirmation",
       type: "confirm",
-      content: "Are you to reset the withdraw?",
+      content: "Are you sure you want to reset your withdrawal?",
     });
 
     if (isReset) {

@@ -137,7 +137,7 @@ export default function Settlement() {
     const isReset = await modal.confirm({
       title: "Confirmation",
       type: "confirm",
-      content: "Are you to reset the settlement",
+      content: "Are you sure you want to reset your settlement?",
     });
 
     if (isReset) {
