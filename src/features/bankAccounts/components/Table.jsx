@@ -87,7 +87,7 @@ const TableComponent = ({
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
       <div className="flex">
         <div className=" w-full h-16  pb-3">
-          <p className="pt-4 ps-4 text-xl ">Enquiry Form</p>
+          <p className="pt-4 ps-4 text-xl ">Bank Accounts</p>
         </div>
         <div className="pt-2 flex">
           <div>
