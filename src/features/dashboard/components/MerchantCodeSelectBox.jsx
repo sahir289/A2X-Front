@@ -9,8 +9,6 @@ const MerchantCodeSelectBox = ({
   setSelectedMerchantCode,
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
-  console.log("🚀 ~ merchantCodeOptions:", merchantCodeOptions)
-
   const context = useContext(PermissionContext);
 
   const handleChange = (value) => {
@@ -40,7 +38,6 @@ const MerchantCodeSelectBox = ({
 
   const fetchMerchantData = async () => {
     const merchantCodes = await getApi("/getall-merchant");
-    console.log("🚀 ~ fetchMerchantData ~ merchantCodes:", merchantCodes)
     if (merchantCodes.error) {
       return;
     }
@@ -52,7 +49,6 @@ const MerchantCodeSelectBox = ({
           label: merchant.code,
           value: merchant.code,
         }));
-      console.log("🚀 ~ fetchMerchantData ~ formattedMerchantCodes:", formattedMerchantCodes)
       setMerchantCodeOptions(formattedMerchantCodes);
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
