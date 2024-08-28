@@ -9,6 +9,7 @@ const MerchantCodeSelectBox = ({
   setSelectedMerchantCode,
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
+  console.log("🚀 ~ merchantCodeOptions:", merchantCodeOptions)
 
   const context = useContext(PermissionContext);
 
@@ -39,21 +40,19 @@ const MerchantCodeSelectBox = ({
 
   const fetchMerchantData = async () => {
     const merchantCodes = await getApi("/getall-merchant");
+    console.log("🚀 ~ fetchMerchantData ~ merchantCodes:", merchantCodes)
     if (merchantCodes.error) {
       return;
     }
 
     if (context?.code && !invalidText(context?.code)) {
-      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
-        (merchant) => {
-          if (merchant.code === context.code) {
-            return {
-              label: merchant.code,
-              value: merchant.code,
-            };
-          }
-        }
-      );
+      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants
+        ?.filter(merchant => merchant.code === context.code)  // Filter merchants that match the code
+        .map(merchant => ({
+          label: merchant.code,
+          value: merchant.code,
+        }));
+      console.log("🚀 ~ fetchMerchantData ~ formattedMerchantCodes:", formattedMerchantCodes)
       setMerchantCodeOptions(formattedMerchantCodes);
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
