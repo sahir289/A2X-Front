@@ -7,6 +7,7 @@ import { NotificationContainer, NotificationManager } from 'react-notifications'
 import { getApi, postApi } from '../../../redux/api';
 import { PlusIcon, Reload } from '../../../utils/constants';
 import { formatCurrency, formatDate } from '../../../utils/utils';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -21,6 +22,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const [form] = Form.useForm();
   const [paymentUrlModal, setPaymentUrlModal] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState('')
+  const navigate = useNavigate()
 
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
@@ -99,8 +101,10 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
   const handleGetMerchants = async () => {
     const res = await getApi("/getall-merchant");
-    if (res.error) {
-      return;
+    if (res.error?.error?.response?.status === 401) {
+      NotificationManager.error(res?.error?.message, 401);
+      localStorage.clear();
+      navigate('/')
     }
     setMerchants(res.data?.data?.merchants || []);
   }

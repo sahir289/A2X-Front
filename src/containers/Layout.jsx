@@ -8,11 +8,13 @@ import 'react-notifications/lib/notifications.css'
 import { getApi } from '../redux/api.jsx'
 import { removeNotificationMessage } from "../redux/slice/headerSlice.jsx"
 import { initMerchants } from "../redux/slice/merchantSlice.jsx"
+import { useNavigate } from 'react-router-dom'
 // import ModalLayout from "./ModalLayout"
 
 function Layout() {
   const dispatch = useDispatch()
   const { newNotificationMessage, newNotificationStatus } = useSelector(state => state.header)
+  const navigate = useNavigate()
 
 
   useEffect(() => {
@@ -29,8 +31,10 @@ function Layout() {
 
   const handelGetMerchants = async () => {
     const res = await getApi("/getall-merchant");
-    if (res.error) {
-      return;
+    if (res.error?.error?.response?.status === 401) {
+      NotificationManager.error(res?.error?.message, 401);
+      localStorage.clear();
+      navigate('/')
     }
     if (Array.isArray(res.data?.data?.merchants)) {
       dispatch(initMerchants(res.data.data.merchants));
@@ -39,7 +43,7 @@ function Layout() {
 
   return (
     <>
-     
+
       { /* Left drawer - containing page content and side bar (always open) */}
       <div className="drawer  lg:drawer-open">
         <input id="left-sidebar-drawer" type="checkbox" className="drawer-toggle" />

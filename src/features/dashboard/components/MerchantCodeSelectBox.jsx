@@ -3,6 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { getApi } from "../../../redux/api";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { invalidText } from "../../../utils/utils";
+import { useNavigate } from "react-router-dom";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+
 
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
@@ -10,6 +13,8 @@ const MerchantCodeSelectBox = ({
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
   const context = useContext(PermissionContext);
+  const navigate = useNavigate()
+
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
@@ -38,8 +43,11 @@ const MerchantCodeSelectBox = ({
 
   const fetchMerchantData = async () => {
     const merchantCodes = await getApi("/getall-merchant");
-    if (merchantCodes.error) {
-      return;
+
+    if (merchantCodes.error?.error?.response?.status === 401) {
+      NotificationManager.error(merchantCodes?.error?.message, 401);
+      localStorage.clear();
+      navigate('/')
     }
 
     if (context?.code && !invalidText(context?.code)) {
@@ -81,6 +89,7 @@ const MerchantCodeSelectBox = ({
           />
         </div>
       </div>
+      <NotificationContainer />
     </div>
   );
 };

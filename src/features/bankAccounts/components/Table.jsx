@@ -8,6 +8,9 @@ import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
+import { useNavigate } from "react-router-dom";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+
 
 const TableComponent = ({
   data,
@@ -24,9 +27,8 @@ const TableComponent = ({
   const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
 
-  const handleCopy = (values) => {
-    navigator.clipboard.writeText(values);
-  };
+  const navigate = useNavigate()
+
 
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
@@ -60,8 +62,10 @@ const TableComponent = ({
       page: 1,
       pageSize: 10000,
     });
-    if (merchant.error) {
-      return;
+    if (merchant.error?.error?.response?.status === 401) {
+      NotificationManager.error(merchant?.error?.message, 401);
+      localStorage.clear();
+      navigate('/')
     }
 
     setAllMerchants(merchant?.data?.data?.merchants);
@@ -469,6 +473,7 @@ const TableComponent = ({
         displayItem={`${deleteRecord?.ac_name}?`}
         handleTableChange={handleTableChange}
       />
+      <NotificationContainer />
     </div>
   );
 };

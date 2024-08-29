@@ -2,12 +2,17 @@ import { Button, Form, Input, notification, Select } from "antd";
 import Modal from "antd/es/modal/Modal";
 import React, { useEffect, useState } from "react";
 import { getApi, postApi } from "../../../redux/api";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { useNavigate } from "react-router-dom";
+
 
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
   const [form] = Form.useForm();
   const selectedRole = Form.useWatch("role", form);
+
+  const navigate = useNavigate()
 
   const roleOptions = [
     // { label: 'Vendor', value: 'VENDOR' },
@@ -20,8 +25,10 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
-    if (merchantApiRes.error) {
-      return;
+    if (merchantApiRes.error?.error?.response?.status === 401) {
+      NotificationManager.error(merchantApiRes?.error?.message, 401);
+      localStorage.clear();
+      navigate('/')
     }
 
     const dropdownOptions = merchantApiRes?.data?.data?.merchants?.map(
@@ -158,6 +165,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
           </Form.Item>
         </Form>
       </Modal>
+      <NotificationContainer />
     </>
   );
 };
