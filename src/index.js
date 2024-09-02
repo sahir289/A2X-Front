@@ -16,7 +16,9 @@ root.render(
           colorPrimary: "rgb(22 163 74)",
         }
       }}>
-        <App />
+        <div className="font-serif">
+          <App />
+        </div>
       </ConfigProvider>
     </Provider>
   </React.StrictMode>

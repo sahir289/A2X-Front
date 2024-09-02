@@ -93,17 +93,18 @@ function Login() {
     setIsModalOpen(false);
   };
 
-  const proceedHandler = async() => {
+  const proceedHandler = async () => {
     setLoading(true);
     let updateLoginObj = {
       ...loginObj,
-      confirmOverRide:true
+      confirmOverRide: true
     }
 
     const resp = await postApi('/login', updateLoginObj).then((res) => {
       if (res?.data?.statusCode === 200) {
         localStorage.setItem("accessToken", res?.data?.data);
         const userData = jwtDecode(res?.data?.data);
+        localStorage.setItem("userData", JSON.stringify({ name: userData?.userName, role: userData?.role }))
         context.permissionHandle(userData?.id, userData?.userName, userData?.role, userData?.code)
         navigate("/app/dashboard");
       }

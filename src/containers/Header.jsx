@@ -1,13 +1,17 @@
 import Bars3Icon from '@heroicons/react/24/outline/Bars3Icon'
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { Tooltip } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { Logout } from '../utils/constants'
+
 
 
 
 function Header() {
 
   const { pageTitle } = useSelector(state => state.header)
-
+  const [userData, setUserData] = useState({ name: " ", role: " " })
+  console.log("🚀 ~ Header ~ userData:", userData)
 
 
 
@@ -16,8 +20,13 @@ function Header() {
     window.location.href = '/'
   }
 
+  useEffect(() => {
+    const getUserData = JSON.parse(localStorage.getItem("userData"))
+    console.log("🚀 ~ useEffect ~ getUserData:", getUserData)
+    setUserData(getUserData)
+  }, [])
+
   return (
-    // navbar fixed  flex-none justify-between bg-base-300  z-10 shadow-md
 
     <>
       <div className="navbar sticky top-0 bg-base-100  z-10 shadow-md ">
@@ -33,17 +42,19 @@ function Header() {
 
 
         <div className="flex-none ">
-
-          <div className="dropdown dropdown-end ml-4">
-            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-              <div className="w-10 rounded-full">
-                <img src="https://cdn-icons-png.flaticon.com/512/9203/9203764.png" alt="profile" />
-              </div>
-            </label>
-            <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-              <li><a onClick={logoutUser}>Logout</a></li>
-            </ul>
+          <div className="w-10 rounded-full">
+            <img src="https://cdn-icons-png.flaticon.com/512/9203/9203764.png" alt="profile" />
           </div>
+
+          <div className='font-serif px-4'>
+            <p className='font-semibold'>{userData?.name}</p>
+            <p className=' text-sm'>{userData?.role}</p>
+          </div>
+          <Tooltip title="Logout">
+            <span  onClick={logoutUser}>
+              <Logout />
+            </span>
+          </Tooltip>
         </div>
       </div>
 
