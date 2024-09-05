@@ -122,7 +122,7 @@ const TableComponent = ({
         </div>
       </div>
       <Table
-        dataSource={data.bankAccRes}
+        dataSource={data?.bankAccRes}
         rowKey={(item) => item.id}
         scroll={{
           // y: 240,

@@ -16,17 +16,19 @@ const AddTelegramResponse = ({ handleTableChange }) => {
       },
     };
 
-    const AddData = await postApi("/create-message", formData);
-    if (AddData.error) {
-      api.error({
-        description: `Error: ${AddData.error.message}`,
-      });
-      return;
-    }
-    setIsLoading(false)
+    const AddData = await postApi("/create-message", formData).then((res) => {
+      if (res?.error) {
+        api.error({
+          description: `Error: ${res?.error?.error?.response?.data?.error?.code == "P2002" ? "Duplicate amount code" : res?.error?.message}`,
+        });
+      }
+    }).catch((err) => {
+    }).finally(() => {
+      setIsLoading(false)
 
-    handleTableChange({ current: 1, pageSize: 20 });
-    form.resetFields();
+      handleTableChange({ current: 1, pageSize: 20 });
+      form.resetFields();
+    })
   };
 
   const resetForm = () => {

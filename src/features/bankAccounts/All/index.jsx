@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getApi, putApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 function All() {
   const [tableData, setTableData] = useState([]);
+  const userData = useContext(PermissionContext)
   const [filterValues, setFilterValues] = useState({
     ac_name: "",
     ac_no: "",
     upi_id: "",
+    createdBy:`${userData?.userId}`,
+    role:`${userData?.role}`,
     page: 1,
     pageSize: 20,
   });

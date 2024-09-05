@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getApi, putApi } from "../../redux/api";
 import TableComponent from "./components/Table";
+import { PermissionContext } from "../AuthLayout/AuthLayout";
 
 const RolesComponent = () => {
   const [tableData, setTableData] = useState([]);
+  const context = useContext(PermissionContext)
   const [filterValues, setFilterValues] = useState({
     name: "",
     userName: "",
-    role: "",
+    role: `${context?.role}`,
+    createdBy:`${context?.userId}`,
     page: 1,
     pageSize: 20,
   });
   const [isFetchUsersLoading, setIsFetchUsersLoading] = useState(false);
+
+
+
 
   useEffect(() => {
     fetchUsersData();

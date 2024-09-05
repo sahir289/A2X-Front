@@ -11,8 +11,6 @@ function Header() {
 
   const { pageTitle } = useSelector(state => state.header)
   const [userData, setUserData] = useState({ name: " ", role: " " })
-  console.log("🚀 ~ Header ~ userData:", userData)
-
 
 
   function logoutUser() {
@@ -22,7 +20,6 @@ function Header() {
 
   useEffect(() => {
     const getUserData = JSON.parse(localStorage.getItem("userData"))
-    console.log("🚀 ~ useEffect ~ getUserData:", getUserData)
     setUserData(getUserData)
   }, [])
 

@@ -1,9 +1,10 @@
 import { Button, Form, Input, notification, Select } from "antd";
 import Modal from "antd/es/modal/Modal";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getApi, postApi } from "../../../redux/api";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../AuthLayout/AuthLayout";
 
 
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
@@ -14,14 +15,24 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
   const navigate = useNavigate()
 
-  const roleOptions = [
-    // { label: 'Vendor', value: 'VENDOR' },
+  const context = useContext(PermissionContext)
+
+  const commonOptions = [
     { label: "Merchant", value: "MERCHANT" },
     { label: "Customer Service", value: "CUSTOMER_SERVICE" },
     { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Operations", value: "OPERATIONS" },
-    { label: "Admin", value: "ADMIN" },
+    { label: 'Vendor', value: 'VENDOR' }
   ];
+  const merchantOptions = [
+    { label: "Customer Service", value: "CUSTOMER_SERVICE" },
+    { label: "Transactions", value: "TRANSACTIONS" },
+    { label: "Operations", value: "OPERATIONS" },
+  ];
+
+  const roleOptions = context?.role === "ADMIN"
+    ? commonOptions
+    : merchantOptions
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
@@ -41,7 +52,9 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   };
 
   useEffect(() => {
-    fetchMerchantData();
+    if (context?.role === "ADMIN") {
+      fetchMerchantData();
+    }
   }, []);
 
   const handleModalOk = () => {
@@ -61,6 +74,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       password: values.password,
       role: values.role,
       code: values.code,
+      createdBy: context?.userId
     };
 
     const addUser = await postApi("/create-user", formData);
