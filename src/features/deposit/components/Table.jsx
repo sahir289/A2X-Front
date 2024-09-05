@@ -2,16 +2,19 @@ import { CopyOutlined, ExclamationCircleOutlined, SyncOutlined } from '@ant-desi
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { getApi, postApi } from '../../../redux/api';
 import { PlusIcon, Reload } from '../../../utils/constants';
 import { formatCurrency, formatDate } from '../../../utils/utils';
+import { useNavigate } from 'react-router-dom';
+import { PermissionContext } from '../../../components/AuthLayout/AuthLayout';
 
 
 
 
-const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler, allTable, completedTable, inProgressTable, fetchUsersData }) => {
+const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, currentPage, pageSize, tableChangeHandler, allTable, completedTable, inProgressTable, fetchUsersData, isFetchUsersLoading }) => {
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [merchants, setMerchants] = useState([]);
@@ -21,7 +24,9 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const [form] = Form.useForm();
   const [paymentUrlModal, setPaymentUrlModal] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState('')
+  const navigate = useNavigate()
 
+  const userData = useContext(PermissionContext)
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
@@ -99,8 +104,10 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
   const handleGetMerchants = async () => {
     const res = await getApi("/getall-merchant");
-    if (res.error) {
-      return;
+    if (res.error?.error?.response?.status === 401) {
+      NotificationManager.error(res?.error?.message, 401);
+      localStorage.clear();
+      navigate('/')
     }
     setMerchants(res.data?.data?.merchants || []);
   }
@@ -191,6 +198,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         }}
         className='font-serif'
         pagination={paginationConfig}
+        loading={isFetchUsersLoading}
       >
         <Column
           title={<>
@@ -325,10 +333,12 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <>
               <span>Merchant Code</span>
               <br />
+
               <Input
                 value={filterValues?.merchantCode}
                 onChange={(e) => handleFilterValuesChange(e.target.value, 'merchantCode')}
                 allowClear
+                disabled={userData?.role === "MERCHANT" ? true : false}
               />
             </>
           }
