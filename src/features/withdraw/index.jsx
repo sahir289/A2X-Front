@@ -5,9 +5,6 @@ import { useSelector } from 'react-redux';
 import { getApi, postApi, putApi } from '../../redux/api';
 import { getQueryFromObject, reasonOptions, RequiredRule } from '../../utils/utils';
 import Table from './components/Table';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import { useNavigate } from 'react-router-dom';
-
 
 const Withdraw = ({ type }) => {
 
@@ -28,8 +25,6 @@ const Withdraw = ({ type }) => {
     page: 1,
     take: 20,
   })
-  const navigate = useNavigate()
-
 
   const merchants = useSelector(state => state.merchant.data);
   useEffect(() => {
@@ -75,12 +70,10 @@ const Withdraw = ({ type }) => {
     setIsLoading(true);
     const res = await getApi(`/getall-payout${query}`);
     setIsLoading(false);
-    if (res?.error?.error?.response?.status === 401) {
-      NotificationManager.error(res?.error?.message, 401);
-      localStorage.clear();
-      navigate('/')
+    if (res.error) {
+      return;
     }
-    const data = res?.data?.data;
+    const data = res.data.data;
     setWithdraws({
       data: data?.data || [],
       total: data?.totalRecords || 0,
@@ -120,7 +113,7 @@ const Withdraw = ({ type }) => {
     const isReset = await modal.confirm({
       title: "Confirmation",
       type: "confirm",
-      content: "Are you sure you want to reset your withdrawal?",
+      content: "Are you to reset the withdraw?",
     });
 
     if (isReset) {
@@ -187,9 +180,9 @@ const Withdraw = ({ type }) => {
     <section>
       {contextHolder}
       {notificationContext}
-      <div className='bg-white rounded-[8px] p-[8px] font-serif'>
+      <div className='bg-white rounded-[8px] p-[8px]'>
         <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
-          <p className='text-lg font-medium p-[5px]'>{type}</p>
+          <p className='text-lg font-medium p-[5px]'>Withdraws {type}</p>
           <div className='flex items-start gap-4 max-[500px]:justify-end'>
             <div className='flex flex-col items-start'>
               <Button
@@ -327,8 +320,6 @@ const Withdraw = ({ type }) => {
           </div>
         </Form>
       </Modal>
-      <NotificationContainer />
-
     </section>
   )
 }

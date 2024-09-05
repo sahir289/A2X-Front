@@ -35,7 +35,7 @@ function LeftSidebar() {
 
         <li className="mb-2 font-semibold text-xl">
 
-          <p><img className="mask mask-squircle w-10" src="/logo192.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
+          <Link to={'/app/welcome'}><img className="mask mask-squircle w-10" src="/logo192.png" alt="A2X-PAY logo" />Trust-Pay</Link> </li>
         {
           filteredRoutes.map((route, k) => {
             return (

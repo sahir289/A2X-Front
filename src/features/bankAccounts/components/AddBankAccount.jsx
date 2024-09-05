@@ -7,9 +7,8 @@ import {
   notification,
   Switch,
 } from "antd";
-import React, { useContext } from "react";
+import React from "react";
 import { postApi } from "../../../redux/api";
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 const AddBankAccount = ({
   isAddBankAccountModelOpen,
@@ -29,7 +28,6 @@ const AddBankAccount = ({
     form.resetFields();
   };
 
-  const userData = useContext(PermissionContext)
   const onFinish = async (values) => {
     const formData = {
       upi_id: values.upi_id,
@@ -46,7 +44,6 @@ const AddBankAccount = ({
       is_enabled: !!values.status,
       payin_count: 0,
       balance: 0,
-      createdBy: `${userData?.userId}`,
     };
 
     const AddBankAcc = await postApi("/create-bank", formData);

@@ -5,8 +5,6 @@ import { useSelector } from "react-redux";
 import { getApi, postApi, putApi } from "../../redux/api";
 import { getQueryFromObject, reasonOptions, RequiredRule } from "../../utils/utils";
 import TableComponent, { methodOptions, walletOptions } from './components/Table';
-import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 
 export default function Settlement() {
@@ -32,8 +30,6 @@ export default function Settlement() {
 
   const { data, total } = settlements;
   const merchants = useSelector(state => state.merchant.data);
-  const navigate = useNavigate()
-
 
   useEffect(() => {
     handleGetSettlements();
@@ -71,12 +67,10 @@ export default function Settlement() {
     setIsLoading(true);
     const res = await getApi(`/getall-settlement${query}`);
     setIsLoading(false);
-    if (res?.error?.error?.response?.status === 401) {
-      NotificationManager.error(res?.error?.message, 401);
-      localStorage.clear();
-      navigate('/')
+    if (res.error) {
+      return;
     }
-    const data = res?.data?.data;
+    const data = res.data.data;
     setSettlements({
       data: data?.data || [],
       total: data?.totalRecords || 0,
@@ -143,7 +137,7 @@ export default function Settlement() {
     const isReset = await modal.confirm({
       title: "Confirmation",
       type: "confirm",
-      content: "Are you sure you want to reset your settlement?",
+      content: "Are you to reset the settlement",
     });
 
     if (isReset) {
@@ -322,7 +316,6 @@ export default function Settlement() {
           </div>
         </Form>
       </Modal>
-      <NotificationContainer />
     </section>
   );
 }

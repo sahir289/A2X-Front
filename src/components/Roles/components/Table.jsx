@@ -14,6 +14,10 @@ const TableComponent = ({
 }) => {
   const [isAddModelOpen, setIsAddModelOpen] = useState(false);
 
+  // const handleCopy = (values) => {
+  //   navigator.clipboard.writeText(values);
+  // };
+
   const handleStatusChange = (e, data) => {
     handleUserStatusChange({ id: data.id, status: e });
   };
@@ -128,7 +132,7 @@ const TableComponent = ({
           dataIndex="isEnabled"
           key="isEnabled"
           className="bg-white"
-          width={"10%"}
+          width={"15%"}
           render={(value, data) => {
             return (
               <Switch
@@ -142,8 +146,8 @@ const TableComponent = ({
         />
         <Column
           title="Last logged in (IST)"
-          dataIndex="createdAt"
-          key="createdAt"
+          dataIndex="last_login"
+          key="last_login"
           className="bg-white"
           width={"10%"}
           render={(value) => formatDate(value)}

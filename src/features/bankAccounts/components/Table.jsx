@@ -8,9 +8,6 @@ import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
-import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-
 
 const TableComponent = ({
   data,
@@ -27,8 +24,9 @@ const TableComponent = ({
   const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
 
-  const navigate = useNavigate()
-
+  const handleCopy = (values) => {
+    navigator.clipboard.writeText(values);
+  };
 
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
@@ -62,10 +60,8 @@ const TableComponent = ({
       page: 1,
       pageSize: 10000,
     });
-    if (merchant.error?.error?.response?.status === 401) {
-      NotificationManager.error(merchant?.error?.message, 401);
-      localStorage.clear();
-      navigate('/')
+    if (merchant.error) {
+      return;
     }
 
     setAllMerchants(merchant?.data?.data?.merchants);
@@ -91,7 +87,7 @@ const TableComponent = ({
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
       <div className="flex">
         <div className=" w-full h-16  pb-3">
-          <p className="pt-4 ps-4 text-xl ">Bank Accounts</p>
+          <p className="pt-4 ps-4 text-xl ">Enquiry Form</p>
         </div>
         <div className="pt-2 flex">
           <div>
@@ -122,7 +118,7 @@ const TableComponent = ({
         </div>
       </div>
       <Table
-        dataSource={data?.bankAccRes}
+        dataSource={data.bankAccRes}
         rowKey={(item) => item.id}
         scroll={{
           // y: 240,
@@ -473,7 +469,6 @@ const TableComponent = ({
         displayItem={`${deleteRecord?.ac_name}?`}
         handleTableChange={handleTableChange}
       />
-      <NotificationContainer />
     </div>
   );
 };

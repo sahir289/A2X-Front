@@ -3,18 +3,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { getApi } from "../../../redux/api";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { invalidText } from "../../../utils/utils";
-import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-
 
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
   setSelectedMerchantCode,
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
-  const context = useContext(PermissionContext);
-  const navigate = useNavigate()
 
+  const context = useContext(PermissionContext);
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
@@ -43,20 +39,21 @@ const MerchantCodeSelectBox = ({
 
   const fetchMerchantData = async () => {
     const merchantCodes = await getApi("/getall-merchant");
-
-    if (merchantCodes.error?.error?.response?.status === 401) {
-      NotificationManager.error(merchantCodes?.error?.message, 401);
-      localStorage.clear();
-      navigate('/')
+    if (merchantCodes.error) {
+      return;
     }
 
     if (context?.code && !invalidText(context?.code)) {
-      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants
-        ?.filter(merchant => merchant.code === context.code)  // Filter merchants that match the code
-        .map(merchant => ({
-          label: merchant.code,
-          value: merchant.code,
-        }));
+      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
+        (merchant) => {
+          if (merchant.code === context.code) {
+            return {
+              label: merchant.code,
+              value: merchant.code,
+            };
+          }
+        }
+      );
       setMerchantCodeOptions(formattedMerchantCodes);
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
@@ -89,7 +86,6 @@ const MerchantCodeSelectBox = ({
           />
         </div>
       </div>
-      <NotificationContainer />
     </div>
   );
 };

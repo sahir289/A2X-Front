@@ -1,24 +1,23 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getApi } from '../../../redux/api';
 import TableComponent from '../components/Table';
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 
 function InProgress() {
 
   const [tableData, setTableData] = useState([])
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  const userData = useContext(PermissionContext)
   const [filterValues, setFilterValues] = useState({
     sno: '',
     upiShortCode: '',
     confirmed: '',
     amount: '',
     merchantOrderId: '',
-    merchantCode: `${userData?.code || ""}`,
+    merchantCode: '',
     userId: '',
     userSubmittedUtr: '',
     utr: '',
@@ -31,6 +30,7 @@ function InProgress() {
   })
   const [isFetchUsersLoading, setIsFetchUsersLoading] = useState(false)
 
+  // const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)  for modal
   useEffect(() => {
 
     fetchUsersData()
@@ -46,18 +46,14 @@ function InProgress() {
 
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true)
-    const payInDataRes = await getApi('/get-payInData', filterValues).then((res) => {
-      if (res?.error) {
-        return;
-      }
+    const payInDataRes = await getApi('/get-payInData', filterValues)
+    setIsFetchUsersLoading(false)
+    if (payInDataRes.error) {
+      return;
+    }
 
-      setTableData(res?.data?.data?.payInData)
-      setTotalRecords(res?.data?.data?.totalRecords)
-    }).finally(() => {
-      setIsFetchUsersLoading(false)
-
-    })
-
+    setTableData(payInDataRes?.data?.data?.payInData)
+    setTotalRecords(payInDataRes?.data?.data?.totalRecords)
 
   }
 
@@ -80,7 +76,6 @@ function InProgress() {
           tableChangeHandler={tableChangeHandler}
           fetchUsersData={fetchUsersData}
           inProgressTable={true}
-          isFetchUsersLoading={isFetchUsersLoading}
         />
       </div>
     </>

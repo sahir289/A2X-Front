@@ -33,7 +33,7 @@ function All() {
 
   return (
     <div className="">
-      <WebSockets fetchUsersData={fetchUsersData} /> {/*  to get the message from backend when the api is hit. */}
+       <WebSockets fetchUsersData={fetchUsersData} /> {/*  to get the message from backend when the api is hit. */}
       <TableComponent
         data={tableData}
         filterValues={filterValues}

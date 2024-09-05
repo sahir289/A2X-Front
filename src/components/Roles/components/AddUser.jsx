@@ -1,11 +1,7 @@
 import { Button, Form, Input, notification, Select } from "antd";
 import Modal from "antd/es/modal/Modal";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getApi, postApi } from "../../../redux/api";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import { useNavigate } from "react-router-dom";
-import { PermissionContext } from "../../AuthLayout/AuthLayout";
-
 
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
@@ -13,33 +9,19 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [form] = Form.useForm();
   const selectedRole = Form.useWatch("role", form);
 
-  const navigate = useNavigate()
-
-  const context = useContext(PermissionContext)
-
-  const commonOptions = [
+  const roleOptions = [
+    // { label: 'Vendor', value: 'VENDOR' },
     { label: "Merchant", value: "MERCHANT" },
     { label: "Customer Service", value: "CUSTOMER_SERVICE" },
     { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Operations", value: "OPERATIONS" },
-    { label: 'Vendor', value: 'VENDOR' }
+    { label: "Admin", value: "ADMIN" },
   ];
-  const merchantOptions = [
-    { label: "Customer Service", value: "CUSTOMER_SERVICE" },
-    { label: "Transactions", value: "TRANSACTIONS" },
-    { label: "Operations", value: "OPERATIONS" },
-  ];
-
-  const roleOptions = context?.role === "ADMIN"
-    ? commonOptions
-    : merchantOptions
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
-    if (merchantApiRes.error?.error?.response?.status === 401) {
-      NotificationManager.error(merchantApiRes?.error?.message, 401);
-      localStorage.clear();
-      navigate('/')
+    if (merchantApiRes.error) {
+      return;
     }
 
     const dropdownOptions = merchantApiRes?.data?.data?.merchants?.map(
@@ -52,9 +34,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   };
 
   useEffect(() => {
-    if (context?.role === "ADMIN") {
-      fetchMerchantData();
-    }
+    fetchMerchantData();
   }, []);
 
   const handleModalOk = () => {
@@ -74,7 +54,6 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       password: values.password,
       role: values.role,
       code: values.code,
-      createdBy: context?.userId
     };
 
     const addUser = await postApi("/create-user", formData);
@@ -179,7 +158,6 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
           </Form.Item>
         </Form>
       </Modal>
-      <NotificationContainer />
     </>
   );
 };

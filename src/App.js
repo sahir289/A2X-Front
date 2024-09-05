@@ -1,9 +1,10 @@
 import React, { lazy, Suspense } from "react";
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { themeChange } from 'theme-change';
 import initializeApp from "./app/init";
-import AuthLayout from "./components/AuthLayout/AuthLayout"; // Adjust the path as necessary
 import Layout from "./containers/Layout";
-import SuspenseContent from "./containers/SuspenseContent";
+import checkAuth from "./app/auth";
+import AuthLayout from "./components/AuthLayout/AuthLayout"; // Adjust the path as necessary
 
 const Login = lazy(() => import('./pages/Login'));
 const Page404 = lazy(() => import('./pages/protected/404'));
@@ -13,7 +14,7 @@ initializeApp();
 function App() {
   return (
     <Router>
-      <Suspense fallback={<SuspenseContent/>}>
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
 
           {/* Authenticated Routes */}

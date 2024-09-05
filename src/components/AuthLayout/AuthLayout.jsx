@@ -24,7 +24,46 @@ const AuthLayout = () => {
   // // To change the title.
   const { pathname } = useLocation();
   const token = localStorage.getItem("accessToken");
-  
+  // useEffect(() => {
+  //   const token = Cookies.get("accessToken");
+  //   const check = window.location.pathname.split("/").reverse();
+  //   const url = check.filter(
+  //     (item) =>
+  //       item !== "localhost:3000" && item !== "" && item !== "http:"
+  //   );
+  //   if (url.length !== 0) {
+  //     if (url.length < 3) {
+  //       if (url.length < 2) {
+  //         document.title = `${
+  //           capitalizeFirstLetter(url[0]) + " | " + "SyncTools"
+  //         }`;
+  //       } else {
+  //         document.title = `${
+  //           capitalizeFirstLetter(url[0]) +
+  //           " | " +
+  //           capitalizeFirstLetter(url[1]) +
+  //           " | " +
+  //           "SyncTools"
+  //         }`;
+  //       }
+  //     } else {
+  //       document.title = `${
+  //         capitalizeFirstLetter(url[1]) +
+  //         " | " +
+  //         capitalizeFirstLetter(url[0]) +
+  //         " | " +
+  //         "SyncTools"
+  //       }`;
+  //     }
+  //   } else {
+  //     document.title = `SyncTools`;
+  //   }
+
+  //   if (!authpath.includes(path) && !token) {
+  //     navigate("/login");
+  //   }
+  // }, [pathname]);
+
   const path = window.location.pathname;
   useEffect(() => {
     if (token) {
@@ -55,7 +94,7 @@ useEffect(()=>{
       }
     } catch (error) {
       localStorage.removeItem('accessToken');
-      navigate('/');
+      navigate('/login');
     }
   }
 }, [token])

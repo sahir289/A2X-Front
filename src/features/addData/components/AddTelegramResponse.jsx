@@ -1,34 +1,30 @@
 import { Button, Form, Input, InputNumber, notification, Select } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import { postApi } from "../../../redux/api";
 
 const AddTelegramResponse = ({ handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false)
 
   const onFinish = async (values) => {
-    setIsLoading(true)
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${values.amount_code ?? "nill"
-          } ${values.utr}`,
+        text: `${values.status} ${values.amount} ${
+          values.amount_code ?? "nill"
+        } ${values.utr}`,
       },
     };
 
-    const AddData = await postApi("/create-message", formData).then((res) => {
-      if (res?.error) {
-        api.error({
-          description: `Error: ${res?.error?.error?.response?.data?.error?.code == "P2002" ? "Duplicate amount code" : res?.error?.message}`,
-        });
-      }
-    }).catch((err) => {
-    }).finally(() => {
-      setIsLoading(false)
+    const AddData = await postApi("/create-message", formData);
+    if (AddData.error) {
+      api.error({
+        description: `Error: ${AddData.error.message}`,
+      });
+      return;
+    }
 
-      handleTableChange({ current: 1, pageSize: 20 });
-      form.resetFields();
-    })
+    handleTableChange({ current: 1, pageSize: 20 });
+    form.resetFields();
   };
 
   const resetForm = () => {
@@ -126,7 +122,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={isLoading}>
+            <Button type="primary" htmlType="submit">
               Add Data
             </Button>
           </Form.Item>
