@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getApi } from '../../../redux/api';
 import TableComponent from '../components/Table';
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 
 function Completed() {
 
   const [tableData, setTableData] = useState([])
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalRecords, setTotalRecords] = useState(0);
-
+  const userData = useContext(PermissionContext)
   const [filterValues, setFilterValues] = useState({
     sno: '',
     upiShortCode: '',
     confirmed: '',
     amount: '',
     merchantOrderId: '',
-    merchantCode: '',
+    merchantCode: `${userData?.code || ""}`,
     userId: '',
     userSubmittedUtr: '',
     utr: '',
@@ -46,13 +46,15 @@ function Completed() {
 
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true)
-    const payInDataRes = await getApi('/get-payInData', filterValues)
-    setIsFetchUsersLoading(false)
-    if (payInDataRes.error) {
-      return;
-    }
-    setTableData(payInDataRes?.data?.data?.payInData)
-    setTotalRecords(payInDataRes?.data?.data?.totalRecords)
+    const payInDataRes = await getApi('/get-payInData', filterValues).then((res) => {
+      if (res?.error) {
+        return;
+      }
+      setTableData(res?.data?.data?.payInData)
+      setTotalRecords(res?.data?.data?.totalRecords)
+    }).finally(() => {
+      setIsFetchUsersLoading(false)
+    })
   }
 
 
@@ -74,6 +76,7 @@ function Completed() {
           tableChangeHandler={tableChangeHandler}
           fetchUsersData={fetchUsersData}
           completedTable={true}
+          isFetchUsersLoading={isFetchUsersLoading}
         />
       </div>
     </>
