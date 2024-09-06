@@ -1,22 +1,29 @@
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import { formatCurrency, WithDrawAllOptions } from '../../../utils/utils';
+import { formatCurrency, WithDrawAllOptions } from "../../../utils/utils";
 
 const renderStatusTag = (status) => {
-  let color = '';
+  let color = "";
   switch (status) {
-    case 'INITIATED':
-      color = 'grey';
+    case "INITIATED":
+      color = "grey";
       break;
-    case 'SUCCESS':
-      color = 'green';
+    case "SUCCESS":
+      color = "green";
       break;
     // Add other statuses and colors as needed
     default:
-      color = 'default'; // Fallback color
+      color = "default"; // Fallback color
   }
-  return <Tag color={color} icon={status === "INITIATED" && <ExclamationCircleOutlined />}>{status}</Tag>
+  return (
+    <Tag
+      color={color}
+      icon={status === "INITIATED" && <ExclamationCircleOutlined />}
+    >
+      {status}
+    </Tag>
+  );
 };
 
 const ColumnSearch = ({ name, filters, onChange, ...props }) => {
@@ -25,14 +32,14 @@ const ColumnSearch = ({ name, filters, onChange, ...props }) => {
       {...props}
       value={filters[name]}
       name={name}
-      className='w-full'
+      className="w-full"
       onChange={(e) => {
-        onChange(name, e.target.value)
+        onChange(name, e.target.value);
       }}
       allowClear
     />
-  )
-}
+  );
+};
 
 const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
   return (
@@ -40,109 +47,157 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
       {...props}
       name={name}
       options={options}
-      className='w-full'
+      className="w-full"
       value={filters[name]}
       onChange={(v) => {
-        onChange(name, v)
+        onChange(name, v);
       }}
       allowClear
     />
-  )
-}
+  );
+};
 
-export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type) => {
+export const Columns = (
+  merchantOptions,
+  filters,
+  onChange,
+  updateWithdraw,
+  type,
+  userData
+) => {
   return (
     <>
       <Column
-        title='ID'
-        dataIndex='sno'
+        title="ID"
+        dataIndex="sno"
         ellipsis
         width="100px"
         render={(v, r, i) => {
           if (i) {
             return v;
           }
-          return <ColumnSearch name="sno" min="1" onChange={onChange} filters={filters} />;
+          return (
+            <ColumnSearch
+              name="sno"
+              min="1"
+              onChange={onChange}
+              filters={filters}
+            />
+          );
         }}
       />
       <Column
-        title='Merchant Order Id'
-        dataIndex='merchant_order_id'
+        title="Merchant Order Id"
+        dataIndex="merchant_order_id"
         width="130px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
             return v;
           }
-          return <ColumnSearch name="merchant_order_id" onChange={onChange} filters={filters} />;
+          return (
+            <ColumnSearch
+              name="merchant_order_id"
+              onChange={onChange}
+              filters={filters}
+            />
+          );
         }}
       />
       <Column
-        title='Merchant'
-        dataIndex='Merchant'
+        title="Merchant"
+        dataIndex="Merchant"
         width="130px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
             return v?.code;
           }
-          return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters} />;
+          return (
+            <ColumnSelect
+              name="code"
+              options={merchantOptions}
+              onChange={onChange}
+              filters={filters}
+              disabled={userData?.role === "MERCHANT"}
+            />
+          );
         }}
       />
       <Column
-        title='User'
-        dataIndex='user_id'
+        title="User"
+        dataIndex="user_id"
         width="130px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
             return v;
           }
-          return <ColumnSearch name="user_id" onChange={onChange} filters={filters} />;
+          return (
+            <ColumnSearch
+              name="user_id"
+              onChange={onChange}
+              filters={filters}
+            />
+          );
         }}
       />
       <Column
-        title='Status'
-        dataIndex='status'
+        title="Status"
+        dataIndex="status"
         width="140px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return renderStatusTag(v)
+            return renderStatusTag(v);
           }
-          return <ColumnSelect name="status" options={WithDrawAllOptions} onChange={onChange} filters={filters} />
+          return (
+            <ColumnSelect
+              name="status"
+              options={WithDrawAllOptions}
+              onChange={onChange}
+              filters={filters}
+            />
+          );
         }}
       />
       <Column
-        title='Amount'
-        dataIndex='amount'
+        title="Amount"
+        dataIndex="amount"
         width="100px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
             return formatCurrency(v);
           }
-          return <ColumnSearch name="amount" onChange={onChange} filters={filters} />;
+          return (
+            <ColumnSearch name="amount" onChange={onChange} filters={filters} />
+          );
         }}
       />
-      {
-        type == "Completed" &&
+      {type == "Completed" && (
         <Column
-          title='Commission'
-          dataIndex='payout_commision'
+          title="Commission"
+          dataIndex="payout_commision"
           width="100px"
           ellipsis
           render={(v, r, i) => {
             if (i) {
               return formatCurrency(v);
             }
-            return <ColumnSearch name="commission" onChange={onChange} filters={filters} />;
+            return (
+              <ColumnSearch
+                name="commission"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
           }}
         />
-      }
+      )}
       <Column
-        title='Bank Details'
-        dataIndex='acc_no'
+        title="Bank Details"
+        dataIndex="acc_no"
         width="250px"
         ellipsis
         render={(v, r, i) => {
@@ -156,45 +211,54 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
               </div>
             );
           }
-          return <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />;
+          return (
+            <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />
+          );
         }}
       />
-      {
-        type == "All" &&
+      {type == "All" && (
         <Column
-          title='UTR Id'
-          dataIndex='utr_id'
+          title="UTR Id"
+          dataIndex="utr_id"
           width="140px"
           ellipsis
           render={(v, r, i) => {
             if (i) {
-              return v || '-';
+              return v || "-";
             }
-            return <ColumnSearch name="utr_id" onChange={onChange} filters={filters} />;
+            return (
+              <ColumnSearch
+                name="utr_id"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
           }}
         />
-      }
+      )}
       <Column
-        title='Payout UUID'
-        dataIndex='id'
+        title="Payout UUID"
+        dataIndex="id"
         width="140px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
             return v;
           }
-          return <ColumnSearch name="id" onChange={onChange} filters={filters} />;
+          return (
+            <ColumnSearch name="id" onChange={onChange} filters={filters} />
+          );
         }}
       />
       <Column
-        title='Last Updated'
-        dataIndex='updatedAt'
+        title="Last Updated"
+        dataIndex="updatedAt"
         width="140px"
         ellipsis
-        render={(v) => v ? new Date(v).toDateString() : '-'}
+        render={(v) => (v ? new Date(v).toDateString() : "-")}
       />
       <Column
-        title='Option'
+        title="Option"
         width="110px"
         render={(v, r, i) => {
           if (!i) {
@@ -204,40 +268,48 @@ export const Columns = (merchantOptions, filters, onChange, updateWithdraw, type
             return (
               <Dropdown.Button
                 type="primary"
-                onClick={() => updateWithdraw({
-                  record: r,
-                  key: "approve",
-                })}
+                onClick={() =>
+                  updateWithdraw({
+                    record: r,
+                    key: "approve",
+                  })
+                }
                 menu={{
                   items: [
                     {
-                      key: 'approve',
-                      label: 'Approve',
+                      key: "approve",
+                      label: "Approve",
                     },
                     {
-                      key: 'reject',
-                      label: 'Reject',
+                      key: "reject",
+                      label: "Reject",
                     },
                   ],
-                  onClick: (info) => updateWithdraw({
-                    record: r,
-                    ...info,
-                  }),
+                  onClick: (info) =>
+                    updateWithdraw({
+                      record: r,
+                      ...info,
+                    }),
                 }}
               >
                 Approve
               </Dropdown.Button>
-            )
+            );
           }
           return (
-            <Button onClick={() => updateWithdraw({
-              record: r,
-              reset: true,
-            })}>
+            <Button
+              onClick={() =>
+                updateWithdraw({
+                  record: r,
+                  reset: true,
+                })
+              }
+            >
               Reset
-            </Button>);
+            </Button>
+          );
         }}
       />
     </>
-  )
-}
+  );
+};

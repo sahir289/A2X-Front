@@ -1,20 +1,37 @@
-import { PlusOutlined, RedoOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Modal, notification, Pagination, Select } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { getApi, postApi, putApi } from '../../redux/api';
-import { getQueryFromObject, reasonOptions, RequiredRule } from '../../utils/utils';
-import Table from './components/Table';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import { useNavigate } from 'react-router-dom';
-
+import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Pagination,
+  Select,
+} from "antd";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
+import { getApi, postApi, putApi } from "../../redux/api";
+import {
+  getQueryFromObject,
+  reasonOptions,
+  RequiredRule,
+} from "../../utils/utils";
+import Table from "./components/Table";
 
 const Withdraw = ({ type }) => {
-
   const timer = useRef(null);
+  const userData = useContext(PermissionContext);
   const [modal, contextHolder] = Modal.useModal();
   const [api, notificationContext] = notification.useNotification();
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    code: userData?.code || "",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [addWithdraw, setAddWithdraw] = useState(false);
@@ -23,53 +40,67 @@ const Withdraw = ({ type }) => {
   const [withdraws, setWithdraws] = useState({
     data: [],
     total: 0,
-  })
+  });
   const [pagination, setPagination] = useState({
     page: 1,
     take: 20,
-  })
-  const navigate = useNavigate()
+  });
+  const navigate = useNavigate();
 
-
-  const merchants = useSelector(state => state.merchant.data);
+  const merchantData = useSelector((state) => state.merchant.data);
+  const merchants = userData?.code ? [{ code: userData.code }] : merchantData;
   useEffect(() => {
     handleGetWithdraws();
-  }, [])
+  }, []);
   useEffect(() => {
     setPagination({
       page: 1,
       take: 20,
-    })
+    });
   }, [filters]);
 
   useEffect(() => {
-    handleGetWithdraws({
-      ...pagination,
-      ...filters,
-    }, true);
-  }, [pagination, filters])
+    handleGetWithdraws(
+      {
+        ...pagination,
+        ...filters,
+      },
+      true
+    );
+  }, [pagination, filters]);
 
   const handleToggleModal = () => {
-    setAddWithdraw(!addWithdraw)
-  }
+    setAddWithdraw(!addWithdraw);
+  };
 
   const handleGetWithdraws = async (queryObj = {}, debounced = false) => {
     if (!debounced) {
-      getPayoutList(queryObj);
+      getPayoutList({
+        ...queryObj,
+        code: userData?.code || queryObj.code || null,
+      });
       return;
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      getPayoutList(queryObj);
+      getPayoutList({
+        ...queryObj,
+        code: userData?.code || queryObj.code || null,
+      });
     }, 1500);
-  }
+  };
 
   const getPayoutList = async (queryObj) => {
     const queryObject = {
-      ...queryObj
-    }
+      ...queryObj,
+    };
     if (!queryObject.status) {
-      queryObject.status = type == "In Progress" ? "INITIATED" : type == "Completed" ? "SUCCESS" : "";
+      queryObject.status =
+        type == "In Progress"
+          ? "INITIATED"
+          : type == "Completed"
+          ? "SUCCESS"
+          : "";
     }
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
@@ -78,14 +109,14 @@ const Withdraw = ({ type }) => {
     if (res?.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
       localStorage.clear();
-      navigate('/')
+      navigate("/");
     }
     const data = res?.data?.data;
     setWithdraws({
       data: data?.data || [],
       total: data?.totalRecords || 0,
-    })
-  }
+    });
+  };
 
   const handleUpdateWithdraw = async (data) => {
     if (!data?.record?.id) {
@@ -99,7 +130,7 @@ const Withdraw = ({ type }) => {
       ...data.record,
       key: data.key,
     });
-  }
+  };
 
   const updateWithdraw = async (data, id) => {
     const withdrawId = editWithdraw?.id || id;
@@ -114,7 +145,7 @@ const Withdraw = ({ type }) => {
     }
     setEditWithdraw(null);
     handleGetWithdraws();
-  }
+  };
 
   const handleResetWithdraws = async (id) => {
     const isReset = await modal.confirm({
@@ -124,36 +155,39 @@ const Withdraw = ({ type }) => {
     });
 
     if (isReset) {
-      updateWithdraw({
-        status: "INITIATED"
-      }, id);
+      updateWithdraw(
+        {
+          status: "INITIATED",
+        },
+        id
+      );
     }
-  }
+  };
 
   const onFilterChange = async (name, value) => {
     setFilters({
       ...filters,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handlePageChange = (page, pageSize) => {
     setPagination({
       page,
       take: pageSize,
-    })
-  }
+    });
+  };
 
   const handleShowTotal = (total, range) => {
     if (!total) {
       return;
     }
     return (
-      <p className='text-base'>
+      <p className="text-base">
         {range[0]}-{range[1]} of {total} items
       </p>
-    )
-  }
+    );
+  };
 
   const handleSubmit = async (data) => {
     setAddLoading(true);
@@ -165,13 +199,12 @@ const Withdraw = ({ type }) => {
     }
     handleToggleModal();
     handleGetWithdraws();
-  }
+  };
 
-  const merchantOptions = merchants
-    .map(el => ({
-      value: el.code,
-      label: el.code
-    }))
+  const merchantOptions = merchants.map((el) => ({
+    value: el.code,
+    label: el.code,
+  }));
 
   //Select UTR Method
   const handleSelectUTRMethod = (selectedMethod) => {
@@ -179,34 +212,39 @@ const Withdraw = ({ type }) => {
   };
   //reset search fields
   const handleResetSearchFields = () => {
-    setFilters({})
-  }
-
+    setFilters({});
+  };
 
   return (
     <section>
       {contextHolder}
       {notificationContext}
-      <div className='bg-white rounded-[8px] p-[8px] font-serif'>
-        <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
-          <p className='text-lg font-medium p-[5px]'>{type}</p>
-          <div className='flex items-start gap-4 max-[500px]:justify-end'>
-            <div className='flex flex-col items-start'>
+      <div className="bg-white rounded-[8px] p-[8px] font-serif">
+        <div className="flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]">
+          <p className="text-lg font-medium p-[5px]">{type}</p>
+          <div className="flex items-start gap-4 max-[500px]:justify-end">
+            <div className="flex flex-col items-start">
               <Button
                 icon={<PlusOutlined />}
-                type='primary'
+                type="primary"
                 onClick={handleToggleModal}
               >
                 New Payout
               </Button>
-              <Button className='mt-2 w-full' onClick={handleResetSearchFields}>Reset</Button>
+              <Button className="mt-2 w-full" onClick={handleResetSearchFields}>
+                Reset
+              </Button>
             </div>
-            <Button type="text" className='rounded-full h-[40px] w-[40px] p-[0px] flex items-center justify-center' onClick={() => handleGetWithdraws({ ...pagination, ...filters })}>
+            <Button
+              type="text"
+              className="rounded-full h-[40px] w-[40px] p-[0px] flex items-center justify-center"
+              onClick={() => handleGetWithdraws({ ...pagination, ...filters })}
+            >
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
           </div>
         </div>
-        <div className='overflow-x-auto'>
+        <div className="overflow-x-auto">
           <Table
             loading={isLoading}
             data={withdraws.data}
@@ -215,9 +253,10 @@ const Withdraw = ({ type }) => {
             onFilterChange={onFilterChange}
             updateWithdraw={handleUpdateWithdraw}
             type={type}
+            userData={userData}
           />
         </div>
-        <div className='flex justify-end mt-[10px]'>
+        <div className="flex justify-end mt-[10px]">
           <Pagination
             total={withdraws.total}
             pageSize={pagination.take}
@@ -238,41 +277,42 @@ const Withdraw = ({ type }) => {
         destroyOnClose
       >
         <Form layout="vertical" onFinish={updateWithdraw}>
-          {
-            editWithdraw?.key == "approve" &&
+          {editWithdraw?.key == "approve" && (
             <>
-
               <Form.Item name="method" label="Method">
-                <Select options={[{ value: 'manual', key: 'manual' }, { value: 'accure', key: 'accure' }]}
+                <Select
+                  options={[
+                    { value: "manual", key: "manual" },
+                    { value: "accure", key: "accure" },
+                  ]}
                   onChange={handleSelectUTRMethod}
                   defaultValue={selectedUTRMethod}
                 />
               </Form.Item>
-              {
-                selectedUTRMethod === 'manual' &&
-                <Form.Item name="utr_id" label="UTR Number" rules={RequiredRule}>
+              {selectedUTRMethod === "manual" && (
+                <Form.Item
+                  name="utr_id"
+                  label="UTR Number"
+                  rules={RequiredRule}
+                >
                   <Input />
                 </Form.Item>
-              }
+              )}
             </>
-          }
-          {
-            editWithdraw?.key == "reject" &&
+          )}
+          {editWithdraw?.key == "reject" && (
             <>
-              <Form.Item name="rejected_reason" label="Reason" rules={RequiredRule}>
-                <Select
-                  options={reasonOptions}
-                />
+              <Form.Item
+                name="rejected_reason"
+                label="Reason"
+                rules={RequiredRule}
+              >
+                <Select options={reasonOptions} />
               </Form.Item>
             </>
-          }
-          <Button
-            type="primary"
-            htmlType="submit"
-          >
-            {
-              editWithdraw?.key == "approve" ? "Approve" : "Reject"
-            }
+          )}
+          <Button type="primary" htmlType="submit">
+            {editWithdraw?.key == "approve" ? "Approve" : "Reject"}
           </Button>
         </Form>
       </Modal>
@@ -287,11 +327,13 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleSubmit}>
           <Form.Item name="code" label="Merchant Code" rules={RequiredRule}>
-            <Select
-              options={merchantOptions}
-            />
+            <Select options={merchantOptions} />
           </Form.Item>
-          <Form.Item name="user_id" label="User ID (Account)" rules={RequiredRule}>
+          <Form.Item
+            name="user_id"
+            label="User ID (Account)"
+            rules={RequiredRule}
+          >
             <Input />
           </Form.Item>
           <Form.Item name="bank_name" label="Bank Name">
@@ -300,37 +342,30 @@ const Withdraw = ({ type }) => {
           <Form.Item name="acc_no" label="Account Number" rules={RequiredRule}>
             <Input />
           </Form.Item>
-          <Form.Item name="acc_holder_name" label="Account Holder Name" rules={RequiredRule}>
-            <Input />
-          </Form.Item>
           <Form.Item
-            name="ifsc_code"
-            label="IFSC code"
+            name="acc_holder_name"
+            label="Account Holder Name"
             rules={RequiredRule}
           >
+            <Input />
+          </Form.Item>
+          <Form.Item name="ifsc_code" label="IFSC code" rules={RequiredRule}>
             <Input />
           </Form.Item>
           <Form.Item name="amount" label="Amount" rules={RequiredRule}>
             <Input addonAfter="₹" />
           </Form.Item>
-          <div className='flex justify-end items-center gap-2'>
-            <Button>
-              Cancel
-            </Button>
-            <Button
-              type='primary'
-              loading={addLoading}
-              htmlType='submit'
-            >
+          <div className="flex justify-end items-center gap-2">
+            <Button>Cancel</Button>
+            <Button type="primary" loading={addLoading} htmlType="submit">
               Save
             </Button>
           </div>
         </Form>
       </Modal>
       <NotificationContainer />
-
     </section>
-  )
-}
+  );
+};
 
-export default Withdraw
+export default Withdraw;
