@@ -57,7 +57,7 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
     )
 }
 
-export const Columns = (merchantOptions, filters, onChange, updateSettlementStatus) => {
+export const Columns = (merchantOptions, filters, onChange, updateSettlementStatus, userData) => {
     return (
         <>
             <Column
@@ -81,7 +81,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v?.code;
                     }
-                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters} />;
+                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT"}/>;
                 }}
             />
             <Column

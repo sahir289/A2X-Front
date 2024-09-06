@@ -1,12 +1,13 @@
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, notification, Pagination, Select } from 'antd';
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { getApi, postApi, putApi } from "../../redux/api";
 import { getQueryFromObject, reasonOptions, RequiredRule } from "../../utils/utils";
 import TableComponent, { methodOptions, walletOptions } from './components/Table';
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 
 
 export default function Settlement() {
@@ -24,16 +25,17 @@ export default function Settlement() {
     data: [],
     total: 0,
   })
-  const [filters, setFilters] = useState({});
+  const userData = useContext(PermissionContext)
+  const [filters, setFilters] = useState({
+    code: userData?.code || "",
+  });
   const [pagination, setPagination] = useState({
     page: 1,
     take: 20,
   })
-
   const { data, total } = settlements;
   const merchants = useSelector(state => state.merchant.data);
   const navigate = useNavigate()
-
 
   useEffect(() => {
     handleGetSettlements();
@@ -57,12 +59,18 @@ export default function Settlement() {
 
   const handleGetSettlements = (queryObj = {}, debounced = false) => {
     if (!debounced) {
-      getSettlementList(queryObj);
+      getSettlementList({
+        ...queryObj,
+        code: userData?.code || queryObj.code || null,
+      });
       return;
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      getSettlementList(queryObj);
+      getSettlementList({
+        ...queryObj,
+        code: userData?.code || queryObj.code || null,
+      });
     }, 1500);
   }
 
@@ -169,11 +177,18 @@ export default function Settlement() {
   }
 
 
-  const merchantOptions = merchants
-    .map(el => ({
-      value: el.code,
-      label: el.code
-    }))
+  // const merchantOptions = merchants
+  //   .map(el => ({
+  //     value: el.code,
+  //     label: el.code
+  //   }))
+
+    const merchantOptions = merchants
+    ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
+    .map(merchant => ({
+      label: merchant.code,
+      value: merchant.code,
+    }));
 
   const labelCol = { span: 6 };
   //reset search fields
@@ -212,6 +227,7 @@ export default function Settlement() {
             filters={filters}
             onFilterChange={onFilterChange}
             updateSettlementStatus={updateSettlementStatus}
+            userData={userData}
           />
         </div>
         <div className='flex justify-end mt-[10px]'>

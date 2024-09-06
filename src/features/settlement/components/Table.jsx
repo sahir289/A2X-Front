@@ -26,7 +26,7 @@ export const walletOptions = ["WALLET1", "WALLET2"]
     label: el.toLowerCase(),
   }))
 
-const Table = ({ loading, data, merchantOptions, filters, onFilterChange, updateSettlementStatus }) => {
+const Table = ({ loading, data, merchantOptions, filters, onFilterChange, updateSettlementStatus, userData}) => {
   return (
     <AntTable
       rowKey="id"
@@ -34,7 +34,7 @@ const Table = ({ loading, data, merchantOptions, filters, onFilterChange, update
       pagination={false}
       loading={loading}
     >
-      {Columns(merchantOptions, filters, onFilterChange, updateSettlementStatus)}
+      {Columns(merchantOptions, filters, onFilterChange, updateSettlementStatus, userData)}
     </AntTable>
   )
 }
