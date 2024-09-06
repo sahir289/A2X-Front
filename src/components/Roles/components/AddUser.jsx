@@ -12,7 +12,8 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
   const [form] = Form.useForm();
   const selectedRole = Form.useWatch("role", form);
-
+  const userData = useContext(PermissionContext)
+  console.log("🚀 ~ AddUser ~ userData:", userData)
   const navigate = useNavigate()
 
   const context = useContext(PermissionContext)
@@ -36,25 +37,27 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
+    console.log("🚀 ~ fetchMerchantData ~ merchantApiRes:", merchantApiRes)
     if (merchantApiRes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantApiRes?.error?.message, 401);
       localStorage.clear();
       navigate('/')
     }
 
-    const dropdownOptions = merchantApiRes?.data?.data?.merchants?.map(
-      (merchant) => ({
+   
+    const dropdownOptions = merchantApiRes?.data?.data?.merchants
+      ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
+      .map(merchant => ({
         label: merchant.code,
         value: merchant.code,
-      })
-    );
+      }));
+
+    console.log("🚀 ~ fetchMerchantData ~ dropdownOptions:", dropdownOptions)
     setMerchantCodeOptions(dropdownOptions);
   };
 
   useEffect(() => {
-    if (context?.role === "ADMIN") {
-      fetchMerchantData();
-    }
+    fetchMerchantData();
   }, []);
 
   const handleModalOk = () => {
