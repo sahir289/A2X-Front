@@ -109,6 +109,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       localStorage.clear();
       navigate('/')
     }
+
     setMerchants(res.data?.data?.merchants || []);
   }
 
@@ -117,10 +118,12 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   }, []);
 
   const merchantOptions = merchants
-    .map(el => ({
-      value: el.code,
-      label: el.code
-    }))
+    ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
+    .map(merchant => ({
+      label: merchant.code,
+      value: merchant.code,
+    }));
+
 
   const labelCol = { span: 10 };
   const RequiredRule = [
