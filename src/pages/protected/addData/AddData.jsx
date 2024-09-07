@@ -7,7 +7,7 @@ const AddData = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setPageTitle({ title: "All Data" }));
+    dispatch(setPageTitle({ title: "Add Data" }));
   }, []);
 
   return <All />;

@@ -50,7 +50,7 @@ const TableComponent = ({
             icon={<PlusIcon />}
             onClick={() => setIsAddModelOpen(true)}
           >
-            <p>Add Merchant</p>
+            <p>Add Vendor</p>
           </Button>
           <AddVendor
             isAddModelOpen={isAddModelOpen}

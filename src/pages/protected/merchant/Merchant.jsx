@@ -11,7 +11,7 @@ const Merchant = () => {
   const context = useContext(PermissionContext)
 
   useEffect(() => {
-    dispatch(setPageTitle({ title: "All Data" }));
+    dispatch(setPageTitle({ title: "Merchant" }));
   }, []);
 
   return <>{

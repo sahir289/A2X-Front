@@ -18,6 +18,7 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import Squares2X2Icon from "@heroicons/react/24/outline/Squares2X2Icon";
+import { Vendor } from "../utils/constants";
 
 const iconClasses = `h-6 w-6`;
 const submenuIconClasses = `h-5 w-5`;
@@ -111,7 +112,7 @@ const routes = [
   },
   {
     path: "/app/vendor",
-    icon: <BuildingLibraryIcon className={iconClasses} />,
+    icon: <Vendor  />,
     name: "Vendor",
   },
   {

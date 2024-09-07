@@ -11,7 +11,7 @@ const Vendor = () => {
   const context = useContext(PermissionContext);
 
   useEffect(() => {
-    dispatch(setPageTitle({ title: "All Data" }));
+    dispatch(setPageTitle({ title: "Vendor" }));
   }, []);
 
   return <>{AllowedRoles.includes(context.role) && <All />}</>;
