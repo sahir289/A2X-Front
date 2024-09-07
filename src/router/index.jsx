@@ -1,97 +1,108 @@
 // All components mapping with path for internal routes
 
-import { lazy } from 'react'
+import { lazy } from "react";
 
-const Dashboard = lazy(() => import('../pages/protected/Dashboard'))
-const AddData = lazy(() => import('../pages/protected/addData/AddData'))
-const InProgress = lazy(() => import('../pages/protected/deposit/InProgress'))
-const Completed = lazy(() => import('../pages/protected/deposit/Completed'))
-const Dropped = lazy(() => import('../pages/protected/deposit/Dropped'))
-const All = lazy(() => import('../pages/protected/deposit/All'))
-const UserRoles = lazy(() => import('../pages/protected/user/Roles'))
-const SettlementsAccounts = lazy(() => import("../pages/protected/settlements/Accounts"))
-const Merchant = lazy(() => import("../pages/protected/merchant/Merchant"))
-const BankAccounts = lazy(() => import("../pages/protected/bankAccounts/BankAccount"))
-const WithdrawAll = lazy(() => import("../pages/protected/withdraw/All"))
-const WithdrawCompleted = lazy(() => import("../pages/protected/withdraw/Completed"))
-const WithdrawInProgress = lazy(() => import("../pages/protected/withdraw/InProgress"))
-const Payin = lazy(() => import("../pages/protected/reports/Payin"))
-const Payout = lazy(() => import("../pages/protected/reports/Payout"))
-
+const Dashboard = lazy(() => import("../pages/protected/Dashboard"));
+const AddData = lazy(() => import("../pages/protected/addData/AddData"));
+const InProgress = lazy(() => import("../pages/protected/deposit/InProgress"));
+const Completed = lazy(() => import("../pages/protected/deposit/Completed"));
+const Dropped = lazy(() => import("../pages/protected/deposit/Dropped"));
+const All = lazy(() => import("../pages/protected/deposit/All"));
+const UserRoles = lazy(() => import("../pages/protected/user/Roles"));
+const SettlementsAccounts = lazy(() =>
+  import("../pages/protected/settlements/Accounts")
+);
+const Merchant = lazy(() => import("../pages/protected/merchant/Merchant"));
+const Vendor = lazy(() => import("../pages/protected/vendor/Vendor"));
+const BankAccounts = lazy(() =>
+  import("../pages/protected/bankAccounts/BankAccount")
+);
+const WithdrawAll = lazy(() => import("../pages/protected/withdraw/All"));
+const WithdrawCompleted = lazy(() =>
+  import("../pages/protected/withdraw/Completed")
+);
+const WithdrawInProgress = lazy(() =>
+  import("../pages/protected/withdraw/InProgress")
+);
+const Payin = lazy(() => import("../pages/protected/reports/Payin"));
+const Payout = lazy(() => import("../pages/protected/reports/Payout"));
 
 const routes = [
   {
-    path: '/dashboard',
+    path: "/dashboard",
     component: Dashboard,
   },
   {
-    path: '/add-data',
+    path: "/add-data",
     component: AddData,
   },
 
   {
-    path: '/deposit/progress',
+    path: "/deposit/progress",
     component: InProgress,
   },
   {
-    path: '/deposit/completed',
+    path: "/deposit/completed",
     component: Completed,
   },
   {
-    path: '/deposit/dropped',
+    path: "/deposit/dropped",
     component: Dropped,
   },
   {
-    path: '/deposit/all',
+    path: "/deposit/all",
     component: All,
   },
 
   // withdrawal
   {
-    path: '/withdrawal/progress',
+    path: "/withdrawal/progress",
     component: WithdrawInProgress,
   },
   {
-    path: '/withdrawal/completed',
+    path: "/withdrawal/completed",
     component: WithdrawCompleted,
   },
   {
-    path: '/withdrawal/all',
+    path: "/withdrawal/all",
     component: WithdrawAll,
   },
   //Settlement
   {
-    path: '/settlements',
+    path: "/settlements",
     component: SettlementsAccounts,
   },
 
   //Merchant
   {
-    path: '/merchant',
+    path: "/merchant",
     component: Merchant,
   },
 
   //Merchant
   {
-    path: '/bank-accounts',
+    path: "/bank-accounts",
     component: BankAccounts,
+  },
+
+  {
+    path: "/vendor",
+    component: Vendor,
   },
 
   // User
   {
-    path: '/user',
+    path: "/user",
     component: UserRoles,
   },
   {
-    path: '/payin',
+    path: "/payin",
     component: Payin,
   },
   {
-    path: '/payout',
+    path: "/payout",
     component: Payout,
   },
+];
 
-
-]
-
-export default routes
+export default routes;

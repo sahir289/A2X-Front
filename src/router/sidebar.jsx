@@ -1,140 +1,148 @@
 /** Icons are imported separatly to reduce build time */
-import { ArrowRightCircleIcon, ArrowTrendingUpIcon, BanknotesIcon, BuildingLibraryIcon, CheckBadgeIcon, CurrencyDollarIcon, ExclamationTriangleIcon, GlobeAltIcon, TrashIcon, UserCircleIcon } from '@heroicons/react/16/solid'
-import { CreditCardIcon, DocumentPlusIcon, UserGroupIcon, UsersIcon } from '@heroicons/react/24/outline'
-import Squares2X2Icon from '@heroicons/react/24/outline/Squares2X2Icon'
+import {
+  ArrowRightCircleIcon,
+  ArrowTrendingUpIcon,
+  BanknotesIcon,
+  BuildingLibraryIcon,
+  CheckBadgeIcon,
+  CurrencyDollarIcon,
+  ExclamationTriangleIcon,
+  GlobeAltIcon,
+  TrashIcon,
+  UserCircleIcon,
+} from "@heroicons/react/16/solid";
+import {
+  CreditCardIcon,
+  DocumentPlusIcon,
+  UserGroupIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline";
+import Squares2X2Icon from "@heroicons/react/24/outline/Squares2X2Icon";
 
-const iconClasses = `h-6 w-6`
-const submenuIconClasses = `h-5 w-5`
-
-
-
+const iconClasses = `h-6 w-6`;
+const submenuIconClasses = `h-5 w-5`;
 
 const routes = [
   {
-    path: '/app/dashboard',
+    path: "/app/dashboard",
     icon: <Squares2X2Icon className={iconClasses} />,
-    name: 'Dashboard',
+    name: "Dashboard",
   },
   {
-    path: '/app/add-data',
+    path: "/app/add-data",
     icon: <DocumentPlusIcon className={iconClasses} />,
-    name: 'Add data',
+    name: "Add data",
   },
   {
-    path: '',
+    path: "",
     icon: <CurrencyDollarIcon className={`${iconClasses} inline`} />, // icon component
-    name: 'Deposit', // name that appear in Sidebar
+    name: "Deposit", // name that appear in Sidebar
     submenu: [
       {
-        path: '/app/deposit/progress',
+        path: "/app/deposit/progress",
         icon: <ArrowTrendingUpIcon className={submenuIconClasses} />,
-        name: 'In Progress',
+        name: "In Progress",
       },
       {
-        path: '/app/deposit/completed',
+        path: "/app/deposit/completed",
         icon: <CheckBadgeIcon className={submenuIconClasses} />,
-        name: 'Completed',
+        name: "Completed",
       },
       {
-        path: '/app/deposit/dropped',
+        path: "/app/deposit/dropped",
         icon: <TrashIcon className={submenuIconClasses} />,
-        name: 'Dropped',
+        name: "Dropped",
       },
       {
-        path: '/app/deposit/all',
+        path: "/app/deposit/all",
         icon: <GlobeAltIcon className={submenuIconClasses} />,
-        name: 'All',
+        name: "All",
       },
-    ]
+    ],
   },
   {
-    path: '',
+    path: "",
     icon: <ArrowRightCircleIcon className={`${iconClasses} inline`} />, // icon component
-    name: 'Withdrawals', // name that appear in Sidebar
+    name: "Withdrawals", // name that appear in Sidebar
     submenu: [
-
       {
-        path: '/app/withdrawal/progress', //url
+        path: "/app/withdrawal/progress", //url
         icon: <ArrowTrendingUpIcon className={submenuIconClasses} />, // icon component
-        name: 'In Progress', // name that appear in Sidebar
+        name: "In Progress", // name that appear in Sidebar
       },
       {
-        path: '/app/withdrawal/completed',
+        path: "/app/withdrawal/completed",
         icon: <CheckBadgeIcon className={submenuIconClasses} />,
-        name: 'Completed',
+        name: "Completed",
       },
       {
-        path: '/app/withdrawal/all',
+        path: "/app/withdrawal/all",
         icon: <GlobeAltIcon className={submenuIconClasses} />,
-        name: 'All',
+        name: "All",
       },
-    ]
+    ],
   },
   {
-    path: '',
+    path: "",
     icon: <BanknotesIcon className={`${iconClasses} inline`} />, // icon component
-    name: 'Settlements', // name that appear in Sidebar
+    name: "Settlements", // name that appear in Sidebar
     submenu: [
-
       // {
       //   path: '/app/settlements/transaction',
       //   icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
       //   name: 'Transactions', // name that appear in Sidebar
       // },
       {
-        path: '/app/settlements',
+        path: "/app/settlements",
         icon: <UserCircleIcon className={submenuIconClasses} />,
-        name: 'Accounts',
-      }
-    ]
-  },
-  {
-    path: '/app/merchant',
-    icon: <CreditCardIcon className={iconClasses} />,
-    name: 'Merchant',
-  },
-  {
-    path: '/app/bank-accounts',
-    icon: <BuildingLibraryIcon className={iconClasses} />,
-    name: 'Bank Accounts',
-  },
-  {
-    path: '',
-    icon: <UsersIcon className={`${iconClasses} inline`} />, // icon component
-    name: 'User', // name that appear in Sidebar
-    submenu: [
-
-      {
-        path: '/app/user',
-        icon: <UserGroupIcon className={submenuIconClasses} />, // icon component
-        name: 'Roles', // name that appear in Sidebar
+        name: "Accounts",
       },
-
-    ]
-  },
-  {
-    path: '',
-    icon: <ExclamationTriangleIcon className={`${iconClasses} inline`} />, // icon component
-    name: 'Reports', // name that appear in Sidebar
-    submenu: [
-      {
-        path: '/app/payin',
-        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
-        name: 'Payins', // name that appear in Sidebar
-      },
-      {
-        path: '/app/payout',
-        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
-        name: 'Payouts', // name that appear in Sidebar
-      },
-
     ],
   },
+  {
+    path: "/app/merchant",
+    icon: <CreditCardIcon className={iconClasses} />,
+    name: "Merchant",
+  },
+  {
+    path: "/app/bank-accounts",
+    icon: <BuildingLibraryIcon className={iconClasses} />,
+    name: "Bank Accounts",
+  },
+  {
+    path: "/app/vendor",
+    icon: <BuildingLibraryIcon className={iconClasses} />,
+    name: "Vendor",
+  },
+  {
+    path: "",
+    icon: <UsersIcon className={`${iconClasses} inline`} />, // icon component
+    name: "User", // name that appear in Sidebar
+    submenu: [
+      {
+        path: "/app/user",
+        icon: <UserGroupIcon className={submenuIconClasses} />, // icon component
+        name: "Roles", // name that appear in Sidebar
+      },
+    ],
+  },
+  {
+    path: "",
+    icon: <ExclamationTriangleIcon className={`${iconClasses} inline`} />, // icon component
+    name: "Reports", // name that appear in Sidebar
+    submenu: [
+      {
+        path: "/app/payin",
+        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
+        name: "Payins", // name that appear in Sidebar
+      },
+      {
+        path: "/app/payout",
+        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
+        name: "Payouts", // name that appear in Sidebar
+      },
+    ],
+  },
+];
 
-
-]
-
-
-export default routes
-
-
+export default routes;
