@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   NotificationContainer,
   NotificationManager,
@@ -6,14 +6,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { getApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 function All() {
   const [tableData, setTableData] = useState([]);
-  const context = useContext(PermissionContext);
   const [filterValues, setFilterValues] = useState({
-    n: "",
-    createdBy: "",
     page: 1,
     pageSize: 20,
   });
