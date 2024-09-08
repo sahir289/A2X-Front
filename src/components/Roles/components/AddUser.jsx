@@ -10,24 +10,24 @@ import { PermissionContext } from "../../AuthLayout/AuthLayout";
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
+  const [vendorCodeOptions, setVendorCodeOptions] = useState([]);
   const [form] = Form.useForm();
   const selectedRole = Form.useWatch("role", form);
   const userData = useContext(PermissionContext)
-  console.log("🚀 ~ AddUser ~ userData:", userData)
   const navigate = useNavigate()
 
   const context = useContext(PermissionContext)
 
   const commonOptions = [
     { label: "Merchant", value: "MERCHANT" },
-    { label: "Customer Service", value: "CUSTOMER_SERVICE" },
+    // { label: "Customer Service", value: "CUSTOMER_SERVICE" },
     { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Operations", value: "OPERATIONS" },
     { label: 'Vendor', value: 'VENDOR' }
   ];
   const merchantOptions = [
-    { label: "Customer Service", value: "CUSTOMER_SERVICE" },
-    { label: "Transactions", value: "TRANSACTIONS" },
+    // { label: "Customer Service", value: "CUSTOMER_SERVICE" },
+    // { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Operations", value: "OPERATIONS" },
   ];
 
@@ -37,27 +37,39 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
-    console.log("🚀 ~ fetchMerchantData ~ merchantApiRes:", merchantApiRes)
     if (merchantApiRes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantApiRes?.error?.message, 401);
       localStorage.clear();
       navigate('/')
     }
 
-   
+
     const dropdownOptions = merchantApiRes?.data?.data?.merchants
       ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
       .map(merchant => ({
         label: merchant.code,
         value: merchant.code,
       }));
-
-    console.log("🚀 ~ fetchMerchantData ~ dropdownOptions:", dropdownOptions)
     setMerchantCodeOptions(dropdownOptions);
+  };
+  const fetchVendorData = async () => {
+    const vendorApiRes = await getApi("/getall-vendor");
+    if (vendorApiRes.error?.error?.response?.status === 401) {
+      NotificationManager.error(vendorApiRes?.error?.message, 401);
+      localStorage.clear();
+      navigate('/')
+    }
+
+    const dropdownOptions = vendorApiRes?.data?.data?.map(vendor => ({
+        label: vendor.vendor_code,
+        value: vendor.vendor_code,
+      }));
+    setVendorCodeOptions(dropdownOptions);
   };
 
   useEffect(() => {
     fetchMerchantData();
+    fetchVendorData();
   }, []);
 
   const handleModalOk = () => {
@@ -171,6 +183,23 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={merchantCodeOptions}
+              />
+            </Form.Item>
+          )}
+           {(selectedRole === "VENDOR") && (
+            <Form.Item
+              label="Vendor Code"
+              name="vendorCode"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select your code!",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Please select"
+                options={vendorCodeOptions}
               />
             </Form.Item>
           )}

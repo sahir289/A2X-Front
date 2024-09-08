@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../../redux/slice/headerSlice.jsx';
 
 const Roles = () => {
-  const AllowedRoles = ["ADMIN", "MERCHANT"]
+  const AllowedRoles = ["ADMIN", "MERCHANT","VENDOR","TRANSACTIONS"]
   const context = useContext(PermissionContext)
 
   const dispatch = useDispatch()

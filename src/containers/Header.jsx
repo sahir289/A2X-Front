@@ -31,8 +31,8 @@ function Header() {
 
         {/* Menu toogle for mobile view or small screen */}
         <div className="flex-1">
-          <label htmlFor="left-sidebar-drawer" className="btn btn-primary drawer-button lg:hidden">
-            <Bars3Icon className="h-5 inline-block w-5" /></label>
+          <label htmlFor="left-sidebar-drawer" className="btn bg-[#16A34A] drawer-button lg:hidden">
+            <Bars3Icon className="h-5 inline-block w-5 text-white" /></label>
           <h1 className="text-2xl font-semibold ml-2">{pageTitle}</h1>
         </div>
 

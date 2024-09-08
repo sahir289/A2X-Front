@@ -7,7 +7,7 @@ import { setPageTitle } from '../../../redux/slice/headerSlice.jsx';
 const All = () => {
 
   const dispatch = useDispatch()
-  const AllowedRoles = ["MERCHANT", "ADMIN", "OPERATIONS"]
+  const AllowedRoles = ["MERCHANT", "ADMIN", "OPERATIONS","VENDOR","TRANSACTIONS"]
   const context = useContext(PermissionContext)
 
   useEffect(() => {

@@ -81,7 +81,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v?.code;
                     }
-                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT"}/>;
+                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT" || "OPERATIONS"}/>
                 }}
             />
             <Column

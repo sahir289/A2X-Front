@@ -11,7 +11,7 @@ const InProgress = () => {
   useEffect(() => {
     dispatch(setPageTitle({ title: "In Progress" }))
   }, [])
-  const AllowedRoles = ["MERCHANT", "ADMIN", "OPERATIONS"]
+  const AllowedRoles = ["MERCHANT", "ADMIN", "OPERATIONS","VENDOR","TRANSACTIONS"]
   const context = useContext(PermissionContext)
 
   return (

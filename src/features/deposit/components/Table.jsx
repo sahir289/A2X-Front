@@ -341,7 +341,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
                 value={filterValues?.merchantCode}
                 onChange={(e) => handleFilterValuesChange(e.target.value, 'merchantCode')}
                 allowClear
-                disabled={userData?.role === "MERCHANT" ? true : false}
+                disabled={userData?.role === "MERCHANT" || "OPERATIONS"}
               />
             </>
           }

@@ -11,7 +11,7 @@ const Completed = () => {
   useEffect(() => {
     dispatch(setPageTitle({ title: "Completed" }))
   }, [])
-  const AllowedRoles = ["MERCHANT", "ADMIN", "OPERATIONS"]
+  const AllowedRoles = ["MERCHANT", "ADMIN", "OPERATIONS","VENDOR","TRANSACTIONS"]
   const context = useContext(PermissionContext)
 
   return (
