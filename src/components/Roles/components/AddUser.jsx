@@ -10,6 +10,7 @@ import { PermissionContext } from "../../AuthLayout/AuthLayout";
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
+  const [loading,setLoading]=useState(false)
   const [vendorCodeOptions, setVendorCodeOptions] = useState([]);
   const [form] = Form.useForm();
   const selectedRole = Form.useWatch("role", form);
@@ -30,10 +31,12 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
     // { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Operations", value: "OPERATIONS" },
   ];
-
+  const vendorOptions = [
+    { label: "Vendor-Operations", value: "VENDOR_OPERATIONS" },
+  ];
   const roleOptions = context?.role === "ADMIN"
     ? commonOptions
-    : merchantOptions
+    : context?.role === "VENDOR" ? vendorOptions : merchantOptions
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
@@ -83,6 +86,8 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   };
 
   const onFinish = async (values) => {
+    setLoading(true)
+    console.log("🚀 ~ onFinish ~ values:", values)
     const formData = {
       fullName: values.fullName?.trim(),
       userName: values.userName?.trim(),
@@ -92,16 +97,23 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       createdBy: context?.userId
     };
 
-    const addUser = await postApi("/create-user", formData);
-    if (addUser.error) {
-      api.error({
-        description: `Error: ${addUser.error.message}`,
-      });
-      return;
-    }
-    setIsAddModelOpen(false);
-    handleTableChange({ current: 1, pageSize: 20 });
-    form.resetFields();
+    const addUser = await postApi("/create-user", formData).then((res)=>{
+      if (res.error) {
+        api.error({
+          description: `Error: ${addUser.error.message}`,
+        });
+        return;
+      }
+    }).catch((err) => {
+      console.log("🚀 ~ addUser ~ err:", err)
+    }).finally(()=>{
+      setLoading(false)
+      setIsAddModelOpen(false);
+      handleTableChange({ current: 1, pageSize: 20 });
+      form.resetFields();
+    });
+
+
   };
 
   return (
@@ -186,10 +198,10 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-           {(selectedRole === "VENDOR") && (
+           {(selectedRole === "VENDOR" || selectedRole === "VENDOR_OPERATIONS") && (
             <Form.Item
               label="Vendor Code"
-              name="vendorCode"
+              name="code"
               rules={[
                 {
                   required: true,
@@ -205,7 +217,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
           )}
 
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               Add User
             </Button>
           </Form.Item>

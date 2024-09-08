@@ -47,6 +47,7 @@ const AddBankAccount = ({
       payin_count: 0,
       balance: 0,
       createdBy: `${userData?.userId}`,
+      code : `${userData?.code}`
     };
 
     const AddBankAcc = await postApi("/create-bank", formData);

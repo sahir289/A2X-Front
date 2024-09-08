@@ -9,7 +9,7 @@ function InternalPage() {
   const dispatch = useDispatch()
 
 
-  const AllowedRoles = ["MERCHANT", "ADMIN","OPERATIONS","TRANSACTIONS"]
+  const AllowedRoles = ["MERCHANT", "ADMIN","OPERATIONS","TRANSACTIONS","VENDOR"]
   const context = useContext(PermissionContext)
 
   useEffect(() => {

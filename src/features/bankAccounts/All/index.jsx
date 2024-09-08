@@ -12,8 +12,8 @@ function All() {
     ac_name: "",
     ac_no: "",
     upi_id: "",
-    createdBy:`${userData?.userId}`,
     role:`${userData?.role}`,
+    code : `${userData?.code || ""}`,
     page: 1,
     pageSize: 20,
   });
