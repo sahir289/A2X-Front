@@ -32,6 +32,11 @@ const routes = [
     name: "Dashboard",
   },
   {
+    path: "/app/vendor-board",
+    icon: <Squares2X2Icon className={iconClasses} />,
+    name: "Vendor Board",
+  },
+  {
     path: "/app/add-data",
     icon: <DocumentPlusIcon className={iconClasses} />,
     name: "Add data",
@@ -114,7 +119,7 @@ const routes = [
   },
   {
     path: "/app/vendor",
-    icon: <Vendor  />,
+    icon: <Vendor />,
     name: "Vendor",
   },
   {

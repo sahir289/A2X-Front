@@ -3,6 +3,7 @@
 import { lazy } from "react";
 
 const Dashboard = lazy(() => import("../pages/protected/Dashboard"));
+const VendorBoard = lazy(() => import("../pages/protected/VendorBoard"));
 const AddData = lazy(() => import("../pages/protected/addData/AddData"));
 const InProgress = lazy(() => import("../pages/protected/deposit/InProgress"));
 const Completed = lazy(() => import("../pages/protected/deposit/Completed"));
@@ -31,6 +32,10 @@ const routes = [
   {
     path: "/dashboard",
     component: Dashboard,
+  },
+  {
+    path: "/vendor-board",
+    component: VendorBoard,
   },
   {
     path: "/add-data",
