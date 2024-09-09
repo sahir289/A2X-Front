@@ -55,7 +55,11 @@ function Login() {
           if (res?.error?.error?.response?.status === 409) {
             NotificationManager.error(res?.error?.message, 409);
             showModal()
-          } else {
+          }
+          else if (res?.error?.error?.response?.status === 404){
+            NotificationManager.error(res?.error?.message === "User not found" ? "Wrong credentials":res?.error?.message, 404);
+          }
+          else {
             NotificationManager.error("Fail to login", 401);
           }
         }
