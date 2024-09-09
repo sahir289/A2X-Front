@@ -29,7 +29,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const merchantOptions = [
     // { label: "Customer Service", value: "CUSTOMER_SERVICE" },
     // { label: "Transactions", value: "TRANSACTIONS" },
-    { label: "Operations", value: "OPERATIONS" },
+    { label: "Merchant-Operations", value: "MERCHANT_OPERATIONS" },
   ];
   const vendorOptions = [
     { label: "Vendor-Operations", value: "VENDOR_OPERATIONS" },
@@ -47,11 +47,11 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
     }
 
     const dropdownOptions = merchantApiRes?.data?.data?.merchants
-      ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
-      .map(merchant => ({
-        label: merchant.code,
-        value: merchant.code,
-      }));
+      ?.filter(merchant => userData?.code.includes(merchant.code))    //!userData?.code ||
+    .map(merchant => ({
+      label: merchant.code,
+      value: merchant.code,
+    }));
     setMerchantCodeOptions(dropdownOptions);
   };
   const fetchVendorData = async () => {
@@ -92,7 +92,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       userName: values.userName?.trim(),
       password: values.password,
       role: values.role,
-      code: values.code,
+      code: typeof values.code ==="string" ? [values.code] :values.code ,
       createdBy: context?.userId,
       vendor_code:values?.vendor_code
     };
@@ -126,6 +126,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
         onCancel={handleModalCancel}
         footer={false}
       >
+        {/* {JSON.stringify(merchantCodeOptions)} */}
         <Form
           form={form}
           name="add_data"
@@ -181,7 +182,26 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
             <Select placeholder="Please select" options={roleOptions} />
           </Form.Item>
 
-          {(selectedRole === "MERCHANT" || selectedRole === "OPERATIONS") && (
+          {(selectedRole === "MERCHANT" ) && (
+            <Form.Item
+              label="Merchant Code"
+              name="code"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select your code!",
+                },
+              ]}
+            >
+              {/* {JSON.stringify(selectedRole)} */}
+              <Select
+                placeholder="Please select"
+                options={merchantCodeOptions}
+                // mode={selectedRole ==="OPERATIONS" ?"multiple":undefined}
+              />
+            </Form.Item>
+          )}
+          {(selectedRole === "OPERATIONS" || selectedRole === "MERCHANT_OPERATIONS") && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -195,6 +215,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={merchantCodeOptions}
+              mode="multiple"
               />
             </Form.Item>
           )}

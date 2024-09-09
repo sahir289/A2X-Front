@@ -20,7 +20,7 @@ function LeftSidebar() {
     const filterRoutes = routes.filter(route => {
       if (context.role === "MERCHANT" && (route.name === "Bank Accounts" || route.name === "Vendor" || route.name === "Merchant")||route.name === "Add data") return false;
 
-      if (context?.role === "OPERATIONS" && (route.name === "Add data" || route.name === "Bank Accounts" || route.name == "Merchant" || route.name === "User" ||  route.name === "Vendor")||route.name === "Add data") return false;
+      if ((context?.role === "OPERATIONS" || context?.role === "MERCHANT_OPERATIONS") && (route.name === "Add data" || route.name === "Bank Accounts" || route.name == "Merchant" || route.name === "User" ||  route.name === "Vendor")||route.name === "Add data") return false;
 
       if (context?.role === "VENDOR" && (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports") ||route.name === "Add data") return false;
       return true;
