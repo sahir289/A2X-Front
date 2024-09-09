@@ -10,7 +10,7 @@ import { PermissionContext } from "../../AuthLayout/AuthLayout";
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
   const [vendorCodeOptions, setVendorCodeOptions] = useState([]);
   const [form] = Form.useForm();
   const selectedRole = Form.useWatch("role", form);
@@ -46,7 +46,6 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       navigate('/')
     }
 
-
     const dropdownOptions = merchantApiRes?.data?.data?.merchants
       ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
       .map(merchant => ({
@@ -64,9 +63,9 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
     }
 
     const dropdownOptions = vendorApiRes?.data?.data?.map(vendor => ({
-        label: vendor.vendor_code,
-        value: vendor.vendor_code,
-      }));
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }));
     setVendorCodeOptions(dropdownOptions);
   };
 
@@ -94,10 +93,11 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       password: values.password,
       role: values.role,
       code: values.code,
-      createdBy: context?.userId
+      createdBy: context?.userId,
+      vendor_code:values?.vendor_code
     };
 
-    const addUser = await postApi("/create-user", formData).then((res)=>{
+    const addUser = await postApi("/create-user", formData).then((res) => {
       if (res.error) {
         api.error({
           description: `Error: ${addUser.error.message}`,
@@ -106,7 +106,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       }
     }).catch((err) => {
       console.log("🚀 ~ addUser ~ err:", err)
-    }).finally(()=>{
+    }).finally(() => {
       setLoading(false)
       setIsAddModelOpen(false);
       handleTableChange({ current: 1, pageSize: 20 });
@@ -198,10 +198,10 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-           {(selectedRole === "VENDOR" || selectedRole === "VENDOR_OPERATIONS") && (
+          {(selectedRole === "VENDOR" || selectedRole === "VENDOR_OPERATIONS") && (
             <Form.Item
               label="Vendor Code"
-              name="code"
+              name="vendor_code"
               rules={[
                 {
                   required: true,

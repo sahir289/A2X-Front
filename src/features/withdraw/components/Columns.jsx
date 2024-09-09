@@ -119,7 +119,7 @@ export const Columns = (
               options={merchantOptions}
               onChange={onChange}
               filters={filters}
-              disabled={userData?.role === "MERCHANT" || "OPERATIONS"}
+              disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}
             />
           );
         }}

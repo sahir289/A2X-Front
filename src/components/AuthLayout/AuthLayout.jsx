@@ -2,29 +2,30 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useState } from 'react';
-import {jwtDecode} from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 
 
-export const PermissionContext = createContext ({
+export const PermissionContext = createContext({
   role: null,
   userName: null,
   userId: null,
-  code:null
+  code: null,
+  vendor_code: null
 });
 const AuthLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [userId,setUserId]=useState('')
+  const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
   const [role, setRole] = useState('')
-  const [code,setCode]=useState('')
-
+  const [code, setCode] = useState('')
+  const [vendorCode, setVendorCode] = useState('')
 
 
   // // To change the title.
   const { pathname } = useLocation();
   const token = localStorage.getItem("accessToken");
-  
+
   const path = window.location.pathname;
   useEffect(() => {
     if (token) {
@@ -43,29 +44,30 @@ const AuthLayout = () => {
       }
     }
   }, [pathname]);
-useEffect(()=>{
-  if (token) {
-    try {
-      const userData = jwtDecode(token);
-      if (userData) {
-        setRole(userData?.role);
-        setUserId(userData?.id);
-        setUserName(userData?.userName);
-        setCode(userData?.code)
+  useEffect(() => {
+    if (token) {
+      try {
+        const userData = jwtDecode(token);
+        if (userData) {
+          setRole(userData?.role);
+          setUserId(userData?.id);
+          setUserName(userData?.userName);
+          setCode(userData?.code)
+          setVendorCode(userData?.vendor_code)
+        }
+      } catch (error) {
+        localStorage.removeItem('accessToken');
+        navigate('/');
       }
-    } catch (error) {
-      localStorage.removeItem('accessToken');
-      navigate('/');
     }
-  }
-}, [token])
+  }, [token])
 
-  const permissionHandle=(userId,userName,role,code)=>{
+  const permissionHandle = (userId, userName, role, code,vendor_code) => {
     setUserId(userId)
     setUserName(userName)
     setRole(role)
     setCode(code)
-
+    setVendorCode(vendor_code)
   }
 
   return <PermissionContext.Provider
@@ -74,6 +76,7 @@ useEffect(()=>{
       userName,
       role,
       code,
+      vendorCode,
       permissionHandle
     }}
   >

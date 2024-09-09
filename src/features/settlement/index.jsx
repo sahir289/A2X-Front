@@ -178,13 +178,9 @@ export default function Settlement() {
   }
 
 
-  // const merchantOptions = merchants
-  //   .map(el => ({
-  //     value: el.code,
-  //     label: el.code
-  //   }))
 
-    const merchantOptions = merchants
+
+  const merchantOptions = merchants
     ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
     .map(merchant => ({
       label: merchant.code,
