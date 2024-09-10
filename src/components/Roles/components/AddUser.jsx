@@ -21,14 +21,11 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
   const commonOptions = [
     { label: "Merchant", value: "MERCHANT" },
-    // { label: "Customer Service", value: "CUSTOMER_SERVICE" },
     { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Operations", value: "OPERATIONS" },
     { label: 'Vendor', value: 'VENDOR' }
   ];
   const merchantOptions = [
-    // { label: "Customer Service", value: "CUSTOMER_SERVICE" },
-    // { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Merchant-Operations", value: "MERCHANT_OPERATIONS" },
   ];
   const vendorOptions = [
@@ -47,13 +44,14 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
     }
 
     const dropdownOptions = merchantApiRes?.data?.data?.merchants
-      ?.filter(merchant => userData?.code.includes(merchant.code))    //!userData?.code ||
-    .map(merchant => ({
-      label: merchant.code,
-      value: merchant.code,
-    }));
+      ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
+      .map(merchant => ({
+        label: merchant.code,
+        value: merchant.code,
+      }));
     setMerchantCodeOptions(dropdownOptions);
   };
+
   const fetchVendorData = async () => {
     const vendorApiRes = await getApi("/getall-vendor");
     if (vendorApiRes.error?.error?.response?.status === 401) {
@@ -86,15 +84,14 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
   const onFinish = async (values) => {
     setLoading(true)
-    console.log("🚀 ~ onFinish ~ values:", values)
     const formData = {
       fullName: values.fullName?.trim(),
       userName: values.userName?.trim(),
       password: values.password,
       role: values.role,
-      code: typeof values.code ==="string" ? [values.code] :values.code ,
+      code: typeof values.code === "string" ? [values.code] : values.code,
       createdBy: context?.userId,
-      vendor_code:values?.vendor_code
+      vendor_code: values?.vendor_code
     };
 
     const addUser = await postApi("/create-user", formData).then((res) => {
@@ -105,7 +102,6 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
         return;
       }
     }).catch((err) => {
-      console.log("🚀 ~ addUser ~ err:", err)
     }).finally(() => {
       setLoading(false)
       setIsAddModelOpen(false);
@@ -182,7 +178,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
             <Select placeholder="Please select" options={roleOptions} />
           </Form.Item>
 
-          {(selectedRole === "MERCHANT" ) && (
+          {(selectedRole === "MERCHANT") && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -197,11 +193,11 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={merchantCodeOptions}
-                // mode={selectedRole ==="OPERATIONS" ?"multiple":undefined}
+              // mode={selectedRole ==="OPERATIONS" ?"multiple":undefined}
               />
             </Form.Item>
           )}
-          {(selectedRole === "OPERATIONS" || selectedRole === "MERCHANT_OPERATIONS") && (
+          {(selectedRole === "OPERATIONS" ) && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -215,7 +211,24 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={merchantCodeOptions}
-              mode="multiple"
+                mode="multiple"
+              />
+            </Form.Item>
+          )}
+           {(selectedRole === "MERCHANT_OPERATIONS") && (
+            <Form.Item
+              label="Merchant Code"
+              name="code"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select your code!",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Please select"
+                options={merchantCodeOptions}
               />
             </Form.Item>
           )}
