@@ -13,6 +13,9 @@ const UserRoles = lazy(() => import("../pages/protected/user/Roles"));
 const SettlementsAccounts = lazy(() =>
   import("../pages/protected/settlements/Accounts")
 );
+const VendorSettlementsAccounts = lazy(() =>
+  import("../pages/protected/vendorSettlements/Accounts")
+);
 const Merchant = lazy(() => import("../pages/protected/merchant/Merchant"));
 const Vendor = lazy(() => import("../pages/protected/vendor/Vendor"));
 const BankAccounts = lazy(() =>
@@ -76,6 +79,10 @@ const routes = [
   {
     path: "/settlements",
     component: SettlementsAccounts,
+  },
+  {
+    path: "/vendorsettlements",
+    component: VendorSettlementsAccounts,
   },
 
   //Merchant

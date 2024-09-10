@@ -1,11 +1,11 @@
 
 import { useContext, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import All from '../../../features/settlement/index.jsx'
+import All from '../../../features/vendorsettlement/index.jsx'
 import { setPageTitle } from '../../../redux/slice/headerSlice.jsx'
 import { PermissionContext } from '../../../components/AuthLayout/AuthLayout.jsx'
 
-function VendorAccounts() {
+function Accounts() {
   const dispatch = useDispatch()
 
   const AllowedRoles = ["ADMIN","MERCHANT","VENDOR","OPERATIONS","TRANSACTIONS"]
@@ -22,4 +22,4 @@ function VendorAccounts() {
   )
 }
 
-export default VendorAccounts;
+export default Accounts;

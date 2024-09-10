@@ -27,15 +27,16 @@ export default function Settlement() {
   })
   const userData = useContext(PermissionContext)
   const [filters, setFilters] = useState({
-    code: String(userData?.code) || "",
+    code: userData?.vendorCode ? String(userData?.vendorCode) : "",
 
   });
+  const [vendorOptions,setVendorOptions]=useState([])
   const [pagination, setPagination] = useState({
     page: 1,
     take: 20,
   })
   const { data, total } = settlements;
-  const merchants = useSelector(state => state?.merchant?.data);
+  // const merchants = useSelector(state => state?.merchant?.data);
   const navigate = useNavigate()
 
   // useEffect(() => {
@@ -62,7 +63,9 @@ export default function Settlement() {
     if (!debounced) {
       getSettlementList({
         ...queryObj,
-        code: String(userData?.code)  || queryObj.code || null,
+        // code: String(userData?.vendorCode) || queryObj.code || null,
+        code: queryObj.code || "",
+
       });
       return;
     }
@@ -70,7 +73,8 @@ export default function Settlement() {
     timer.current = setTimeout(() => {
       getSettlementList({
         ...queryObj,
-        code: String(userData?.code) || queryObj.code || null,
+        // code: String(userData?.vendorCode) || queryObj.code || null,
+        code: queryObj.code || "",
       });
     }, 1500);
   }
@@ -78,7 +82,7 @@ export default function Settlement() {
   const getSettlementList = async (queryObj) => {
     const query = getQueryFromObject(queryObj);
     setIsLoading(true);
-    const res = await getApi(`/getall-settlement${query}`);
+    const res = await getApi(`/getall-vendorsettlement${query}`);
     setIsLoading(false);
     if (res?.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
@@ -119,7 +123,7 @@ export default function Settlement() {
   const handleSubmit = async (data) => {
 
     setAddLoading(true);
-    const res = await postApi("/create-settlement", data);
+    const res = await postApi("/create-vendorsettlement", data);
     setAddLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
@@ -168,7 +172,7 @@ export default function Settlement() {
       return;
     }
     setIsLoading(true);
-    const res = await putApi(`/update-settlement/${settlementId}`, data);
+    const res = await putApi(`/update-vendorsettlement/${settlementId}`, data);
     setIsLoading(false);
     if (res.error) {
       return;
@@ -176,16 +180,23 @@ export default function Settlement() {
     setEditSettlement(null);
     handleGetSettlements();
   }
+useEffect(()=>{
+  getAllVerdors()
+},[])
 
 
+  const getAllVerdors=async ()=>{
+    const vendors = await getApi('/getall-vendor')
+    console.log("🚀 ~ getAllVerdors ~ userData?.vendor_code:", userData)
 
-
-  const merchantOptions = merchants
-    ?.filter(merchant =>  !userData.code.length || userData?.code?.includes(merchant?.code) )
-  .map(merchant => ({
-    label: merchant.code,
-    value: merchant.code,
-  }));
+    const merchantOptions = vendors?.data?.data
+      ?.filter(merchant => !userData?.vendorCode || merchant?.vendor_code === userData?.vendorCode)
+    .map(merchant => ({
+      label: merchant.vendor_code,
+      value: merchant.vendor_code,
+    }));
+    setVendorOptions(merchantOptions)
+  }
 
   const labelCol = { span: 6 };
   //reset search fields
@@ -199,7 +210,7 @@ export default function Settlement() {
       {notificationContext}
       <div className='bg-white rounded-[8px] p-[8px]'>
         <div className='flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]'>
-          <p className='text-lg font-medium p-[5px]'>Settlement List</p>
+          <p className='text-lg font-medium p-[5px]'>Vendor Settlement List</p>
           <div className='flex items-start gap-4 max-[500px]:justify-end'>
             <div className='flex flex-col items-start'>
               <Button
@@ -220,7 +231,7 @@ export default function Settlement() {
           <TableComponent
             loading={isLoading}
             data={data}
-            merchantOptions={merchantOptions}
+            merchantOptions={vendorOptions}
             filters={filters}
             onFilterChange={onFilterChange}
             updateSettlementStatus={updateSettlementStatus}
@@ -280,11 +291,11 @@ export default function Settlement() {
         >
           <Form.Item
             name="code"
-            label="Merchant"
+            label="Vendor"
             rules={RequiredRule}
           >
             <Select
-              options={merchantOptions}
+              options={vendorOptions}
             />
           </Form.Item>
           <Form.Item

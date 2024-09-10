@@ -108,6 +108,23 @@ const routes = [
     ],
   },
   {
+    path: "",
+    icon: <BanknotesIcon className={`${iconClasses} inline`} />, // icon component
+    name: "Vendor Settlements", // name that appear in Sidebar
+    submenu: [
+      // {
+      //   path: '/app/settlements/transaction',
+      //   icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
+      //   name: 'Transactions', // name that appear in Sidebar
+      // },
+      {
+        path: "/app/vendorsettlements",
+        icon: <UserCircleIcon className={submenuIconClasses} />,
+        name: "Accounts",
+      },
+    ],
+  },
+  {
     path: "/app/merchant",
     icon: <CreditCardIcon className={iconClasses} />,
     name: "Merchant",

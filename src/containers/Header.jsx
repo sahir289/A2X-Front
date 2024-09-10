@@ -3,7 +3,7 @@ import { Tooltip } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Logout } from '../utils/constants'
-
+import { formatString } from '../utils/utils'
 
 
 
@@ -45,7 +45,7 @@ function Header() {
 
           <div className='font-serif px-4'>
             <p className='font-semibold'>{userData?.name}</p>
-            <p className=' text-sm'>{userData?.role}</p>
+            <p className=' text-sm'>{formatString(userData?.role)}</p>
           </div>
           <Tooltip title="Logout">
             <span  onClick={logoutUser}>

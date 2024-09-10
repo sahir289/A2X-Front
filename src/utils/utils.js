@@ -87,3 +87,9 @@ export const parseErrorFromAxios = (err) => {
     message: err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || "Unknown Error",
   };
 }
+
+export function formatString(input) {
+  return input?.split('_') // Split the string by underscores
+    ?.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+    ?.join(' '); // Join the words with spaces
+}
