@@ -29,15 +29,33 @@ export function formatCurrency(amount) {
 }
 
 
+// export const getQueryFromObject = (obj = {}) => {
+//   console.log("🚀 ~ getQueryFromObject ~ obj:", obj)
+//   const queryParams = [];
+//   for (const name in obj) {
+//     if (obj[name] !== undefined && obj[name] !== null && obj[name] !== "" ) {
+//       queryParams.push(`${name}=${obj[name]}`);
+//     }
+//   }
+//   return `?${queryParams.join("&")}`
+// }
+
 export const getQueryFromObject = (obj = {}) => {
   const queryParams = [];
   for (const name in obj) {
-    if (obj[name]) {
-      queryParams.push(`${name}=${obj[name]}`);
+    const value = obj[name];
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== "" &&
+      (!Array.isArray(value) || value.length > 0)
+    ) {
+      queryParams.push(`${name}=${Array.isArray(value) ? value.join(",") : value}`);
     }
   }
-  return `?${queryParams.join("&")}`
+  return queryParams.length ? `?${queryParams.join("&")}` : '';
 }
+
 
 export function invalidText(value) {
   return (

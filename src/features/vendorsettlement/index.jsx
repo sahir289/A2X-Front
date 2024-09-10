@@ -27,7 +27,7 @@ export default function Settlement() {
   })
   const userData = useContext(PermissionContext)
   const [filters, setFilters] = useState({
-    code: userData?.vendorCode ? String(userData?.vendorCode) : "",
+    code: userData?.vendorCode ? userData?.vendorCode : null,
 
   });
   const [vendorOptions,setVendorOptions]=useState([])

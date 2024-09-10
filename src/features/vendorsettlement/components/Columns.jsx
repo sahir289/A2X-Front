@@ -56,6 +56,23 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
         />
     )
 }
+const ColumnSelectMultiple = ({ name, options, filters, onChange, ...props }) => {
+    return (
+        <Select
+            {...props}
+            name={name}
+            options={options}
+            className='w-full'
+            value={filters[name]}
+            onChange={(v) => {
+                onChange(name, v)
+            }}
+            mode='multiple'
+            allowClear={false}
+            maxTagCount={'responsive'}
+        />
+    )
+}
 
 export const Columns = (merchantOptions, filters, onChange, updateSettlementStatus, userData) => {
     return (
@@ -73,7 +90,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                 }}
             />
             <Column
-                title='Merchant'
+                title='Vendor'
                 dataIndex='Merchant'
                 width="130px"
                 ellipsis
@@ -81,7 +98,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v?.code;
                     }
-                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}/>
+                    return <ColumnSelectMultiple name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}/>
                 }}
             />
             <Column

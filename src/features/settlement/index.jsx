@@ -27,7 +27,7 @@ export default function Settlement() {
   })
   const userData = useContext(PermissionContext)
   const [filters, setFilters] = useState({
-    code: userData?.code?.length ? String(userData?.code[0]) : "",
+    code: userData?.code?.length ? userData?.code : null
 
   });
   const [pagination, setPagination] = useState({
