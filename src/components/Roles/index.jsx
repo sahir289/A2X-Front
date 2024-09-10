@@ -26,6 +26,7 @@ const RolesComponent = () => {
   const fetchUsersData = async () => {
     setIsFetchUsersLoading(true);
     const usersApiRes = await getApi("/getall-users", filterValues);
+    console.log("🚀 ~ fetchUsersData ~ usersApiRes:", usersApiRes)
     setIsFetchUsersLoading(false);
     if (usersApiRes.error) {
       return;

@@ -1,17 +1,21 @@
 import { DownloadOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Form, Select } from 'antd';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
+import { PermissionContext } from '../AuthLayout/AuthLayout';
 
 const { RangePicker } = DatePicker;
 
 const PayDesign = ({ handleFinish, title, loading, statusOptions }) => {
   const merchantCodes = useSelector((state) => state.merchant.data)
-  //make options list
-  const merchantOptions = merchantCodes.map((el) => ({
-    key: el.code,
-    value: el.code,
-  }))
+  const userData = useContext(PermissionContext);
+  const merchantOptions = merchantCodes
+    ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
+    .map(merchant => ({
+      label: merchant.code,
+      value: merchant.code,
+    }));
+
   return (
     <div className='bg-white p-4'>
       <p className='font-bold text-lg'>{title}</p>

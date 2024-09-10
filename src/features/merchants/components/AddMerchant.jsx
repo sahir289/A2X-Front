@@ -8,7 +8,7 @@ import {
   Select,
   Switch,
 } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { postApi } from "../../../redux/api";
 
 const selectBefore = (name) => {
@@ -39,7 +39,7 @@ const AddMerchant = ({
 }) => {
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
-
+  const [loading, setLoading] = useState(false);
   const handleModalOk = () => {
     setIsAddModelOpen(false);
     form.resetFields();
@@ -51,6 +51,7 @@ const AddMerchant = ({
   };
 
   const onFinish = async (values) => {
+    setLoading(true)
     const formData = {
       code: values.code,
       site_url: `${values.site_url_protocol}${values.site_url}`,
@@ -66,17 +67,24 @@ const AddMerchant = ({
       balance: Number(0).toPrecision(3),
     };
 
-    const AddMerchant = await postApi("/create-merchant", formData);
-    if (AddMerchant.error) {
-      api.error({
-        description: `Error: ${AddMerchant.error.message}`,
-      });
-      return;
-    }
+    const AddMerchant = await postApi("/create-merchant", formData).then((res) => {
+      if (res.error) {
+        api.error({
+          description: `Error: ${res.error.message}`,
+        });
+        return;
+      }
+    }).catch((err) => {
+      console.log("🚀 ~ AddMerchant ~ err:", err)
+    }).finally(() => {
+      setLoading(false)
+      setIsAddModelOpen(false);
+      handleTableChange({ current: 1, pageSize: 20 });
+      form.resetFields();
+    });
 
-    setIsAddModelOpen(false);
-    handleTableChange({ current: 1, pageSize: 20 });
-    form.resetFields();
+
+
   };
 
   return (
@@ -282,8 +290,8 @@ const AddMerchant = ({
               </Button>
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Ok
+              <Button type="primary" htmlType="submit" loading={loading}>
+                Save
               </Button>
             </Form.Item>
           </div>
