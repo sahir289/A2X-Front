@@ -52,7 +52,7 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
             onChange={(v) => {
                 onChange(name, v)
             }}
-            allowClear
+            allowClear={false}
         />
     )
 }
@@ -81,7 +81,9 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v?.code;
                     }
-                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}/>
+                    return <ColumnSelect name="code" options={merchantOptions} onChange={onChange} filters={filters}
+                    //   disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}
+                      />
                 }}
             />
             <Column

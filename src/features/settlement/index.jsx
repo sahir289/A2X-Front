@@ -27,7 +27,7 @@ export default function Settlement() {
   })
   const userData = useContext(PermissionContext)
   const [filters, setFilters] = useState({
-    code: String(userData?.code) || "",
+    code: userData?.code?.length ? String(userData?.code[0]) : "",
 
   });
   const [pagination, setPagination] = useState({
@@ -62,7 +62,8 @@ export default function Settlement() {
     if (!debounced) {
       getSettlementList({
         ...queryObj,
-        code: String(userData?.code)  || queryObj.code || null,
+        // code: queryObj?.code || String(userData?.code[0]),
+        code: queryObj?.code || ""
       });
       return;
     }
@@ -70,7 +71,9 @@ export default function Settlement() {
     timer.current = setTimeout(() => {
       getSettlementList({
         ...queryObj,
-        code: String(userData?.code) || queryObj.code || null,
+        // code: queryObj?.code || String(userData?.code[0]),
+        code: queryObj?.code || ""
+
       });
     }, 1500);
   }

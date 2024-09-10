@@ -47,7 +47,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
     }
 
     const dropdownOptions = merchantApiRes?.data?.data?.merchants
-      ?.filter(merchant => userData?.code.includes(merchant.code))    //!userData?.code ||
+      ?.filter(merchant =>!userData?.code?.length || userData?.code.includes(merchant.code))    //!userData?.code ||
     .map(merchant => ({
       label: merchant.code,
       value: merchant.code,
