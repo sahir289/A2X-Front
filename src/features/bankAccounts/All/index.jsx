@@ -13,7 +13,8 @@ function All() {
     ac_no: "",
     upi_id: "",
     role:`${userData?.role}`,
-    code : `${userData?.code || ""}`,
+    vendor_code: `${userData?.vendorCode || ""}`,
+    code: `${userData?.code || ""}`,
     page: 1,
     pageSize: 20,
   });

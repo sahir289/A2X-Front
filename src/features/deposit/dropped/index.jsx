@@ -18,6 +18,7 @@ function Dropped() {
     confirmed: '',
     amount: '',
     merchantOrderId: '',
+    vendorCode: `${userData?.vendorCode || ""}`,
     merchantCode: `${userData?.code || ""}`,
     userId: '',
     userSubmittedUtr: '',

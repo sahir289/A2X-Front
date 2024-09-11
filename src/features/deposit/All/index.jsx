@@ -19,6 +19,7 @@ function All() {
     amount: '',
     merchantOrderId: '',
     merchantCode: `${userData?.code || ""}`,
+    vendorCode: `${userData?.vendorCode || ""}`,
     userId: '',
     userSubmittedUtr: '',
     utr: '',
