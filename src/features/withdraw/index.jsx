@@ -27,6 +27,8 @@ import Table from "./components/Table";
 const Withdraw = ({ type }) => {
   const timer = useRef(null);
   const userData = useContext(PermissionContext);
+  const navigate = useNavigate();
+
   const [modal, contextHolder] = Modal.useModal();
   const [api, notificationContext] = notification.useNotification();
   const [filters, setFilters] = useState({
@@ -45,13 +47,20 @@ const Withdraw = ({ type }) => {
     page: 1,
     take: 20,
   });
-  const navigate = useNavigate();
 
   const merchantData = useSelector((state) => state.merchant.data);
-  const merchants = userData?.code ? [{ code: userData.code }] : merchantData;
+  const merchantOptions = merchantData
+  ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
+  .map(merchant => ({
+    label: merchant.code,
+    value: merchant.code,
+  }));
+
+
   useEffect(() => {
     handleGetWithdraws();
   }, []);
+
   useEffect(() => {
     setPagination({
       page: 1,
@@ -202,15 +211,13 @@ const Withdraw = ({ type }) => {
     handleGetWithdraws();
   };
 
-  const merchantOptions = merchants.map((el) => ({
-    value: el.code,
-    label: el.code,
-  }));
+
 
   //Select UTR Method
   const handleSelectUTRMethod = (selectedMethod) => {
     setSelectedUTRMethod(selectedMethod);
   };
+  
   //reset search fields
   const handleResetSearchFields = () => {
     setFilters({});

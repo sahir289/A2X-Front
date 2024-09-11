@@ -71,7 +71,7 @@ export const Columns = (
         title="ID"
         dataIndex="sno"
         ellipsis
-        width="100px"
+        width="80px"
         render={(v, r, i) => {
           if (i) {
             return v;
@@ -89,7 +89,7 @@ export const Columns = (
       <Column
         title="Merchant Order Id"
         dataIndex="merchant_order_id"
-        width="130px"
+        width="330px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
@@ -119,7 +119,7 @@ export const Columns = (
               options={merchantOptions}
               onChange={onChange}
               filters={filters}
-              disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}
+              disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : userData?.role === "MERCHANT_OPERATIONS" ? true : false}
             />
           );
         }}
@@ -164,7 +164,7 @@ export const Columns = (
       <Column
         title="Amount"
         dataIndex="amount"
-        width="100px"
+        width="130px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
@@ -198,7 +198,7 @@ export const Columns = (
       <Column
         title="Bank Details"
         dataIndex="acc_no"
-        width="250px"
+        width="180px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
@@ -239,7 +239,7 @@ export const Columns = (
       <Column
         title="Payout UUID"
         dataIndex="id"
-        width="140px"
+        width="320px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
@@ -253,63 +253,64 @@ export const Columns = (
       <Column
         title="Last Updated"
         dataIndex="updatedAt"
-        width="140px"
+        width="160px"
         ellipsis
-        render={(v) => (v ? new Date(v).toDateString() : "-")}
+        render={(v) => (v ? new Date(v).toDateString() : "")}
       />
-      <Column
-        title="Option"
-        width="110px"
-        render={(v, r, i) => {
-          if (!i) {
-            return null;
-          }
-          if (r.status == "INITIATED") {
+      {userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" &&
+        <Column
+          title="Option"
+          width="110px"
+          render={(v, r, i) => {
+            if (!i) {
+              return null;
+            }
+            if (r.status == "INITIATED") {
+              return (
+                <Dropdown.Button
+                  type="primary"
+                  onClick={() =>
+                    updateWithdraw({
+                      record: r,
+                      key: "approve",
+                    })
+                  }
+                  menu={{
+                    items: [
+                      {
+                        key: "approve",
+                        label: "Approve",
+                      },
+                      {
+                        key: "reject",
+                        label: "Reject",
+                      },
+                    ],
+                    onClick: (info) =>
+                      updateWithdraw({
+                        record: r,
+                        ...info,
+                      }),
+                  }}
+                >
+                  Approve
+                </Dropdown.Button>
+              );
+            }
             return (
-              <Dropdown.Button
-                type="primary"
+              <Button
                 onClick={() =>
                   updateWithdraw({
                     record: r,
-                    key: "approve",
+                    reset: true,
                   })
                 }
-                menu={{
-                  items: [
-                    {
-                      key: "approve",
-                      label: "Approve",
-                    },
-                    {
-                      key: "reject",
-                      label: "Reject",
-                    },
-                  ],
-                  onClick: (info) =>
-                    updateWithdraw({
-                      record: r,
-                      ...info,
-                    }),
-                }}
               >
-                Approve
-              </Dropdown.Button>
+                Reset
+              </Button>
             );
-          }
-          return (
-            <Button
-              onClick={() =>
-                updateWithdraw({
-                  record: r,
-                  reset: true,
-                })
-              }
-            >
-              Reset
-            </Button>
-          );
-        }}
-      />
+          }}
+        />}
     </>
   );
 };
