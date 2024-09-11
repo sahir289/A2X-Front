@@ -63,6 +63,7 @@ export function invalidText(value) {
   );
 }
 export const statusOptions = [
+  { value: '', label: 'All' },
   { value: 'INITIATED', label: 'INITIATED' },
   { value: 'ASSIGNED', label: 'ASSIGNED' },
   { value: 'SUCCESS', label: 'SUCCESS' },

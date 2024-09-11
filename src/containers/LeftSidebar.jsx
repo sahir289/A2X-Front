@@ -12,21 +12,31 @@ function LeftSidebar() {
 
   const dispatch = useDispatch()
   const context = useContext(PermissionContext)
+  console.log("🚀 ~ LeftSidebar ~ context:", context)
 
   const close = (e) => {
     document.getElementById('left-sidebar-drawer').click()
   }
   useEffect(() => {
     const filterRoutes = routes.filter(route => {
-      if (context.role === "MERCHANT" && (route.name === "Bank Accounts" || route.name === "Vendor" || route.name === "Merchant")||route.name === "Add data") return false;
+      if (context.role === "MERCHANT" && (route.name === "Bank Accounts" || route.name === "Vendor" || route.name === "Merchant" || route.name === "Add data"))
+        return false;
 
-      if ((context?.role === "OPERATIONS" || context?.role === "MERCHANT_OPERATIONS") && (route.name === "Add data" || route.name === "Bank Accounts" || route.name == "Merchant" || route.name === "User" ||  route.name === "Vendor")||route.name === "Add data") return false;
+      if ((context?.role === "OPERATIONS" || context?.role === "MERCHANT_OPERATIONS") &&
+        (route.name === "Add data" || route.name === "Bank Accounts" || route.name === "Merchant" || route.name === "User" || route.name === "Vendor"))
+        return false;
 
-      if (context?.role === "VENDOR" && (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports") ||route.name === "Add data") return false;
+      if (context?.role === "VENDOR" &&
+        (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports"))
+        return false;
+
+      // Allow "Add data" for all other roles, including ADMIN
       return true;
     });
-    setFilteredRoutes(filterRoutes)
-  }, [routes, context])
+
+    setFilteredRoutes(filterRoutes);
+  }, [routes, context]);
+
 
   return (
     <div className="drawer-side  z-30  ">
@@ -41,6 +51,7 @@ function LeftSidebar() {
           <p><img className="mask mask-squircle w-10" src="/logo192.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
         {
           filteredRoutes.map((route, k) => {
+            console.log("🚀 ~ filteredRoutes.map ~ route:", route)
             return (
               <li className="" key={k}>
                 {
