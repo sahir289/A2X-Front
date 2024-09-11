@@ -118,7 +118,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   }, []);
 
   const merchantOptions = merchants
-    ?.filter(merchant => !userData?.code || merchant?.code === userData?.code)
+    ?.filter(merchant => !userData?.code.length || userData?.code?.includes(merchant?.code))
     .map(merchant => ({
       label: merchant.code,
       value: merchant.code,

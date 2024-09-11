@@ -27,7 +27,6 @@ export const walletOptions = ["WALLET1", "WALLET2"]
   }))
 
 const Table = ({ loading, data, merchantOptions, filters, onFilterChange, updateSettlementStatus, userData}) => {
-  console.log("🚀 ~ Table ~ merchantOptions:", merchantOptions)
   return (
     <AntTable
       rowKey="id"
