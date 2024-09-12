@@ -187,7 +187,6 @@ useEffect(()=>{
 
   const getAllVerdors=async ()=>{
     const vendors = await getApi('/getall-vendor')
-    console.log("🚀 ~ getAllVerdors ~ userData?.vendor_code:", userData)
 
     const merchantOptions = vendors?.data?.data
       ?.filter(merchant => !userData?.vendorCode || merchant?.vendor_code === userData?.vendorCode)

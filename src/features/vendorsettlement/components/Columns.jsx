@@ -91,12 +91,12 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
             />
             <Column
                 title='Vendor'
-                dataIndex='Merchant'
+                dataIndex='Vendor'
                 width="130px"
                 ellipsis
                 render={(v, r, i) => {
                     if (i) {
-                        return v?.code;
+                        return v?.vendor_code;
                     }
                     return <ColumnSelectMultiple name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}/>
                 }}
