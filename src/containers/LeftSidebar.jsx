@@ -12,7 +12,7 @@ function LeftSidebar() {
 
   const dispatch = useDispatch()
   const context = useContext(PermissionContext)
-  console.log("🚀 ~ LeftSidebar ~ context:", context)
+  // console.log("🚀 ~ LeftSidebar ~ context:", context)
 
   const close = (e) => {
     document.getElementById('left-sidebar-drawer').click()
@@ -51,7 +51,7 @@ function LeftSidebar() {
           <p><img className="mask mask-squircle w-10" src="/logo192.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
         {
           filteredRoutes.map((route, k) => {
-            console.log("🚀 ~ filteredRoutes.map ~ route:", route)
+            // console.log("🚀 ~ filteredRoutes.map ~ route:", route)
             return (
               <li className="" key={k}>
                 {
