@@ -16,6 +16,7 @@ const UpdateMerchant = ({
   const [deletedId, setDeletedId] = useState(null);
   const [newMerchant, setNewMerchant] = useState(null);
   const [selectedMerchant, setSelectedMerchant] = useState([]);
+  const [loading,setLoading]=useState(false)
   const [form] = Form.useForm();
 
   const handleModalCancel = () => {
@@ -44,12 +45,14 @@ const UpdateMerchant = ({
   };
 
   const onUpdateMerchant = async () => {
+    setLoading(true)
     const formData = selectedMerchant.map((merchant) => ({
       bankAccountId: record?.id,
       merchantId: merchant?.id,
     }));
 
     if (formData.length === 0) {
+      setLoading(false)
       return;
     }
 
@@ -58,16 +61,24 @@ const UpdateMerchant = ({
         return;
       }
 
-      const addBankMerchant = await postApi("/add-bank-merchant", element);
-      if (addBankMerchant.error) {
-        return;
-      }
+      const addBankMerchant = await postApi("/add-bank-merchant", element).then(async(res) => {
+        if (res?.error) {
+          return;
+        }
+        await getBankMerchant(res?.data?.data?.merchantId);
+        setSelectedMerchant((prev) =>
+          prev.filter((prevMerchant) => prevMerchant?.id !== element?.merchantId)
+        );
+      }).catch((err) => {
+        console.log("🚀 ~ addBankMerchant ~ err:", err)
 
-      await getBankMerchant(addBankMerchant?.data?.data?.merchantId);
+      }).finally(async() => {
+        setLoading(false)
+        handleModalCancel()
+      });
 
-      setSelectedMerchant((prev) =>
-        prev.filter((prevMerchant) => prevMerchant?.id !== element?.merchantId)
-      );
+
+
     }
 
     handleTableChange({ current: 1, pageSize: 20 });
@@ -121,7 +132,7 @@ const UpdateMerchant = ({
           <Button key="back" onClick={handleModalCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={onUpdateMerchant}>
+          <Button key="submit" type="primary" onClick={onUpdateMerchant} loading={loading}>
             Update
           </Button>,
         ]}

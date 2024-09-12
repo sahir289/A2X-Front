@@ -57,7 +57,7 @@ const TableComponent = ({
         </div>
       </div>
       <Table
-        dataSource={data.merchants}
+        dataSource={data?.merchants}
         rowKey={(item) => item.id}
         scroll={{
           // y: 240,
