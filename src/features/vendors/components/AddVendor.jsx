@@ -31,7 +31,7 @@ const AddVendor = ({
   };
 
   const onFinish = async (values) => {
-    console.log("Success:", values);
+    // console.log("Success:", values);
     const formData = {
       vendor_code: values.vendor_code,
       vendor_commission: `${values.vendor_commission}`,

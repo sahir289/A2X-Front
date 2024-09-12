@@ -23,7 +23,7 @@ function All() {
   const fetchUsersData = async () => {
     setIsFetchDataLoading(true);
     const data = await getApi("/getall-vendor", filterValues);
-    console.log(data);
+    // console.log(data);
     setIsFetchDataLoading(false);
     if (data.error?.error?.response?.status === 401) {
       NotificationManager.error(data?.error?.message, 401);
