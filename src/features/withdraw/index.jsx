@@ -51,7 +51,7 @@ const Withdraw = ({ type }) => {
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
-    ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
+    ?.filter(merchant => !userData?.code?.length || userData?.code.includes(merchant.code))
     .map(merchant => ({
       label: merchant.code,
       value: merchant.code,
