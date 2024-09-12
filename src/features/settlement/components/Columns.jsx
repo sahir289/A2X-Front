@@ -181,10 +181,10 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} />;
                 }}
             />
-            {userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS"  &&
+            {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" ) &&
                 <Column
                     title='Option'
-                    width="110px"
+                    width="155px"
                     render={(v, r, i) => {
                         if (!i) {
                             return null;

@@ -33,6 +33,7 @@ const Withdraw = ({ type }) => {
   const [api, notificationContext] = notification.useNotification();
   const [filters, setFilters] = useState({
     code: userData?.code || "",
+    vendorCode:userData?.vendorCode || "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
@@ -50,11 +51,11 @@ const Withdraw = ({ type }) => {
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
-  ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
-  .map(merchant => ({
-    label: merchant.code,
-    value: merchant.code,
-  }));
+    ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
+    .map(merchant => ({
+      label: merchant.code,
+      value: merchant.code,
+    }));
 
 
   useEffect(() => {
@@ -87,6 +88,7 @@ const Withdraw = ({ type }) => {
       getPayoutList({
         ...queryObj,
         code: userData?.code || queryObj.code || null,
+        vendorCode:userData?.vendorCode || queryObj.code || null,
       });
       return;
     }
@@ -95,6 +97,7 @@ const Withdraw = ({ type }) => {
       getPayoutList({
         ...queryObj,
         code: userData?.code || queryObj.code || null,
+        vendorCode:userData?.vendorCode || queryObj.code || null,
       });
     }, 1500);
   };
@@ -108,8 +111,8 @@ const Withdraw = ({ type }) => {
         type == "In Progress"
           ? "INITIATED"
           : type == "Completed"
-          ? "SUCCESS"
-          : "";
+            ? "SUCCESS"
+            : "";
     }
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
@@ -217,7 +220,7 @@ const Withdraw = ({ type }) => {
   const handleSelectUTRMethod = (selectedMethod) => {
     setSelectedUTRMethod(selectedMethod);
   };
-  
+
   //reset search fields
   const handleResetSearchFields = () => {
     setFilters({});
@@ -232,13 +235,15 @@ const Withdraw = ({ type }) => {
           <p className="text-lg font-medium p-[5px]">{type}</p>
           <div className="flex items-start gap-4 max-[500px]:justify-end">
             <div className="flex flex-col items-start">
-              <Button
-                icon={<PlusOutlined />}
-                type="primary"
-                onClick={handleToggleModal}
-              >
-                New Payout
-              </Button>
+              {!(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
+                (<Button
+                  icon={<PlusOutlined />}
+                  type="primary"
+                  onClick={handleToggleModal}
+                >
+                  New Payout
+                </Button>)}
+
               <Button className="mt-2 w-full" onClick={handleResetSearchFields}>
                 Reset
               </Button>
