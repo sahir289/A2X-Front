@@ -98,7 +98,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v?.code;
                     }
-                    return <ColumnSelectMultiple name="code" options={merchantOptions} onChange={onChange} filters={filters}   disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}/>
+                    return <ColumnSelectMultiple name="code" options={merchantOptions} onChange={onChange} filters={filters} disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false} />
                 }}
             />
             <Column
@@ -180,51 +180,54 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} />;
                 }}
             />
-            <Column
-                title='Option'
-                width="110px"
-                render={(v, r, i) => {
-                    if (!i) {
-                        return null;
-                    }
-                    if (r.status == "INITIATED") {
-                        return (
-                            <Dropdown.Button
-                                type="primary"
-                                onClick={() => updateSettlementStatus({
-                                    record: r,
-                                    key: "approve",
-                                })}
-                                menu={{
-                                    items: [
-                                        {
-                                            key: 'approve',
-                                            label: 'Approve',
-                                        },
-                                        {
-                                            key: 'reject',
-                                            label: 'Reject',
-                                        },
-                                    ],
-                                    onClick: (info) => updateSettlementStatus({
+
+            {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") &&
+                <Column
+                    title='Option'
+                    width="110px"
+                    render={(v, r, i) => {
+                        if (!i) {
+                            return null;
+                        }
+                        if (r.status == "INITIATED") {
+                            return (
+                                <Dropdown.Button
+                                    type="primary"
+                                    onClick={() => updateSettlementStatus({
                                         record: r,
-                                        ...info,
-                                    }),
-                                }}
-                            >
-                                Approve
-                            </Dropdown.Button>
-                        )
-                    }
-                    return (
-                        <Button onClick={() => updateSettlementStatus({
-                            record: r,
-                            reset: true,
-                        })}>
-                            Reset
-                        </Button>);
-                }}
-            />
+                                        key: "approve",
+                                    })}
+                                    menu={{
+                                        items: [
+                                            {
+                                                key: 'approve',
+                                                label: 'Approve',
+                                            },
+                                            {
+                                                key: 'reject',
+                                                label: 'Reject',
+                                            },
+                                        ],
+                                        onClick: (info) => updateSettlementStatus({
+                                            record: r,
+                                            ...info,
+                                        }),
+                                    }}
+                                >
+                                    Approve
+                                </Dropdown.Button>
+                            )
+                        }
+                        return (
+                            <Button onClick={() => updateSettlementStatus({
+                                record: r,
+                                reset: true,
+                            })}>
+                                Reset
+                            </Button>);
+                    }}
+                />
+            }
         </>
     )
 }

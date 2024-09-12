@@ -204,7 +204,7 @@ const Withdraw = ({ type }) => {
   const handleSubmit = async (data) => {
     setAddLoading(true);
 
-    const res = await postApi("/create-payout", { ...data, vendor_code: userData?.vendor_code });
+    const res = await postApi("/create-payout", { ...data, vendor_code: userData?.vendorCode });
     setAddLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });

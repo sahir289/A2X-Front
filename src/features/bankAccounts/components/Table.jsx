@@ -30,8 +30,6 @@ const TableComponent = ({
 
   const navigate = useNavigate()
   const userData = useContext(PermissionContext)
-  console.log("🚀 ~ userData:", userData)
-
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
