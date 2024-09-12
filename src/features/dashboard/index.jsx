@@ -257,7 +257,7 @@ function Dashboard() {
         </div>
       </div>
 
-    
+
       <BarChart
         title={`Deposit`}
         data={depositData}
