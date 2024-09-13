@@ -25,6 +25,11 @@ import {
 import Table from "./components/Table";
 
 const Withdraw = ({ type }) => {
+
+  const style = {
+    width: 'calc(100% - 256px)'
+  };
+
   const timer = useRef(null);
   const userData = useContext(PermissionContext);
   const navigate = useNavigate();
@@ -308,19 +313,30 @@ const Withdraw = ({ type }) => {
             showSizeChanger
           />
         </div>
-        <div className="flex justify-end mt-[10px]">
-          {hasSelected ? `${selectedData.length} item has been selected` : null}
+       </div> 
+      { hasSelected ?
+        <div className="fixed bottom-0 w-full z-99" style={style}>
+          <div className="bg-white p-[8px] font-serif">
+            <div className="flex justify-between">
+              <div className="ml-[10px] text-black">
+                <a className="font-semibold">{selectedData.length} </a>
+                item hs been selected
+              </div>
 
-          <Button
-            className="ml-[20px]"
-            icon={<PlusOutlined />}
-            type="primary"
-            onClick={handleToggleAddVendorModal}
-          >
-            Add Vendor
-          </Button>
+              <Button
+                className="mr-[10px]"
+                icon={<PlusOutlined />}
+                type="primary"
+                onClick={handleToggleAddVendorModal}
+              >
+                Add Vendor
+              </Button>
+
+            </div>
+          </div>
         </div>
-      </div>
+        : null
+      }
 
       <Modal
         title="Withdraw"
