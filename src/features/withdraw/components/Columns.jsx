@@ -67,6 +67,19 @@ export const Columns = (
 ) => {
   return (
     <>
+    {/* <Column
+        // title="ID"
+        dataIndex="id"
+        ellipsis
+        width="80px"
+        render={(v, r, i) => {
+          // if (i) {
+          //   return v;
+          // }
+          checkb
+
+        }}
+      /> */}
       <Column
         title="ID"
         dataIndex="sno"
