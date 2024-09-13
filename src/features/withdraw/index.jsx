@@ -425,7 +425,7 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleAddVendor}>
           <Form.Item name="code" label="Vendor Code" rules={RequiredRule}>
-            <Select options={merchantOptions} />
+            <Select options={merchantOptions} mode="multiple"/>
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
             <Button>Cancel</Button>
