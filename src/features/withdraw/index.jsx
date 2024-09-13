@@ -38,8 +38,10 @@ const Withdraw = ({ type }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [addWithdraw, setAddWithdraw] = useState(false);
+  const [addVendor, setAddVendor] = useState(false);
   const [editWithdraw, setEditWithdraw] = useState(null);
   const [selectedUTRMethod, setSelectedUTRMethod] = useState();
+  const [selectedData, setSelectedData] = useState([]);
   const [withdraws, setWithdraws] = useState({
     data: [],
     total: 0,
@@ -81,6 +83,10 @@ const Withdraw = ({ type }) => {
 
   const handleToggleModal = () => {
     setAddWithdraw(!addWithdraw);
+  };
+
+  const handleToggleAddVendorModal = () => {
+    setAddVendor(!addVendor);
   };
 
   const handleGetWithdraws = async (queryObj = {}, debounced = false) => {
@@ -214,7 +220,26 @@ const Withdraw = ({ type }) => {
     handleGetWithdraws();
   };
 
+  const handleAddVendor = async (data) => {
+    setAddLoading(true);
+    let apiData = {
+      vendorCode: data.code,
+      merchantCode: {selectedData}
+    }
 
+    const res = await postApi("/update-vendor-code", apiData);
+    setAddLoading(false);
+    if (res.error) {
+      api.error({ description: res.error.message });
+      return;
+    }
+    handleToggleAddVendorModal();
+  };
+
+  const handleData = (data) => {
+    setSelectedData(data)
+  // console.log("🚀 ~ selectedData:", selectedData)
+  }
 
   //Select UTR Method
   const handleSelectUTRMethod = (selectedMethod) => {
@@ -267,6 +292,7 @@ const Withdraw = ({ type }) => {
             updateWithdraw={handleUpdateWithdraw}
             type={type}
             userData={userData}
+            setSelectedData={handleData}
           />
         </div>
         <div className="flex justify-end mt-[10px]">
@@ -279,6 +305,18 @@ const Withdraw = ({ type }) => {
             pageSizeOptions={[20, 50, 100]}
             showSizeChanger
           />
+        </div>
+        <div className="flex justify-end mt-[10px]">
+          {`${selectedData.length} item has been selected`}
+
+          <Button
+            className="ml-[20px]"
+            icon={<PlusOutlined />}
+            type="primary"
+            onClick={handleToggleAddVendorModal}
+          >
+            Add Vendor
+          </Button>
         </div>
       </div>
 
@@ -372,6 +410,27 @@ const Withdraw = ({ type }) => {
             <Button>Cancel</Button>
             <Button type="primary" loading={addLoading} htmlType="submit">
               Save
+            </Button>
+          </div>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Add Vendor"
+        open={addVendor}
+        onCancel={handleToggleAddVendorModal}
+        footer={false}
+        width={600}
+        destroyOnClose
+      >
+        <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleAddVendor}>
+          <Form.Item name="code" label="Vendor Code" rules={RequiredRule}>
+            <Select options={merchantOptions} />
+          </Form.Item>
+          <div className="flex justify-end items-center gap-2">
+            <Button>Cancel</Button>
+            <Button type="primary" loading={addLoading} htmlType="submit">
+              Add
             </Button>
           </div>
         </Form>

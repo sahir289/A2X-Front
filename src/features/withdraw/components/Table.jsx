@@ -10,23 +10,28 @@ const Table = ({
   updateWithdraw,
   type,
   userData,
+  setSelectedData
 }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  console.log("🚀 ~ selectedRowKeys:", selectedRowKeys)
+  const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
   const handleCheckboxChange = (row, isChecked) => {
     if (isChecked) {
       setSelectedRowKeys((prev) => [...prev, row.id]);
+      setSelectedData((prev) => [...prev, row.id]);
+
     } else {
       setSelectedRowKeys((prev) => prev.filter((key) => key !== row.id));
+      setSelectedData((prev) => prev.filter((key) => key !== row.id));
     }
   };
 
   const handleSelectAllChange = (isChecked) => {
     if (isChecked) {
       setSelectedRowKeys(data.map((row) => row.id));
+      setSelectedData(data.map((row) => row.id));
     } else {
       setSelectedRowKeys([]);
+      setSelectedData([]);
     }
   };
 
