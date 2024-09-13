@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Empty, Input, Switch, Table, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { getApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
@@ -10,6 +10,7 @@ import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 
 const TableComponent = ({
@@ -28,8 +29,7 @@ const TableComponent = ({
   const [deleteRecord, setDeleteRecord] = useState(null);
 
   const navigate = useNavigate()
-
-
+  const userData = useContext(PermissionContext)
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -125,7 +125,6 @@ const TableComponent = ({
         dataSource={data?.bankAccRes}
         rowKey={(item) => item.id}
         scroll={{
-          // y: 240,
           x: "120vw",
         }}
         className="font-serif px-3"
@@ -399,61 +398,64 @@ const TableComponent = ({
           width={"6%"}
           render={(text, record) => lastLogIn(record)}
         />
-        <Column
-          title={
-            <>
-              Merchants
-              <br />
-              <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
-              />
-            </>
-          }
-          dataIndex="merchants"
-          key="merchants"
-          className="bg-white"
-          width={"6%"}
-          render={(_, record) => {
-            return (
-              <div className="whitespace-nowrap flex gap-2">
-                <Tooltip
-                  color="white"
-                  placement="bottomRight"
-                  title={
-                    <div className="flex flex-col gap-1 text-black p-2">
-                      <div className="font-bold">Merchant List</div>
-                      {(record?.merchants?.length > 0 &&
-                        record?.merchants?.map((merchant) => (
-                          <p key={merchant?.id}>{merchant?.code}</p>
-                        ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                    </div>
-                  }
-                >
-                  <Button type="text" icon={<EyeOutlined />} />
-                </Tooltip>
-
-                <Button
-                  type="text"
-                  icon={<EditOutlined />}
-                  title="Edit"
-                  onClick={() => showModal(record)}
+        {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && (
+          <Column
+            title={
+              <>
+                Merchants
+                <br />
+                <Input
+                  disabled
+                  style={{
+                    backgroundColor: "#fafafa",
+                    border: "none",
+                    cursor: "auto",
+                  }}
                 />
+              </>
+            }
+            dataIndex="merchants"
+            key="merchants"
+            className="bg-white"
+            width={"6%"}
+            render={(_, record) => {
+              return (
+                <div className="whitespace-nowrap flex gap-2">
+                  <Tooltip
+                    color="white"
+                    placement="bottomRight"
+                    title={
+                      <div className="flex flex-col gap-1 text-black p-2">
+                        <div className="font-bold">Merchant List</div>
+                        {(record?.merchants?.length > 0 &&
+                          record?.merchants?.map((merchant) => (
+                            <p key={merchant?.id}>{merchant?.code}</p>
+                          ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+                      </div>
+                    }
+                  >
+                    <Button type="text" icon={<EyeOutlined />} />
+                  </Tooltip>
 
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  title="Delete"
-                  onClick={() => deleteBank(record)}
-                />
-              </div>
-            );
-          }}
-        />
+                  <Button
+                    type="text"
+                    icon={<EditOutlined />}
+                    title="Edit"
+                    onClick={() => showModal(record)}
+                  />
+
+                  <Button
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    title="Delete"
+                    onClick={() => deleteBank(record)}
+                  />
+                </div>
+              );
+            }}
+          />
+        )}
+
       </Table>
 
       <UpdateMerchant

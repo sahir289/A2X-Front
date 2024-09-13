@@ -12,8 +12,6 @@ function LeftSidebar() {
 
   const dispatch = useDispatch()
   const context = useContext(PermissionContext)
-  // console.log("🚀 ~ LeftSidebar ~ context:", context)
-
   const close = (e) => {
     document.getElementById('left-sidebar-drawer').click()
   }
@@ -27,7 +25,7 @@ function LeftSidebar() {
         return false;
 
       if (context?.role === "VENDOR" &&
-        (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports"))
+        (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports" || route.name === "Settlements" ))
         return false;
 
       // Allow "Add data" for all other roles, including ADMIN
@@ -51,7 +49,6 @@ function LeftSidebar() {
           <p><img className="mask mask-squircle w-10" src="/logo192.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
         {
           filteredRoutes.map((route, k) => {
-            // console.log("🚀 ~ filteredRoutes.map ~ route:", route)
             return (
               <li className="" key={k}>
                 {

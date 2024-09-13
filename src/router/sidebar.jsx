@@ -19,7 +19,6 @@ import {
 } from "@heroicons/react/24/outline";
 import Squares2X2Icon from "@heroicons/react/24/outline/Squares2X2Icon";
 import { Vendor } from "../utils/constants";
-import { useContext } from "react";
 
 const iconClasses = `h-6 w-6`;
 const submenuIconClasses = `h-5 w-5`;

@@ -10,7 +10,7 @@ export const PermissionContext = createContext({
   userName: null,
   userId: null,
   code: null,
-  vendor_code: null
+  vendorCode: null
 });
 const AuthLayout = () => {
   const dispatch = useDispatch();
@@ -48,6 +48,7 @@ const AuthLayout = () => {
     if (token) {
       try {
         const userData = jwtDecode(token);
+        console.log("🚀 ~ useEffect ~ userData:", userData)
         if (userData) {
           setRole(userData?.role);
           setUserId(userData?.id);
@@ -62,12 +63,12 @@ const AuthLayout = () => {
     }
   }, [token])
 
-  const permissionHandle = (userId, userName, role, code,vendor_code) => {
+  const permissionHandle = (userId, userName, role, code,vendorCode) => {
     setUserId(userId)
     setUserName(userName)
     setRole(role)
     setCode(code)
-    setVendorCode(vendor_code)
+    setVendorCode(vendorCode)
   }
 
   return <PermissionContext.Provider

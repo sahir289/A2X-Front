@@ -257,10 +257,10 @@ export const Columns = (
         ellipsis
         render={(v) => (v ? new Date(v).toDateString() : "")}
       />
-      {userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" &&
+      {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
         <Column
           title="Option"
-          width="110px"
+          width="155px"
           render={(v, r, i) => {
             if (!i) {
               return null;

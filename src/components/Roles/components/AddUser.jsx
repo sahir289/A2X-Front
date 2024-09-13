@@ -59,11 +59,12 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       localStorage.clear();
       navigate('/')
     }
-
-    const dropdownOptions = vendorApiRes?.data?.data?.map(vendor => ({
-      label: vendor.vendor_code,
-      value: vendor.vendor_code,
-    }));
+    const dropdownOptions = vendorApiRes?.data?.data?.
+      filter(vendor => userData?.vendorCode ? userData.vendorCode === vendor.vendor_code : vendor.vendor_code)
+      .map(vendor => ({
+        label: vendor.vendor_code,
+        value: vendor.vendor_code,
+      }));
     setVendorCodeOptions(dropdownOptions);
   };
 
@@ -197,7 +198,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-          {(selectedRole === "OPERATIONS" ) && (
+          {(selectedRole === "OPERATIONS") && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -215,7 +216,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-           {(selectedRole === "MERCHANT_OPERATIONS") && (
+          {(selectedRole === "MERCHANT_OPERATIONS") && (
             <Form.Item
               label="Merchant Code"
               name="code"
