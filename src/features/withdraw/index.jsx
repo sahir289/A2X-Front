@@ -251,6 +251,8 @@ const Withdraw = ({ type }) => {
     setFilters({});
   };
 
+  const hasSelected = selectedData.length > 0;
+
   return (
     <section>
       {contextHolder}
@@ -307,7 +309,7 @@ const Withdraw = ({ type }) => {
           />
         </div>
         <div className="flex justify-end mt-[10px]">
-          {`${selectedData.length} item has been selected`}
+          {hasSelected ? `${selectedData.length} item has been selected` : null}
 
           <Button
             className="ml-[20px]"
