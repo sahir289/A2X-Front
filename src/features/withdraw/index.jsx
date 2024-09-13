@@ -224,7 +224,7 @@ const Withdraw = ({ type }) => {
     setAddLoading(true);
     let apiData = {
       vendorCode: data.code,
-      merchantCode: {selectedData}
+      merchantCode: selectedData
     }
 
     const res = await postApi("/update-vendor-code", apiData);
