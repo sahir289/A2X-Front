@@ -18,15 +18,16 @@ const periodOptions = [
     {name : "Last Month", value : "LAST_MONTH"},
 ]
 
-function DashboardTopBar({updateDashboardPeriod}){
+function DashboardTopBar({updateDashboardPeriod,dateValue}){
 
-        const [dateValue, setDateValue] = useState({
-            startDate: new Date(),
-            endDate: new Date()
-        });
+        // const [dateValue, setDateValue] = useState({
+        //     startDate: new Date(),
+        //     endDate: new Date()
+        // });
 
         const handleDatePickerValueChange = (newValue) => {
-            setDateValue(newValue);
+
+            // setDateValue(newValue);
             updateDashboardPeriod(newValue)
         }
 

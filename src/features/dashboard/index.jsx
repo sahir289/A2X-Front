@@ -87,7 +87,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchPayInDataMerchant();
-  }, [selectedMerchantCode]);
+  }, [selectedMerchantCode, dateRange]);
 
   const fetchPayInDataMerchant = async () => {
     try {
@@ -95,7 +95,7 @@ function Dashboard() {
         .map((code) => "merchantCode=" + encodeURIComponent(code))
         .join("&");
 
-      const payInOutData = await getApi(`/get-payInDataMerchant?${query}`);
+      const payInOutData = await getApi(`/get-payInDataMerchant?${query}`, dateRange);
       if (payInOutData.error) {
         return;
       }
@@ -203,7 +203,7 @@ function Dashboard() {
         </div>
         {/** ---------------------- Select Period Content ------------------------- */}
         <div className="grid grid-row-1">
-          <DashboardTopBar updateDashboardPeriod={updateDashboardPeriod} />
+          <DashboardTopBar updateDashboardPeriod={updateDashboardPeriod} dateValue={dateRange}/>
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
