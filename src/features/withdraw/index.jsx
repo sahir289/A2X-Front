@@ -63,10 +63,16 @@ const Withdraw = ({ type }) => {
       label: merchant.code,
       value: merchant.code,
     }));
+  const [vendorData, setVendorData] = useState([]);
+  const vendorOptions = vendorData.map(vendor => ({
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }));
 
 
   useEffect(() => {
     handleGetWithdraws();
+    fetchUsersData();
   }, []);
 
   useEffect(() => {
@@ -111,6 +117,11 @@ const Withdraw = ({ type }) => {
         vendorCode:userData?.vendorCode || queryObj.code || null,
       });
     }, 1500);
+  };
+
+  const fetchUsersData = async () => {
+    const res = await getApi("/getall-vendor");
+    setVendorData(res.data.data);
   };
 
   const getPayoutList = async (queryObj) => {
@@ -228,8 +239,8 @@ const Withdraw = ({ type }) => {
   const handleAddVendor = async (data) => {
     setAddLoading(true);
     let apiData = {
-      vendorCode: data.code,
-      merchantCode: selectedData
+      withdrawId: selectedData,
+      vendorCode: data.code.toString()
     }
 
     const res = await postApi("/update-vendor-code", apiData);
@@ -243,7 +254,6 @@ const Withdraw = ({ type }) => {
 
   const handleData = (data) => {
     setSelectedData(data)
-  // console.log("🚀 ~ selectedData:", selectedData)
   }
 
   //Select UTR Method
@@ -320,7 +330,7 @@ const Withdraw = ({ type }) => {
             <div className="flex justify-between">
               <div className="ml-[10px] text-black">
                 <a className="font-semibold">{selectedData.length} </a>
-                item hs been selected
+                item has been selected
               </div>
 
               <Button
@@ -443,7 +453,7 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleAddVendor}>
           <Form.Item name="code" label="Vendor Code" rules={RequiredRule}>
-            <Select options={merchantOptions} mode="multiple"/>
+            <Select options={vendorOptions} />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
             <Button>Cancel</Button>
