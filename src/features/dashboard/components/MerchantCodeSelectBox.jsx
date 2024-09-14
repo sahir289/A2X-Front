@@ -21,23 +21,25 @@ const MerchantCodeSelectBox = ({
     setSelectedMerchantCode(value);
   };
 
-  const storedMerchantCode = localStorage.getItem("selectedMerchantCode");
-  useEffect(() => {
-    if (storedMerchantCode) {
-      setSelectedMerchantCode(JSON.parse(storedMerchantCode));
-    } else {
-      setSelectedMerchantCode([]);
-    }
-  }, [storedMerchantCode]);
+  // const storedMerchantCode = localStorage.getItem("selectedMerchantCode");
+  // useEffect(() => {
+  //   if (storedMerchantCode) {
+  //     setSelectedMerchantCode(JSON.parse(storedMerchantCode));
+  //   }
+  //   else {
+  //     setSelectedMerchantCode([]);
+  //   }
+  // }, [storedMerchantCode]);
 
   useEffect(() => {
-    if (context?.code && !invalidText(context?.code)) {
-      const selectedValue = context?.code;
-      localStorage.setItem(
-        "selectedMerchantCode",
-        JSON.stringify(selectedValue)
-      );
-    }
+    // if (context?.code && !invalidText(context?.code)) {
+    //   const selectedValue = context?.code;
+    //   console.log("🚀 ~ useEffect ~ selectedValue:", selectedValue)
+    //   localStorage.setItem(
+    //     "selectedMerchantCode",
+    //     JSON.stringify(selectedValue)
+    //   );
+    // }
     fetchMerchantData();
   }, []);
 
@@ -52,13 +54,14 @@ const MerchantCodeSelectBox = ({
 
     if (context?.code && !invalidText(context?.code)) {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants
-        ?.filter(merchant => context.code.includes(merchant.code))  // Filter merchants that match the code
+        ?.filter(merchant => context?.code?.includes(merchant.code))  // Filter merchants that match the code
         .map(merchant => ({
           label: merchant.code,
           value: merchant.code,
         }));
-      localStorage.setItem("selectedMerchantCode", JSON.stringify(formattedMerchantCodes));
+      localStorage.setItem("selectedMerchantCode", JSON.stringify(formattedMerchantCodes?.map(item => item.value)));
       setMerchantCodeOptions(formattedMerchantCodes);
+      setSelectedMerchantCode(formattedMerchantCodes?.map(item => item.value));
 
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
@@ -67,8 +70,10 @@ const MerchantCodeSelectBox = ({
           value: merchant.code,
         })
       );
-      localStorage.setItem("selectedMerchantCode", JSON.stringify(formattedMerchantCodes));
+      localStorage.setItem("selectedMerchantCode", JSON.stringify(formattedMerchantCodes?.map(item => item.value)));
       setMerchantCodeOptions(formattedMerchantCodes);
+      setSelectedMerchantCode(formattedMerchantCodes?.map(item => item.value));
+
     }
   };
 
