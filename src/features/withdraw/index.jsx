@@ -243,7 +243,7 @@ const Withdraw = ({ type }) => {
       vendorCode: data.code.toString()
     }
 
-    const res = await postApi("/update-vendor-code", apiData);
+    const res = await putApi("/update-vendor-code", apiData);
     setAddLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
