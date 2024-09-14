@@ -25,6 +25,11 @@ import {
 import Table from "./components/Table";
 
 const Withdraw = ({ type }) => {
+
+  const style = {
+    width: 'calc(100% - 256px)'
+  };
+
   const timer = useRef(null);
   const userData = useContext(PermissionContext);
   const navigate = useNavigate();
@@ -58,10 +63,16 @@ const Withdraw = ({ type }) => {
       label: merchant.code,
       value: merchant.code,
     }));
+  const [vendorData, setVendorData] = useState([]);
+  const vendorOptions = vendorData.map(vendor => ({
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }));
 
 
   useEffect(() => {
     handleGetWithdraws();
+    fetchUsersData();
   }, []);
 
   useEffect(() => {
@@ -106,6 +117,11 @@ const Withdraw = ({ type }) => {
         vendorCode:userData?.vendorCode || queryObj.code || null,
       });
     }, 1500);
+  };
+
+  const fetchUsersData = async () => {
+    const res = await getApi("/getall-vendor");
+    setVendorData(res.data.data);
   };
 
   const getPayoutList = async (queryObj) => {
@@ -223,11 +239,11 @@ const Withdraw = ({ type }) => {
   const handleAddVendor = async (data) => {
     setAddLoading(true);
     let apiData = {
-      vendorCode: data.code,
-      merchantCode: {selectedData}
+      withdrawId: selectedData,
+      vendorCode: data.code.toString()
     }
 
-    const res = await postApi("/update-vendor-code", apiData);
+    const res = await putApi("/update-vendor-code", apiData);
     setAddLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
@@ -238,7 +254,6 @@ const Withdraw = ({ type }) => {
 
   const handleData = (data) => {
     setSelectedData(data)
-  // console.log("🚀 ~ selectedData:", selectedData)
   }
 
   //Select UTR Method
@@ -308,19 +323,30 @@ const Withdraw = ({ type }) => {
             showSizeChanger
           />
         </div>
-        <div className="flex justify-end mt-[10px]">
-          {hasSelected ? `${selectedData.length} item has been selected` : null}
+       </div> 
+      { hasSelected ?
+        <div className="fixed bottom-0 w-full z-99" style={style}>
+          <div className="bg-white p-[8px] font-serif">
+            <div className="flex justify-between">
+              <div className="ml-[10px] text-black">
+                <a className="font-semibold">{selectedData.length} </a>
+                item has been selected
+              </div>
 
-          <Button
-            className="ml-[20px]"
-            icon={<PlusOutlined />}
-            type="primary"
-            onClick={handleToggleAddVendorModal}
-          >
-            Add Vendor
-          </Button>
+              <Button
+                className="mr-[10px]"
+                icon={<PlusOutlined />}
+                type="primary"
+                onClick={handleToggleAddVendorModal}
+              >
+                Add Vendor
+              </Button>
+
+            </div>
+          </div>
         </div>
-      </div>
+        : null
+      }
 
       <Modal
         title="Withdraw"
@@ -427,7 +453,7 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleAddVendor}>
           <Form.Item name="code" label="Vendor Code" rules={RequiredRule}>
-            <Select options={merchantOptions} mode="multiple"/>
+            <Select options={vendorOptions} />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
             <Button>Cancel</Button>
