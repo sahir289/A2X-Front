@@ -26,6 +26,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const [paymentUrl, setPaymentUrl] = useState('')
   const navigate = useNavigate()
 
+
   const userData = useContext(PermissionContext)
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
@@ -134,27 +135,29 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   ]
 
   const handleSubmit = (data) => {
+    setAddLoading(true)
     if (data?.paymentLink === undefined || data?.paymentLink === false) {
-      // const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`
+      const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`
 
-      // setPaymentUrl(unlimitedUrl)
-      // handleToggleModal()
-      // setPaymentUrlModal(true);
-      // handleCopy(unlimitedUrl)
-      const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`).then((res) => {
-        if (res?.data?.data) {
-          setPaymentUrl(res?.data?.data?.payInUrl)
-          console.log("🚀 ~ oneTimeUrlRes ~ res:", res)
-          handleToggleModal()
-          setPaymentUrlModal(true);
-          handleCopy(res?.data?.data?.payInUrl)
-        }
-        else {
-          NotificationManager.error(res?.error?.message || "Some thing went wrong")
-        }
-      }).catch((err) => {
-        console.log(err)
-      })
+      setPaymentUrl(unlimitedUrl)
+      handleToggleModal()
+      setPaymentUrlModal(true);
+      handleCopy(unlimitedUrl)
+      setAddLoading(false)
+      // const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`).then((res) => {
+      //   if (res?.data?.data) {
+      //     setPaymentUrl(res?.data?.data?.payInUrl)
+      //     console.log("🚀 ~ oneTimeUrlRes ~ res:", res)
+      //     handleToggleModal()
+      //     setPaymentUrlModal(true);
+      //     handleCopy(res?.data?.data?.payInUrl)
+      //   }
+      //   else {
+      //     NotificationManager.error(res?.error?.message || "Some thing went wrong")
+      //   }
+      // }).catch((err) => {
+      //   console.log(err)
+      // })
 
     } else {
 
@@ -170,6 +173,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         }
       }).catch((err) => {
         console.log(err)
+      }).finally(()=>{
+        setAddLoading(false)
       })
     }
 
