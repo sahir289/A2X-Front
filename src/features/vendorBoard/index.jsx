@@ -1,13 +1,18 @@
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
+import { getApi } from "../../redux/api";
+import { showNotification } from "../../redux/slice/headerSlice";
+import { formatCurrency } from "../../utils/utils";
 import BarChart from "./components/BarChart";
 import VendorBoardStats from "./components/VendorBoardStats";
 import VendorBoardTopBar from "./components/VendorBoardTopBar";
-import { useEffect, useState } from "react";
-import { showNotification } from "../../redux/slice/headerSlice";
-import { formatCurrency } from "../../utils/utils";
+import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
 
 function VendorBoard() {
+  const context = useContext(PermissionContext);
+  const [selectedVendorCode, setSelectedVendorCode] = useState([]);
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -78,8 +83,122 @@ function VendorBoard() {
     );
   };
 
+  useEffect(() => {
+    fetchPayInDataVendor();
+  }, [selectedVendorCode, dateRange]);
+
+  const fetchPayInDataVendor = async () => {
+    try {
+      const currentVendorCode = [`${context?.vendorCode}`];
+      let query = "";
+      if (context?.role && context?.role.toLowerCase() === "admin") {
+        query = selectedVendorCode
+          .map((code) => "vendorCode=" + encodeURIComponent(code))
+          .join("&");
+      } else {
+        query = currentVendorCode
+          .map((code) => "vendorCode=" + encodeURIComponent(code))
+          .join("&");
+      }
+
+      const payInOutData = await getApi(
+        `/get-payInDataVendor?${query}`,
+        dateRange
+      );
+
+      if (payInOutData.error) {
+        return;
+      }
+
+      const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
+      const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
+      const settlementData =
+        payInOutData?.data?.data?.payInOutData?.settlementData;
+
+      setDepositData(payInData);
+      setWithdrawData(payOutData);
+
+      let payInAmount = 0;
+      let payInCommission = 0;
+      let payInCount = 0;
+      let payOutAmount = 0;
+      let payOutCommission = 0;
+      let payOutCount = 0;
+      let settlementAmount = 0;
+
+      payInData?.forEach((data) => {
+        payInAmount += Number(data.amount);
+        payInCommission += Number(data.payin_commission);
+        payInCount += 1;
+      });
+
+      payOutData?.forEach((data) => {
+        payOutAmount += Number(data.amount);
+        payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+        payOutCount += 1;
+      });
+
+      settlementData?.forEach((data) => {
+        settlementAmount += Number(data.amount);
+      });
+
+      setPayInOutData([
+        {
+          title: "Deposit",
+          value: payInAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: payInCount,
+        },
+        {
+          title: "Deposit %",
+          value: payInCommission,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Withdraw",
+          value: payOutAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: payOutCount,
+        },
+        {
+          title: "Withdraw %",
+          value: payOutCommission,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Commission",
+          value: payInCommission + payOutCommission,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Settlement",
+          value: settlementAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Net Balance",
+          // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
+          value:
+            payInAmount -
+            (payOutAmount + (payInCommission + payOutCommission)) -
+            settlementAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+      ]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
+      {context?.role && context?.role.toLowerCase() === "admin" && (
+        <VendorCodeSelectBox
+          selectedVendorCode={selectedVendorCode}
+          setSelectedVendorCode={setSelectedVendorCode}
+        />
+      )}
+
       <div className="grid lg:grid-cols-2 mt-4 md:grid-cols-1 grid-cols-1 gap-6">
         <div className="grid grid-row-1 md:grid-cols-2 gap-6">
           {payInOutData.map((data, index) => {
