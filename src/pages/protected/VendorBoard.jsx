@@ -6,7 +6,7 @@ import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 
 function InternalPage() {
   const dispatch = useDispatch();
-  const AllowedRoles = ["ADMIN", "OPERATIONS", "MERCHANT", "VENDOR"];
+  const AllowedRoles = ["ADMIN", "OPERATIONS", "MERCHANT", "VENDOR","VENDOR_OPERATIONS"];
   const context = useContext(PermissionContext);
 
   useEffect(() => {

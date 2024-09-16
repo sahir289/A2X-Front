@@ -28,6 +28,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
 
   const userData = useContext(PermissionContext)
+  console.log("🚀 ~ TableComponent ~ userData:", userData)
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
@@ -162,18 +163,19 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     } else {
 
       const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y`).then((res) => {
-        if(res?.data?.data){
-        setPaymentUrl(res?.data?.data?.payInUrl)
-        console.log("🚀 ~ oneTimeUrlRes ~ res:", res)
-        handleToggleModal()
-        setPaymentUrlModal(true);
-        handleCopy(res?.data?.data?.payInUrl)}
-        else{
+        if (res?.data?.data) {
+          setPaymentUrl(res?.data?.data?.payInUrl)
+          console.log("🚀 ~ oneTimeUrlRes ~ res:", res)
+          handleToggleModal()
+          setPaymentUrlModal(true);
+          handleCopy(res?.data?.data?.payInUrl)
+        }
+        else {
           NotificationManager.error(res?.error?.message || "Some thing went wrong")
         }
       }).catch((err) => {
         console.log(err)
-      }).finally(()=>{
+      }).finally(() => {
         setAddLoading(false)
       })
     }
@@ -188,6 +190,9 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
     setFilterValues({ status: allTable ? '' : filterValues?.status || '' });
   }
 
+  console.log("🚀 ~ TableComponent ~ process.env.REACT_S3_URL:", process.env.REACT_APP_S3_URL)
+
+
   return (
     <>
       <div className='font-serif pt-3 flex bg-zinc-50 rounded-lg'>
@@ -200,19 +205,30 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         <div className='pt-2 flex items-start'>
           <div className={`flex flex-col ${!(allTable || inProgressTable) ? 'mr-2' : ''}`}>
             <>
-              {(allTable === true || inProgressTable === true) && (
-                <Button
-                  className='mr-3 mb-2 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white'
-                  icon={<PlusIcon />}
-                  onClick={handleToggleModal}
-                >
-                  <p>New Payment Link</p>
-                </Button>
-              )}
-              <Button className={`${!(allTable || inProgressTable) ? 'w-full' : 'w-[175px]'}`} onClick={handleResetSearchFields}>Reset</Button>
+              {!(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
+                (allTable === true || inProgressTable === true) && (
+                  <Button
+                    className="mr-3 mb-2 flex bg-green-600 hover:!bg-green-600 text-white hover:!text-white"
+                    icon={<PlusIcon />}
+                    onClick={handleToggleModal}
+                  >
+                    <p>New Payment Link</p>
+                  </Button>
+                )}
+              <Button
+                className={`${userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS"
+                    ? `w-[80px] ${(allTable || inProgressTable) && 'mr-2'}`
+                    : `${!(allTable || inProgressTable) ? 'w-full' : 'w-[178px]'}`
+                  }`}
+                onClick={handleResetSearchFields}
+              >Reset</Button>
             </>
           </div>
-          <Button className='mr-5 hover:bg-slate-300' icon={<Reload />} onClick={fetchUsersData} />
+
+          <Button
+            className={'mr-5 hover:bg-slate-300'}
+
+            icon={<Reload />} onClick={fetchUsersData} />
         </div>
       </div>
 
@@ -366,7 +382,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
                 value={filterValues?.merchantCode}
                 onChange={(e) => handleFilterValuesChange(e.target.value, 'merchantCode')}
                 allowClear
-                disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}
+                disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false}
               />
             </>
           }
@@ -510,10 +526,10 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <>
               {imageUrl !== null &&
                 <img
-                  src={`${process.env.REACT_APP_WS_URL}/${imageUrl}`}
+                  src={`${process.env.REACT_APP_S3_URL}${imageUrl}`}
                   alt="thumbnail"
                   className="thumbnail w-10 h-10"
-                  onClick={() => handleImageClick(`${process.env.REACT_APP_WS_URL}/${imageUrl}`, record)}
+                  onClick={() => handleImageClick(`${process.env.REACT_APP_S3_URL}${imageUrl}`, record)}
                 />
               }
             </>
@@ -524,7 +540,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       </Table >
 
       {/* Image Modal */}
-      <Modal open={isModalVisible} footer={null} onCancel={handleModalClose}>
+      <Modal open={isModalVisible}   footer={null} onCancel={handleModalClose}>
         <img
           src={selectedImageUrl}
           alt="Enlarged"

@@ -30,6 +30,7 @@ function Login() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const context = useContext(PermissionContext)
+  console.log("🚀 ~ Login ~ context:", context)
 
 
 
@@ -50,15 +51,16 @@ function Login() {
           const userData = jwtDecode(res?.data?.data);
           localStorage.setItem("userData", JSON.stringify({ name: userData?.userName, role: userData?.role }))
           context.permissionHandle(userData?.id, userData?.userName, userData?.role, userData?.code)
-          navigate("/app/dashboard");
+          const isVendor = userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS";
+          navigate(isVendor ? "/app/vendor-board" : "/app/dashboard");
         }
         else {
           if (res?.error?.error?.response?.status === 409) {
             NotificationManager.error(res?.error?.message, 409);
             showModal()
           }
-          else if (res?.error?.error?.response?.status === 404){
-            NotificationManager.error(res?.error?.message === "User not found" ? "Wrong credentials":res?.error?.message, 404);
+          else if (res?.error?.error?.response?.status === 404) {
+            NotificationManager.error(res?.error?.message === "User not found" ? "Wrong credentials" : res?.error?.message, 404);
           }
           else {
             NotificationManager.error("Fail to login", 401);
@@ -111,7 +113,8 @@ function Login() {
         const userData = jwtDecode(res?.data?.data);
         localStorage.setItem("userData", JSON.stringify({ name: userData?.userName, role: userData?.role }))
         context.permissionHandle(userData?.id, userData?.userName, userData?.role, userData?.code)
-        navigate("/app/dashboard");
+        const isVendor = userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS";
+        navigate(isVendor ? "/app/vendor-board" : "/app/dashboard");
       }
       else {
         NotificationManager.error("Fail to login", 401);
