@@ -58,17 +58,14 @@ function VendorBoard() {
   const [withdrawData, setWithdrawData] = useState([]);
   const [interval, setInterval] = useState("15d");
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: new Date(new Date().setDate(new Date().getDate() - 15)),
+      endDate: new Date(),
   });
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setDateRange({
-      startDate: new Date(new Date().setDate(new Date().getDate() - 15)),
-      endDate: new Date(),
-    });
-  }, []);
+    fetchPayInDataVendor();
+  }, [selectedVendorCode, dateRange]);
 
   const updateVendorBoardPeriod = (newRange) => {
     setDateRange({
@@ -83,10 +80,6 @@ function VendorBoard() {
       })
     );
   };
-
-  useEffect(() => {
-      fetchPayInDataVendor();
-  }, [selectedVendorCode, dateRange]);
 
   const fetchPayInDataVendor = async () => {
     try {
