@@ -1,5 +1,5 @@
 import { Table as AntTable, Checkbox } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Columns } from "./Columns";
 const Table = ({
   loading,
@@ -10,7 +10,8 @@ const Table = ({
   updateWithdraw,
   type,
   userData,
-  setSelectedData
+  setSelectedData,
+  selectedData
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
@@ -39,6 +40,9 @@ const Table = ({
     selectedRowKeys,
     onChange: (selectedRowKeys) => setSelectedRowKeys(selectedRowKeys),
   };
+  useEffect(()=>{
+    setSelectedRowKeys(selectedData?.length ? selectedData : [])
+  },[selectedData])
 
   return (
     <AntTable
@@ -47,7 +51,7 @@ const Table = ({
       pagination={false}
       loading={loading}
     >
-      <AntTable.Column
+     {(userData.role!=="VENDOR" && userData.role!=="VENDOR_OPERATION" )&& <AntTable.Column
         title={<Checkbox onChange={(e) => handleSelectAllChange(e.target.checked)} />}
         dataIndex="id"
         width="80px"
@@ -62,7 +66,7 @@ const Table = ({
           }
           return null; // Render nothing in the header row
         }}
-      />
+      />}
       {Columns(
         merchantOptions,
         filters,

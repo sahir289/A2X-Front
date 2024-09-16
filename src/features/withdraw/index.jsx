@@ -64,7 +64,7 @@ const Withdraw = ({ type }) => {
       value: merchant.code,
     }));
   const [vendorData, setVendorData] = useState([]);
-  const vendorOptions = vendorData.map(vendor => ({
+  const vendorOptions = vendorData?.map(vendor => ({
       label: vendor.vendor_code,
       value: vendor.vendor_code,
     }));
@@ -121,7 +121,7 @@ const Withdraw = ({ type }) => {
 
   const fetchUsersData = async () => {
     const res = await getApi("/getall-vendor");
-    setVendorData(res.data.data);
+    setVendorData(res?.data?.data);
   };
 
   const getPayoutList = async (queryObj) => {
@@ -250,6 +250,7 @@ const Withdraw = ({ type }) => {
       return;
     }
     handleToggleAddVendorModal();
+    setSelectedData([])
   };
 
   const handleData = (data) => {
@@ -310,6 +311,7 @@ const Withdraw = ({ type }) => {
             type={type}
             userData={userData}
             setSelectedData={handleData}
+            selectedData={selectedData}
           />
         </div>
         <div className="flex justify-end mt-[10px]">
@@ -323,7 +325,7 @@ const Withdraw = ({ type }) => {
             showSizeChanger
           />
         </div>
-       </div> 
+       </div>
       { hasSelected ?
         <div className="fixed bottom-0 w-full z-99" style={style}>
           <div className="bg-white p-[8px] font-serif">
@@ -335,7 +337,7 @@ const Withdraw = ({ type }) => {
 
               <Button
                 className="mr-[10px]"
-                icon={<PlusOutlined />}
+                // icon={<PlusOutlined />}
                 type="primary"
                 onClick={handleToggleAddVendorModal}
               >

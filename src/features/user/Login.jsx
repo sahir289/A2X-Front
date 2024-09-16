@@ -56,7 +56,7 @@ function Login() {
         }
         else {
           if (res?.error?.error?.response?.status === 409) {
-            NotificationManager.error(res?.error?.message, 409);
+            // NotificationManager.error(res?.error?.message, 409);
             showModal()
           }
           else if (res?.error?.error?.response?.status === 404) {
