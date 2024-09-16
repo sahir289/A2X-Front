@@ -1,4 +1,3 @@
-/** Icons are imported separatly to reduce build time */
 import {
   ArrowRightCircleIcon,
   ArrowTrendingUpIcon,
@@ -94,11 +93,6 @@ const routes = [
     icon: <BanknotesIcon className={`${iconClasses} inline`} />, // icon component
     name: "Settlements", // name that appear in Sidebar
     submenu: [
-      // {
-      //   path: '/app/settlements/transaction',
-      //   icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
-      //   name: 'Transactions', // name that appear in Sidebar
-      // },
       {
         path: "/app/settlements",
         icon: <UserCircleIcon className={submenuIconClasses} />,
@@ -111,11 +105,6 @@ const routes = [
     icon: <BanknotesIcon className={`${iconClasses} inline`} />, // icon component
     name: "Vendor Settlements", // name that appear in Sidebar
     submenu: [
-      // {
-      //   path: '/app/settlements/transaction',
-      //   icon: <CurrencyDollarIcon className={submenuIconClasses} />, // icon component
-      //   name: 'Transactions', // name that appear in Sidebar
-      // },
       {
         path: "/app/vendorsettlements",
         icon: <UserCircleIcon className={submenuIconClasses} />,
