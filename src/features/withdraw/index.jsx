@@ -458,7 +458,6 @@ const Withdraw = ({ type }) => {
             <Select options={vendorOptions} />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
-            <Button>Cancel</Button>
             <Button type="primary" loading={addLoading} htmlType="submit">
               Add
             </Button>

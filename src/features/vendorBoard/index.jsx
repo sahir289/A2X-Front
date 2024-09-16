@@ -85,7 +85,7 @@ function VendorBoard() {
   };
 
   useEffect(() => {
-      fetchPayInDataVendor();
+    fetchPayInDataVendor();
   }, [selectedVendorCode, dateRange]);
 
   const fetchPayInDataVendor = async () => {
@@ -94,6 +94,7 @@ function VendorBoard() {
       let query = "";
       if (
         (context?.role && context?.role.toLowerCase() === "admin") ||
+        (context?.role && context?.role.toLowerCase() === "operations") ||
         (context?.role &&
           context?.role.toLowerCase() === "merchant" &&
           context?.vendorCode === null)
@@ -103,6 +104,7 @@ function VendorBoard() {
           .join("&");
       } else if (
         (context?.role && context?.role.toLowerCase() === "vendor") ||
+        (context?.role && context?.role.toLowerCase() === "vendor_operations") ||
         (context?.role &&
           context?.role.toLowerCase() === "merchant" &&
           context?.vendorCode !== null)
@@ -203,7 +205,8 @@ function VendorBoard() {
 
   return (
     <>
-      {context?.role && context?.role.toLowerCase() !== "vendor" && (
+      {/* {!(context?.role=="VENDOR" || context?.role=="VENDOR_OPERATIONS" ) */}
+      {!(context?.role == "VENDOR" || context?.role == "VENDOR_OPERATIONS") && (
         <VendorCodeSelectBox
           selectedVendorCode={selectedVendorCode}
           setSelectedVendorCode={setSelectedVendorCode}

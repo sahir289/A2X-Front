@@ -30,8 +30,6 @@ function Login() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const context = useContext(PermissionContext)
-  console.log("🚀 ~ Login ~ context:", context)
-
 
 
   const submitForm = async (e) => {
