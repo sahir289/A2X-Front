@@ -12,6 +12,7 @@ import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
 
 function VendorBoard() {
   const context = useContext(PermissionContext);
+
   const [selectedVendorCode, setSelectedVendorCode] = useState([]);
   const [payInOutData, setPayInOutData] = useState([
     {
@@ -84,18 +85,28 @@ function VendorBoard() {
   };
 
   useEffect(() => {
-    fetchPayInDataVendor();
+      fetchPayInDataVendor();
   }, [selectedVendorCode, dateRange]);
 
   const fetchPayInDataVendor = async () => {
     try {
       const currentVendorCode = [`${context?.vendorCode}`];
       let query = "";
-      if (context?.role && context?.role.toLowerCase() === "admin") {
+      if (
+        (context?.role && context?.role.toLowerCase() === "admin") ||
+        (context?.role &&
+          context?.role.toLowerCase() === "merchant" &&
+          context?.vendorCode === null)
+      ) {
         query = selectedVendorCode
           .map((code) => "vendorCode=" + encodeURIComponent(code))
           .join("&");
-      } else {
+      } else if (
+        (context?.role && context?.role.toLowerCase() === "vendor") ||
+        (context?.role &&
+          context?.role.toLowerCase() === "merchant" &&
+          context?.vendorCode !== null)
+      ) {
         query = currentVendorCode
           .map((code) => "vendorCode=" + encodeURIComponent(code))
           .join("&");
@@ -192,7 +203,7 @@ function VendorBoard() {
 
   return (
     <>
-      {context?.role && context?.role.toLowerCase() === "admin" && (
+      {context?.role && context?.role.toLowerCase() !== "vendor" && (
         <VendorCodeSelectBox
           selectedVendorCode={selectedVendorCode}
           setSelectedVendorCode={setSelectedVendorCode}
@@ -247,7 +258,7 @@ function VendorBoard() {
                     )}
                     {data.title === "Settlement" && (
                       <div className="flex justify-between">
-                        <p>Settlement</p>
+                        <p>Vendor Settlement</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>

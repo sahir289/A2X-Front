@@ -4,8 +4,10 @@ import { getApi } from "../../../redux/api";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { invalidText } from "../../../utils/utils";
 import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
 
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
@@ -13,33 +15,14 @@ const MerchantCodeSelectBox = ({
 }) => {
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
   const context = useContext(PermissionContext);
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
     setSelectedMerchantCode(value);
   };
 
-  // const storedMerchantCode = localStorage.getItem("selectedMerchantCode");
-  // useEffect(() => {
-  //   if (storedMerchantCode) {
-  //     setSelectedMerchantCode(JSON.parse(storedMerchantCode));
-  //   }
-  //   else {
-  //     setSelectedMerchantCode([]);
-  //   }
-  // }, [storedMerchantCode]);
-
   useEffect(() => {
-    // if (context?.code && !invalidText(context?.code)) {
-    //   const selectedValue = context?.code;
-    //   console.log("🚀 ~ useEffect ~ selectedValue:", selectedValue)
-    //   localStorage.setItem(
-    //     "selectedMerchantCode",
-    //     JSON.stringify(selectedValue)
-    //   );
-    // }
     fetchMerchantData();
   }, []);
 
@@ -49,20 +32,24 @@ const MerchantCodeSelectBox = ({
     if (merchantCodes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantCodes?.error?.message, 401);
       localStorage.clear();
-      navigate('/')
+      navigate("/");
     }
 
     if (context?.code && !invalidText(context?.code)) {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants
-        ?.filter(merchant => context?.code?.includes(merchant.code))  // Filter merchants that match the code
-        .map(merchant => ({
+        ?.filter((merchant) => context?.code?.includes(merchant.code)) // Filter merchants that match the code
+        .map((merchant) => ({
           label: merchant.code,
           value: merchant.code,
         }));
-      localStorage.setItem("selectedMerchantCode", JSON.stringify(formattedMerchantCodes?.map(item => item.value)));
+      localStorage.setItem(
+        "selectedMerchantCode",
+        JSON.stringify(formattedMerchantCodes?.map((item) => item.value))
+      );
       setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(formattedMerchantCodes?.map(item => item.value));
-
+      setSelectedMerchantCode(
+        formattedMerchantCodes?.map((item) => item.value)
+      );
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
         (merchant) => ({
@@ -70,10 +57,14 @@ const MerchantCodeSelectBox = ({
           value: merchant.code,
         })
       );
-      localStorage.setItem("selectedMerchantCode", JSON.stringify(formattedMerchantCodes?.map(item => item.value)));
+      localStorage.setItem(
+        "selectedMerchantCode",
+        JSON.stringify(formattedMerchantCodes?.map((item) => item.value))
+      );
       setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(formattedMerchantCodes?.map(item => item.value));
-
+      setSelectedMerchantCode(
+        formattedMerchantCodes?.map((item) => item.value)
+      );
     }
   };
 

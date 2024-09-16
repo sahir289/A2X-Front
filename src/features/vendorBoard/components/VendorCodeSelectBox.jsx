@@ -7,7 +7,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../../redux/api";
-import { invalidText } from "../../../utils/utils";
 
 const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
   const [vendorCodeOptions, setVendorCodeOptions] = useState([]);
@@ -32,31 +31,16 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
       navigate("/");
     }
 
-    if (context?.code && !invalidText(context?.code)) {
-      const formattedVendorCodes = vendorCodes?.data?.data
-        ?.filter((vendor) => context?.code?.includes(vendor.vendor_code)) // Filter vendors that match the code
-        .map((vendor) => ({
-          label: vendor.vendor_code,
-          value: vendor.vendor_code,
-        }));
+    const formattedVendorCodes = vendorCodes?.data?.data?.map((vendor) => ({
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }));
+    setVendorCodeOptions(formattedVendorCodes);
       localStorage.setItem(
         "selectedVendorCode",
         JSON.stringify(formattedVendorCodes?.map((item) => item.value))
-      );
-      setVendorCodeOptions(formattedVendorCodes);
-      setSelectedVendorCode(formattedVendorCodes?.map((item) => item.value));
-    } else {
-      const formattedVendorCodes = vendorCodes?.data?.data?.map((vendor) => ({
-        label: vendor.vendor_code,
-        value: vendor.vendor_code,
-      }));
-      localStorage.setItem(
-        "selectedVendorCode",
-        JSON.stringify(formattedVendorCodes?.map((item) => item.value))
-      );
-      setVendorCodeOptions(formattedVendorCodes);
-      setSelectedVendorCode(formattedVendorCodes?.map((item) => item.value));
-    }
+    );
+    setSelectedVendorCode(formattedVendorCodes?.map((item) => item.value));
   };
 
   return (
