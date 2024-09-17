@@ -8,6 +8,7 @@ import TableComponent, { methodOptions, walletOptions } from './components/Table
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
+import axios from "axios";
 
 
 export default function Settlement() {
@@ -38,18 +39,6 @@ export default function Settlement() {
   const merchants = useSelector(state => state?.merchant?.data);
   const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   handleGetSettlements();
-  // }, []);
-
-  // useEffect(() => {
-  //   // reset the pagination
-  //   // if anything changes in filters
-  //   setPagination({
-  //     page: 1,
-  //     take: 20,
-  //   })
-  // }, [filters]);
 
   useEffect(() => {
     handleGetSettlements({
@@ -119,17 +108,41 @@ export default function Settlement() {
     )
   }
 
-  const handleSubmit = async (data) => {
 
+  // Function to validate IFSC code using an API
+  const validateIfscCode = async (ifsc) => {
+    try {
+      const response = await axios.get(`https://ifsc.razorpay.com/${ifsc}`);
+      return response.data;
+    } catch (error) {
+      return null; // If invalid IFSC or error in API request
+    }
+  };
+
+  const handleSubmit = async (data) => {
     setAddLoading(true);
-    const res = await postApi("/create-settlement", data);
-    setAddLoading(false);
-    if (res.error) {
-      api.error({ description: res.error.message });
+    // Validate the IFSC code before proceeding
+    const ifscValidation = await validateIfscCode(data?.ifsc);
+    if (!ifscValidation) {
+      setAddLoading(false)
+      api.error({
+        message: "Invalid IFSC Code",
+        description: "Please enter a valid IFSC code.",
+      });
       return;
     }
-    handleToggleModal();
-    getSettlementList();
+    const res = await postApi("/create-settlement", data).then((res) => {
+      if (res?.error) {
+        api.error({ description: res.error.message });
+        return;
+      }
+    }).catch((err) => {
+    }).finally(() => {
+      setAddLoading(false);
+      handleToggleModal();
+      getSettlementList();
+    });
+
 
   }
 
@@ -184,11 +197,11 @@ export default function Settlement() {
 
 
   const merchantOptions = merchants
-    ?.filter(merchant =>  !userData?.code?.length || userData?.code?.includes(merchant?.code) )
-  .map(merchant => ({
-    label: merchant.code,
-    value: merchant.code,
-  }));
+    ?.filter(merchant => !userData?.code?.length || userData?.code?.includes(merchant?.code))
+    .map(merchant => ({
+      label: merchant.code,
+      value: merchant.code,
+    }));
 
   const labelCol = { span: 6 };
   //reset search fields

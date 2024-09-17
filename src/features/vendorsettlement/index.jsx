@@ -8,6 +8,7 @@ import TableComponent, { methodOptions, walletOptions } from './components/Table
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
+import axios from "axios";
 
 
 export default function Settlement() {
@@ -30,7 +31,7 @@ export default function Settlement() {
     code: userData?.vendorCode ? userData?.vendorCode : null,
 
   });
-  const [vendorOptions,setVendorOptions]=useState([])
+  const [vendorOptions, setVendorOptions] = useState([])
   const [pagination, setPagination] = useState({
     page: 1,
     take: 20,
@@ -120,17 +121,41 @@ export default function Settlement() {
     )
   }
 
+  // Function to validate IFSC code using an API
+  const validateIfscCode = async (ifsc) => {
+    try {
+      const response = await axios.get(`https://ifsc.razorpay.com/${ifsc}`);
+      return response.data;
+    } catch (error) {
+      return null; // If invalid IFSC or error in API request
+    }
+  };
   const handleSubmit = async (data) => {
-
     setAddLoading(true);
-    const res = await postApi("/create-vendorsettlement", data);
-    setAddLoading(false);
-    if (res.error) {
-      api.error({ description: res.error.message });
+
+    // Validate the IFSC code before proceeding
+    const ifscValidation = await validateIfscCode(data?.ifsc);
+    if (!ifscValidation) {
+      setAddLoading(false)
+      api.error({
+        message: "Invalid IFSC Code",
+        description: "Please enter a valid IFSC code.",
+      });
       return;
     }
-    handleToggleModal();
-    getSettlementList();
+    
+    const res = await postApi("/create-vendorsettlement", data).then((res) => {
+      if (res?.error) {
+        api.error({ description: res.error.message });
+        return;
+      }
+    }).catch((err) => {
+      console.log("🚀 ~ res ~ err:", err)
+    }).finally(() => {
+      setAddLoading(false);
+      handleToggleModal();
+      getSettlementList();
+    });
 
   }
 
@@ -180,19 +205,19 @@ export default function Settlement() {
     setEditSettlement(null);
     handleGetSettlements();
   }
-useEffect(()=>{
-  getAllVendors()
-},[])
+  useEffect(() => {
+    getAllVendors()
+  }, [])
 
 
-  const getAllVendors=async ()=>{
+  const getAllVendors = async () => {
     const vendors = await getApi('/getall-vendor')
     const merchantOptions = vendors?.data?.data
       ?.filter(merchant => !userData?.vendorCode || merchant?.vendor_code === userData?.vendorCode)
-    .map(merchant => ({
-      label: merchant.vendor_code,
-      value: merchant.vendor_code,
-    }));
+      .map(merchant => ({
+        label: merchant.vendor_code,
+        value: merchant.vendor_code,
+      }));
     setVendorOptions(merchantOptions)
   }
 

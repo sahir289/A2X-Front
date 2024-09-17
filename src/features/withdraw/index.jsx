@@ -23,6 +23,7 @@ import {
   RequiredRule,
 } from "../../utils/utils";
 import Table from "./components/Table";
+import axios from "axios";
 
 const Withdraw = ({ type }) => {
 
@@ -38,7 +39,7 @@ const Withdraw = ({ type }) => {
   const [api, notificationContext] = notification.useNotification();
   const [filters, setFilters] = useState({
     code: userData?.code || "",
-    vendorCode:userData?.vendorCode || "",
+    vendorCode: userData?.vendorCode || "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
@@ -65,9 +66,9 @@ const Withdraw = ({ type }) => {
     }));
   const [vendorData, setVendorData] = useState([]);
   const vendorOptions = vendorData?.map(vendor => ({
-      label: vendor.vendor_code,
-      value: vendor.vendor_code,
-    }));
+    label: vendor.vendor_code,
+    value: vendor.vendor_code,
+  }));
 
 
   useEffect(() => {
@@ -105,7 +106,7 @@ const Withdraw = ({ type }) => {
       getPayoutList({
         ...queryObj,
         code: userData?.code || queryObj.code || null,
-        vendorCode:userData?.vendorCode || queryObj.code || null,
+        vendorCode: userData?.vendorCode || queryObj.code || null,
       });
       return;
     }
@@ -114,7 +115,7 @@ const Withdraw = ({ type }) => {
       getPayoutList({
         ...queryObj,
         code: userData?.code || queryObj.code || null,
-        vendorCode:userData?.vendorCode || queryObj.code || null,
+        vendorCode: userData?.vendorCode || queryObj.code || null,
       });
     }, 1500);
   };
@@ -223,17 +224,43 @@ const Withdraw = ({ type }) => {
     );
   };
 
+  // Function to validate IFSC code using an API
+  const validateIfscCode = async (ifsc) => {
+    try {
+      const response = await axios.get(`https://ifsc.razorpay.com/${ifsc}`);
+      return response.data;
+    } catch (error) {
+      return null; // If invalid IFSC or error in API request
+    }
+  };
+
+
   const handleSubmit = async (data) => {
     setAddLoading(true);
-
-    const res = await postApi("/create-payout", { ...data, vendor_code: userData?.vendorCode });
-    setAddLoading(false);
-    if (res.error) {
-      api.error({ description: res.error.message });
+    // Validate the IFSC code before proceeding
+    const ifscValidation = await validateIfscCode(data?.ifsc_code);
+    if (!ifscValidation) {
+      setAddLoading(false)
+      api.error({
+        message: "Invalid IFSC Code",
+        description: "Please enter a valid IFSC code.",
+      });
       return;
     }
-    handleToggleModal();
-    handleGetWithdraws();
+
+    const res = await postApi("/create-payout", { ...data, vendor_code: userData?.vendorCode }).then((res) => {
+      if (res?.error) {
+        api.error({ description: res.error.message });
+        return;
+      }
+    }).catch((err) => {
+    }).finally(() => {
+      setAddLoading(false);
+
+      handleToggleModal();
+      handleGetWithdraws();
+    });
+
   };
 
   const handleAddVendor = async (data) => {
@@ -325,8 +352,8 @@ const Withdraw = ({ type }) => {
             showSizeChanger
           />
         </div>
-       </div>
-      { hasSelected ?
+      </div>
+      {hasSelected ?
         <div className="fixed bottom-0 w-full z-99" style={style}>
           <div className="bg-white p-[8px] font-serif">
             <div className="flex justify-between">
