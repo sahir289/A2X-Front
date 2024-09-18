@@ -29,17 +29,6 @@ export function formatCurrency(amount) {
 }
 
 
-// export const getQueryFromObject = (obj = {}) => {
-//   console.log("🚀 ~ getQueryFromObject ~ obj:", obj)
-//   const queryParams = [];
-//   for (const name in obj) {
-//     if (obj[name] !== undefined && obj[name] !== null && obj[name] !== "" ) {
-//       queryParams.push(`${name}=${obj[name]}`);
-//     }
-//   }
-//   return `?${queryParams.join("&")}`
-// }
-
 export const getQueryFromObject = (obj = {}) => {
   const queryParams = [];
   for (const name in obj) {

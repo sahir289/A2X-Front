@@ -28,7 +28,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
 
   const userData = useContext(PermissionContext)
-  console.log("🚀 ~ TableComponent ~ userData:", userData)
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
@@ -148,7 +147,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       // const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`).then((res) => {
       //   if (res?.data?.data) {
       //     setPaymentUrl(res?.data?.data?.payInUrl)
-      //     console.log("🚀 ~ oneTimeUrlRes ~ res:", res)
       //     handleToggleModal()
       //     setPaymentUrlModal(true);
       //     handleCopy(res?.data?.data?.payInUrl)
@@ -165,7 +163,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y`).then((res) => {
         if (res?.data?.data) {
           setPaymentUrl(res?.data?.data?.payInUrl)
-          console.log("🚀 ~ oneTimeUrlRes ~ res:", res)
           handleToggleModal()
           setPaymentUrlModal(true);
           handleCopy(res?.data?.data?.payInUrl)
@@ -189,9 +186,6 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const handleResetSearchFields = () => {
     setFilterValues({ status: allTable ? '' : filterValues?.status || '' });
   }
-
-  console.log("🚀 ~ TableComponent ~ process.env.REACT_S3_URL:", process.env.REACT_APP_S3_URL)
-
 
   return (
     <>

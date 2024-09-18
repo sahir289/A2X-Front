@@ -48,7 +48,6 @@ const AuthLayout = () => {
     if (token) {
       try {
         const userData = jwtDecode(token);
-        console.log("🚀 ~ useEffect ~ userData:", userData)
         if (userData) {
           setRole(userData?.role);
           setUserId(userData?.id);

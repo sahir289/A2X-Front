@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import LeftSidebar from "./LeftSidebar"
 import PageContent from "./PageContent.jsx"
-// import RightSidebar from './RightSidebar'
 import { useEffect } from "react"
 import { NotificationContainer, NotificationManager } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
@@ -9,7 +8,6 @@ import { getApi } from '../redux/api.jsx'
 import { removeNotificationMessage } from "../redux/slice/headerSlice.jsx"
 import { initMerchants } from "../redux/slice/merchantSlice.jsx"
 import { useNavigate } from 'react-router-dom'
-// import ModalLayout from "./ModalLayout"
 
 function Layout() {
   const dispatch = useDispatch()
@@ -51,15 +49,10 @@ function Layout() {
         <LeftSidebar />
       </div>
 
-      { /* Right drawer - containing secondary content like notifications list etc.. */}
-      {/* <RightSidebar /> */}
-
 
       {/** Notification layout container */}
       <NotificationContainer />
 
-      {/* Modal layout container */}
-      {/* <ModalLayout /> */}
 
     </>
   )
