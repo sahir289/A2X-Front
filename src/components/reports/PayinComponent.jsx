@@ -13,13 +13,10 @@ const PayinComponent = () => {
   const handlePayIn = async (data) => {
     const startDate = data.range[0];
     const endDate = data.range[1];
-    const completeData = {
-      ...data,
-      startDate,
-      endDate
-    }
+    let query = data.merchantCode.map((code) => "merchantCode=" + encodeURIComponent(code)).join("&");
+    const completeData = `${query}&status=${data.status}&startDate=${startDate}&endDate=${endDate}`;
     setLoading(true);
-    const res = await getApi('/get-all-payins', completeData);
+    const res = await getApi(`/get-all-payins?${completeData}`);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
