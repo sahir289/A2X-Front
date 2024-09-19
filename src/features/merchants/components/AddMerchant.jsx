@@ -40,6 +40,8 @@ const AddMerchant = ({
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [minPayin, setMinPayin] = useState(0);
+  const [minPayout, setMinPayout] = useState(0);
   const handleModalOk = () => {
     setIsAddModelOpen(false);
     form.resetFields();
@@ -187,7 +189,14 @@ const AddMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={1} onChange={setMinPayin} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <Form.Item
@@ -204,7 +213,14 @@ const AddMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={minPayin} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <Form.Item
@@ -221,7 +237,14 @@ const AddMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={1} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <Form.Item
@@ -238,7 +261,14 @@ const AddMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={1} onChange={setMinPayout} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <Form.Item
@@ -255,7 +285,14 @@ const AddMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={minPayout} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <Form.Item
@@ -272,7 +309,14 @@ const AddMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={1} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <Form.Item
