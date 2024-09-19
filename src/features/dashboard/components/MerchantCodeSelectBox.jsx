@@ -1,13 +1,13 @@
 import { Select } from "antd";
 import React, { useContext, useEffect, useState } from "react";
-import { getApi } from "../../../redux/api";
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
-import { invalidText } from "../../../utils/utils";
-import { useNavigate } from "react-router-dom";
 import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
+import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { getApi } from "../../../redux/api";
+import { invalidText } from "../../../utils/utils";
 
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
@@ -35,6 +35,8 @@ const MerchantCodeSelectBox = ({
       navigate("/");
     }
 
+    if (!Array.isArray(merchantCodes?.data?.data?.merchants)) return;
+
     if (context?.code && !invalidText(context?.code)) {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants
         ?.filter((merchant) => context?.code?.includes(merchant.code)) // Filter merchants that match the code
@@ -42,14 +44,13 @@ const MerchantCodeSelectBox = ({
           label: merchant.code,
           value: merchant.code,
         }));
+      const merchants = formattedMerchantCodes?.map((item) => item.value);
       localStorage.setItem(
         "selectedMerchantCode",
-        JSON.stringify(formattedMerchantCodes?.map((item) => item.value))
+        JSON.stringify(merchants)
       );
       setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(
-        formattedMerchantCodes?.map((item) => item.value)
-      );
+      setSelectedMerchantCode(merchants);
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
         (merchant) => ({
@@ -57,14 +58,13 @@ const MerchantCodeSelectBox = ({
           value: merchant.code,
         })
       );
+      const merchants = formattedMerchantCodes?.map((item) => item.value);
       localStorage.setItem(
         "selectedMerchantCode",
-        JSON.stringify(formattedMerchantCodes?.map((item) => item.value))
+        JSON.stringify(merchants)
       );
       setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(
-        formattedMerchantCodes?.map((item) => item.value)
-      );
+      setSelectedMerchantCode(merchants);
     }
   };
 
