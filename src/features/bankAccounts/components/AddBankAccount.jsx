@@ -7,15 +7,17 @@ import {
   notification,
   Switch,
 } from "antd";
-import React, { useContext } from "react";
-import { postApi } from "../../../redux/api";
+import axios from "axios";
+import React, { useContext, useState } from "react";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { postApi } from "../../../redux/api";
 
 const AddBankAccount = ({
   isAddBankAccountModelOpen,
   setIsAddBankAccountModelOpen,
   handleTableChange,
 }) => {
+  const [loading, setLoading] = useState(false)
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
 
@@ -30,7 +32,31 @@ const AddBankAccount = ({
   };
 
   const userData = useContext(PermissionContext)
+
+  // Function to validate IFSC code using an API
+  const validateIfscCode = async (ifsc) => {
+    try {
+      const response = await axios.get(`https://ifsc.razorpay.com/${ifsc}`);
+      return response.data;
+    } catch (error) {
+      return null; // If invalid IFSC or error in API request
+    }
+  };
+
   const onFinish = async (values) => {
+    setLoading(true)
+    // Validate the IFSC code before proceeding
+    const ifscValidation = await validateIfscCode(values?.ifsc);
+    if (!ifscValidation) {
+      setLoading(false)
+      api.error({
+        message: "Invalid IFSC Code",
+        description: "Please enter a valid IFSC code.",
+      });
+      return;
+    }
+
+    // Proceed with form data submission after IFSC validation
     const formData = {
       upi_id: values.upi_id,
       upi_params: "",
@@ -47,20 +73,25 @@ const AddBankAccount = ({
       payin_count: 0,
       balance: 0,
       createdBy: `${userData?.userId}`,
-      code : `${userData?.code}`,
-      vendor_code: `${userData?.vendorCode}`
+      code: `${userData?.code}`,
+      vendor_code: `${userData?.vendorCode}`,
     };
 
-    const AddBankAcc = await postApi("/create-bank", formData);
-    if (AddBankAcc.error) {
-      api.error({
-        description: `Error: ${AddBankAcc.error.message}`,
-      });
-      return;
-    }
-    setIsAddBankAccountModelOpen(false);
-    handleTableChange({ current: 1, pageSize: 20 });
-    form.resetFields();
+    const AddBankAcc = await postApi("/create-bank", formData).then((res) => {
+      if (res?.error) {
+        api.error({
+          description: `Error: ${res?.error.message}`,
+        });
+        return;
+      }
+    }).catch((err) => {
+
+    }).finally(() => {
+      setLoading(false)
+      setIsAddBankAccountModelOpen(false);
+      handleTableChange({ current: 1, pageSize: 20 });
+      form.resetFields();
+    });
   };
 
   return (
@@ -239,7 +270,7 @@ const AddBankAccount = ({
               </Button>
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={loading}>
                 Ok
               </Button>
             </Form.Item>
