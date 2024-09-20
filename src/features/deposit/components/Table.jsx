@@ -184,7 +184,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   }
   //reset search fields
   const handleResetSearchFields = () => {
-    setFilterValues({ status: allTable ? '' : filterValues?.status || '' });
+    setFilterValues({
+      status: allTable ? '' : filterValues?.status || '', merchantCode: `${userData?.code || ""}`,
+      vendorCode: `${userData?.vendorCode || ""}`, pageSize: 20,
+      page: 1
+});
   }
 
   return (
