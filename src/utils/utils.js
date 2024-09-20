@@ -59,6 +59,7 @@ export const statusOptions = [
   { value: 'DROPPED', label: 'DROPPED' },
   { value: 'DUPLICATE', label: 'DUPLICATE' },
   { value: 'DISPUTE', label: 'DISPUTE' },
+  { value: 'PENDING', label: 'PENDING' },
   { value: 'IMG_PENDING', label: 'IMG_PENDING' },
 ];
 

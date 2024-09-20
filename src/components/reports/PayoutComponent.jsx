@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 import { json2csv } from 'json-2-csv';
 import React, { useState } from 'react';
-import { getApi } from '../../redux/api';
+import { postApi } from '../../redux/api';
 import { formatDate, payoutInOutStatusOptions } from '../../utils/utils';
 import PayDesign from './index';
 
@@ -12,15 +12,17 @@ const PayoutComponent = () => {
 
   //handlePayInFunction
   const handlePayOut = async (data) => {
-    const startDate = data.range[0];
-    const endDate = data.range[1];
+    const formattedDates = data.range.map(date =>  new Date(date).toLocaleDateString('en-CA'));
+    const startDate = formattedDates[0];
+    const endDate = formattedDates[1];
+    delete data.range;
     const completeData = {
       ...data,
       startDate,
       endDate
     }
     setLoading(true);
-    const res = await getApi('/get-all-payouts', completeData);
+    const res = await postApi('/get-all-payouts', completeData);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
