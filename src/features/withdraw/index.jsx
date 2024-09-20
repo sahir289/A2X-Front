@@ -468,7 +468,14 @@ const Withdraw = ({ type }) => {
             <Input />
           </Form.Item>
           <Form.Item name="amount" label="Amount" rules={RequiredRule}>
-            <Input addonAfter="₹" />
+            <Input addonAfter="₹" min={1} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
             <Button onClick={handleToggleModal}>Cancel</Button>

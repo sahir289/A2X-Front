@@ -75,6 +75,7 @@ export const WithDrawAllOptions = [
   { value: 'INITIATED', label: 'INITIATED' },
   { value: 'SUCCESS', label: 'SUCCESS' },
   { value: 'FAILED', label: 'FAILED' },
+  { value: 'REJECTED', label: 'REJECTED' },
   { value: 'REVERSED', label: 'REVERSED' },
 ]
 export const WithDrawCompletedOptions = [
