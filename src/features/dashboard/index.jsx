@@ -10,8 +10,7 @@ import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
 import { formatCurrency } from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
-
-
+import dayjs from "dayjs";
 
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
@@ -57,24 +56,25 @@ function Dashboard() {
   ]);
   const [depositData, setDepositData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
-  const [interval, setInterval] = useState("15d");
+  const [intervalDeposit, setIntervalDeposit] = useState("15d");
+  const [intervalWithdraw, setIntervalWithdraw] = useState("15d");
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 15)),
-      endDate: new Date(),
+    startDate: dayjs().add(-14, "d"),
+    endDate: dayjs(),
   });
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("kkk")
     fetchPayInDataMerchant();
   }, [selectedMerchantCode, dateRange]);
 
   const updateDashboardPeriod = (newRange) => {
     setDateRange({
-      startDate: new Date(newRange.startDate),
-      endDate: new Date(newRange.endDate),
+      startDate: newRange.startDate,
+      endDate: newRange.endDate,
     });
-    setInterval("");
+    setIntervalDeposit("");
+    setIntervalWithdraw("");
     dispatch(
       showNotification({
         message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
@@ -89,7 +89,10 @@ function Dashboard() {
         .map((code) => "merchantCode=" + encodeURIComponent(code))
         .join("&");
 
-      const payInOutData = await getApi(`/get-payInDataMerchant?${query}`, dateRange);
+      const payInOutData = await getApi(
+        `/get-payInDataMerchant?${query}`,
+        dateRange
+      );
       if (payInOutData.error) {
         return;
       }
@@ -197,7 +200,10 @@ function Dashboard() {
         </div>
         {/** ---------------------- Select Period Content ------------------------- */}
         <div className="grid grid-row-1">
-          <DashboardTopBar updateDashboardPeriod={updateDashboardPeriod} dateValue={dateRange}/>
+          <DashboardTopBar
+            updateDashboardPeriod={updateDashboardPeriod}
+            dateValue={dateRange}
+          />
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
@@ -251,24 +257,20 @@ function Dashboard() {
         </div>
       </div>
 
-
       <BarChart
         title={`Deposit`}
         data={depositData}
-        interval={interval}
-        setInterval={setInterval}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
+        interval={intervalDeposit}
+        setInterval={setIntervalDeposit}
+        currentCateRange={dateRange}
       />
       <BarChart
         title={`Withdraw`}
         data={withdrawData}
-        interval={interval}
-        setInterval={setInterval}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
+        interval={intervalWithdraw}
+        setInterval={setIntervalWithdraw}
+        currentCateRange={dateRange}
       />
-
     </>
   );
 }

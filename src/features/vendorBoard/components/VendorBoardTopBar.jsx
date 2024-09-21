@@ -1,39 +1,65 @@
-import { useState } from "react";
-import Datepicker from "react-tailwindcss-datepicker";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
+const { RangePicker } = DatePicker;
 
-const periodOptions = [
-  { name: "Today", value: "TODAY" },
-  { name: "Yesterday", value: "YESTERDAY" },
-  { name: "This Week", value: "THIS_WEEK" },
-  { name: "Last Week", value: "LAST_WEEK" },
-  { name: "This Month", value: "THIS_MONTH" },
-  { name: "Last Month", value: "LAST_MONTH" },
+const rangePresets = [
+  {
+    label: "Today",
+    value: [
+      dayjs().add(0, "day").startOf("day"),
+      dayjs().add(0, "day").endOf("day"),
+    ],
+  },
+  {
+    label: "Yesterday",
+    value: [
+      dayjs().add(-1, "day").startOf("day"),
+      dayjs().add(-1, "day").endOf("day"),
+    ],
+  },
+  {
+    label: "Last 7 days",
+    value: [dayjs().add(-7, "d"), dayjs().endOf("day")],
+  },
+  {
+    label: "Last 30 days",
+    value: [dayjs().add(-30, "d"), dayjs().endOf("day")],
+  },
+  {
+    label: "This Month",
+    value: [dayjs().startOf("month"), dayjs().endOf("month")],
+  },
+  {
+    label: "Last Month",
+    value: [
+      dayjs().add(-1, "month").startOf("month"),
+      dayjs().add(-1, "month").endOf("month"),
+    ],
+  },
 ];
 
-function VendorBoardTopBar({ updateVendorBoardPeriod }) {
-  const [dateValue, setDateValue] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-  });
-
-  const handleDatePickerValueChange = (newValue) => {
-    setDateValue(newValue);
-    updateVendorBoardPeriod(newValue);
+function VendorBoardTopBar({ updateVendorBoardPeriod, dateValue }) {
+  const onRangeChange = (dates, dateStrings) => {
+    if (dates) {
+      let startDate = new Date(dateStrings[0]);
+      let endDate = new Date(dateStrings[1]);
+      endDate.setHours(23, 59, 59, 999);
+      const newRange = {
+        startDate: startDate,
+        endDate: endDate,
+      };
+      updateVendorBoardPeriod(newRange);
+    }
   };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div className="">
-        <Datepicker
-          containerClassName="w-64 "
-          value={dateValue}
-          theme={"light"}
-          inputClassName="input input-bordered w-72"
-          popoverDirection={"down"}
-          toggleClassName="invisible"
-          onChange={handleDatePickerValueChange}
-          showShortcuts={true}
-          primaryColor={"white"}
+        <RangePicker
+          className="w-72 h-12"
+          defaultValue={[dateValue.startDate, dateValue.endDate]}
+          presets={rangePresets}
+          onChange={onRangeChange}
         />
       </div>
     </div>

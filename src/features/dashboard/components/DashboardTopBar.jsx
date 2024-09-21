@@ -1,41 +1,67 @@
-// import SelectBox from "../../../components/Input/SelectBox"
-import ArrowDownTrayIcon  from '@heroicons/react/24/outline/ArrowDownTrayIcon'
-import ShareIcon  from '@heroicons/react/24/outline/ShareIcon'
-import EnvelopeIcon  from '@heroicons/react/24/outline/EnvelopeIcon'
-import EllipsisVerticalIcon  from '@heroicons/react/24/outline/EllipsisVerticalIcon'
-import ArrowPathIcon  from '@heroicons/react/24/outline/ArrowPathIcon'
-import { useState } from "react"
-import Datepicker from "react-tailwindcss-datepicker";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
+const { RangePicker } = DatePicker;
 
+const rangePresets = [
+  {
+    label: "Today",
+    value: [
+      dayjs().add(0, "day").startOf("day"),
+      dayjs().add(0, "day").endOf("day"),
+    ],
+  },
+  {
+    label: "Yesterday",
+    value: [
+      dayjs().add(-1, "day").startOf("day"),
+      dayjs().add(-1, "day").endOf("day"),
+    ],
+  },
+  {
+    label: "Last 7 days",
+    value: [dayjs().add(-7, "d"), dayjs().endOf("day")],
+  },
+  {
+    label: "Last 30 days",
+    value: [dayjs().add(-30, "d"), dayjs().endOf("day")],
+  },
+  {
+    label: "This Month",
+    value: [dayjs().startOf("month"), dayjs().endOf("month")],
+  },
+  {
+    label: "Last Month",
+    value: [
+      dayjs().add(-1, "month").startOf("month"),
+      dayjs().add(-1, "month").endOf("month"),
+    ],
+  },
+];
 
+function DashboardTopBar({ updateDashboardPeriod, dateValue }) {
+  const onRangeChange = (dates, dateStrings) => {
+    if (dates) {
+      let startDate = new Date(dateStrings[0]);
+      let endDate = new Date(dateStrings[1]);
+      endDate.setHours(23, 59, 59, 999);
+      const newRange = {
+        startDate: startDate,
+        endDate: endDate,
+      };
+      updateDashboardPeriod(newRange);
+    }
+  };
 
-const periodOptions = [
-    {name : "Today", value : "TODAY"},
-    {name : "Yesterday", value : "YESTERDAY"},
-    {name : "This Week", value : "THIS_WEEK"},
-    {name : "Last Week", value : "LAST_WEEK"},
-    {name : "This Month", value : "THIS_MONTH"},
-    {name : "Last Month", value : "LAST_MONTH"},
-]
-
-function DashboardTopBar({updateDashboardPeriod,dateValue}){
-
-        // const [dateValue, setDateValue] = useState({
-        //     startDate: new Date(),
-        //     endDate: new Date()
-        // });
-
-        const handleDatePickerValueChange = (newValue) => {
-
-            // setDateValue(newValue);
-            updateDashboardPeriod(newValue)
-        }
-
-
-    return(
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="">
-            <Datepicker
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="">
+        <RangePicker
+          className="w-72 h-12"
+          defaultValue={[dateValue.startDate, dateValue.endDate]}
+          presets={rangePresets}
+          onChange={onRangeChange}
+        />
+        {/* <Datepicker
                 containerClassName="w-64 "
                 value={dateValue}
                 theme={"light"}
@@ -46,8 +72,8 @@ function DashboardTopBar({updateDashboardPeriod,dateValue}){
                 showShortcuts={true}
                 primaryColor={"white"}
 
-            />
-            {/* <SelectBox
+            /> */}
+        {/* <SelectBox
                 options={periodOptions}
                 labelTitle="Period"
                 placeholder="Select date range"
@@ -56,8 +82,8 @@ function DashboardTopBar({updateDashboardPeriod,dateValue}){
                 defaultValue="TODAY"
                 updateFormValue={updateSelectBoxValue}
             /> */}
-            </div>
-            {/* <div className="text-right ">
+      </div>
+      {/* <div className="text-right ">
                 <button className="btn btn-ghost btn-sm normal-case"><ArrowPathIcon className="w-4 mr-2"/>Refresh Data</button>
                 <button className="btn btn-ghost btn-sm normal-case  ml-2"><ShareIcon className="w-4 mr-2"/>Share</button>
 
@@ -69,8 +95,8 @@ function DashboardTopBar({updateDashboardPeriod,dateValue}){
                     </ul>
                 </div>
             </div> */}
-        </div>
-    )
+    </div>
+  );
 }
 
-export default DashboardTopBar
+export default DashboardTopBar;

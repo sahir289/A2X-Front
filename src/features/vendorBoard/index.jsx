@@ -9,6 +9,7 @@ import BarChart from "./components/BarChart";
 import VendorBoardStats from "./components/VendorBoardStats";
 import VendorBoardTopBar from "./components/VendorBoardTopBar";
 import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
+import dayjs from "dayjs";
 
 function VendorBoard() {
   const context = useContext(PermissionContext);
@@ -56,10 +57,11 @@ function VendorBoard() {
   ]);
   const [depositData, setDepositData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
-  const [interval, setInterval] = useState("15d");
+  const [intervalDeposit, setIntervalDeposit] = useState("15d");
+  const [intervalWithdraw, setIntervalWithdraw] = useState("15d");
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 15)),
-      endDate: new Date(),
+    startDate: dayjs().add(-14, "d"),
+    endDate: dayjs(),
   });
   const dispatch = useDispatch();
 
@@ -69,10 +71,11 @@ function VendorBoard() {
 
   const updateVendorBoardPeriod = (newRange) => {
     setDateRange({
-      startDate: new Date(newRange.startDate),
-      endDate: new Date(newRange.endDate),
+      startDate: newRange.startDate,
+      endDate: newRange.endDate,
     });
-    setInterval("");
+    setIntervalDeposit("");
+    setIntervalWithdraw("");
     dispatch(
       showNotification({
         message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
@@ -101,7 +104,8 @@ function VendorBoard() {
           .join("&");
       } else if (
         (context?.role && context?.role.toLowerCase() === "vendor") ||
-        (context?.role && context?.role.toLowerCase() === "vendor_operations") ||
+        (context?.role &&
+          context?.role.toLowerCase() === "vendor_operations") ||
         (context?.role &&
           context?.role.toLowerCase() === "merchant" &&
           context?.vendorCode !== null)
@@ -226,6 +230,7 @@ function VendorBoard() {
         <div className="grid grid-row-1">
           <VendorBoardTopBar
             updateVendorBoardPeriod={updateVendorBoardPeriod}
+            dateValue={dateRange}
           />
           <div className="stats shadow col-span-2">
             <div className="stat">
@@ -283,18 +288,16 @@ function VendorBoard() {
       <BarChart
         title={`Deposit`}
         data={depositData}
-        interval={interval}
-        setInterval={setInterval}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
+        interval={intervalDeposit}
+        setInterval={setIntervalDeposit}
+        currentCateRange={dateRange}
       />
       <BarChart
         title={`Withdraw`}
         data={withdrawData}
-        interval={interval}
-        setInterval={setInterval}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
+        interval={intervalWithdraw}
+        setInterval={setIntervalWithdraw}
+        currentCateRange={dateRange}
       />
     </>
   );
