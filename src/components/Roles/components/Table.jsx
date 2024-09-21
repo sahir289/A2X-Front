@@ -113,9 +113,9 @@ const TableComponent = ({
             <>
               <span>Role</span>
               <br />
-              {/* <Input
+              {filterValues.role == "ADMIN" || filterValues.role == "" && <Input
             value={filterValues.role}
-            onChange={(e) => { handleFilterValuesChange(e.target.value, 'role') }} /> */}
+            onChange={(e) => { handleFilterValuesChange(e.target.value, 'role') }} />}
             </>
           }
           dataIndex="role"
