@@ -22,6 +22,7 @@ function All() {
 
   const fetchUsersData = async () => {
     setIsFetchDataLoading(true);
+    console.log("fetchUsersData",filterValues);
     const data = await getApi("/getall-vendor", filterValues);
     // console.log(data);
     setIsFetchDataLoading(false);
