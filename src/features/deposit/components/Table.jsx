@@ -267,6 +267,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <br />
             <Input
               value={filterValues?.upiShortCode}
+              maxLength={5}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'upiShortCode')}
               allowClear
             />
