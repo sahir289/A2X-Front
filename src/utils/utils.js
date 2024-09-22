@@ -1,12 +1,56 @@
-export function formatDate(inputDate) {
-  const date = new Date(inputDate);
+function getISTOffsetForUser() {
+  // Get user's current time zone
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  // Get current time in IST
+  const istDate = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+  
+  // Get current time in user's time zone
+  const userDate = new Date().toLocaleString("en-US", { timeZone: userTimeZone });
+  
+  // Convert both times to Date objects
+  const istTime = new Date(istDate);
+  const userTime = new Date(userDate);
+  
+  // Calculate the time difference in milliseconds
+  const timeDifference = istTime - userTime;
+  
+  // Convert the difference to hours and minutes
+  const diffHours = Math.floor(timeDifference / (1000 * 60 * 60));
+  const diffMinutes = Math.abs(Math.floor((timeDifference / (1000 * 60)) % 60));
+  
+  // Format the offset
+  const offsetHours = (Math.abs(diffHours) + 2).toString();
+  const offsetMinutes = (diffMinutes + 20).toString().padStart(2, '0');
+  
+  return {
+    userTimeZone: userTimeZone,
+    istOffset: `${offsetHours}.${offsetMinutes}`
+  };
+}
+const IST_OFFSET = getISTOffsetForUser();
 
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
-  const year = date.getUTCFullYear();
-  const hours = String(date.getUTCHours()).padStart(2, '0');
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+export function formatDate(inputDate) {
+  // const date = new Date(inputDate);
+
+  // const day = String(date.getUTCDate()).padStart(2, '0');
+  // const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+  // const year = date.getUTCFullYear();
+  // const hours = String(date.getUTCHours()).padStart(2, '0');
+  // const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  // const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+  const date = new Date(inputDate);
+  const utcTime = date.getTime();
+  const istTime = utcTime + (IST_OFFSET.istOffset * 60 * 60 * 1000); // Convert hours to milliseconds and add the offset
+  const istDate = new Date(istTime);
+
+  const day = String(istDate.getDate()).padStart(2, '0');
+  const month = String(istDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = istDate.getFullYear();
+  const hours = String(istDate.getHours()).padStart(2, '0');
+  const minutes = String(istDate.getMinutes()).padStart(2, '0');
+  const seconds = String(istDate.getSeconds()).padStart(2, '0');
 
   return `${day}/${month}/${year} at ${hours}:${minutes}:${seconds}`;
 }
