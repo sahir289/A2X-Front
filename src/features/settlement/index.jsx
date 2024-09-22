@@ -121,17 +121,18 @@ export default function Settlement() {
 
   const handleSubmit = async (data) => {
     setAddLoading(true);
-    if (data.method === 'BANK') {
-      // Validate the IFSC code before proceeding
-      const ifscValidation = await validateIfscCode(data?.ifsc);
-      if (!ifscValidation) {
-        setAddLoading(false)
-        api.error({
-          message: "Invalid IFSC Code",
-          description: "Please enter a valid IFSC code.",
-        });
-        return;
-      }
+    // Validate the IFSC code before proceeding
+
+    if (data?.method==="BANK"){
+    const ifscValidation = await validateIfscCode(data?.ifsc);
+    if (!ifscValidation) {
+      setAddLoading(false)
+      api.error({
+        message: "Invalid IFSC Code",
+        description: "Please enter a valid IFSC code.",
+      });
+      return;
+    }
     }
     const res = await postApi("/create-settlement", data).then((res) => {
       if (res?.error) {
