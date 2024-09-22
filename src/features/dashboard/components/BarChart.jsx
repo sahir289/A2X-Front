@@ -10,6 +10,7 @@ import {
 } from "chart.js";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import dayjs from "dayjs";
 import TitleCard from "../../../components/Cards/TitleCard";
 import { formatCurrency } from "../../../utils/utils";
 
@@ -22,20 +23,21 @@ ChartJS.register(
   Legend
 );
 
-function BarChart({
-  title,
-  data,
-  interval,
-  setInterval,
-  dateRange,
-  setDateRange,
-}) {
+function BarChart({ title, data, interval, setInterval, currentCateRange }) {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [{ label: "", data: [], backgroundColor: "" }],
   });
+  const [dateRange, setDateRange] = useState({
+    startDate: dayjs().subtract(15, "day"),
+    endDate: dayjs(),
+  });
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    setDateRange(currentCateRange);
+  }, [currentCateRange]);
 
   const options = {
     responsive: true,
@@ -63,27 +65,27 @@ function BarChart({
 
   const getDateRangeLabels = (startDate, endDate, interval) => {
     const result = [];
-    const currentDate = new Date(startDate);
+    let currentDate = dayjs(startDate);
 
-    if (
-      interval === "12h" ||
-      startDate.toISOString().split("T")[0] ===
-        endDate.toISOString().split("T")[0]
-    ) {
-      // If the interval is "12h" or the start and end dates are the same, create hourly labels
-      const hoursInterval = interval === "12h" ? 1 : 2; // 1-hour intervals for 12h and 2-hour intervals for the same date
+    if (interval === "12h" || dayjs(startDate).isSame(endDate, "day")) {
+      const hoursInterval =
+        interval === "12h" || dayjs(startDate).isSame(endDate, "day") ? 1 : 2;
       const hoursToShow = interval === "12h" ? 12 : 24;
 
       for (let i = 0; i < hoursToShow; i++) {
-        const date = new Date(startDate);
-        date.setHours(date.getHours() - (hoursToShow - 1 - i) * hoursInterval);
-        result.push(date.toISOString());
+        result.push(
+          dayjs(startDate)
+            .add(i * hoursInterval, "hour")
+            .toISOString()
+        );
       }
     } else {
-      // Create daily labels
-      while (currentDate <= endDate) {
-        result.push(new Date(currentDate).toISOString().split("T")[0]);
-        currentDate.setDate(currentDate.getDate() + 1);
+      while (
+        currentDate.isBefore(endDate) ||
+        currentDate.isSame(endDate, "day")
+      ) {
+        result.push(currentDate.format("YYYY-MM-DD"));
+        currentDate = currentDate.add(1, "day");
       }
     }
 
@@ -91,14 +93,11 @@ function BarChart({
   };
 
   const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
+    const date = dayjs(dateString);
+    let hours = date.hour();
     const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours || 12; // the hour '0' should be '12'
-    const minutesStr = minutes < 10 ? "0" + minutes : minutes;
-    return `${hours}:${minutesStr} ${ampm}`;
+    hours = hours % 12 || 12;
+    return `${hours}:00 ${ampm}`;
   };
 
   const labels = getDateRangeLabels(
@@ -108,10 +107,9 @@ function BarChart({
   ).map((date) => {
     if (
       interval === "12h" ||
-      dateRange.startDate.toISOString().split("T")[0] ===
-        dateRange.endDate.toISOString().split("T")[0]
+      dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
     ) {
-      return formatTime(date); // Format time as human-readable
+      return formatTime(date);
     }
     return date;
   });
@@ -122,19 +120,17 @@ function BarChart({
         let dayData;
         if (
           interval === "12h" ||
-          dateRange.startDate.toISOString().split("T")[0] ===
-            dateRange.endDate.toISOString().split("T")[0]
+          dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
         ) {
           dayData = data.filter(
             (item) =>
-              new Date(item.updatedAt).getHours() ===
-                new Date(date).getHours() &&
-              new Date(item.updatedAt).toISOString().split("T")[0] ===
-                new Date(date).toISOString().split("T")[0]
+              dayjs(item.createdAt).startOf("hour").format("h:mm A") == date &&
+              new Date(item.createdAt).getDate() ==
+                new Date(dateRange.startDate).getDate()
           );
         } else {
           dayData = data.filter(
-            (item) => item.updatedAt.split("T")[0] === date
+            (item) => dayjs(item.createdAt).format("YYYY-MM-DD") === date
           );
         }
         const total = dayData.reduce(
@@ -178,15 +174,17 @@ function BarChart({
 
   const onChange = (e) => {
     setInterval(e.target.value);
+    const today = dayjs();
+
     if (e.target.value === "15d") {
       setDateRange({
-        startDate: new Date(new Date().setDate(new Date().getDate() - 15)),
-        endDate: new Date(),
+        startDate: today.subtract(15, "day"),
+        endDate: today,
       });
     } else if (e.target.value === "7d") {
       setDateRange({
-        startDate: new Date(new Date().setDate(new Date().getDate() - 7)),
-        endDate: new Date(),
+        startDate: today.subtract(7, "day"),
+        endDate: today,
       });
     }
   };
