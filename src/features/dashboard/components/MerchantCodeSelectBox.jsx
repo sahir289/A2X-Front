@@ -45,10 +45,7 @@ const MerchantCodeSelectBox = ({
           value: merchant.code,
         }));
       const merchants = formattedMerchantCodes?.map((item) => item.value);
-      localStorage.setItem(
-        "selectedMerchantCode",
-        JSON.stringify(merchants)
-      );
+      localStorage.setItem("selectedMerchantCode", JSON.stringify(merchants));
       setMerchantCodeOptions(formattedMerchantCodes);
       setSelectedMerchantCode(merchants);
     } else {
@@ -59,10 +56,7 @@ const MerchantCodeSelectBox = ({
         })
       );
       const merchants = formattedMerchantCodes?.map((item) => item.value);
-      localStorage.setItem(
-        "selectedMerchantCode",
-        JSON.stringify(merchants)
-      );
+      localStorage.setItem("selectedMerchantCode", JSON.stringify(merchants));
       setMerchantCodeOptions(formattedMerchantCodes);
       setSelectedMerchantCode(merchants);
     }
@@ -77,7 +71,8 @@ const MerchantCodeSelectBox = ({
         <div className="w-full">
           <Select
             mode="tags"
-            size={"large"}
+            maxTagCount={5}
+            size={"middle"}
             placeholder="Please select"
             onChange={handleChange}
             style={{

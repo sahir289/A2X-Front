@@ -32,18 +32,16 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
     }
 
     const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
-    ? vendorCodes?.data?.data?.map((vendor) => ({
-      label: vendor.vendor_code,
-      value: vendor.vendor_code,
-    })) : [];
+      ? vendorCodes?.data?.data?.map((vendor) => ({
+          label: vendor.vendor_code,
+          value: vendor.vendor_code,
+        }))
+      : [];
 
     setVendorCodeOptions(formattedVendorCodes);
 
     const vendors = formattedVendorCodes?.map((item) => item.value);
-    localStorage.setItem(
-      "selectedVendorCode",
-      JSON.stringify(vendors)
-    );
+    localStorage.setItem("selectedVendorCode", JSON.stringify(vendors));
     setSelectedVendorCode(vendors);
   };
 
@@ -56,7 +54,8 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
         <div className="w-full">
           <Select
             mode="tags"
-            size={"large"}
+            maxTagCount={5}
+            size={"middle"}
             placeholder="Please select"
             onChange={handleChange}
             style={{

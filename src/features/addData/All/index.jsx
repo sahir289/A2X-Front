@@ -5,7 +5,8 @@ import WebSockets from "../../../components/WebSockets/WebSockets";
 
 function All() {
   const [tableData, setTableData] = useState([]);
-  const [filterValues, setFilterValues] = useState({
+
+  const initialFilterValues = {
     sno: "",
     status: "/success",
     amount: "",
@@ -13,7 +14,9 @@ function All() {
     utr: "",
     page: 1,
     pageSize: 20,
-  });
+  };
+
+  const [filterValues, setFilterValues] = useState(initialFilterValues);
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
 
   useEffect(() => {
@@ -25,20 +28,25 @@ function All() {
     const botMessage = await getApi("/get-message", filterValues);
     setIsFetchBanksLoading(false);
     if (botMessage.error) {
-
       return;
     }
     setTableData(botMessage?.data?.data);
   };
 
+  const handleResetSearchFields = () => {
+    setFilterValues(initialFilterValues);
+  };
+
   return (
     <div className="">
-      <WebSockets fetchUsersData={fetchUsersData} /> {/*  to get the message from backend when the api is hit. */}
+      <WebSockets fetchUsersData={fetchUsersData} />{" "}
+      {/*  to get the message from backend when the api is hit. */}
       <TableComponent
         data={tableData}
         filterValues={filterValues}
         setFilterValues={setFilterValues}
         isFetchBanksLoading={isFetchBanksLoading}
+        handleResetSearchFields={handleResetSearchFields}
       />
     </div>
   );

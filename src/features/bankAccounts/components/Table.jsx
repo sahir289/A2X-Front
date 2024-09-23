@@ -9,9 +9,11 @@ import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
 import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
-
 
 const TableComponent = ({
   data,
@@ -19,6 +21,7 @@ const TableComponent = ({
   setFilterValues,
   isFetchBanksLoading,
   handleStatusChange,
+  handleResetSearchFields,
 }) => {
   const [isAddBankAccountModelOpen, setIsAddBankAccountModelOpen] =
     useState(false);
@@ -28,8 +31,8 @@ const TableComponent = ({
   const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
 
-  const navigate = useNavigate()
-  const userData = useContext(PermissionContext)
+  const navigate = useNavigate();
+  const userData = useContext(PermissionContext);
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -65,7 +68,7 @@ const TableComponent = ({
     if (merchant.error?.error?.response?.status === 401) {
       NotificationManager.error(merchant?.error?.message, 401);
       localStorage.clear();
-      navigate('/')
+      navigate("/");
     }
 
     setAllMerchants(merchant?.data?.data?.merchants);
@@ -81,10 +84,6 @@ const TableComponent = ({
     };
 
     setDeleteRecord(deleteData);
-  };
-  //reset filter from search fields
-  const handleResetSearchFields = () => {
-    setFilterValues({});
   };
 
   return (
@@ -398,7 +397,9 @@ const TableComponent = ({
           width={"6%"}
           render={(text, record) => lastLogIn(record)}
         />
-        {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && (
+        {(userData?.role === "ADMIN" ||
+          userData?.role === "TRANSACTIONS" ||
+          userData?.role === "OPERATIONS") && (
           <Column
             title={
               <>
@@ -455,7 +456,6 @@ const TableComponent = ({
             }}
           />
         )}
-
       </Table>
 
       <UpdateMerchant
