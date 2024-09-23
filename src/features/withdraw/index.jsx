@@ -112,11 +112,18 @@ const Withdraw = ({ type }) => {
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      getPayoutList({
-        ...queryObj,
-        code: userData?.code || queryObj.code || null,
-        vendorCode: userData?.vendorCode || queryObj.code || null,
-      });
+      if (userData.role === 'ADMIN') {
+        getPayoutList({
+          ...queryObj,
+          code: queryObj.code || null,
+        });
+      } else {
+        getPayoutList({
+          ...queryObj,
+          code: userData?.code || queryObj.code || null,
+          vendorCode: userData?.vendorCode || queryObj.code || null,
+        });
+      }
     }, 1500);
   };
 
@@ -464,7 +471,7 @@ const Withdraw = ({ type }) => {
             <Input addonAfter="₹" />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
-            <Button>Cancel</Button>
+            <Button onClick={handleToggleModal}>Cancel</Button>
             <Button type="primary" loading={addLoading} htmlType="submit">
               Save
             </Button>

@@ -71,11 +71,17 @@ export const payoutInOutStatusOptions = [
 
 //With draw all status options list.
 export const WithDrawAllOptions = [
+  { value: '', label: 'All' },
   { value: 'INITIATED', label: 'INITIATED' },
   { value: 'SUCCESS', label: 'SUCCESS' },
   { value: 'FAILED', label: 'FAILED' },
   { value: 'REVERSED', label: 'REVERSED' },
-
+]
+export const WithDrawCompletedOptions = [
+  { value: 'SUCCESS', label: 'SUCCESS' },
+]
+export const WithDrawInProgressOptions = [
+  { value: 'INITIATED', label: 'INITIATED' },
 ]
 export const reasonOptions = ["Insufficient Fund", "Invalid Bank Details", "Other"].map(el => ({ value: el, label: el }));
 

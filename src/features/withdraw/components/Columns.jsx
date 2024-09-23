@@ -1,7 +1,7 @@
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import { formatCurrency, WithDrawAllOptions } from "../../../utils/utils";
+import { formatCurrency, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
 
 const renderStatusTag = (status) => {
   let color = "";
@@ -154,7 +154,9 @@ export const Columns = (
           return (
             <ColumnSelect
               name="status"
-              options={WithDrawAllOptions}
+              disabled={type === "Completed" || type === "In Progress" ? true : false}
+              defaultValue={type === "Completed" ? WithDrawCompletedOptions[0].value : type === "In Progress" ? WithDrawInProgressOptions[0].value : WithDrawAllOptions[0].label}
+              options={type === "Completed" ? WithDrawCompletedOptions : type === "In Progress" ? WithDrawInProgressOptions : WithDrawAllOptions}
               onChange={onChange}
               filters={filters}
             />
