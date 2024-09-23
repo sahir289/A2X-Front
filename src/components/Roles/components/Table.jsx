@@ -39,11 +39,16 @@ const TableComponent = ({
     setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
   };
 
+  let text = `${filterValues.userRole}`;
+  let convertedText = text.charAt(0) + text.slice(1).toLowerCase();
+  const title = `${convertedText} User List`;
+  const titleBoxName = `${convertedText}User Name`;
+
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
       <div className="flex">
         <div className=" w-full h-16  pb-3">
-          <p className="pt-4 ps-4 text-xl ">Admin User List</p>
+          <p className="pt-4 ps-4 text-xl ">{title}</p>
         </div>
         <div className="pt-2 flex">
           <Button
@@ -75,7 +80,7 @@ const TableComponent = ({
         <Column
           title={
             <>
-              <span>AdminUser name</span>
+              <span>{titleBoxName}</span>
               <br />
               <Input
                 value={filterValues.name}
@@ -113,9 +118,12 @@ const TableComponent = ({
             <>
               <span>Role</span>
               <br />
-              {filterValues.role == "ADMIN" || filterValues.role == "" && <Input
-            value={filterValues.role}
-            onChange={(e) => { handleFilterValuesChange(e.target.value, 'role') }} />}
+              {filterValues.userRole == "ADMIN" && 
+                <Input
+                  value={filterValues.role}
+                  onChange={(e) => { handleFilterValuesChange(e.target.value, 'role') }}
+                />
+              }
             </>
           }
           dataIndex="role"
