@@ -454,16 +454,38 @@ const Withdraw = ({ type }) => {
           <Form.Item name="bank_name" label="Bank Name">
             <Input />
           </Form.Item>
-          <Form.Item name="acc_no" label="Account Number" rules={RequiredRule}>
-            <Input />
+          <Form.Item name="acc_no" label="Account Number" rules={[...RequiredRule , {type:'number' , message:'Please enter a valid number'}]}>
+            <Input type="number" onKeyUp={(e)=>{
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}/>
           </Form.Item>
           <Form.Item
             name="acc_holder_name"
             label="Account Holder Name"
-            rules={RequiredRule}
+            rules={[
+              ...RequiredRule,
+              {
+                validator: (_, value) => {
+                  if (!/^[A-Za-z\s]*$/.test(value)) {
+                    return Promise.reject(new Error('Name must contain only alphabets.'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
-            <Input />
+            <Input
+            onKeyDown={(e) => {
+              if (!/[A-Za-z\s]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}
+            
+            />
           </Form.Item>
+          
           <Form.Item name="ifsc_code" label="IFSC code" rules={RequiredRule}>
             <Input />
           </Form.Item>

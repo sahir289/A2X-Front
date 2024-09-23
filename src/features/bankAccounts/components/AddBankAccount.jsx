@@ -128,8 +128,16 @@ const AddBankAccount = ({
                 message: "Please input your bank account nick name!",
               },
             ]}
+            
           >
-            <Input />
+            <Input
+             onKeyDown={(e) => {
+              if (!/[A-Za-z\s]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}
+            
+            />
           </Form.Item>
           <Form.Item
             label="Bank Name"
@@ -154,7 +162,14 @@ const AddBankAccount = ({
               },
             ]}
           >
-            <Input />
+            <Input
+             onKeyDown={(e) => {
+              if (!/[A-Za-z\s]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}
+            
+            />
           </Form.Item>
 
           <Form.Item
@@ -167,7 +182,12 @@ const AddBankAccount = ({
               },
             ]}
           >
-            <Input />
+            <Input
+            type="number" onKeyUp={(e)=>{
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}/>
           </Form.Item>
 
           <Form.Item
