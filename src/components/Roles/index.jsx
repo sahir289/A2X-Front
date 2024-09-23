@@ -10,6 +10,7 @@ const RolesComponent = () => {
     name: "",
     userName: "",
     role: context?.role == 'ADMIN' ? "" : `${context?.role}`,
+    userRole: `${context?.role}`,
     createdBy:`${context?.userId}`,
     page: 1,
     pageSize: 20,
