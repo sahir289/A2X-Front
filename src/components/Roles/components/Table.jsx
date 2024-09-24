@@ -23,9 +23,9 @@ const TableComponent = ({
   };
 
   const paginationConfig = {
-    current: data?.totalRecords?.page ?? 1,
-    pageSize: data?.totalRecords?.pageSize ?? 20,
-    total: data?.totalRecords?.total ?? 0,
+    current: data?.pagination?.page ?? 1,
+    pageSize: data?.pagination?.pageSize ?? 20,
+    total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
     pageSizeOptions: ["20", "50", "100"],
     onChange: (page, size) =>
@@ -118,12 +118,14 @@ const TableComponent = ({
             <>
               <span>Role</span>
               <br />
-              {filterValues.userRole == "ADMIN" && 
+              {filterValues.userRole == "ADMIN" && (
                 <Input
                   value={filterValues.role}
-                  onChange={(e) => { handleFilterValuesChange(e.target.value, 'role') }}
+                  onChange={(e) => {
+                    handleFilterValuesChange(e.target.value, "role");
+                  }}
                 />
-              }
+              )}
             </>
           }
           dataIndex="role"

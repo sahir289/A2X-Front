@@ -56,6 +56,7 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
             mode="tags"
             maxTagCount={5}
             size={"middle"}
+            allowClear
             placeholder="Please select"
             onChange={handleChange}
             style={{

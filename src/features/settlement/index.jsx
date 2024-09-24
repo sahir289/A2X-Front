@@ -38,34 +38,27 @@ export default function Settlement() {
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [editSettlement, setEditSettlement] = useState(null);
-  const [settlements, setSettlements] = useState({
-    data: [],
-    total: 0,
-  });
+  const [settlements, setSettlements] = useState([]);
   const userData = useContext(PermissionContext);
 
   const initialFilters = {
     code: userData?.code?.length ? userData?.code : null,
+    page: 1,
+    pageSize: 20,
   };
 
   const [filters, setFilters] = useState(initialFilters);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    take: 20,
-  });
-  const { data, total } = settlements;
   const merchants = useSelector((state) => state?.merchant?.data);
   const navigate = useNavigate();
 
   useEffect(() => {
     handleGetSettlements(
       {
-        ...pagination,
         ...filters,
       },
       false
     );
-  }, [pagination, filters]);
+  }, [filters]);
 
   const handleGetSettlements = (queryObj = {}, debounced = false) => {
     if (!debounced) {
@@ -97,10 +90,7 @@ export default function Settlement() {
       navigate("/");
     }
     const data = res?.data?.data;
-    setSettlements({
-      data: data?.data || [],
-      total: data?.totalRecords || 0,
-    });
+    setSettlements(data);
   };
 
   const handleToggleModal = () => {
@@ -109,9 +99,10 @@ export default function Settlement() {
   };
 
   const handlePageChange = (page, pageSize) => {
-    setPagination({
+    setFilters({
+      ...filters,
       page,
-      take: pageSize,
+      pageSize,
     });
   };
 
@@ -140,31 +131,31 @@ export default function Settlement() {
     setAddLoading(true);
     // Validate the IFSC code before proceeding
 
-    if (data?.method==="BANK"){
-    const ifscValidation = await validateIfscCode(data?.ifsc);
-    if (!ifscValidation) {
-      setAddLoading(false);
-      api.error({
-        message: "Invalid IFSC Code",
-        description: "Please enter a valid IFSC code.",
-      });
-      return;
-    }
-    }
-    const res = await postApi("/create-settlement", data).then((res) => {
-      if (res?.error) {
-        api.error({ description: res.error.message });
+    if (data?.method === "BANK") {
+      const ifscValidation = await validateIfscCode(data?.ifsc);
+      if (!ifscValidation) {
+        setAddLoading(false);
+        api.error({
+          message: "Invalid IFSC Code",
+          description: "Please enter a valid IFSC code.",
+        });
         return;
       }
-    }).catch((err) => {
-    }).finally(() => {
-      setAddLoading(false);
-      handleToggleModal();
-      getSettlementList();
-    });
-
-
-  }
+    }
+    const res = await postApi("/create-settlement", data)
+      .then((res) => {
+        if (res?.error) {
+          api.error({ description: res.error.message });
+          return;
+        }
+      })
+      .catch((err) => {})
+      .finally(() => {
+        setAddLoading(false);
+        handleToggleModal();
+        getSettlementList();
+      });
+  };
 
   const onFilterChange = async (name, value) => {
     setFilters({
@@ -255,9 +246,7 @@ export default function Settlement() {
             <Button
               type="text"
               className="rounded-full h-[40px] w-[40px] p-[0px]"
-              onClick={() =>
-                handleGetSettlements({ ...pagination, ...filters })
-              }
+              onClick={() => handleGetSettlements({ ...filters })}
             >
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
@@ -266,7 +255,7 @@ export default function Settlement() {
         <div className="overflow-x-auto">
           <TableComponent
             loading={isLoading}
-            data={data}
+            data={settlements?.data}
             merchantOptions={merchantOptions}
             filters={filters}
             onFilterChange={onFilterChange}
@@ -276,9 +265,9 @@ export default function Settlement() {
         </div>
         <div className="flex justify-end mt-[10px]">
           <Pagination
-            total={total}
-            pageSize={pagination.take}
-            current={pagination.page}
+            total={settlements?.pagination?.total}
+            current={settlements?.pagination?.page}
+            pageSize={settlements?.pagination?.pageSize}
             showTotal={handleShowTotal}
             onChange={handlePageChange}
             pageSizeOptions={[20, 50, 100]}
@@ -334,19 +323,26 @@ export default function Settlement() {
           <Form.Item name="code" label="Merchant" rules={RequiredRule}>
             <Select options={merchantOptions} />
           </Form.Item>
-          <Form.Item
-            name="amount"
-            label="Amount"
-            rules={RequiredRule}
-          >
-            <Input type="number" min={1} addonAfter="₹" onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
-                  e.preventDefault();
+          <Form.Item name="amount" label="Amount" rules={RequiredRule}>
+            <Input
+              type="number"
+              min={1}
+              addonAfter="₹"
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = [
+                    "Backspace",
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "Delete",
+                    "Tab",
+                  ].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-              }
-            }} />
+              }}
+            />
           </Form.Item>
           <Form.Item name="method" label="Method" rules={RequiredRule}>
             <Select options={methodOptions} />
