@@ -184,7 +184,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   }
   //reset search fields
   const handleResetSearchFields = () => {
-    setFilterValues({ status: allTable ? '' : filterValues?.status || '' });
+    setFilterValues({
+      status: allTable ? '' : filterValues?.status || '', merchantCode: `${userData?.code || ""}`,
+      vendorCode: `${userData?.vendorCode || ""}`, pageSize: 20,
+      page: 1
+});
   }
 
   return (
@@ -245,6 +249,14 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.sno}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'sno')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
+                }
+              }}
               allowClear
             />
           </>}
@@ -259,6 +271,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <br />
             <Input
               value={filterValues?.upiShortCode}
+              maxLength={5}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'upiShortCode')}
               allowClear
             />
@@ -275,6 +288,14 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.confirmed}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'confirmed')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
+                }
+              }}
               allowClear
             />
           </>}
@@ -310,6 +331,14 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.amount}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
+                }
+              }}
               allowClear
             />
           </>}
@@ -416,7 +445,16 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <br />
             <Input
               value={filterValues?.userSubmittedUtr}
+              maxLength={12}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'userSubmittedUtr')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
+                }
+              }}
               allowClear
             />
           </>}
@@ -432,7 +470,16 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <br />
             <Input
               value={filterValues?.utr}
+              maxLength={12}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'utr')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
+                }
+              }}
               allowClear
             />
           </>}
@@ -468,6 +515,14 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <Input
               value={filterValues?.dur}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'dur')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
+                }
+              }}
               allowClear
             />
           </>}

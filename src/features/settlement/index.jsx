@@ -122,6 +122,8 @@ export default function Settlement() {
   const handleSubmit = async (data) => {
     setAddLoading(true);
     // Validate the IFSC code before proceeding
+
+    if (data?.method==="BANK"){
     const ifscValidation = await validateIfscCode(data?.ifsc);
     if (!ifscValidation) {
       setAddLoading(false)
@@ -130,6 +132,7 @@ export default function Settlement() {
         description: "Please enter a valid IFSC code.",
       });
       return;
+    }
     }
     const res = await postApi("/create-settlement", data).then((res) => {
       if (res?.error) {
@@ -308,7 +311,14 @@ export default function Settlement() {
             label="Amount"
             rules={RequiredRule}
           >
-            <Input type="number" min={1} addonAfter="₹" />
+            <Input type="number" min={1} addonAfter="₹" onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
           <Form.Item
             name="method"

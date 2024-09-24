@@ -31,16 +31,20 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
       navigate("/");
     }
 
-    const formattedVendorCodes = vendorCodes?.data?.data?.map((vendor) => ({
+    const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
+    ? vendorCodes?.data?.data?.map((vendor) => ({
       label: vendor.vendor_code,
       value: vendor.vendor_code,
-    }));
+    })) : [];
+
     setVendorCodeOptions(formattedVendorCodes);
-      localStorage.setItem(
-        "selectedVendorCode",
-        JSON.stringify(formattedVendorCodes?.map((item) => item.value))
+
+    const vendors = formattedVendorCodes?.map((item) => item.value);
+    localStorage.setItem(
+      "selectedVendorCode",
+      JSON.stringify(vendors)
     );
-    setSelectedVendorCode(formattedVendorCodes?.map((item) => item.value));
+    setSelectedVendorCode(vendors);
   };
 
   return (

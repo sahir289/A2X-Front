@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 import { json2csv } from 'json-2-csv';
 import React, { useState } from 'react';
-import { getApi } from '../../redux/api';
+import { postApi } from '../../redux/api';
 import { formatDate, statusOptions } from '../../utils/utils';
 import PayDesign from './index';
 
@@ -11,12 +11,17 @@ const PayinComponent = () => {
 
   //handlePayInFunction
   const handlePayIn = async (data) => {
-    const startDate = data.range[0];
-    const endDate = data.range[1];
-    let query = data.merchantCode.map((code) => "merchantCode=" + encodeURIComponent(code)).join("&");
-    const completeData = `${query}&status=${data.status}&startDate=${startDate}&endDate=${endDate}`;
+    const formattedDates = data.range.map(date =>  new Date(date).toLocaleDateString('en-CA'));
+    const startDate = formattedDates[0];
+    const endDate = formattedDates[1];
+    delete data.range;
+    const completeData = {
+      ...data,
+      startDate,
+      endDate
+    }
     setLoading(true);
-    const res = await getApi(`/get-all-payins?${completeData}`);
+    const res = await postApi('/get-all-payins', completeData);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
@@ -56,9 +61,18 @@ const PayinComponent = () => {
     }
 
   }
-  const getBankCode = (record) => {
-    return record?.Merchant?.Merchant_Bank[0]?.bankAccount?.bank_name || 'N/A';
-  };
+
+  const options = statusOptions.map(el=>{
+    if(el.label == "All"){
+      return {
+        label: "All",
+        value: "All",
+      }
+    }
+    return el;
+  });
+
+
   return (
     <>
       {notificationContext}
@@ -66,7 +80,7 @@ const PayinComponent = () => {
         handleFinish={handlePayIn}
         title='Payins'
         loading={loading}
-        statusOptions={statusOptions}
+        statusOptions={options}
       />
     </>
   )
