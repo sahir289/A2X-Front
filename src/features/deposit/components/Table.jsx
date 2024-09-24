@@ -390,6 +390,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="merchant_order_id"
           key="merchant_order_id"
           className="bg-white"
+          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : false}
           width={"150px"}
           render={(text) => (
             <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
@@ -412,6 +413,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="Merchant"
           key="merchant_code"
           className="bg-white"
+          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : false}
           width={"150px"}
           render={(text, record) => (
             <>

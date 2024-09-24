@@ -12,6 +12,7 @@ function Completed() {
   const [totalRecords, setTotalRecords] = useState(0);
   const userData = useContext(PermissionContext)
   const [filterValues, setFilterValues] = useState({
+    loggedInUserRole: userData.role,
     sno: '',
     upiShortCode: '',
     confirmed: '',

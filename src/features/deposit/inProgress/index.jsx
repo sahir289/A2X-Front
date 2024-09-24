@@ -13,6 +13,7 @@ function InProgress() {
 
   const userData = useContext(PermissionContext)
   const [filterValues, setFilterValues] = useState({
+    loggedInUserRole: userData.role,
     sno: '',
     upiShortCode: '',
     confirmed: '',
