@@ -19,6 +19,7 @@ const AddBankAccount = ({
 }) => {
   const [loading, setLoading] = useState(false)
   const [api, contextHolder] = notification.useNotification();
+  const [minPayin, setMinPayin] = useState(0);
   const [form] = Form.useForm();
 
   const handleModalOk = () => {
@@ -127,8 +128,16 @@ const AddBankAccount = ({
                 message: "Please input your bank account nick name!",
               },
             ]}
+            
           >
-            <Input />
+            <Input
+             onKeyDown={(e) => {
+              if (!/[A-Za-z\s]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}
+            
+            />
           </Form.Item>
           <Form.Item
             label="Bank Name"
@@ -153,7 +162,14 @@ const AddBankAccount = ({
               },
             ]}
           >
-            <Input />
+            <Input
+             onKeyDown={(e) => {
+              if (!/[A-Za-z\s]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}
+            
+            />
           </Form.Item>
 
           <Form.Item
@@ -166,7 +182,12 @@ const AddBankAccount = ({
               },
             ]}
           >
-            <Input />
+            <Input
+            type="number" onKeyUp={(e)=>{
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault(); 
+              }
+            }}/>
           </Form.Item>
 
           <Form.Item
@@ -247,7 +268,14 @@ const AddBankAccount = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={1} onChange={setMinPayin} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <Form.Item
@@ -260,7 +288,14 @@ const AddBankAccount = ({
               },
             ]}
           >
-            <InputNumber className="w-full" />
+            <InputNumber className="w-full" min={minPayin} onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
 
           <div className="flex flex-row gap-2 float-right">

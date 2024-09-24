@@ -152,15 +152,17 @@ export default function Settlement() {
   const handleSubmit = async (data) => {
     setAddLoading(true);
 
-    // Validate the IFSC code before proceeding
-    const ifscValidation = await validateIfscCode(data?.ifsc);
-    if (!ifscValidation) {
-      setAddLoading(false);
-      api.error({
-        message: "Invalid IFSC Code",
-        description: "Please enter a valid IFSC code.",
-      });
-      return;
+    if (data.method === 'BANK') {
+      // Validate the IFSC code before proceeding
+      const ifscValidation = await validateIfscCode(data?.ifsc);
+      if (!ifscValidation) {
+        setAddLoading(false)
+        api.error({
+          message: "Invalid IFSC Code",
+          description: "Please enter a valid IFSC code.",
+        });
+        return;
+      }
     }
 
     const res = await postApi("/create-vendorsettlement", data)
@@ -356,8 +358,19 @@ export default function Settlement() {
           <Form.Item name="code" label="Vendor" rules={RequiredRule}>
             <Select options={vendorOptions} />
           </Form.Item>
-          <Form.Item name="amount" label="Amount" rules={RequiredRule}>
-            <Input type="number" min={1} addonAfter="₹" />
+          <Form.Item
+            name="amount"
+            label="Amount"
+            rules={RequiredRule}
+          >
+            <Input type="number" min={1} addonAfter="₹" onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
           <Form.Item name="method" label="Method" rules={RequiredRule}>
             <Select options={methodOptions} />

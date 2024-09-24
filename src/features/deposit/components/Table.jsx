@@ -276,57 +276,62 @@ const TableComponent = ({
         loading={isFetchUsersLoading}
       >
         <Column
-          title={
-            <>
-              <span>Sno.</span>
-              <br />
-              <Input
-                value={filterValues?.sno}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "sno")
+          title={<>
+            <span>Sno.</span>
+            <br />
+            <Input
+              value={filterValues?.sno}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'sno')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-                allowClear
-              />
-            </>
-          }
+              }}
+              allowClear
+            />
+          </>}
           dataIndex="sno"
           key="sno"
           className="bg-white"
           width={"24px"}
         />
         <Column
-          title={
-            <>
-              <span>Code</span>
-              <br />
-              <Input
-                value={filterValues?.upiShortCode}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "upiShortCode")
-                }
-                allowClear
-              />
-            </>
-          }
+          title={<>
+            <span>Code</span>
+            <br />
+            <Input
+              value={filterValues?.upiShortCode}
+              maxLength={5}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'upiShortCode')}
+              allowClear
+            />
+          </>}
           dataIndex="upi_short_code"
           key="upi_short_code"
           className="bg-white"
           width={"24px"}
         />
         <Column
-          title={
-            <>
-              <span className="mb-2">Confirmed</span>
-              <br />
-              <Input
-                value={filterValues?.confirmed}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "confirmed")
+          title={<>
+            <span className='mb-2' >Confirmed</span>
+            <br />
+            <Input
+              value={filterValues?.confirmed}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'confirmed')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-                allowClear
-              />
-            </>
-          }
+              }}
+              allowClear
+            />
+          </>}
           dataIndex="confirmed"
           key="confirmed"
           className="bg-white"
@@ -356,19 +361,23 @@ const TableComponent = ({
         )}
 
         <Column
-          title={
-            <>
-              <span className="mb-2">Amount</span>
-              <br />
-              <Input
-                value={filterValues?.amount}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "amount")
+          title={<>
+            <span className='mb-2' >Amount</span>
+            <br />
+            <Input
+              value={filterValues?.amount}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-                allowClear
-              />
-            </>
-          }
+              }}
+              allowClear
+            />
+          </>}
           dataIndex="amount"
           key="amount"
           className="bg-white"
@@ -511,19 +520,24 @@ const TableComponent = ({
           width={"100px"}
         />
         <Column
-          title={
-            <>
-              <span>User Submitted utr</span>
-              <br />
-              <Input
-                value={filterValues?.userSubmittedUtr}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "userSubmittedUtr")
+          title={<>
+            <span>User Submitted utr</span>
+            <br />
+            <Input
+              value={filterValues?.userSubmittedUtr}
+              maxLength={12}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'userSubmittedUtr')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-                allowClear
-              />
-            </>
-          }
+              }}
+              allowClear
+            />
+          </>}
           dataIndex="user_submitted_utr"
           key="user_submitted_utr"
           className="bg-white"
@@ -531,19 +545,24 @@ const TableComponent = ({
           render={(text) => text || "--"}
         />
         <Column
-          title={
-            <>
-              <span>UTR</span>
-              <br />
-              <Input
-                value={filterValues?.utr}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "utr")
+          title={<>
+            <span>UTR</span>
+            <br />
+            <Input
+              value={filterValues?.utr}
+              maxLength={12}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'utr')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-                allowClear
-              />
-            </>
-          }
+              }}
+              allowClear
+            />
+          </>}
           dataIndex="utr"
           key="utr"
           className="bg-white"
@@ -579,19 +598,23 @@ const TableComponent = ({
           )}
         />
         <Column
-          title={
-            <>
-              <span>Dur</span>
-              <br />
-              <Input
-                value={filterValues?.dur}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "dur")
+          title={<>
+            <span>Dur</span>
+            <br />
+            <Input
+              value={filterValues?.dur}
+              onChange={(e) => handleFilterValuesChange(e.target.value, 'dur')}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-                allowClear
-              />
-            </>
-          }
+              }}
+              allowClear
+            />
+          </>}
           dataIndex="duration" // Adjust according to actual data structure
           key="duration"
           className="bg-white"

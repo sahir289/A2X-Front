@@ -9,7 +9,8 @@ const RolesComponent = () => {
   const [filterValues, setFilterValues] = useState({
     name: "",
     userName: "",
-    role: `${context?.role}`,
+    role: context?.role == 'ADMIN' ? "" : `${context?.role}`,
+    userRole: `${context?.role}`,
     createdBy:`${context?.userId}`,
     page: 1,
     pageSize: 20,

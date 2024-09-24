@@ -100,12 +100,11 @@ const TableComponent = ({
               <span className="whitespace-nowrap">Code</span>
               <br />
               <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
+                value={filterValues?.vendor_code}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "vendor_code")
+                }
+                allowClear
               />
             </>
           }

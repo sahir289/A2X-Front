@@ -139,6 +139,8 @@ export default function Settlement() {
   const handleSubmit = async (data) => {
     setAddLoading(true);
     // Validate the IFSC code before proceeding
+
+    if (data?.method==="BANK"){
     const ifscValidation = await validateIfscCode(data?.ifsc);
     if (!ifscValidation) {
       setAddLoading(false);
@@ -148,20 +150,21 @@ export default function Settlement() {
       });
       return;
     }
-    const res = await postApi("/create-settlement", data)
-      .then((res) => {
-        if (res?.error) {
-          api.error({ description: res.error.message });
-          return;
-        }
-      })
-      .catch((err) => {})
-      .finally(() => {
-        setAddLoading(false);
-        handleToggleModal();
-        getSettlementList();
-      });
-  };
+    }
+    const res = await postApi("/create-settlement", data).then((res) => {
+      if (res?.error) {
+        api.error({ description: res.error.message });
+        return;
+      }
+    }).catch((err) => {
+    }).finally(() => {
+      setAddLoading(false);
+      handleToggleModal();
+      getSettlementList();
+    });
+
+
+  }
 
   const onFilterChange = async (name, value) => {
     setFilters({
@@ -331,8 +334,19 @@ export default function Settlement() {
           <Form.Item name="code" label="Merchant" rules={RequiredRule}>
             <Select options={merchantOptions} />
           </Form.Item>
-          <Form.Item name="amount" label="Amount" rules={RequiredRule}>
-            <Input type="number" min={1} addonAfter="₹" />
+          <Form.Item
+            name="amount"
+            label="Amount"
+            rules={RequiredRule}
+          >
+            <Input type="number" min={1} addonAfter="₹" onKeyDown={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                if (!isControlKey) {
+                  e.preventDefault();
+                }
+              }
+            }} />
           </Form.Item>
           <Form.Item name="method" label="Method" rules={RequiredRule}>
             <Select options={methodOptions} />
