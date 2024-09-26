@@ -20,6 +20,11 @@ const apiConfig = (flag = false) => {
 
 export const getApi = async (url, params) => {
   try {
+    // this is the temporary solution for getting all merchants in dropdowns.
+    // will improves this in future.
+    if (url.includes("getall-merchant") && !params.pageSize) {
+      params.pageSize = 1000;
+    }
     const response = await axios.get(`${endPoint}${url}`, {
       params: params,
       ...apiConfig(),
