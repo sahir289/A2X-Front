@@ -656,6 +656,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           >
             <Select
               options={merchantOptions}
+              defaultValue={userData?.role === "MERCHANT" ? filterValues?.merchantCode : userData?.role === "OPERATIONS" ? filterValues?.merchantCode : ""}
+              disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false}
             />
           </Form.Item>
           <Form.Item

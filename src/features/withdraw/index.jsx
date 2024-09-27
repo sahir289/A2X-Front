@@ -391,7 +391,7 @@ const Withdraw = ({ type }) => {
         footer={false}
         destroyOnClose
       >
-        <Form layout="vertical" onFinish={updateWithdraw}>
+        <Form layout="vertical" onFinish={updateWithdraw}> 
           {editWithdraw?.key == "approve" && (
             <>
               <Form.Item name="method" label="Method">
