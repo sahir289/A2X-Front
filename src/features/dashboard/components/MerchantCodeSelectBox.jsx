@@ -13,6 +13,7 @@ const MerchantCodeSelectBox = ({
   selectedMerchantCode,
   setSelectedMerchantCode,
 }) => {
+  const userData = useContext(PermissionContext)
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
   const context = useContext(PermissionContext);
   const navigate = useNavigate();
@@ -83,8 +84,10 @@ const MerchantCodeSelectBox = ({
             style={{
               width: "98%",
             }}
+            disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false} //Selecting and Locking the merchant name while logged in user is merchant
             options={merchantCodeOptions}
             value={selectedMerchantCode}
+            className={userData?.role === "MERCHANT" ? "bg-white" : userData?.role === "OPERATIONS" ? "bg-white" : false}
           />
         </div>
       </div>
