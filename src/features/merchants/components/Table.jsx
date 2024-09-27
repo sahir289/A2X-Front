@@ -1,11 +1,12 @@
 import { Button, Switch, Table } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, CopyOutlined } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency } from "../../../utils/utils";
 import AddMerchant from "./AddMerchant";
 import DeleteModal from "./DeleteModal";
+import { NotificationManager } from 'react-notifications';
 import UpdateMerchant from "./UpdateMerchant";
 
 const TableComponent = ({
@@ -54,6 +55,12 @@ const TableComponent = ({
     setIsAddMerchantModalOpen(true);
   };
 
+  // added handle copy functionality for merchant code and API key column
+  const handleCopy = (values) => {
+    navigator.clipboard.writeText(values);
+    NotificationManager.success("Copied to clipboard")
+  };
+
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
       <div className="flex">
@@ -97,6 +104,10 @@ const TableComponent = ({
           key="code"
           className="bg-white"
           width={"1%"}
+          // added copy button
+          render={(text) => (
+            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+          )}
         />
         <Column
           title="Site"
@@ -111,6 +122,10 @@ const TableComponent = ({
           key="api_key"
           className="bg-white"
           width={"12%"}
+          // added copy button
+          render={(text) => (
+            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+          )}
         />
         <Column
           title="Balance"
