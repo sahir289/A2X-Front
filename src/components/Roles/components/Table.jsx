@@ -41,7 +41,7 @@ const TableComponent = ({
 
   let text = `${filterValues.userRole}`;
   let convertedText = text.charAt(0) + text.slice(1).toLowerCase();
-  const title = `${convertedText} User List`;
+  const title = text !== "ADMIN" ? `${convertedText} User List` : "User List"; //Showing different user list Name while user is logged in from different roles
   const titleBoxName = `${convertedText}User Name`;
 
   return (

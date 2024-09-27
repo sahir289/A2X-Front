@@ -26,11 +26,18 @@ const renderStatusTag = (status) => {
     return <Tag color={color} icon={status === "INITIATED" && <ExclamationCircleOutlined />}>{status}</Tag>
 };
 
-const ColumnSearch = ({ name, filters, onChange, ...props }) => {
+const ColumnSearch = ({ name, filters, onChange, isNumeric , ...props }) => {
     return (
         <Input
             {...props}
             value={filters[name]}
+            onKeyDown={(e) => {
+                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
+                const regex = isNumeric ? /^[0-9]$/ : /^[A-Za-z]$/;
+                if (!isControlKey && !regex.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
             name={name}
             className='w-full'
             onChange={(e) => {
@@ -86,7 +93,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v;
                     }
-                    return <ColumnSearch name="id" min="1" onChange={onChange} filters={filters} />;
+                    return <ColumnSearch name="id" min="1" onChange={onChange} filters={filters} isNumeric={true} />;
                 }}
             />
             <Column
@@ -122,7 +129,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return `₹${v}`;
                     }
-                    return <ColumnSearch name="amount" onChange={onChange} filters={filters} />;
+                    return <ColumnSearch name="amount" onChange={onChange} filters={filters} isNumeric={true}/>;
                 }}
             />
             <Column
