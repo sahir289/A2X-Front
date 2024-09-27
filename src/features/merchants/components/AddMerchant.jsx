@@ -111,6 +111,7 @@ const AddMerchant = ({
             site_url_protocol: "http://",
             return_url_protocol: "http://",
             notify_url_protocol: "http://",
+            payout_notify_url_protocol: "http://", // Added payout notify url protocol for payout feature
             is_test_mode: true,
           }}
         >
@@ -171,6 +172,23 @@ const AddMerchant = ({
           >
             <Input
               addonBefore={selectBefore("notify_url_protocol")}
+              placeholder="example.com"
+            />
+          </Form.Item>
+
+          {/* Added payout callback input field for payout feature */}
+          <Form.Item
+            label="PayOut Callback"
+            name="payout_notify_url"
+            rules={[
+              {
+                required: true,
+                message: "Please input your callback url",
+              },
+            ]}
+          >
+            <Input
+              addonBefore={selectBefore("payout_notify_url_protocol")}
               placeholder="example.com"
             />
           </Form.Item>
