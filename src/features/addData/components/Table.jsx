@@ -171,14 +171,16 @@ const TableComponent = ({
               <>
                 <span className="whitespace-nowrap">Used</span>
                 <br />
-                <Input
-                  disabled
-                  style={{
-                    backgroundColor: "#fafafa",
-                    border: "none",
-                    cursor: "auto",
-                  }}
-                />
+                <Select
+                  className="flex"
+                  onChange={(value) =>
+                    handleFilterValuesChange(value, "is_used")
+                  }
+                  allowClear
+                >
+                  <Select.Option value="Used">Used</Select.Option>
+                  <Select.Option value="Unused">Un-Used</Select.Option>
+                </Select>
               </>
             }
             dataIndex="is_used"

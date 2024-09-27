@@ -391,7 +391,7 @@ const Withdraw = ({ type }) => {
         footer={false}
         destroyOnClose
       >
-        <Form layout="vertical" onFinish={updateWithdraw}>
+        <Form layout="vertical" onFinish={updateWithdraw}> 
           {editWithdraw?.key == "approve" && (
             <>
               <Form.Item name="method" label="Method">
@@ -442,7 +442,7 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleSubmit}>
           <Form.Item name="code" label="Merchant Code" rules={RequiredRule}>
-            <Select options={merchantOptions} />
+            <Select showSearch placeholder={""} defaultActiveFirstOption={false} options={merchantOptions} />
           </Form.Item>
           <Form.Item
             name="user_id"

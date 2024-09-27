@@ -1,4 +1,4 @@
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, CheckSquareTwoTone, CloseSquareTwoTone } from "@ant-design/icons";
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import { formatCurrency, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
@@ -277,34 +277,35 @@ export const Columns = (
             }
             if (r.status == "INITIATED") {
               return (
-                <Dropdown.Button
-                  type="primary"
-                  onClick={() =>
-                    updateWithdraw({
-                      record: r,
-                      key: "approve",
-                    })
-                  }
-                  menu={{
-                    items: [
-                      {
-                        key: "approve",
-                        label: "Approve",
-                      },
-                      {
-                        key: "reject",
-                        label: "Reject",
-                      },
-                    ],
-                    onClick: (info) =>
+                // UI change of Approve and Reject Buttons
+                <>
+                  <CheckSquareTwoTone
+                    style={{
+                      fontSize: '40px',
+                      marginRight: '7px',
+                    }}
+                    twoToneColor="#52c41a"
+                    onClick={() =>
                       updateWithdraw({
                         record: r,
-                        ...info,
-                      }),
-                  }}
-                >
-                  Approve
-                </Dropdown.Button>
+                        key: "approve",
+                      })
+                    }
+                  />
+                  <CloseSquareTwoTone
+                    style={{
+                      fontSize: '40px',
+                      marginLeft: '7px',
+                    }}
+                    twoToneColor="#ff0000"
+                    onClick={() =>
+                      updateWithdraw({
+                        record: r,
+                        key: "reject",
+                      })
+                    }
+                  />
+                </>
               );
             }
             return (

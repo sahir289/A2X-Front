@@ -1,4 +1,4 @@
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, CheckSquareTwoTone, CloseSquareTwoTone } from '@ant-design/icons';
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import { methodOptions, statusOptions } from "./Table";
@@ -191,38 +191,42 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
             {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") &&
                 <Column
                     title='Option'
-                    width="110px"
+                    width="155px"
                     render={(v, r, i) => {
                         if (!i) {
                             return null;
                         }
                         if (r.status == "INITIATED") {
                             return (
-                                <Dropdown.Button
-                                    type="primary"
-                                    onClick={() => updateSettlementStatus({
-                                        record: r,
-                                        key: "approve",
-                                    })}
-                                    menu={{
-                                        items: [
-                                            {
-                                                key: 'approve',
-                                                label: 'Approve',
-                                            },
-                                            {
-                                                key: 'reject',
-                                                label: 'Reject',
-                                            },
-                                        ],
-                                        onClick: (info) => updateSettlementStatus({
-                                            record: r,
-                                            ...info,
-                                        }),
-                                    }}
-                                >
-                                    Approve
-                                </Dropdown.Button>
+                                // UI change of Approve and Reject Buttons
+                                <>
+                                    <CheckSquareTwoTone
+                                        style={{
+                                            fontSize: '40px',
+                                            marginRight: '7px',
+                                        }}
+                                        twoToneColor="#52c41a"
+                                        onClick={() =>
+                                            updateSettlementStatus({
+                                                record: r,
+                                                key: "approve",
+                                            })
+                                        }
+                                    />
+                                    <CloseSquareTwoTone
+                                        style={{
+                                            fontSize: '40px',
+                                            marginLeft: '7px',
+                                        }}
+                                        twoToneColor="#ff0000"
+                                        onClick={() =>
+                                            updateSettlementStatus({
+                                                record: r,
+                                                key: "reject",
+                                            })
+                                        }
+                                    />
+                                </>
                             )
                         }
                         return (

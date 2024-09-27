@@ -1,9 +1,13 @@
 import { Button, Switch, Table } from "antd";
+import { DeleteOutlined, EditOutlined, CopyOutlined } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency } from "../../../utils/utils";
 import AddMerchant from "./AddMerchant";
+import DeleteModal from "./DeleteModal";
+import { NotificationManager } from 'react-notifications';
+import UpdateMerchant from "./UpdateMerchant";
 
 const TableComponent = ({
   data,
@@ -12,6 +16,10 @@ const TableComponent = ({
   isFetchBanksLoading,
 }) => {
   const [isAddModelOpen, setIsAddModelOpen] = useState(false);
+  const [deleteRecord, setDeleteRecord] = useState();
+  const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
+  const [isAddMerchantModalOpen, setIsAddMerchantModalOpen] = useState(false);
+  const [updateRecord, setUpdateRecord] = useState(null);
 
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
@@ -28,6 +36,29 @@ const TableComponent = ({
 
   const handleTableChange = ({ current, pageSize }) => {
     setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
+  };
+
+  const deleteMerchantData = async (record) => {
+    console.log("Delete Merchant", record);
+    setIsDeletePanelOpen(true);
+
+    const deleteData = {
+      merchantId: record?.id,
+      merchantCode: record?.code,
+    };
+
+    setDeleteRecord(deleteData);
+  };
+
+  const showModal = async (record) => {
+    setUpdateRecord(record);
+    setIsAddMerchantModalOpen(true);
+  };
+
+  // added handle copy functionality for merchant code and API key column
+  const handleCopy = (values) => {
+    navigator.clipboard.writeText(values);
+    NotificationManager.success("Copied to clipboard")
   };
 
   return (
@@ -73,6 +104,10 @@ const TableComponent = ({
           key="code"
           className="bg-white"
           width={"1%"}
+          // added copy button
+          render={(text) => (
+            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+          )}
         />
         <Column
           title="Site"
@@ -87,6 +122,10 @@ const TableComponent = ({
           key="api_key"
           className="bg-white"
           width={"12%"}
+          // added copy button
+          render={(text) => (
+            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+          )}
         />
         <Column
           title="Balance"
@@ -156,7 +195,56 @@ const TableComponent = ({
             return <Switch checked={record?.is_test_mode} />;
           }}
         />
+        {/* {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && ( */}
+          <Column
+            title={
+              <>
+                Actions
+              </>
+            }
+            dataIndex="merchants"
+            key="merchants"
+            className="bg-white"
+            width={"6%"}
+            render={(_, record) => {
+              return (
+                <div className="whitespace-nowrap flex gap-2">
+                  <Button
+                    type="text"
+                    icon={<EditOutlined />}
+                    title="Edit"
+                    onClick={() => showModal(record)}
+                  />
+
+                  <Button
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    title="Delete"
+                    onClick={() => deleteMerchantData(record)}
+                  />
+                </div>
+              );
+            }}
+          />
+        {/* )} */}
       </Table>
+
+      <UpdateMerchant
+        record={updateRecord}
+        isAddMerchantModalOpen={isAddMerchantModalOpen}
+        setIsAddMerchantModalOpen={setIsAddMerchantModalOpen}
+        handleTableChange={handleTableChange}
+      />
+
+      <DeleteModal
+        record={deleteRecord}
+        isDeletePanelOpen={isDeletePanelOpen}
+        setIsDeletePanelOpen={setIsDeletePanelOpen}
+        modalTitle="Delete Merchant"
+        deleteMessage="Are you sure you want to delete this merchant "
+        displayItem={`${deleteRecord?.merchantCode}?`}
+        handleTableChange={handleTableChange}
+      />
     </div>
   );
 };

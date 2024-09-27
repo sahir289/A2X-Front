@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Empty, Input, Switch, Table, Tooltip } from "antd";
+import { Button, Empty, Input, Switch, Table, Tooltip, Select } from "antd";
 import Column from "antd/es/table/Column";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { getApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
@@ -25,6 +25,11 @@ const TableComponent = ({
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [isAddMerchantModalOpen, setIsAddMerchantModalOpen] = useState(false);
   const [allMerchants, setAllMerchants] = useState([]);
+  const [allVendors, setAllVendors] = useState([]);
+  const vendorOptions = allVendors.map((vendor) => ({
+    label: vendor.vendor_code,
+    value: vendor.vendor_code,
+  }));
   const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
 
@@ -87,6 +92,22 @@ const TableComponent = ({
     setFilterValues({});
   };
 
+  useEffect(() => {
+    getAllVendor();
+  }, []);
+
+  const getAllVendor = async () => {
+    let data = await getApi("/getall-vendor")
+    setAllVendors(data.data.data);
+  }
+
+  let tableData = data?.bankAccRes?.map(item => {
+    if (item.vendor_code === "null") {
+      return { ...item, vendor_code: "" };
+    }
+    return item;
+  });
+  
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
       <div className="flex">
@@ -122,7 +143,7 @@ const TableComponent = ({
         </div>
       </div>
       <Table
-        dataSource={data?.bankAccRes}
+        dataSource={tableData}
         rowKey={(item) => item.id}
         scroll={{
           x: "120vw",
@@ -253,6 +274,29 @@ const TableComponent = ({
           key="upi_id"
           className="bg-white"
           width={"4%"}
+        />
+        {/* Add column for vendor filter */}
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Vendors</span>
+              <br />
+              <Select
+                value={filterValues?.vendor_code}
+                options={vendorOptions}
+                style={{ width: '90%' }}
+                onChange={(e) =>
+                  handleFilterValuesChange(e, "vendor_code")
+                }
+                allowClear
+              />
+            </>
+          }
+          dataIndex="vendor_code"
+          key="vendor_code"
+          hidden={filterValues.role !== "ADMIN"}
+          className="bg-white"
+          width={"10%"}
         />
         <Column
           title={

@@ -363,6 +363,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="merchant_order_id"
           key="merchant_order_id"
           className="bg-white"
+          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : false}
           width={"150px"}
           render={(text) => (
             <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
@@ -385,6 +386,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="Merchant"
           key="merchant_code"
           className="bg-white"
+          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : false}
           width={"150px"}
           render={(text, record) => (
             <>
@@ -603,6 +605,9 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           >
             <Select
               options={merchantOptions}
+              // Selecting and Locking the merchant name at time new payment link of while logged in user is merchant
+              defaultValue={userData?.role === "MERCHANT" ? filterValues?.merchantCode : userData?.role === "OPERATIONS" ? filterValues?.merchantCode : ""}
+              disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false}
             />
           </Form.Item>
           <Form.Item
