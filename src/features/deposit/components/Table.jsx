@@ -656,6 +656,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           >
             <Select
               options={merchantOptions}
+              // Selecting and Locking the merchant name at time new payment link of while logged in user is merchant
               defaultValue={userData?.role === "MERCHANT" ? filterValues?.merchantCode : userData?.role === "OPERATIONS" ? filterValues?.merchantCode : ""}
               disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false}
             />
