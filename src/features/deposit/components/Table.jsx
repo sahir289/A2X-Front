@@ -4,6 +4,15 @@ import {
   SyncOutlined,
 } from "@ant-design/icons";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
+import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from 'antd';
+import Column from 'antd/es/table/Column';
+import React, { useContext, useEffect, useState } from 'react';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { getApi, postApi } from '../../../redux/api';
+import { PlusIcon, Reload } from '../../../utils/constants';
+import { formatCurrency, formatDate } from '../../../utils/utils';
+import { useNavigate } from 'react-router-dom';
+import { PermissionContext } from '../../../components/AuthLayout/AuthLayout';
 import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useEffect, useState } from "react";
@@ -282,14 +291,6 @@ const TableComponent = ({
             <Input
               value={filterValues?.sno}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'sno')}
-              onKeyDown={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                  if (!isControlKey) {
-                    e.preventDefault();
-                  }
-                }
-              }}
               allowClear
             />
           </>}
@@ -321,14 +322,6 @@ const TableComponent = ({
             <Input
               value={filterValues?.confirmed}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'confirmed')}
-              onKeyDown={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                  if (!isControlKey) {
-                    e.preventDefault();
-                  }
-                }
-              }}
               allowClear
             />
           </>}
@@ -367,14 +360,6 @@ const TableComponent = ({
             <Input
               value={filterValues?.amount}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
-              onKeyDown={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                  if (!isControlKey) {
-                    e.preventDefault();
-                  }
-                }
-              }}
               allowClear
             />
           </>}
@@ -527,14 +512,6 @@ const TableComponent = ({
               value={filterValues?.userSubmittedUtr}
               maxLength={12}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'userSubmittedUtr')}
-              onKeyDown={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                  if (!isControlKey) {
-                    e.preventDefault();
-                  }
-                }
-              }}
               allowClear
             />
           </>}
@@ -552,14 +529,6 @@ const TableComponent = ({
               value={filterValues?.utr}
               maxLength={12}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'utr')}
-              onKeyDown={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                  if (!isControlKey) {
-                    e.preventDefault();
-                  }
-                }
-              }}
               allowClear
             />
           </>}
@@ -604,14 +573,6 @@ const TableComponent = ({
             <Input
               value={filterValues?.dur}
               onChange={(e) => handleFilterValuesChange(e.target.value, 'dur')}
-              onKeyDown={(e) => {
-                if (!/[0-9]/.test(e.key)) {
-                  const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                  if (!isControlKey) {
-                    e.preventDefault();
-                  }
-                }
-              }}
               allowClear
             />
           </>}
