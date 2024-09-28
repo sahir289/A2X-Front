@@ -22,6 +22,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const [paymentUrlModal, setPaymentUrlModal] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState('')
   const navigate = useNavigate()
+  const [selectedMerchant,setSelectedMerchant]=useState('')
+  const [isOneTimeLinkTrue,setIsOneTimeLinkTrue]=useState(false)
 
 
   const userData = useContext(PermissionContext)
@@ -138,6 +140,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
       setPaymentUrl(unlimitedUrl)
       handleToggleModal()
+      setSelectedMerchant('')
       setPaymentUrlModal(true);
       handleCopy(unlimitedUrl)
       setAddLoading(false)
@@ -157,10 +160,11 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
 
     } else {
 
-      const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y`).then((res) => {
+      const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest?? false}`).then((res) => {
         if (res?.data?.data) {
           setPaymentUrl(res?.data?.data?.payInUrl)
           handleToggleModal()
+          setSelectedMerchant('')
           setPaymentUrlModal(true);
           handleCopy(res?.data?.data?.payInUrl)
         }
@@ -605,9 +609,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           >
             <Select
               options={merchantOptions}
-              // Selecting and Locking the merchant name at time new payment link of while logged in user is merchant
-              defaultValue={userData?.role === "MERCHANT" ? filterValues?.merchantCode : userData?.role === "OPERATIONS" ? filterValues?.merchantCode : ""}
-              disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false}
+              onSelect={(e)=>{setSelectedMerchant(merchants.find(item=>item.code===e))}}
             />
           </Form.Item>
           <Form.Item
@@ -621,8 +623,14 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             label="One time payment link ? : "
             name="paymentLink"
           >
-            <Switch />
+            <Switch onChange={(e) => { console.log("ISTRUE", e); setIsOneTimeLinkTrue(e) } }/>
           </Form.Item>
+          {(selectedMerchant.is_test_mode && isOneTimeLinkTrue) && <Form.Item
+            label="Test link ? : "
+            name="isTest"
+          >
+            <Switch  />
+          </Form.Item>}
 
           <div className='flex justify-end'>
             <Button type='primary'
