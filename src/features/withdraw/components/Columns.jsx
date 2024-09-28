@@ -1,7 +1,12 @@
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import { formatCurrency, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
+import {
+  formatCurrency,
+  WithDrawAllOptions,
+  WithDrawCompletedOptions,
+  WithDrawInProgressOptions,
+} from "../../../utils/utils";
 
 const renderStatusTag = (status) => {
   let color = "";
@@ -26,14 +31,31 @@ const renderStatusTag = (status) => {
   );
 };
 
-const ColumnSearch = ({ name, filters, onChange,isNumeric, ...props }) => {
+const ColumnSearch = ({
+  name,
+  filters,
+  onChange,
+  isNumeric = null,
+  ...props
+}) => {
   return (
     <Input
       {...props}
       value={filters[name]}
       onKeyDown={(e) => {
-        const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-        const regex = isNumeric ? /^[0-9]$/ : /^[A-Za-z]$/;
+        const isControlKey = [
+          "Backspace",
+          "ArrowLeft",
+          "ArrowRight",
+          "Delete",
+          "Tab",
+        ].includes(e.key);
+        const regex =
+          isNumeric === null
+            ? /.{0,}/
+            : isNumeric === true
+            ? /^[0-9]*$/
+            : /^[A-Za-z]*$/;
         if (!isControlKey && !regex.test(e.key)) {
           e.preventDefault();
         }
@@ -127,7 +149,15 @@ export const Columns = (
               options={merchantOptions}
               onChange={onChange}
               filters={filters}
-              disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : userData?.role === "MERCHANT_OPERATIONS" ? true : false}
+              disabled={
+                userData?.role === "MERCHANT"
+                  ? true
+                  : userData?.role === "OPERATIONS"
+                  ? true
+                  : userData?.role === "MERCHANT_OPERATIONS"
+                  ? true
+                  : false
+              }
             />
           );
         }}
@@ -162,9 +192,23 @@ export const Columns = (
           return (
             <ColumnSelect
               name="status"
-              disabled={type === "Completed" || type === "In Progress" ? true : false}
-              defaultValue={type === "Completed" ? WithDrawCompletedOptions[0].value : type === "In Progress" ? WithDrawInProgressOptions[0].value : WithDrawAllOptions[0].label}
-              options={type === "Completed" ? WithDrawCompletedOptions : type === "In Progress" ? WithDrawInProgressOptions : WithDrawAllOptions}
+              disabled={
+                type === "Completed" || type === "In Progress" ? true : false
+              }
+              defaultValue={
+                type === "Completed"
+                  ? WithDrawCompletedOptions[0].value
+                  : type === "In Progress"
+                  ? WithDrawInProgressOptions[0].value
+                  : WithDrawAllOptions[0].label
+              }
+              options={
+                type === "Completed"
+                  ? WithDrawCompletedOptions
+                  : type === "In Progress"
+                  ? WithDrawInProgressOptions
+                  : WithDrawAllOptions
+              }
               onChange={onChange}
               filters={filters}
             />
@@ -181,7 +225,13 @@ export const Columns = (
             return formatCurrency(v);
           }
           return (
-            <ColumnSearch name="amount" onChange={onChange} filters={filters} />
+            <ColumnSearch
+              name="amount"
+              min="1"
+              isNumeric={true}
+              onChange={onChange}
+              filters={filters}
+            />
           );
         }}
       />
@@ -239,6 +289,7 @@ export const Columns = (
             return (
               <ColumnSearch
                 name="utr_id"
+                isNumeric={true}
                 onChange={onChange}
                 filters={filters}
               />
@@ -267,7 +318,11 @@ export const Columns = (
         ellipsis
         render={(v) => (v ? new Date(v).toDateString() : "")}
       />
-      {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" ||
+        userData?.role === "OPERATIONS" ||
+        userData?.role === "VENDOR" ||
+        userData?.role === "VENDOR_OPERATIONS") && (
         <Column
           title="Option"
           width="155px"
@@ -320,7 +375,8 @@ export const Columns = (
               </Button>
             );
           }}
-        />}
+        />
+      )}
     </>
   );
 };

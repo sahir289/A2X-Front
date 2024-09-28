@@ -2,28 +2,30 @@ import { Button, Form, Input, notification, Select } from "antd";
 import Modal from "antd/es/modal/Modal";
 import React, { useContext, useEffect, useState } from "react";
 import { getApi, postApi } from "../../../redux/api";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../AuthLayout/AuthLayout";
-
 
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [vendorCodeOptions, setVendorCodeOptions] = useState([]);
   const [form] = Form.useForm();
   const selectedRole = Form.useWatch("role", form);
-  const userData = useContext(PermissionContext)
-  const navigate = useNavigate()
+  const userData = useContext(PermissionContext);
+  const navigate = useNavigate();
 
-  const context = useContext(PermissionContext)
+  const context = useContext(PermissionContext);
 
   const commonOptions = [
     { label: "Merchant", value: "MERCHANT" },
     { label: "Transactions", value: "TRANSACTIONS" },
     { label: "Operations", value: "OPERATIONS" },
-    { label: 'Vendor', value: 'VENDOR' }
+    { label: "Vendor", value: "VENDOR" },
   ];
   const merchantOptions = [
     { label: "Merchant-Operations", value: "MERCHANT_OPERATIONS" },
@@ -31,21 +33,27 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const vendorOptions = [
     { label: "Vendor-Operations", value: "VENDOR_OPERATIONS" },
   ];
-  const roleOptions = context?.role === "ADMIN"
-    ? commonOptions
-    : context?.role === "VENDOR" ? vendorOptions : merchantOptions
+  const roleOptions =
+    context?.role === "ADMIN"
+      ? commonOptions
+      : context?.role === "VENDOR"
+      ? vendorOptions
+      : merchantOptions;
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
     if (merchantApiRes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantApiRes?.error?.message, 401);
       localStorage.clear();
-      navigate('/')
+      navigate("/");
     }
 
     const dropdownOptions = merchantApiRes?.data?.data?.merchants
-      ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
-      .map(merchant => ({
+      ?.filter(
+        (merchant) =>
+          !userData?.code.length || userData?.code.includes(merchant.code)
+      )
+      .map((merchant) => ({
         label: merchant.code,
         value: merchant.code,
       }));
@@ -57,11 +65,15 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
     if (vendorApiRes.error?.error?.response?.status === 401) {
       NotificationManager.error(vendorApiRes?.error?.message, 401);
       localStorage.clear();
-      navigate('/')
+      navigate("/");
     }
-    const dropdownOptions = vendorApiRes?.data?.data?.
-      filter(vendor => userData?.vendorCode ? userData.vendorCode === vendor.vendor_code : vendor.vendor_code)
-      .map(vendor => ({
+    const dropdownOptions = vendorApiRes?.data?.data
+      ?.filter((vendor) =>
+        userData?.vendorCode
+          ? userData.vendorCode === vendor.vendor_code
+          : vendor.vendor_code
+      )
+      .map((vendor) => ({
         label: vendor.vendor_code,
         value: vendor.vendor_code,
       }));
@@ -84,7 +96,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   };
 
   const onFinish = async (values) => {
-    setLoading(true)
+    setLoading(true);
     const formData = {
       fullName: values.fullName?.trim(),
       userName: values.userName?.trim(),
@@ -92,25 +104,33 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       role: values.role,
       code: typeof values.code === "string" ? [values.code] : values.code,
       createdBy: context?.userId,
-      vendor_code: values?.vendor_code
+      vendor_code: values?.vendor_code,
     };
 
-    const addUser = await postApi("/create-user", formData).then((res) => {
-      if (res.error) {
-        api.error({
-          description: `Error: ${addUser.error.message}`,
-        });
-        return;
-      }
-    }).catch((err) => {
-    }).finally(() => {
-      setLoading(false)
-      setIsAddModelOpen(false);
-      handleTableChange({ current: 1, pageSize: 20 });
-      form.resetFields();
-    });
+    const addUser = await postApi("/create-user", formData)
+      .then((res) => {
+        if (res.error) {
+          api.error({
+            description: `Error: ${res.error.message}`,
+          });
+          return;
+        }
 
-
+        setIsAddModelOpen(false);
+        handleTableChange({ current: 1, pageSize: 20 });
+        form.resetFields();
+      })
+      .catch((err) => {
+        if (err.error) {
+          api.error({
+            description: `Error: ${err.error.message}`,
+          });
+          return;
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -179,7 +199,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
             <Select placeholder="Please select" options={roleOptions} />
           </Form.Item>
 
-          {(selectedRole === "MERCHANT") && (
+          {selectedRole === "MERCHANT" && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -194,11 +214,11 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={merchantCodeOptions}
-              // mode={selectedRole ==="OPERATIONS" ?"multiple":undefined}
+                // mode={selectedRole ==="OPERATIONS" ?"multiple":undefined}
               />
             </Form.Item>
           )}
-          {(selectedRole === "OPERATIONS") && (
+          {selectedRole === "OPERATIONS" && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -216,7 +236,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-          {(selectedRole === "MERCHANT_OPERATIONS") && (
+          {selectedRole === "MERCHANT_OPERATIONS" && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -233,7 +253,8 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-          {(selectedRole === "VENDOR" || selectedRole === "VENDOR_OPERATIONS") && (
+          {(selectedRole === "VENDOR" ||
+            selectedRole === "VENDOR_OPERATIONS") && (
             <Form.Item
               label="Vendor Code"
               name="vendor_code"
@@ -244,10 +265,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
                 },
               ]}
             >
-              <Select
-                placeholder="Please select"
-                options={vendorCodeOptions}
-              />
+              <Select placeholder="Please select" options={vendorCodeOptions} />
             </Form.Item>
           )}
 

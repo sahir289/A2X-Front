@@ -1,7 +1,7 @@
-import { Button, Input, Switch, Table } from "antd";
+import { Button, Input, Select, Switch, Table } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useState } from "react";
-import { formatDate } from "../../../../src/utils/utils.js";
+import { formatDate, roleOptions } from "../../../../src/utils/utils.js";
 import { PlusIcon, Reload } from "../../../utils/constants.jsx";
 import AddUser from "./AddUser.jsx";
 
@@ -119,11 +119,14 @@ const TableComponent = ({
               <span>Role</span>
               <br />
               {filterValues.userRole == "ADMIN" && (
-                <Input
+                <Select
+                  options={roleOptions}
                   value={filterValues.role}
-                  onChange={(e) => {
-                    handleFilterValuesChange(e.target.value, "role");
+                  onChange={(value) => {
+                    handleFilterValuesChange(value, "role");
                   }}
+                  className="w-full"
+                  allowClear
                 />
               )}
             </>

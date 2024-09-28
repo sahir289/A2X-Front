@@ -1,4 +1,4 @@
-import { Button, Input, Select, Table, Tag } from "antd";
+import { Button, Input, InputNumber, Select, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import React from "react";
 import { Reload } from "../../../utils/constants";
@@ -70,11 +70,11 @@ const TableComponent = ({
               <>
                 <span className="whitespace-nowrap">SNO</span>
                 <br />
-                <Input
+                <InputNumber
+                  min={1}
+                  className="w-full"
                   value={filterValues?.sno}
-                  onChange={(e) =>
-                    handleFilterValuesChange(e.target.value, "sno")
-                  }
+                  onChange={(value) => handleFilterValuesChange(value, "sno")}
                   allowClear
                 />
               </>
@@ -112,10 +112,12 @@ const TableComponent = ({
               <>
                 <span className="whitespace-nowrap">Amount</span>
                 <br />
-                <Input
+                <InputNumber
+                  min={1}
+                  className="w-full"
                   value={filterValues?.amount}
-                  onChange={(e) =>
-                    handleFilterValuesChange(e.target.value, "amount")
+                  onChange={(value) =>
+                    handleFilterValuesChange(value, "amount")
                   }
                   allowClear
                 />
@@ -151,11 +153,12 @@ const TableComponent = ({
               <>
                 <span className="whitespace-nowrap">utr</span>
                 <br />
-                <Input
+                <InputNumber
+                  min={1}
+                  maxLength={12}
+                  className="w-full"
                   value={filterValues?.utr}
-                  onChange={(e) =>
-                    handleFilterValuesChange(e.target.value, "utr")
-                  }
+                  onChange={(value) => handleFilterValuesChange(value, "utr")}
                   allowClear
                 />
               </>

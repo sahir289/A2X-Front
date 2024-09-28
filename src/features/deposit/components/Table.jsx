@@ -4,15 +4,6 @@ import {
   SyncOutlined,
 } from "@ant-design/icons";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
-import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from 'antd';
-import Column from 'antd/es/table/Column';
-import React, { useContext, useEffect, useState } from 'react';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import { getApi, postApi } from '../../../redux/api';
-import { PlusIcon, Reload } from '../../../utils/constants';
-import { formatCurrency, formatDate } from '../../../utils/utils';
-import { useNavigate } from 'react-router-dom';
-import { PermissionContext } from '../../../components/AuthLayout/AuthLayout';
 import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useEffect, useState } from "react";
@@ -20,11 +11,11 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
+import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi, postApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
-import { useNavigate } from "react-router-dom";
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 const TableComponent = ({
   data,
@@ -285,46 +276,58 @@ const TableComponent = ({
         loading={isFetchUsersLoading}
       >
         <Column
-          title={<>
-            <span>Sno.</span>
-            <br />
-            <Input
-              value={filterValues?.sno}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'sno')}
-              allowClear
-            />
-          </>}
+          title={
+            <>
+              <span>Sno.</span>
+              <br />
+              <Input
+                value={filterValues?.sno}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "sno")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="sno"
           key="sno"
           className="bg-white"
           width={"24px"}
         />
         <Column
-          title={<>
-            <span>Code</span>
-            <br />
-            <Input
-              value={filterValues?.upiShortCode}
-              maxLength={5}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'upiShortCode')}
-              allowClear
-            />
-          </>}
+          title={
+            <>
+              <span>Code</span>
+              <br />
+              <Input
+                value={filterValues?.upiShortCode}
+                maxLength={5}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "upiShortCode")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="upi_short_code"
           key="upi_short_code"
           className="bg-white"
           width={"24px"}
         />
         <Column
-          title={<>
-            <span className='mb-2' >Confirmed</span>
-            <br />
-            <Input
-              value={filterValues?.confirmed}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'confirmed')}
-              allowClear
-            />
-          </>}
+          title={
+            <>
+              <span className="mb-2">Confirmed</span>
+              <br />
+              <Input
+                value={filterValues?.confirmed}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "confirmed")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="confirmed"
           key="confirmed"
           className="bg-white"
@@ -354,15 +357,19 @@ const TableComponent = ({
         )}
 
         <Column
-          title={<>
-            <span className='mb-2' >Amount</span>
-            <br />
-            <Input
-              value={filterValues?.amount}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'amount')}
-              allowClear
-            />
-          </>}
+          title={
+            <>
+              <span className="mb-2">Amount</span>
+              <br />
+              <Input
+                value={filterValues?.amount}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "amount")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="amount"
           key="amount"
           className="bg-white"
@@ -505,16 +512,20 @@ const TableComponent = ({
           width={"100px"}
         />
         <Column
-          title={<>
-            <span>User Submitted utr</span>
-            <br />
-            <Input
-              value={filterValues?.userSubmittedUtr}
-              maxLength={12}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'userSubmittedUtr')}
-              allowClear
-            />
-          </>}
+          title={
+            <>
+              <span>User Submitted utr</span>
+              <br />
+              <Input
+                value={filterValues?.userSubmittedUtr}
+                maxLength={12}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "userSubmittedUtr")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="user_submitted_utr"
           key="user_submitted_utr"
           className="bg-white"
@@ -522,16 +533,20 @@ const TableComponent = ({
           render={(text) => text || "--"}
         />
         <Column
-          title={<>
-            <span>UTR</span>
-            <br />
-            <Input
-              value={filterValues?.utr}
-              maxLength={12}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'utr')}
-              allowClear
-            />
-          </>}
+          title={
+            <>
+              <span>UTR</span>
+              <br />
+              <Input
+                value={filterValues?.utr}
+                maxLength={12}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "utr")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="utr"
           key="utr"
           className="bg-white"
@@ -567,15 +582,19 @@ const TableComponent = ({
           )}
         />
         <Column
-          title={<>
-            <span>Dur</span>
-            <br />
-            <Input
-              value={filterValues?.dur}
-              onChange={(e) => handleFilterValuesChange(e.target.value, 'dur')}
-              allowClear
-            />
-          </>}
+          title={
+            <>
+              <span>Dur</span>
+              <br />
+              <Input
+                value={filterValues?.dur}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "dur")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="duration" // Adjust according to actual data structure
           key="duration"
           className="bg-white"

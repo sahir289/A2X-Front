@@ -3,6 +3,7 @@ import {
   Button,
   Form,
   Input,
+  InputNumber,
   Modal,
   notification,
   Pagination,
@@ -21,6 +22,7 @@ import {
   getQueryFromObject,
   reasonOptions,
   RequiredRule,
+  validateNumberField,
 } from "../../utils/utils";
 import Table from "./components/Table";
 import axios from "axios";
@@ -463,12 +465,19 @@ const Withdraw = ({ type }) => {
           <Form.Item name="bank_name" label="Bank Name">
             <Input />
           </Form.Item>
-          <Form.Item name="acc_no" label="Account Number" rules={[...RequiredRule , {type:'number' , message:'Please enter a valid number'}]}>
-            <Input type="number" onKeyUp={(e)=>{
-              if (!/[0-9]/.test(e.key)) {
-                e.preventDefault(); 
-              }
-            }}/>
+          <Form.Item
+            name="acc_no"
+            label="Account Number"
+            rules={[...RequiredRule, validateNumberField]}
+          >
+            <Input
+              className="w-full"
+              onKeyUp={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item
             name="acc_holder_name"
@@ -478,7 +487,9 @@ const Withdraw = ({ type }) => {
               {
                 validator: (_, value) => {
                   if (!/^[A-Za-z\s]*$/.test(value)) {
-                    return Promise.reject(new Error('Name must contain only alphabets.'));
+                    return Promise.reject(
+                      new Error("Name must contain only alphabets.")
+                    );
                   }
                   return Promise.resolve();
                 },
@@ -486,27 +497,36 @@ const Withdraw = ({ type }) => {
             ]}
           >
             <Input
-            onKeyDown={(e) => {
-              if (!/[A-Za-z\s]/.test(e.key)) {
-                e.preventDefault(); 
-              }
-            }}
-            
+              onKeyDown={(e) => {
+                if (!/[A-Za-z\s]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
             />
           </Form.Item>
-          
+
           <Form.Item name="ifsc_code" label="IFSC code" rules={RequiredRule}>
             <Input />
           </Form.Item>
           <Form.Item name="amount" label="Amount" rules={RequiredRule}>
-            <Input addonAfter="₹" min={1} onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
-                  e.preventDefault();
+            <Input
+              addonAfter="₹"
+              min={1}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = [
+                    "Backspace",
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "Delete",
+                    "Tab",
+                  ].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-              }
-            }} />
+              }}
+            />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
             <Button onClick={handleToggleModal}>Cancel</Button>
