@@ -345,7 +345,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           render={(value) => (
             <span>
               <Tag
-                color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : value === "PENDING" ? "yellow" : value === "DROPPED" ? "red" : '#FF6600'}
+                color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : value === "PENDING" ? "yellow" : value === "DROPPED" ? "red" :value === 'DISPUTE' ? '#FF6600' : value === "TEST_SUCCESS" ? "green-inverse" : "gold-inverse"}
                 key={value}
                 icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
               >
