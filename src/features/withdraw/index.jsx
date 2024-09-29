@@ -26,9 +26,8 @@ import Table from "./components/Table";
 import axios from "axios";
 
 const Withdraw = ({ type }) => {
-
   const style = {
-    width: 'calc(100% - 256px)'
+    width: "calc(100% - 256px)",
   };
 
   const timer = useRef(null);
@@ -59,17 +58,19 @@ const Withdraw = ({ type }) => {
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
-    ?.filter(merchant => !userData?.code?.length || userData?.code.includes(merchant.code))
-    .map(merchant => ({
+    ?.filter(
+      (merchant) =>
+        !userData?.code?.length || userData?.code.includes(merchant.code)
+    )
+    .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
     }));
   const [vendorData, setVendorData] = useState([]);
-  const vendorOptions = vendorData?.map(vendor => ({
+  const vendorOptions = vendorData?.map((vendor) => ({
     label: vendor.vendor_code,
     value: vendor.vendor_code,
   }));
-
 
   useEffect(() => {
     handleGetWithdraws();
@@ -112,7 +113,7 @@ const Withdraw = ({ type }) => {
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      if (userData.role === 'ADMIN') {
+      if (userData.role === "ADMIN") {
         getPayoutList({
           ...queryObj,
           code: queryObj.code || null,
@@ -141,8 +142,8 @@ const Withdraw = ({ type }) => {
         type == "In Progress"
           ? "INITIATED"
           : type == "Completed"
-            ? "SUCCESS"
-            : "";
+          ? "SUCCESS"
+          : "";
     }
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
@@ -241,13 +242,12 @@ const Withdraw = ({ type }) => {
     }
   };
 
-
   const handleSubmit = async (data) => {
     setAddLoading(true);
     // Validate the IFSC code before proceeding
     const ifscValidation = await validateIfscCode(data?.ifsc_code);
     if (!ifscValidation) {
-      setAddLoading(false)
+      setAddLoading(false);
       api.error({
         message: "Invalid IFSC Code",
         description: "Please enter a valid IFSC code.",
@@ -255,27 +255,31 @@ const Withdraw = ({ type }) => {
       return;
     }
 
-    const res = await postApi("/create-payout", { ...data, vendor_code: userData?.vendorCode }).then((res) => {
-      if (res?.error) {
-        api.error({ description: res.error.message });
-        return;
-      }
-    }).catch((err) => {
-    }).finally(() => {
-      setAddLoading(false);
+    const res = await postApi("/create-payout", {
+      ...data,
+      vendor_code: userData?.vendorCode,
+    })
+      .then((res) => {
+        if (res?.error) {
+          api.error({ description: res.error.message });
+          return;
+        }
+      })
+      .catch((err) => {})
+      .finally(() => {
+        setAddLoading(false);
 
-      handleToggleModal();
-      handleGetWithdraws();
-    });
-
+        handleToggleModal();
+        handleGetWithdraws();
+      });
   };
 
   const handleAddVendor = async (data) => {
     setAddLoading(true);
     let apiData = {
       withdrawId: selectedData,
-      vendorCode: data.code.toString()
-    }
+      vendorCode: data.code.toString(),
+    };
 
     const res = await putApi("/update-vendor-code", apiData);
     setAddLoading(false);
@@ -284,12 +288,12 @@ const Withdraw = ({ type }) => {
       return;
     }
     handleToggleAddVendorModal();
-    setSelectedData([])
+    setSelectedData([]);
   };
 
   const handleData = (data) => {
-    setSelectedData(data)
-  }
+    setSelectedData(data);
+  };
 
   //Select UTR Method
   const handleSelectUTRMethod = (selectedMethod) => {
@@ -312,14 +316,18 @@ const Withdraw = ({ type }) => {
           <p className="text-lg font-medium p-[5px]">{type}</p>
           <div className="flex items-start gap-4 max-[500px]:justify-end">
             <div className="flex flex-col items-start">
-              {!(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
-                (<Button
+              {!(
+                userData?.role === "VENDOR" ||
+                userData?.role === "VENDOR_OPERATIONS"
+              ) && (
+                <Button
                   icon={<PlusOutlined />}
                   type="primary"
                   onClick={handleToggleModal}
                 >
                   New Payout
-                </Button>)}
+                </Button>
+              )}
 
               <Button className="mt-2 w-full" onClick={handleResetSearchFields}>
                 Reset
@@ -360,7 +368,7 @@ const Withdraw = ({ type }) => {
           />
         </div>
       </div>
-      {hasSelected ?
+      {hasSelected ? (
         <div className="fixed bottom-0 w-full z-99" style={style}>
           <div className="bg-white p-[8px] font-serif">
             <div className="flex justify-between">
@@ -377,12 +385,10 @@ const Withdraw = ({ type }) => {
               >
                 Add Vendor
               </Button>
-
             </div>
           </div>
         </div>
-        : null
-      }
+      ) : null}
 
       <Modal
         title="Withdraw"
@@ -391,7 +397,7 @@ const Withdraw = ({ type }) => {
         footer={false}
         destroyOnClose
       >
-        <Form layout="vertical" onFinish={updateWithdraw}> 
+        <Form layout="vertical" onFinish={updateWithdraw}>
           {editWithdraw?.key == "approve" && (
             <>
               <Form.Item name="method" label="Method">
@@ -442,7 +448,12 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleSubmit}>
           <Form.Item name="code" label="Merchant Code" rules={RequiredRule}>
-            <Select showSearch placeholder={""} defaultActiveFirstOption={false} options={merchantOptions} />
+            <Select
+              showSearch
+              placeholder={""}
+              defaultActiveFirstOption={false}
+              options={merchantOptions}
+            />
           </Form.Item>
           <Form.Item
             name="user_id"
@@ -454,12 +465,15 @@ const Withdraw = ({ type }) => {
           <Form.Item name="bank_name" label="Bank Name">
             <Input />
           </Form.Item>
-          <Form.Item name="acc_no" label="Account Number" rules={[...RequiredRule , {type:'number' , message:'Please enter a valid number'}]}>
-            <Input type="number" onKeyUp={(e)=>{
-              if (!/[0-9]/.test(e.key)) {
-                e.preventDefault(); 
-              }
-            }}/>
+          <Form.Item name="acc_no" label="Account Number">
+            <Input
+              type="number"
+              onKeyUp={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item
             name="acc_holder_name"
@@ -469,7 +483,9 @@ const Withdraw = ({ type }) => {
               {
                 validator: (_, value) => {
                   if (!/^[A-Za-z\s]*$/.test(value)) {
-                    return Promise.reject(new Error('Name must contain only alphabets.'));
+                    return Promise.reject(
+                      new Error("Name must contain only alphabets.")
+                    );
                   }
                   return Promise.resolve();
                 },
@@ -477,27 +493,36 @@ const Withdraw = ({ type }) => {
             ]}
           >
             <Input
-            onKeyDown={(e) => {
-              if (!/[A-Za-z\s]/.test(e.key)) {
-                e.preventDefault(); 
-              }
-            }}
-            
+              onKeyDown={(e) => {
+                if (!/[A-Za-z\s]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
             />
           </Form.Item>
-          
+
           <Form.Item name="ifsc_code" label="IFSC code" rules={RequiredRule}>
             <Input />
           </Form.Item>
           <Form.Item name="amount" label="Amount" rules={RequiredRule}>
-            <Input addonAfter="₹" min={1} onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
-                  e.preventDefault();
+            <Input
+              addonAfter="₹"
+              min={1}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  const isControlKey = [
+                    "Backspace",
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "Delete",
+                    "Tab",
+                  ].includes(e.key);
+                  if (!isControlKey) {
+                    e.preventDefault();
+                  }
                 }
-              }
-            }} />
+              }}
+            />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
             <Button onClick={handleToggleModal}>Cancel</Button>
@@ -516,7 +541,11 @@ const Withdraw = ({ type }) => {
         width={600}
         destroyOnClose
       >
-        <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleAddVendor}>
+        <Form
+          labelAlign="left"
+          labelCol={{ span: 8 }}
+          onFinish={handleAddVendor}
+        >
           <Form.Item name="code" label="Vendor Code" rules={RequiredRule}>
             <Select options={vendorOptions} />
           </Form.Item>
