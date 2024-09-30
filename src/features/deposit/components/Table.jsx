@@ -4,7 +4,7 @@ import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
 import React, { useContext, useEffect, useState } from 'react';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
-import { getApi, postApi } from '../../../redux/api';
+import { getApi, getApiForGeneratePaymentUrl, postApi } from '../../../redux/api';
 import { PlusIcon, Reload } from '../../../utils/constants';
 import { formatCurrency, formatDate } from '../../../utils/utils';
 import { useNavigate } from 'react-router-dom';
@@ -160,8 +160,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       // })
 
     } else {
-
-      const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest?? false}`).then((res) => {
+console.log("dd",selectedMerchant)
+      const oneTimeUrlRes = getApiForGeneratePaymentUrl(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest?? false}`,{},{"x-api-key":`${selectedMerchant.api_key}`}).then((res) => {
         if (res?.data?.data) {
           setPaymentUrl(res?.data?.data?.payInUrl)
           handleToggleModal()
