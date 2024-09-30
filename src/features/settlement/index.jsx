@@ -269,7 +269,7 @@ export default function Settlement() {
         <Form layout="vertical" onFinish={handelUpdateSettlement}>
           {
             editSettlement?.key == "approve" ?
-            editSettlement?.method == "bank" ?
+            editSettlement?.method == "BANK" ?
             <Form.Item name="refrence_id" label="UTR Number" rules={RequiredRule}>
             <Input size="large" />
             </Form.Item>: null :
@@ -281,7 +281,7 @@ export default function Settlement() {
           }
           {
             editSettlement?.key == "approve" &&
-            editSettlement?.method !== "bank" ? 
+            editSettlement?.method !== "BANK" ? 
             <div>
               <h5> Are you sure to approve? </h5>
             </div>
