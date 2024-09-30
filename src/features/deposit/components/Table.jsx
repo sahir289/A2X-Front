@@ -144,6 +144,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       setPaymentUrlModal(true);
       handleCopy(unlimitedUrl)
       setAddLoading(false)
+      setIsOneTimeLinkTrue(false)
       // const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`).then((res) => {
       //   if (res?.data?.data) {
       //     setPaymentUrl(res?.data?.data?.payInUrl)
@@ -175,6 +176,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         console.log(err)
       }).finally(() => {
         setAddLoading(false)
+        setIsOneTimeLinkTrue(false)
       })
     }
 
@@ -623,7 +625,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             label="One time payment link ? : "
             name="paymentLink"
           >
-            <Switch onChange={(e) => { console.log("ISTRUE", e); setIsOneTimeLinkTrue(e) } }/>
+            <Switch onChange={(e) => { setIsOneTimeLinkTrue(e) } }/>
           </Form.Item>
           {(selectedMerchant.is_test_mode && isOneTimeLinkTrue) && <Form.Item
             label="Test link ? : "
