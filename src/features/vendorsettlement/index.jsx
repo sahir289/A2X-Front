@@ -1,10 +1,9 @@
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, notification, Pagination, Select } from 'antd';
 import { useContext, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { getApi, postApi, putApi } from "../../redux/api";
 import { getQueryFromObject, reasonOptions, RequiredRule } from "../../utils/utils";
-import TableComponent, { methodOptions, walletOptions } from './components/Table';
+import TableComponent, { methodOptions } from './components/Table';
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
@@ -146,18 +145,14 @@ export default function Settlement() {
       }
     }
     
-    const res = await postApi("/create-vendorsettlement", data).then((res) => {
-      if (res?.error) {
-        api.error({ description: res.error.message });
-        return;
-      }
-    }).catch((err) => {
-      console.log("🚀 ~ res ~ err:", err)
-    }).finally(() => {
-      setAddLoading(false);
-      handleToggleModal();
-      getSettlementList();
-    });
+  const res = await postApi("/create-vendorsettlement", data)
+    if (res?.error) {
+      api.error({ description: res.error.message });
+      return;
+    }    
+    setAddLoading(false);
+    handleToggleModal();
+    getSettlementList();
 
   }
 
@@ -199,6 +194,9 @@ export default function Settlement() {
       return;
     }
     setIsLoading(true);
+    if (editSettlement?.key == "approve" && editSettlement?.method !== "bank") {
+      data = { refrence_id: " " };
+    }
     const res = await putApi(`/update-vendorsettlement/${settlementId}`, data);
     setIsLoading(false);
     if (res.error) {
@@ -284,25 +282,36 @@ export default function Settlement() {
         destroyOnClose
       >
         <Form layout="vertical" onFinish={handelUpdateSettlement}>
-          {
-            editSettlement?.key == "approve" ?
-              <Form.Item name="refrence_id" label="UTR Number" rules={RequiredRule}>
+          {editSettlement?.key == "approve" ? (
+            editSettlement?.method == "bank" ? (
+              <Form.Item
+                name="refrence_id"
+                label="UTR Number"
+                rules={RequiredRule}
+              >
                 <Input size="large" />
-              </Form.Item> :
-              <Form.Item name="rejected_reason" label="Reason" rules={RequiredRule}>
-                <Select
-                  options={reasonOptions}
-                />
               </Form.Item>
-          }
-          <Button
-            type="primary"
-            htmlType="submit"
-          >
-            {
-              editSettlement?.key == "approve" ? "Approve" : "Reject"
-            }
-          </Button>
+            ) : null
+          ) : (
+            <Form.Item
+              name="rejected_reason"
+              label="Reason"
+              rules={RequiredRule}
+            >
+              <Select options={reasonOptions} />
+            </Form.Item>
+          )}
+          {editSettlement?.key == "approve" &&
+          editSettlement?.method !== "bank" ? (
+            <div>
+              <h5> Are you sure to approve? </h5>
+            </div>
+          ) : null}
+          <div className="flex justify-end">
+            <Button type="primary" htmlType="submit">
+              {editSettlement?.key == "approve" ? "Approve" : "Reject"}
+            </Button>
+          </div>
         </Form>
       </Modal>
 
@@ -364,7 +373,7 @@ export default function Settlement() {
             method === "CRYPTO" &&
             <>
               <Form.Item name="wallet" label="Wallet" rules={RequiredRule}>
-                <Select options={walletOptions} />
+                <Input />
               </Form.Item>
               <Form.Item name="wallet_address" label="Wallet Address" rules={RequiredRule}>
                 <Input />
