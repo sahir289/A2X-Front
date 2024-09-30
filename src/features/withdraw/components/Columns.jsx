@@ -1,7 +1,9 @@
-import { ExclamationCircleOutlined, CheckSquareTwoTone, CloseSquareTwoTone } from "@ant-design/icons";
+import { ExclamationCircleOutlined, CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import { formatCurrency, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+
 
 const renderStatusTag = (status) => {
   let color = "";
@@ -72,6 +74,10 @@ export const Columns = (
   type,
   userData
 ) => {
+  const handleCopy = (values) => {
+    navigator.clipboard.writeText(values);
+    NotificationManager.success("Copied to clipboard")
+  };
   return (
     <>
       <Column
@@ -97,11 +103,11 @@ export const Columns = (
       <Column
         title="Merchant Order Id"
         dataIndex="merchant_order_id"
-        width="330px"
+        width="380px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v;
+            return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
           }
           return (
             <ColumnSearch
@@ -119,7 +125,7 @@ export const Columns = (
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v?.code;
+            return <>{v?.code}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v?.code)} /> </>;
           }
           return (
             <ColumnSelect
@@ -249,11 +255,11 @@ export const Columns = (
       <Column
         title="Payout UUID"
         dataIndex="id"
-        width="320px"
+        width="380px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v;
+            return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
           }
           return (
             <ColumnSearch name="id" onChange={onChange} filters={filters} />
