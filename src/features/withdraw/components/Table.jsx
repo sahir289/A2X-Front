@@ -51,7 +51,7 @@ const Table = ({
       pagination={false}
       loading={loading}
     >
-     {!(userData?.role=="VENDOR" || userData?.role=="VENDOR_OPERATIONS" )&& <AntTable.Column
+     {!(userData?.role=="VENDOR" || userData?.role=="VENDOR_OPERATIONS"|| userData?.role=="MERCHANT" || userData?.role=="MERCHANT_OPERATIONS")&& <AntTable.Column
         title={<Checkbox onChange={(e) => handleSelectAllChange(e.target.checked)} />}
         dataIndex="id"
         width="80px"

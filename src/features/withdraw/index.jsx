@@ -106,7 +106,7 @@ const Withdraw = ({ type }) => {
       getPayoutList({
         ...queryObj,
         code: userData?.code || queryObj.code || null,
-        vendorCode: userData?.vendorCode || queryObj.code || null,
+        vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
       });
       return;
     }
@@ -121,7 +121,7 @@ const Withdraw = ({ type }) => {
         getPayoutList({
           ...queryObj,
           code: userData?.code || queryObj.code || null,
-          vendorCode: userData?.vendorCode || queryObj.code || null,
+          vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
         });
       }
     }, 1500);
@@ -274,7 +274,8 @@ const Withdraw = ({ type }) => {
     setAddLoading(true);
     let apiData = {
       withdrawId: selectedData,
-      vendorCode: data.code.toString()
+      // here i have changed code to vendor code.
+      vendorCode: data.vendorCode.toString()
     }
 
     const res = await putApi("/update-vendor-code", apiData);
@@ -391,7 +392,7 @@ const Withdraw = ({ type }) => {
         footer={false}
         destroyOnClose
       >
-        <Form layout="vertical" onFinish={updateWithdraw}> 
+        <Form layout="vertical" onFinish={updateWithdraw}>
           {editWithdraw?.key == "approve" && (
             <>
               <Form.Item name="method" label="Method">
@@ -457,7 +458,7 @@ const Withdraw = ({ type }) => {
           <Form.Item name="acc_no" label="Account Number">
             <Input type="number" onKeyUp={(e)=>{
               if (!/[0-9]/.test(e.key)) {
-                e.preventDefault(); 
+                e.preventDefault();
               }
             }}/>
           </Form.Item>
@@ -479,13 +480,13 @@ const Withdraw = ({ type }) => {
             <Input
             onKeyDown={(e) => {
               if (!/[A-Za-z\s]/.test(e.key)) {
-                e.preventDefault(); 
+                e.preventDefault();
               }
             }}
-            
+
             />
           </Form.Item>
-          
+
           <Form.Item name="ifsc_code" label="IFSC code" rules={RequiredRule}>
             <Input />
           </Form.Item>
@@ -517,7 +518,7 @@ const Withdraw = ({ type }) => {
         destroyOnClose
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleAddVendor}>
-          <Form.Item name="code" label="Vendor Code" rules={RequiredRule}>
+          <Form.Item name="vendorCode" label="Vendor Code" rules={RequiredRule}>
             <Select options={vendorOptions} />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
