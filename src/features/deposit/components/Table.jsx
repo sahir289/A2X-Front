@@ -136,7 +136,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const handleSubmit = (data) => {
     setAddLoading(true)
     if (data?.paymentLink === undefined || data?.paymentLink === false) {
-      const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`
+      const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n&ap=${selectedMerchant.api_key}`
 
       setPaymentUrl(unlimitedUrl)
       handleToggleModal()
@@ -145,22 +145,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       handleCopy(unlimitedUrl)
       setAddLoading(false)
       setIsOneTimeLinkTrue(false)
-      // const oneTimeUrlRes = getApi(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n`).then((res) => {
-      //   if (res?.data?.data) {
-      //     setPaymentUrl(res?.data?.data?.payInUrl)
-      //     handleToggleModal()
-      //     setPaymentUrlModal(true);
-      //     handleCopy(res?.data?.data?.payInUrl)
-      //   }
-      //   else {
-      //     NotificationManager.error(res?.error?.message || "Some thing went wrong")
-      //   }
-      // }).catch((err) => {
-      //   console.log(err)
-      // })
-
     } else {
-      
+
       const oneTimeUrlRes = getApiForGeneratePaymentUrl(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest?? false}`,{},{"x-api-key":`${selectedMerchant.api_key}`}).then((res) => {
         if (res?.data?.data) {
           setPaymentUrl(res?.data?.data?.payInUrl)
@@ -596,7 +582,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         title="New Payment link"
         onCancel={handleToggleModal}
         open={open}
-        footer={false}>
+        footer={false}
+        >
         <Form
           form={form}
           className='pt-[10px]'
@@ -657,7 +644,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         closable={false}
         // onOk={handleCancel}
         onCancel={handleCancel}
-        width="40rem" // Use the width property directly
+        width="45rem" // Use the width property directly
         footer={[
           <Button key="ok" type="primary" onClick={handleCancel}>
             Ok
