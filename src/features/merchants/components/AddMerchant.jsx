@@ -59,6 +59,7 @@ const AddMerchant = ({
       site_url: `${values.site_url_protocol}${values.site_url}`,
       return_url: `${values.return_url_protocol}${values.return_url}`,
       notify_url: `${values.notify_url_protocol}${values.notify_url}`,
+      payout_notify_url:`${values.notify_url_protocol}${values.payout_notify_url}`,
       payin_commission: `${values.payin_commission}`,
       payout_commission: `${values.payout_commission}`,
       min_payin: `${values.min_payin}`,
