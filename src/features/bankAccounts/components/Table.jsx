@@ -89,7 +89,16 @@ const TableComponent = ({
   };
   //reset filter from search fields
   const handleResetSearchFields = () => {
-    setFilterValues({});
+    setFilterValues({
+      ac_name: "",
+      ac_no: "",
+      upi_id: "",
+      role:`${userData?.role}`,
+      vendor_code: `${userData?.vendorCode || ""}`,
+      code: `${userData?.code || ""}`,
+      page: 1,
+      pageSize: 20,
+    });
   };
 
   useEffect(() => {
