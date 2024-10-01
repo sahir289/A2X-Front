@@ -160,11 +160,28 @@ export const getApiForGeneratePaymentUrl = async (url, params = {},header={}) =>
   try {
     // this is the temporary solution for getting all merchants in dropdowns.
     // will improves this in future.
-
-    console.log("🚀 ~ getApiForGeneratePaymentUrl ~ header:", header)
-
     const response = await axios.get(`${endPoint}${url}`, {
       params: params,
+      headers:header,
+      // ...apiConfig(),
+    });
+    return {
+      data: response.data,
+      error: null,
+    };
+  } catch (err) {
+    if (err?.response?.data?.error?.name) {
+      // localStorage.clear();
+    }
+    return { data: null, error: parseErrorFromAxios(err) };
+  }
+};
+
+export const postApiForWithdrawCreation = async (url, data = {},header={}) => {
+  try {
+    // this is the temporary solution for getting all merchants in dropdowns.
+    // will improves this in future.
+    const response = await axios.post(`${endPoint}${url}`,data, {
       headers:header,
       // ...apiConfig(),
     });

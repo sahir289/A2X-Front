@@ -160,7 +160,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       // })
 
     } else {
-console.log("dd",selectedMerchant)
+      
       const oneTimeUrlRes = getApiForGeneratePaymentUrl(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest?? false}`,{},{"x-api-key":`${selectedMerchant.api_key}`}).then((res) => {
         if (res?.data?.data) {
           setPaymentUrl(res?.data?.data?.payInUrl)

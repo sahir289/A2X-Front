@@ -16,7 +16,7 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
-import { getApi, postApi, putApi } from "../../redux/api";
+import { getApi, postApi, postApiForWithdrawCreation, putApi } from "../../redux/api";
 import {
   getQueryFromObject,
   reasonOptions,
@@ -56,6 +56,7 @@ const Withdraw = ({ type }) => {
     page: 1,
     take: 20,
   });
+  const [selectedMerchant, setSelectedMerchant] = useState('')
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
@@ -255,7 +256,7 @@ const Withdraw = ({ type }) => {
       return;
     }
 
-    const res = await postApi("/create-payout", { ...data, vendor_code: userData?.vendorCode }).then((res) => {
+    const res = await postApiForWithdrawCreation("/create-payout", { ...data, vendor_code: userData?.vendorCode }, { "x-api-key": `${selectedMerchant?.api_key}` }).then((res) => {
       if (res?.error) {
         api.error({ description: res.error.message });
         return;
@@ -263,9 +264,9 @@ const Withdraw = ({ type }) => {
     }).catch((err) => {
     }).finally(() => {
       setAddLoading(false);
-
       handleToggleModal();
       handleGetWithdraws();
+      setSelectedMerchant('')
     });
 
   };
@@ -443,7 +444,9 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleSubmit}>
           <Form.Item name="code" label="Merchant Code" rules={RequiredRule}>
-            <Select showSearch placeholder={""} defaultActiveFirstOption={false} options={merchantOptions} />
+            <Select showSearch placeholder={""} defaultActiveFirstOption={false} options={merchantOptions}
+              onSelect={(e) => { setSelectedMerchant(merchantData?.find(item => item.code === e)) }}
+            />
           </Form.Item>
           <Form.Item
             name="user_id"
@@ -456,11 +459,11 @@ const Withdraw = ({ type }) => {
             <Input />
           </Form.Item>
           <Form.Item name="acc_no" label="Account Number">
-            <Input type="number" onKeyUp={(e)=>{
+            <Input type="number" onKeyUp={(e) => {
               if (!/[0-9]/.test(e.key)) {
                 e.preventDefault();
               }
-            }}/>
+            }} />
           </Form.Item>
           <Form.Item
             name="acc_holder_name"
@@ -478,11 +481,11 @@ const Withdraw = ({ type }) => {
             ]}
           >
             <Input
-            onKeyDown={(e) => {
-              if (!/[A-Za-z\s]/.test(e.key)) {
-                e.preventDefault();
-              }
-            }}
+              onKeyDown={(e) => {
+                if (!/[A-Za-z\s]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
 
             />
           </Form.Item>
