@@ -454,7 +454,7 @@ const Withdraw = ({ type }) => {
           <Form.Item name="bank_name" label="Bank Name">
             <Input />
           </Form.Item>
-          <Form.Item name="acc_no" label="Account Number" rules={[...RequiredRule , {type:'number' , message:'Please enter a valid number'}]}>
+          <Form.Item name="acc_no" label="Account Number">
             <Input type="number" onKeyUp={(e)=>{
               if (!/[0-9]/.test(e.key)) {
                 e.preventDefault(); 
