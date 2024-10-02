@@ -75,6 +75,7 @@ const ColumnSelectMultiple = ({ name, options, filters, onChange, ...props }) =>
 }
 
 export const Columns = (merchantOptions, filters, onChange, updateSettlementStatus, userData) => {
+    console.log("🚀 ~ Columns ~ userData:", userData)
     return (
         <>
             <Column
@@ -98,10 +99,19 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v?.code;
                     }
-                    return <ColumnSelectMultiple name="code" options={merchantOptions} onChange={onChange} filters={filters}
-                    //   disabled={userData?.role === "MERCHANT" ? true : userData?.role ===  "OPERATIONS" ? true : false}
-                      />
+                    return (<ColumnSelectMultiple
+                        name="code"
+                        options={merchantOptions}
+                        onChange={onChange}
+                        filters={filters}
+                        disabled={
+                            userData?.role === "MERCHANT" ||
+                            userData?.role === "OPERATIONS" ||
+                            userData?.role === "MERCHANT_OPERATIONS"
+                        }
+                    />)
                 }}
+
             />
             <Column
                 title='Status'
@@ -181,7 +191,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} />;
                 }}
             />
-            {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" ) &&
+            {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") &&
                 <Column
                     title='Option'
                     width="155px"

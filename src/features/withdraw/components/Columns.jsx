@@ -28,7 +28,7 @@ const renderStatusTag = (status) => {
   );
 };
 
-const ColumnSearch = ({ name, filters, onChange,isNumeric, ...props }) => {
+const ColumnSearch = ({ name, filters, onChange, isNumeric, ...props }) => {
   return (
     <Input
       {...props}
@@ -100,62 +100,72 @@ export const Columns = (
           );
         }}
       />
-      <Column
-        title="Merchant Order Id"
-        dataIndex="merchant_order_id"
-        width="380px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
-          }
-          return (
-            <ColumnSearch
-              name="merchant_order_id"
-              onChange={onChange}
-              filters={filters}
-            />
-          );
-        }}
-      />
-      <Column
-        title="Merchant"
-        dataIndex="Merchant"
-        width="130px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return <>{v?.code}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v?.code)} /> </>;
-          }
-          return (
-            <ColumnSelect
-              name="code"
-              options={merchantOptions}
-              onChange={onChange}
-              filters={filters}
-              disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : userData?.role === "MERCHANT_OPERATIONS" ? true : false}
-            />
-          );
-        }}
-      />
-      <Column
-        title="User"
-        dataIndex="user_id"
-        width="130px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return v;
-          }
-          return (
-            <ColumnSearch
-              name="user_id"
-              onChange={onChange}
-              filters={filters}
-            />
-          );
-        }}
-      />
+      {
+        (userData?.role === "VENDOR" ||
+          userData?.role === "VENDOR_OPERATIONS") ? " " :
+          <Column
+            title="Merchant Order Id"
+            dataIndex="merchant_order_id"
+            width="380px"
+            ellipsis
+            render={(v, r, i) => {
+              if (i) {
+                return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
+              }
+              return (
+                <ColumnSearch
+                  name="merchant_order_id"
+                  onChange={onChange}
+                  filters={filters}
+                />
+              );
+            }}
+          />}
+      {
+        (userData?.role === "VENDOR" ||
+          userData?.role === "VENDOR_OPERATIONS") ? " " :
+          <Column
+            title="Merchant"
+            dataIndex="Merchant"
+            width="130px"
+            ellipsis
+            render={(v, r, i) => {
+              if (i) {
+                return <>{v?.code}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v?.code)} /> </>;
+              }
+              return (
+                <ColumnSelect
+                  name="code"
+                  options={merchantOptions}
+                  onChange={onChange}
+                  filters={filters}
+                  disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : userData?.role === "MERCHANT_OPERATIONS" ? true : false}
+                />
+              );
+            }}
+          />}
+      {
+        (userData?.role === "VENDOR" ||
+          userData?.role === "VENDOR_OPERATIONS") ? " " :
+          <Column
+            title="User"
+            dataIndex="user_id"
+            width="130px"
+            ellipsis
+            render={(v, r, i) => {
+              if (i) {
+                return v;
+              }
+              return (
+                <ColumnSearch
+                  name="user_id"
+                  onChange={onChange}
+                  filters={filters}
+                />
+              );
+            }}
+          />
+      }
       <Column
         title="Status"
         dataIndex="status"

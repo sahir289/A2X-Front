@@ -22,8 +22,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
   const [paymentUrlModal, setPaymentUrlModal] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState('')
   const navigate = useNavigate()
-  const [selectedMerchant,setSelectedMerchant]=useState('')
-  const [isOneTimeLinkTrue,setIsOneTimeLinkTrue]=useState(false)
+  const [selectedMerchant, setSelectedMerchant] = useState('')
+  const [isOneTimeLinkTrue, setIsOneTimeLinkTrue] = useState(false)
 
 
   const userData = useContext(PermissionContext)
@@ -147,7 +147,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       setIsOneTimeLinkTrue(false)
     } else {
 
-      const oneTimeUrlRes = getApiForGeneratePaymentUrl(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest?? false}`,{},{"x-api-key":`${selectedMerchant.api_key}`}).then((res) => {
+      const oneTimeUrlRes = getApiForGeneratePaymentUrl(`/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest ?? false}`, {}, { "x-api-key": `${selectedMerchant.api_key}` }).then((res) => {
         if (res?.data?.data) {
           setPaymentUrl(res?.data?.data?.payInUrl)
           handleToggleModal()
@@ -177,7 +177,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       status: allTable ? '' : filterValues?.status || '', merchantCode: `${userData?.code || ""}`,
       vendorCode: `${userData?.vendorCode || ""}`, pageSize: 20,
       page: 1
-});
+    });
   }
 
   return (
@@ -204,8 +204,8 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
                 )}
               <Button
                 className={`${userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS"
-                    ? `w-[80px] ${(allTable || inProgressTable) && 'mr-2'}`
-                    : `${!(allTable || inProgressTable) ? 'w-full' : 'w-[178px]'}`
+                  ? `w-[80px] ${(allTable || inProgressTable) && 'mr-2'}`
+                  : `${!(allTable || inProgressTable) ? 'w-full' : 'w-[178px]'}`
                   }`}
                 onClick={handleResetSearchFields}
               >Reset</Button>
@@ -333,7 +333,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           render={(value) => (
             <span>
               <Tag
-                color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : value === "PENDING" ? "yellow" : value === "DROPPED" ? "red" :value === 'DISPUTE' ? '#FF6600' : value === "TEST_SUCCESS" ? "green-inverse" : "gold-inverse"}
+                color={value === "ASSIGNED" ? 'blue' : value === "SUCCESS" ? 'green' : value === 'INITIATED' ? 'grey' : value === "PENDING" ? "yellow" : value === "DROPPED" ? "red" : value === 'DISPUTE' ? '#FF6600' : value === "TEST_SUCCESS" ? "green-inverse" : "gold-inverse"}
                 key={value}
                 icon={value === "ASSIGNED" ? <SyncOutlined spin /> : value === "SUCCESS" ? '' : <ExclamationCircleOutlined />}
               >
@@ -355,7 +355,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           dataIndex="merchant_order_id"
           key="merchant_order_id"
           className="bg-white"
-          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : false}
+          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ? true : false}
           width={"150px"}
           render={(text) => (
             <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
@@ -366,19 +366,19 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             <>
               <span>Merchant Code</span>
               <br />
-
               <Input
                 value={filterValues?.merchantCode}
                 onChange={(e) => handleFilterValuesChange(e.target.value, 'merchantCode')}
                 allowClear
-                disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false}
+                hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ? true : false}
+               
               />
             </>
           }
           dataIndex="Merchant"
           key="merchant_code"
           className="bg-white"
-          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : false}
+          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ? true : false}
           width={"150px"}
           render={(text, record) => (
             <>
@@ -401,6 +401,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
               allowClear
             />
           </>}
+          hidden={filterValues?.loggedInUserRole === "VENDOR" ? true : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ? true : false}
           dataIndex="user_id"
           key="user_id"
           className="bg-white"
@@ -532,7 +533,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
       </Table >
 
       {/* Image Modal */}
-      <Modal open={isModalVisible}   footer={null} onCancel={handleModalClose}>
+      <Modal open={isModalVisible} footer={null} onCancel={handleModalClose}>
         <img
           src={selectedImageUrl}
           alt="Enlarged"
@@ -583,7 +584,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
         onCancel={handleToggleModal}
         open={open}
         footer={false}
-        >
+      >
         <Form
           form={form}
           className='pt-[10px]'
@@ -598,7 +599,7 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
           >
             <Select
               options={merchantOptions}
-              onSelect={(e)=>{setSelectedMerchant(merchants.find(item=>item.code===e))}}
+              onSelect={(e) => { setSelectedMerchant(merchants.find(item => item.code === e)) }}
             />
           </Form.Item>
           <Form.Item
@@ -612,13 +613,13 @@ const TableComponent = ({ data, filterValues, setFilterValues, totalRecords, cur
             label="One time payment link ? : "
             name="paymentLink"
           >
-            <Switch onChange={(e) => { setIsOneTimeLinkTrue(e) } }/>
+            <Switch onChange={(e) => { setIsOneTimeLinkTrue(e) }} />
           </Form.Item>
           {(selectedMerchant.is_test_mode && isOneTimeLinkTrue) && <Form.Item
             label="Test link ? : "
             name="isTest"
           >
-            <Switch  />
+            <Switch />
           </Form.Item>}
 
           <div className='flex justify-end'>
