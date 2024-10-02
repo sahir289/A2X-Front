@@ -44,6 +44,10 @@ import {
               value: record?.notify_url,
             },
             {
+        name: ['payout_notify_url'],
+        value: record?.payout_notify_url,
+      },
+      {
               name: ['min_payin'],
               value: Number(record?.min_payin),
             },
@@ -87,6 +91,7 @@ import {
         site_url: `${values.site_url}`,
         notify_url: `${values.notify_url}`,
         return_url: `${values.return_url}`,
+      payout_notify_url: `${values.payout_notify_url}`,
         payin_commission: values.payin_commission,
         payout_commission: values.payout_commission,
         min_payin: `${values.min_payin}`,
@@ -191,6 +196,22 @@ import {
               />
             </Form.Item>
   
+          {/* Added payout callback input field for payout feature */}
+          <Form.Item
+            label="PayOut Callback"
+            name="payout_notify_url"
+            rules={[
+              {
+                required: true,
+                message: "Please input your callback url",
+              },
+            ]}
+          >
+            <Input
+              placeholder="example.com"
+            />
+          </Form.Item>
+
             <Form.Item
               label="Min Payin"
               name="min_payin"
