@@ -1,13 +1,15 @@
-import { Button, Switch, Table } from "antd";
+import { Button, Switch, Table, Form, Input, Modal } from "antd";
 import { DeleteOutlined, EditOutlined, CopyOutlined } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency } from "../../../utils/utils";
 import AddMerchant from "./AddMerchant";
 import DeleteModal from "./DeleteModal";
 import { NotificationManager } from 'react-notifications';
 import UpdateMerchant from "./UpdateMerchant";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { postApi } from "../../../redux/api";
 
 const TableComponent = ({
   data,
@@ -20,6 +22,19 @@ const TableComponent = ({
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [isAddMerchantModalOpen, setIsAddMerchantModalOpen] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+  // Password verification while edit and delete merchant
+  const [verification, setVerification] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
+  const [actionValue, setActionValue] = useState();
+  const [form] = Form.useForm();
+  const userData = useContext(PermissionContext)
+  const labelCol = { span: 10 };
+  const RequiredRule = [
+    {
+      required: true,
+      message: "${label} is Required!",
+    }
+  ]
 
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
@@ -39,8 +54,7 @@ const TableComponent = ({
   };
 
   const deleteMerchantData = async (record) => {
-    console.log("Delete Merchant", record);
-    setIsDeletePanelOpen(true);
+    setVerification(true); //Password verification while edit and delete merchant
 
     const deleteData = {
       merchantId: record?.id,
@@ -51,14 +65,41 @@ const TableComponent = ({
   };
 
   const showModal = async (record) => {
+    setVerification(true); //Password verification while edit and delete merchant
     setUpdateRecord(record);
-    setIsAddMerchantModalOpen(true);
   };
 
   // added handle copy functionality for merchant code and API key column
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
+  };
+
+  //Password verification while edit and delete merchant
+  const handleToggleModal = () => {
+    setVerification(!verification);
+    form.resetFields();
+  };
+
+  const verifyPassword = async (data) => {
+    setAddLoading(true)
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    }
+    const res = await postApi("/verify-password", verifyPasswordData);
+    setAddLoading(false)
+    if (res?.data?.statusCode === 200) {
+      if (actionValue === "DELETE") {
+        setIsDeletePanelOpen(true);
+      } else if (actionValue === "UPDATE") {
+        setIsAddMerchantModalOpen(true);
+      }
+      handleToggleModal();
+    }
+    else {
+      NotificationManager.error(res?.error?.message)
+    }
   };
 
   return (
@@ -196,38 +237,70 @@ const TableComponent = ({
           }}
         />
         {/* {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && ( */}
-          <Column
-            title={
-              <>
-                Actions
-              </>
-            }
-            dataIndex="merchants"
-            key="merchants"
-            className="bg-white"
-            width={"6%"}
-            render={(_, record) => {
-              return (
-                <div className="whitespace-nowrap flex gap-2">
-                  <Button
-                    type="text"
-                    icon={<EditOutlined />}
-                    title="Edit"
-                    onClick={() => showModal(record)}
-                  />
+        <Column
+          title={
+            <>
+              Actions
+            </>
+          }
+          dataIndex="merchants"
+          key="merchants"
+          className="bg-white"
+          width={"6%"}
+          render={(_, record) => {
+            return (
+              <div className="whitespace-nowrap flex gap-2">
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  title="Edit"
+                  onClick={() => { setActionValue("UPDATE"); showModal(record)} } // Password verification while edit and delete merchant
+                />
 
-                  <Button
-                    type="text"
-                    icon={<DeleteOutlined />}
-                    title="Delete"
-                    onClick={() => deleteMerchantData(record)}
-                  />
-                </div>
-              );
-            }}
-          />
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  title="Delete"
+                  onClick={() => { setActionValue("DELETE"); deleteMerchantData(record) }} // Password verification while edit and delete merchant
+                />
+              </div>
+            );
+          }}
+        />
         {/* )} */}
       </Table>
+
+      {/* Password verification Modal */}
+      <Modal
+        title="Password Verification"
+        onCancel={handleToggleModal}
+        open={verification}
+        footer={false}>
+        <Form
+          form={form}
+          className='pt-[10px]'
+          labelAlign='left'
+          labelCol={labelCol}
+          onFinish={verifyPassword}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input type="text" />
+          </Form.Item>
+
+          <div className='flex justify-end'>
+            <Button type='primary'
+              loading={addLoading}
+              htmlType='submit'
+            >
+              Verify
+            </Button>
+          </div>
+        </Form>
+      </Modal>
 
       <UpdateMerchant
         record={updateRecord}
