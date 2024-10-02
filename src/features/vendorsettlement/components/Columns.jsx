@@ -26,7 +26,7 @@ const renderStatusTag = (status) => {
     return <Tag color={color} icon={status === "INITIATED" && <ExclamationCircleOutlined />}>{status}</Tag>
 };
 
-const ColumnSearch = ({ name, filters, onChange, isNumeric , ...props }) => {
+const ColumnSearch = ({ name, filters, onChange, isNumeric, ...props }) => {
     return (
         <Input
             {...props}
@@ -35,9 +35,9 @@ const ColumnSearch = ({ name, filters, onChange, isNumeric , ...props }) => {
                 const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
                 const regex = isNumeric ? /^[0-9]$/ : /^[A-Za-z]$/;
                 if (!isControlKey && !regex.test(e.key)) {
-                  e.preventDefault();
+                    e.preventDefault();
                 }
-              }}
+            }}
             name={name}
             className='w-full'
             onChange={(e) => {
@@ -101,11 +101,14 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                 dataIndex='Vendor'
                 width="130px"
                 ellipsis
+
                 render={(v, r, i) => {
                     if (i) {
                         return v?.vendor_code;
                     }
-                    return <ColumnSelectMultiple name="code" options={merchantOptions} onChange={onChange} filters={filters} disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : false} />
+                    return <ColumnSelectMultiple name="code" options={merchantOptions} onChange={onChange} filters={filters}
+                        disabled={(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") ? true : false}
+                    />
                 }}
             />
             <Column
@@ -129,7 +132,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return `₹${v}`;
                     }
-                    return <ColumnSearch name="amount" onChange={onChange} filters={filters} isNumeric={true}/>;
+                    return <ColumnSearch name="amount" onChange={onChange} filters={filters} isNumeric={true} />;
                 }}
             />
             <Column
