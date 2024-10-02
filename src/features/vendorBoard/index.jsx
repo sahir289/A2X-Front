@@ -95,6 +95,7 @@ function VendorBoard() {
       if (
         (context?.role && context?.role.toLowerCase() === "admin") ||
         (context?.role && context?.role.toLowerCase() === "operations") ||
+        (context?.role && context?.role.toLowerCase() === "transactions") ||
         (context?.role &&
           context?.role.toLowerCase() === "merchant" &&
           context?.vendorCode === null)
