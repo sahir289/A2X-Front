@@ -28,18 +28,11 @@ const renderStatusTag = (status) => {
   );
 };
 
-const ColumnSearch = ({ name, filters, onChange, isNumeric, ...props }) => {
+const ColumnSearch = ({ name, filters, onChange, ...props }) => {
   return (
     <Input
       {...props}
       value={filters[name]}
-      onKeyDown={(e) => {
-        const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-        const regex = isNumeric ? /^[0-9]$/ : /^[A-Za-z]$/;
-        if (!isControlKey && !regex.test(e.key)) {
-          e.preventDefault();
-        }
-      }}
       name={name}
       className="w-full"
       onChange={(e) => {
