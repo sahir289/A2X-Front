@@ -96,8 +96,12 @@ const TableComponent = ({
 
   const handleModalClose = () => {
     setIsModalVisible(false);
-    setSelectedImageUrl(null);
     form.resetFields();
+  };
+
+  const onFinish = async () => {
+    await handleResetModal(); 
+    handleModalClose(); 
   };
 
   const paginationConfig = {
@@ -243,10 +247,8 @@ const TableComponent = ({
       let utr = `${String(record?.user_submitted_utr)}DU${String(
         Math.floor(10000 + Math.random() * 90000)
       ).padStart(5, "0")}`;
-      console.log("utr", utr);
       setGenereatedUtr("");
       setGenereatedUtr(utr);
-      console.log(generatedUtr);
     }
     setResetRecord(record);
     setIsResetModalVisible(true);
@@ -259,45 +261,42 @@ const TableComponent = ({
   };
 
   const handleResetModal = async (data) => {
-    console.log("data", data);
+    
     try {
-      console.log("Validating form fields...");
       const values = await resetForm.validateFields();
-
-      console.log("Form values validated:", values);
-      console.log("resot record ", resetRecord);
-
-      const payload = {
-        ...data,
-      };
+      let payload = {}
+      if (recordStatus === "DUPLICATE") {
+        payload = {
+          ...data,
+          confirmed : confirmAmount
+        }
+      }
+      else {
+        payload = {
+          ...data,
+        }
+      }
 
       const resetTransaction = `/update-duplicatedisputetransaction/${resetRecord.id}`;
-      console.log(`Making API call to: ${resetTransaction}`);
-      console.log("Payload sent to API:", payload);
 
       const response = await putApi(resetTransaction, payload);
 
-      if (response.success) {
-        console.log("Transaction reset successful:", response);
+      if (response.data.statusCode === 200) {
         NotificationManager.success("Transaction reset successfully");
 
         setIsResetModalVisible(false);
 
-        console.log("Fetching updated user data...");
         fetchUsersData();
       } else {
-        console.log("Transaction reset failed:", response);
         NotificationManager.error("Failed to reset transaction");
       }
     } catch (error) {
-      console.error("Error resetting transaction:", error);
       NotificationManager.error(
         "An error occurred while resetting the transaction"
       );
     }
   };
 
-  console.log(generatedUtr);
 
   return (
     <>
@@ -798,7 +797,7 @@ const TableComponent = ({
                   setRecordStatus(record.status);
                   record.status === "DISPUTE"
                     ? setConfirmAmount(record.confirmed)
-                    : setConfirmAmount(null);
+                    : setConfirmAmount(record.amount);
                 }}
                 style={{ marginLeft: "8px" }}
               >
@@ -926,10 +925,9 @@ const TableComponent = ({
           className="pt-[10px]"
           labelAlign="left"
           labelCol={labelCol}
-          onFinish={() => {
-            handleResetModal(); 
-            handleResetCancel(); 
-          }}
+          onFinish={handleResetModal}
+          
+        
         >
           {recordStatus === "DUPLICATE" && (
             <>
@@ -983,7 +981,7 @@ const TableComponent = ({
             </>
           )}
           <div className="flex justify-end">
-            <Button type="primary" loading={addLoading} htmlType="submit">
+            <Button type="primary" loading={addLoading} htmlType="submit" >
               Success
             </Button>
           </div>
