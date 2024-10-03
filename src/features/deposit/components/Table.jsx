@@ -926,7 +926,10 @@ const TableComponent = ({
           className="pt-[10px]"
           labelAlign="left"
           labelCol={labelCol}
-          onFinish={handleResetModal}
+          onFinish={() => {
+            handleResetModal(); 
+            handleResetCancel(); 
+          }}
         >
           {recordStatus === "DUPLICATE" && (
             <>
