@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import BarChart from "./components/BarChart";
 import DashboardTopBar from "./components/DashboardTopBar";
 // import {showNotification} from ''
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
 import { formatCurrency } from "../../utils/utils";
@@ -63,9 +63,11 @@ function Dashboard() {
     endDate: dayjs(),
   });
   const dispatch = useDispatch();
+  const debounceRef = useRef();
 
   useEffect(() => {
-    fetchPayInDataMerchant();
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(fetchPayInDataMerchant, 400);
   }, [selectedMerchantCode, dateRange]);
 
   const updateDashboardPeriod = (newRange) => {

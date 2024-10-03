@@ -1,5 +1,5 @@
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../redux/api";
@@ -64,9 +64,11 @@ function VendorBoard() {
     endDate: dayjs(),
   });
   const dispatch = useDispatch();
+  const debounceRef = useRef();
 
   useEffect(() => {
-    fetchPayInDataVendor();
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(fetchPayInDataVendor, 400);
   }, [selectedVendorCode, dateRange]);
 
   const updateVendorBoardPeriod = (newRange) => {
@@ -83,10 +85,6 @@ function VendorBoard() {
       })
     );
   };
-
-  useEffect(() => {
-    fetchPayInDataVendor();
-  }, [selectedVendorCode, dateRange]);
 
   const fetchPayInDataVendor = async () => {
     try {
