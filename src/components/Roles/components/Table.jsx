@@ -23,9 +23,9 @@ const TableComponent = ({
   };
 
   const paginationConfig = {
-    current: data?.totalRecords?.page ?? 1,
-    pageSize: data?.totalRecords?.pageSize ?? 20,
-    total: data?.totalRecords?.total ?? 0,
+    current: filterValues?.page ?? 1,
+    pageSize: filterValues?.pageSize ?? 20,
+    total: data?.totalRecords ?? 0,
     showSizeChanger: true,
     pageSizeOptions: ["20", "50", "100"],
     onChange: (page, size) =>
