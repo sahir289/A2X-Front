@@ -75,7 +75,6 @@ const ColumnSelectMultiple = ({ name, options, filters, onChange, ...props }) =>
 }
 
 export const Columns = (merchantOptions, filters, onChange, updateSettlementStatus, userData) => {
-    console.log("🚀 ~ Columns ~ userData:", userData)
     return (
         <>
             <Column
@@ -146,9 +145,9 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return (
                             <div>
-                                <p>{r?.acc_name}</p>
-                                <p>{r?.acc_no}</p>
-                                <p>{r?.ifsc}</p>
+                                <p>{r?.acc_name || '--'}</p>
+                                <p>{r?.acc_no }</p>
+                                <p>{r?.ifsc }</p>
                             </div>
                         );
                     }
@@ -186,7 +185,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                 ellipsis
                 render={(v, r, i) => {
                     if (i) {
-                        return v;
+                        return v || "--";
                     }
                     return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} />;
                 }}

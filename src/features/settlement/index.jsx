@@ -123,16 +123,16 @@ export default function Settlement() {
     setAddLoading(true);
     // Validate the IFSC code before proceeding
 
-    if (data?.method==="BANK"){
-    const ifscValidation = await validateIfscCode(data?.ifsc);
-    if (!ifscValidation) {
-      setAddLoading(false)
-      api.error({
-        message: "Invalid IFSC Code",
-        description: "Please enter a valid IFSC code.",
-      });
-      return;
-    }
+    if (data?.method === "BANK") {
+      const ifscValidation = await validateIfscCode(data?.ifsc);
+      if (!ifscValidation) {
+        setAddLoading(false)
+        api.error({
+          message: "Invalid IFSC Code",
+          description: "Please enter a valid IFSC code.",
+        });
+        return;
+      }
     }
     const res = await postApi("/create-settlement", data)
     if (res?.error) {
@@ -181,9 +181,9 @@ export default function Settlement() {
     if (!settlementId) {
       return;
     }
-    if(editSettlement?.key == "approve" && editSettlement?.method !== "bank"){
+    if (editSettlement?.key == "approve" && editSettlement?.method !== "BANK") {
       data = {
-        refrence_id:' '
+        refrence_id: ' '
       }
     }
     setIsLoading(true);
@@ -269,10 +269,17 @@ export default function Settlement() {
         <Form layout="vertical" onFinish={handelUpdateSettlement}>
           {
             editSettlement?.key == "approve" ?
-            editSettlement?.method == "BANK" ?
-            <Form.Item name="refrence_id" label="UTR Number" rules={RequiredRule}>
-            <Input size="large" />
-            </Form.Item>: null :
+              editSettlement?.method == "BANK" ?
+                <Form.Item
+                  name="refrence_id"
+                  label="UTR Number"
+                  rules={[
+                    { RequiredRule },
+                    { pattern: /^\d{12}$/, message: 'UTR Number must be exactly 12 digits' }
+                  ]}
+                >
+                  <Input size="large" />
+                </Form.Item> : null :
               <Form.Item name="rejected_reason" label="Reason" rules={RequiredRule}>
                 <Select
                   options={reasonOptions}
@@ -281,16 +288,17 @@ export default function Settlement() {
           }
           {
             editSettlement?.key == "approve" &&
-            editSettlement?.method !== "BANK" ? 
-            <div>
-              <h5> Are you sure to approve? </h5>
-            </div>
-            :null
+              editSettlement?.method !== "BANK" ?
+              <div>
+                <h5> Are you sure to approve? </h5>
+              </div>
+              : null
           }
           <div className="flex justify-end">
             <Button
               type="primary"
               htmlType="submit"
+              loading={isLoading}
             >
               {
                 editSettlement?.key == "approve" ? "Approve" : "Reject"

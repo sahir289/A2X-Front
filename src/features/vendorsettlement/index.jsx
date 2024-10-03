@@ -144,12 +144,12 @@ export default function Settlement() {
         return;
       }
     }
-    
-  const res = await postApi("/create-vendorsettlement", data)
+
+    const res = await postApi("/create-vendorsettlement", data)
     if (res?.error) {
       api.error({ description: res.error.message });
       return;
-    }    
+    }
     setAddLoading(false);
     handleToggleModal();
     getSettlementList();
@@ -194,7 +194,7 @@ export default function Settlement() {
       return;
     }
     setIsLoading(true);
-    if (editSettlement?.key == "approve" && editSettlement?.method !== "bank") {
+    if (editSettlement?.key == "approve" && editSettlement?.method !== "BANK") {
       data = { refrence_id: " " };
     }
     const res = await putApi(`/update-vendorsettlement/${settlementId}`, data);
@@ -287,7 +287,10 @@ export default function Settlement() {
               <Form.Item
                 name="refrence_id"
                 label="UTR Number"
-                rules={RequiredRule}
+                rules={[
+                  { RequiredRule },
+                  { pattern: /^\d{12}$/, message: 'UTR Number must be exactly 12 digits' }
+                ]}
               >
                 <Input size="large" />
               </Form.Item>
@@ -302,13 +305,13 @@ export default function Settlement() {
             </Form.Item>
           )}
           {editSettlement?.key == "approve" &&
-          editSettlement?.method !== "BANK" ? (
+            editSettlement?.method !== "BANK" ? (
             <div>
               <h5> Are you sure to approve? </h5>
             </div>
           ) : null}
           <div className="flex justify-end">
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={isLoading}>
               {editSettlement?.key == "approve" ? "Approve" : "Reject"}
             </Button>
           </div>
