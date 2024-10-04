@@ -9,6 +9,7 @@ import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../../redux/api";
 import { invalidText } from "../../../utils/utils";
 
+
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
   setSelectedMerchantCode,
@@ -17,10 +18,12 @@ const MerchantCodeSelectBox = ({
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
   const context = useContext(PermissionContext);
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
     setSelectedMerchantCode(value);
+    setDropdownOpen(false);
   };
 
   useEffect(() => {
@@ -81,6 +84,8 @@ const MerchantCodeSelectBox = ({
             size={"large"}
             placeholder="Please select"
             onChange={handleChange}
+            onDropdownVisibleChange={(open) => setDropdownOpen(open)} 
+            open={dropdownOpen}
             style={{
               width: "98%",
             }}

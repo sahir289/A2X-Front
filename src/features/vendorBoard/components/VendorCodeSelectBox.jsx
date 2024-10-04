@@ -12,10 +12,13 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
   const [vendorCodeOptions, setVendorCodeOptions] = useState([]);
   const context = useContext(PermissionContext);
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
 
   const handleChange = (value) => {
     localStorage.setItem("selectedVendorCode", JSON.stringify(value));
     setSelectedVendorCode(value);
+    setDropdownOpen(false)
   };
 
   useEffect(() => {
@@ -59,6 +62,8 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
             size={"large"}
             placeholder="Please select"
             onChange={handleChange}
+            onDropdownVisibleChange={(open) => setDropdownOpen(open)}        // Manage dropdown visibility
+            open={dropdownOpen}
             style={{
               width: "98%",
             }}
