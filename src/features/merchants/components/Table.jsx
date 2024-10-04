@@ -1,5 +1,5 @@
 import { Button, Switch, Table, Form, Input, Modal } from "antd";
-import { DeleteOutlined, EditOutlined, CopyOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, CopyOutlined, EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
 import React, { useState, useContext } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
@@ -288,7 +288,12 @@ const TableComponent = ({
             label="Enter your password"
             rules={RequiredRule}
           >
-            <Input type="text" />
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+             />
           </Form.Item>
 
           <div className='flex justify-end'>
