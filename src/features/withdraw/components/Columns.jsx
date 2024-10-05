@@ -61,6 +61,7 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
 
 export const Columns = (
   merchantOptions,
+  payOutBankOptions, // payout bank options
   filters,
   onChange,
   updateWithdraw,
@@ -232,6 +233,26 @@ export const Columns = (
           }
           return (
             <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />
+          );
+        }}
+      />
+      // Colunm to display the selected payout bank and it's filter
+      <Column
+        title="From Bank"
+        dataIndex="from_bank"
+        width="130px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return v;
+          }
+          return (
+            <ColumnSelect
+              name="from_bank"
+              options={payOutBankOptions}
+              onChange={onChange}
+              filters={filters}
+            />
           );
         }}
       />

@@ -12,6 +12,7 @@ function All() {
     ac_name: "",
     ac_no: "",
     upi_id: "",
+    bank_used_for: "", // bank used for filtering
     role:`${userData?.role}`,
     vendor_code: `${userData?.vendorCode || ""}`,
     code: `${userData?.code || ""}`,

@@ -93,6 +93,7 @@ const TableComponent = ({
       ac_name: "",
       ac_no: "",
       upi_id: "",
+      bank_used_for: "", // bank used for filtering
       role:`${userData?.role}`,
       vendor_code: `${userData?.vendorCode || ""}`,
       code: `${userData?.code || ""}`,
@@ -281,6 +282,31 @@ const TableComponent = ({
           }
           dataIndex="upi_id"
           key="upi_id"
+          className="bg-white"
+          width={"4%"}
+        />
+        // Column to display useage of bank and it's bank
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Bank Used For</span>
+              <br />
+              <Select
+                  className="flex"
+                  value={filterValues?.bank_used_for}
+                  onChange={(value) =>
+                    handleFilterValuesChange(value, "bank_used_for")
+                  }
+                  allowClear
+                >
+                  <Select.Option value="">Select</Select.Option>
+                  <Select.Option value="payIn">PayIn</Select.Option>
+                  <Select.Option value="payOut">PayOut</Select.Option>
+                </Select>
+            </>
+          }
+          dataIndex="bank_used_for"
+          key="bank_used_for"
           className="bg-white"
           width={"4%"}
         />
