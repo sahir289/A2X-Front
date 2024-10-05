@@ -5,6 +5,7 @@ const Table = ({
   loading,
   data,
   merchantOptions,
+  payOutBankOptions, // getting options of payout banks
   filters,
   onFilterChange,
   updateWithdraw,
@@ -69,6 +70,7 @@ const Table = ({
       />}
       {Columns(
         merchantOptions,
+        payOutBankOptions, // sending options of payout banks
         filters,
         onFilterChange,
         updateWithdraw,

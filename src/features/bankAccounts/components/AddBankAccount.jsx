@@ -5,6 +5,7 @@ import {
   InputNumber,
   Modal,
   notification,
+  Select,
   Switch,
 } from "antd";
 import axios from "axios";
@@ -66,6 +67,7 @@ const AddBankAccount = ({
       ac_name: values.ac_name,
       ifsc: values.ifsc,
       bank_name: values.bank_name,
+      bank_used_for: values.bank_used_for, //sending bank_used_for data
       is_qr: !!values.is_qr,
       is_bank: !!values.is_bank,
       min_payin: values.min_payin,
@@ -170,6 +172,23 @@ const AddBankAccount = ({
             }}
             
             />
+          </Form.Item>
+
+          // Field to select payin/payout option
+          <Form.Item
+            label="PayIn/PayOut"
+            name="bank_used_for"
+            rules={[
+              {
+                required: true,
+                message: "Please input your bank account holder name!",
+              },
+            ]}
+          >
+            <Select>
+              <Select.Option value="payIn">PayIn</Select.Option>
+              <Select.Option value="payOut">PayOut</Select.Option>
+            </Select>
           </Form.Item>
 
           <Form.Item

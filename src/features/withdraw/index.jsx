@@ -70,11 +70,18 @@ const Withdraw = ({ type }) => {
     label: vendor.vendor_code,
     value: vendor.vendor_code,
   }));
+  // State to store the payout banks
+  const [payOutBankData, setPayOutBankData] = useState([]);
+  const payOutBankOptions = payOutBankData?.map(payOutBank => ({
+    label: payOutBank.name,
+    value: payOutBank.name,
+  }));
 
 
   useEffect(() => {
     handleGetWithdraws();
     fetchUsersData();
+    fetchPayoutBankData(); // get payout bank data
   }, []);
 
   useEffect(() => {
@@ -131,6 +138,12 @@ const Withdraw = ({ type }) => {
   const fetchUsersData = async () => {
     const res = await getApi("/getall-vendor");
     setVendorData(res?.data?.data);
+  };
+
+  //Function to fetch all the payout banks
+  const fetchPayoutBankData = async () => {
+    const res = await getApi("/get-payout-bank");
+    setPayOutBankData(res?.data?.data);
   };
 
   const getPayoutList = async (queryObj) => {
@@ -342,6 +355,7 @@ const Withdraw = ({ type }) => {
             data={withdraws.data}
             filters={filters}
             merchantOptions={merchantOptions}
+            payOutBankOptions={payOutBankOptions} // Sending options of payout banks
             onFilterChange={onFilterChange}
             updateWithdraw={handleUpdateWithdraw}
             type={type}
@@ -404,6 +418,12 @@ const Withdraw = ({ type }) => {
                   ]}
                   onChange={handleSelectUTRMethod}
                   defaultValue={selectedUTRMethod}
+                />
+              </Form.Item>
+              {/* Select to choose payout bank */}
+              <Form.Item name="from_bank" label="Select Bank">
+                <Select
+                  options={payOutBankOptions}
                 />
               </Form.Item>
               {selectedUTRMethod === "manual" && (
