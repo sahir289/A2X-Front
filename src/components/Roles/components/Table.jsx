@@ -68,8 +68,7 @@ const TableComponent = ({
   const handleToggleModal = () => {
     setVerification(!verification);
     form.resetFields();
-    // handleTableChange({ current: 1, pageSize: 20 })
-    window.location.reload();
+    handleTableChange({ current: 1, pageSize: 20 })
   };
 
   const verifyPassword = async (data) => {
