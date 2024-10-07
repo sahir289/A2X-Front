@@ -120,7 +120,7 @@ const Withdraw = ({ type }) => {
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      if (userData.role === 'ADMIN') {
+      if (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS') { // enable the merchant code filtering for transactions
         getPayoutList({
           ...queryObj,
           code: queryObj.code || null,
