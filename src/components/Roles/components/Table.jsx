@@ -1,9 +1,13 @@
-import { Button, Input, Switch, Table } from "antd";
+import { Button, Input, Switch, Table, Modal, Form } from "antd";
+import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { formatDate } from "../../../../src/utils/utils.js";
 import { PlusIcon, Reload } from "../../../utils/constants.jsx";
 import AddUser from "./AddUser.jsx";
+import { PermissionContext } from "../../AuthLayout/AuthLayout.jsx";
+import { postApi } from "../../../redux/api.jsx";
+import { NotificationManager } from "react-notifications";
 
 const TableComponent = ({
   data,
@@ -13,9 +17,25 @@ const TableComponent = ({
   setFilterValues,
 }) => {
   const [isAddModelOpen, setIsAddModelOpen] = useState(false);
+  // Password verification while enabling or disabling users
+  const [verification, setVerification] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
+  const [dataId, setId] = useState();
+  const [dataStatus, setStatus] = useState();
+  const userData = useContext(PermissionContext)
+  const [form] = Form.useForm();
+  const labelCol = { span: 10 };
+  const RequiredRule = [
+    {
+      required: true,
+      message: "${label} is Required!",
+    }
+  ]
 
   const handleStatusChange = (e, data) => {
-    handleUserStatusChange({ id: data.id, status: e });
+    setId(data.id);
+    setStatus(e);
+    // handleUserStatusChange({ id: data.id, status: e });
   };
 
   const handleFilterValuesChange = (value, fieldName) => {
@@ -43,6 +63,31 @@ const TableComponent = ({
   let convertedText = text.charAt(0) + text.slice(1).toLowerCase();
   const title = text !== "ADMIN" ? `${convertedText} User List` : "User List"; //Showing different user list Name while user is logged in from different roles
   const titleBoxName = `${convertedText}User Name`;
+
+  // Password verification while enabling or disabling users
+  const handleToggleModal = () => {
+    setVerification(!verification);
+    form.resetFields();
+    // handleTableChange({ current: 1, pageSize: 20 })
+    window.location.reload();
+  };
+
+  const verifyPassword = async (data) => {
+    setAddLoading(true)
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    }
+    const res = await postApi("/verify-password", verifyPasswordData);
+    setAddLoading(false)
+    if (res?.data?.statusCode === 200) {
+      handleUserStatusChange({ id: dataId, status: dataStatus });
+      handleToggleModal();
+    }
+    else {
+      NotificationManager.error(res?.error?.message)
+    }
+  };
 
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
@@ -142,6 +187,7 @@ const TableComponent = ({
               <Switch
                 defaultValue={value}
                 onChange={(e) => {
+                  setVerification(true); // Password verification while enabling or disabling users
                   handleStatusChange(e, data);
                 }}
               />
@@ -157,6 +203,43 @@ const TableComponent = ({
           render={(value) => formatDate(value)}
         />
       </Table>
+
+      {/* Password verification Modal */}
+      <Modal
+        title="Password Verification"
+        onCancel={handleToggleModal}
+        open={verification}
+        footer={false}>
+        <Form
+          form={form}
+          className='pt-[10px]'
+          labelAlign='left'
+          labelCol={labelCol}
+          onFinish={verifyPassword}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+             />
+          </Form.Item>
+
+          <div className='flex justify-end'>
+            <Button type='primary'
+              loading={addLoading}
+              htmlType='submit'
+            >
+              Verify
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 };
