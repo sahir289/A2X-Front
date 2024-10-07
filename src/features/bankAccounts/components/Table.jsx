@@ -1,5 +1,5 @@
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Empty, Input, Switch, Table, Tooltip, Select } from "antd";
+import { DeleteOutlined, EditOutlined, EyeOutlined, EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
+import { Button, Empty, Input, Switch, Table, Tooltip, Select, Modal, Form } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useState, useEffect } from "react";
 import { getApi } from "../../../redux/api";
@@ -11,6 +11,7 @@ import UpdateMerchant from "./UpdateMerchant";
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { postApi } from "../../../redux/api";
 
 
 const TableComponent = ({
@@ -32,6 +33,17 @@ const TableComponent = ({
   }));
   const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
+  // Password verification while deleting bank account
+  const [verification, setVerification] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
+  const [form] = Form.useForm();
+  const labelCol = { span: 10 };
+  const RequiredRule = [
+    {
+      required: true,
+      message: "${label} is Required!",
+    }
+  ]
 
   const navigate = useNavigate()
   const userData = useContext(PermissionContext)
@@ -77,7 +89,7 @@ const TableComponent = ({
   };
 
   const deleteBank = async (record) => {
-    setIsDeletePanelOpen(true);
+    setVerification(true); // Password verification while deleting bank account
 
     const deleteData = {
       bankAccountId: record?.id,
@@ -87,6 +99,30 @@ const TableComponent = ({
 
     setDeleteRecord(deleteData);
   };
+
+  // Password verification while deleting bank account
+  const handleToggleModal = () => {
+    setVerification(!verification);
+    form.resetFields();
+  };
+
+  const verifyPassword = async (data) => {
+    setAddLoading(true)
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    }
+    const res = await postApi("/verify-password", verifyPasswordData);
+    setAddLoading(false)
+    if (res?.data?.statusCode === 200) {
+      setIsDeletePanelOpen(true);
+      handleToggleModal();
+    }
+    else {
+      NotificationManager.error(res?.error?.message)
+    }
+  };
+
   //reset filter from search fields
   const handleResetSearchFields = () => {
     setFilterValues({
@@ -555,6 +591,43 @@ const TableComponent = ({
         handleTableChange={handleTableChange}
       />
       <NotificationContainer />
+      
+      {/* Password verification Modal */}
+      <Modal
+        title="Password Verification"
+        onCancel={handleToggleModal}
+        open={verification}
+        footer={false}>
+        <Form
+          form={form}
+          className='pt-[10px]'
+          labelAlign='left'
+          labelCol={labelCol}
+          onFinish={verifyPassword}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+             />
+          </Form.Item>
+
+          <div className='flex justify-end'>
+            <Button type='primary'
+              loading={addLoading}
+              htmlType='submit'
+            >
+              Verify
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 };

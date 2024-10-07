@@ -174,14 +174,14 @@ const AddBankAccount = ({
             />
           </Form.Item>
 
-          // Field to select payin/payout option
+          {/* Field to select payin/payout option */}
           <Form.Item
             label="PayIn/PayOut"
             name="bank_used_for"
             rules={[
               {
                 required: true,
-                message: "Please input your bank account holder name!",
+                message: "Please select Payin/Payout!",
               },
             ]}
           >
