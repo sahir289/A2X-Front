@@ -566,16 +566,15 @@ const TableComponent = ({
             <>
               <span>Merchant Code</span>
               <br />
-              <Input
+              <Select
                 value={filterValues?.merchantCode}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "merchantCode")
+                options={merchantOptions}
+                className="flex"
+                disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : userData?.role === "MERCHANT_OPERATIONS" ? true : false}
+                onChange={(value) =>
+                  handleFilterValuesChange(value, "merchantCode")
                 }
                 allowClear
-                //check op
-                disabled={
-                  filterValues?.loggedInUserRole === "OPERATIONS" ? true : false
-                }
               />
             </>
           }
