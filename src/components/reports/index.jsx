@@ -10,7 +10,7 @@ const PayDesign = ({ handleFinish, title, loading, statusOptions }) => {
   const merchantCodes = useSelector((state) => state.merchant.data)
   const userData = useContext(PermissionContext);
   const merchantOptions = merchantCodes
-    ?.filter(merchant => !userData?.code?.length || userData?.code.includes(merchant.code))
+    ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code.includes(merchant.code))
     .map(merchant => ({
       label: merchant.code,
       value: merchant.code,

@@ -102,6 +102,21 @@ const TableComponent = ({
     }
   };
 
+  const rowClassName = (record) => {
+    return record.is_deleted ? 'ant-table-row-disabled' : '';
+  };
+
+  const rowStyles = (record) => {
+    if (record.is_deleted) {
+      return {
+        opacity: 0.5,           // Grayed out appearance
+        pointerEvents: 'none',  // Disable user interaction
+        backgroundColor: '#f5f5f5', // Light gray background
+      };
+    }
+    return {};
+  };
+
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
       <div className="flex">
@@ -135,6 +150,10 @@ const TableComponent = ({
           // y: 240,
           x: "120vw",
         }}
+        rowClassName={(record) => rowClassName(record)}
+          onRow={(record) => ({
+            style: rowStyles(record),
+          })}
         className="font-serif px-3"
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
