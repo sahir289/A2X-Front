@@ -5,6 +5,7 @@ const Table = ({
   loading,
   data,
   merchantOptions,
+  vendorOptions, // getting options of vendors
   payOutBankOptions, // getting options of payout banks
   filters,
   onFilterChange,
@@ -29,8 +30,8 @@ const Table = ({
 
   const handleSelectAllChange = (isChecked) => {
     if (isChecked) {
-      setSelectedRowKeys(data.map((row) => row.id));
-      setSelectedData(data.map((row) => row.id));
+      setSelectedRowKeys(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
+      setSelectedData(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
     } else {
       setSelectedRowKeys([]);
       setSelectedData([]);
@@ -58,18 +59,21 @@ const Table = ({
         width="80px"
         render={(v, r, i) => {
           if (i) {
-            return (
-              <Checkbox
-                checked={selectedRowKeys.includes(r.id)}
-                onChange={(e) => handleCheckboxChange(r, e.target.checked)}
-              />
-            );
+            if (!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED")) {
+              return (
+                <Checkbox
+                  checked={selectedRowKeys.includes(r.id)}
+                  onChange={(e) => handleCheckboxChange(r, e.target.checked)}
+                />
+              );
+            }
           }
           return null; // Render nothing in the header row
         }}
       />}
       {Columns(
         merchantOptions,
+        vendorOptions, // sending options of vendors
         payOutBankOptions, // sending options of payout banks
         filters,
         onFilterChange,

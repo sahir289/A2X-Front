@@ -158,6 +158,10 @@ const Withdraw = ({ type }) => {
             ? "SUCCESS"
             : "";
     }
+    if (queryObj?.vendor_code) {
+      queryObject.vendorCode = queryObj.vendor_code;
+      delete queryObject.vendor_code
+    }
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
     const res = await getApi(`/getall-payout${query}`);
@@ -355,6 +359,7 @@ const Withdraw = ({ type }) => {
             data={withdraws.data}
             filters={filters}
             merchantOptions={merchantOptions}
+            vendorOptions={vendorOptions}
             payOutBankOptions={payOutBankOptions} // Sending options of payout banks
             onFilterChange={onFilterChange}
             updateWithdraw={handleUpdateWithdraw}
