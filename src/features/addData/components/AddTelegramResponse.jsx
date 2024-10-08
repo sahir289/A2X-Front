@@ -11,7 +11,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
     setIsLoading(true)
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${values.amount_code ?? "nill"
+        text: `${values.status} ${values.amount} ${values.amount_code ?? "nil"
           } ${values.utr}`,
       },
     };
