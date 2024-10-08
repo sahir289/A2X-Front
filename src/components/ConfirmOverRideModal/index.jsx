@@ -17,7 +17,7 @@ const ConfirmLoginOverride = (props) => {
         <div className={styles["confirm-delete-model"]}>
           <WarningOutlined width={25} />
           <h4 className={styles["confirm-delete-model__title"]}>
-            You are currently logged in from another location. If you wish to continue and log out the other session, click Proceed.Otherwise, you can choose to Log Out the session from the other location.
+          If you are using another device, you will be automatically logged out of the current one.
           </h4>
         </div>
       }
