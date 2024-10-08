@@ -61,6 +61,7 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
 
 export const Columns = (
   merchantOptions,
+  vendorOptions, // vendor options
   payOutBankOptions, // payout bank options
   filters,
   onChange,
@@ -160,6 +161,28 @@ export const Columns = (
             }}
           />
       }
+      { (userData?.role === "ADMIN" ||
+          userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? 
+      <Column
+        title="Vendor"
+        dataIndex="vendor_code"
+        width="140px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return v;
+          }
+          return (
+            <ColumnSelect
+              name="vendor_code"
+              options={vendorOptions}
+              onChange={onChange}
+              filters={filters}
+            />
+          );
+        }}
+      />
+    : " "}
       <Column
         title="Status"
         dataIndex="status"
