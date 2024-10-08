@@ -42,12 +42,14 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue }) {
   const onRangeChange = (dates, dateStrings) => {
     if (dates) {
       let startDate = new Date(dateStrings[0]);
+      startDate.setHours(0, 0, 0, 0)
       let endDate = new Date(dateStrings[1]);
       endDate.setHours(23, 59, 59, 999);
       const newRange = {
         startDate: startDate,
         endDate: endDate,
       };
+      console.log("🚀 ~ onRangeChange ~ newRange:", newRange)
       updateDashboardPeriod(newRange);
     }
   };

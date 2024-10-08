@@ -11,6 +11,8 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
+import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import {
   getApi,
   getApiForGeneratePaymentUrl,
@@ -19,8 +21,6 @@ import {
 } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
-import { useNavigate } from "react-router-dom";
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 const TableComponent = ({
   data,
@@ -85,7 +85,7 @@ const TableComponent = ({
   };
 
   const lastLogIn = (record) => {
-    return formatDate(record?.Merchant?.updatedAt) || "N/A"; // Safely access nested property
+    return formatDate(record?.updatedAt) || "N/A"; // Safely access nested property
   };
 
   const handleImageClick = (imageUrl, record) => {
@@ -100,8 +100,8 @@ const TableComponent = ({
   };
 
   const onFinish = async () => {
-    await handleResetModal(); 
-    handleModalClose(); 
+    await handleResetModal();
+    handleModalClose();
   };
 
   const paginationConfig = {
@@ -261,7 +261,7 @@ const TableComponent = ({
   };
 
   const handleResetModal = async (data) => {
-    
+
     try {
       const values = await resetForm.validateFields();
       let payload = {}
@@ -738,7 +738,7 @@ const TableComponent = ({
         />
 
         <Column
-          title="Last logged in (IST)"
+          title="Updated at (IST)"
           dataIndex="Merchant"
           key="Merchant"
           className="bg-white"
@@ -925,8 +925,8 @@ const TableComponent = ({
           labelAlign="left"
           labelCol={labelCol}
           onFinish={handleResetModal}
-          
-        
+
+
         >
           {recordStatus === "DUPLICATE" && (
             <>

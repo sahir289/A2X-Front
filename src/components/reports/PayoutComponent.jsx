@@ -12,9 +12,11 @@ const PayoutComponent = () => {
 
   //handlePayInFunction
   const handlePayOut = async (data) => {
-    const formattedDates = data.range.map(date =>  new Date(date).toLocaleDateString('en-CA'));
+    const formattedDates = data.range.map(date =>  new Date(date));
     const startDate = formattedDates[0];
+    startDate.setHours(0, 0, 0, 0)
     const endDate = formattedDates[1];
+    endDate.setHours(23, 59, 59, 0);
     delete data.range;
     const completeData = {
       ...data,

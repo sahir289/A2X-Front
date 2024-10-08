@@ -40,7 +40,7 @@ const PayDesign = ({ handleFinish, title, loading, statusOptions }) => {
             rules={[{ required: true, message: 'Please select duration!' }]}
             label="Select Duration"
           >
-            <RangePicker />
+            <RangePicker  />
           </Form.Item>
         </div>
         <Button

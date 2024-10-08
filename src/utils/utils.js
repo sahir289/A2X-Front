@@ -1,59 +1,34 @@
-function getISTOffsetForUser() {
-  // Get user's current time zone
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  
-  // Get current time in IST
-  const istDate = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-  
-  // Get current time in user's time zone
-  const userDate = new Date().toLocaleString("en-US", { timeZone: userTimeZone });
-  
-  // Convert both times to Date objects
-  const istTime = new Date(istDate);
-  const userTime = new Date(userDate);
-  
-  // Calculate the time difference in milliseconds
-  const timeDifference = istTime - userTime;
-  
-  // Convert the difference to hours and minutes
-  const diffHours = Math.floor(timeDifference / (1000 * 60 * 60));
-  const diffMinutes = Math.abs(Math.floor((timeDifference / (1000 * 60)) % 60));
-  
-  // Format the offset
-  const offsetHours = (Math.abs(diffHours) + 2).toString();
-  const offsetMinutes = (diffMinutes + 20).toString().padStart(2, '0');
-  
-  return {
-    userTimeZone: userTimeZone,
-    istOffset: `${offsetHours}.${offsetMinutes}`
-  };
+
+export function formatDate(utcDate) {
+  const date = new Date(utcDate);
+
+  // Extract the UTC components directly
+  const utcYear = date.getUTCFullYear();
+  const utcMonth = date.getUTCMonth();
+  const utcDay = date.getUTCDate();
+  const utcHours = date.getUTCHours();
+  const utcMinutes = date.getUTCMinutes();
+  const utcSeconds = date.getUTCSeconds();
+
+  // Apply IST offset (5 hours and 30 minutes ahead of UTC)
+  const istDate = new Date(Date.UTC(utcYear, utcMonth, utcDay, utcHours, utcMinutes + 30, utcSeconds));
+  istDate.setHours(istDate.getHours() + 5);
+
+  // Format the IST date as "DD/MM/YYYY at HH:MM:SS AM/PM"
+  const day = String(istDate.getUTCDate()).padStart(2, '0');
+  const month = String(istDate.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = istDate.getUTCFullYear();
+  let hours = istDate.getUTCHours();
+  const minutes = String(istDate.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(istDate.getUTCSeconds()).padStart(2, '0');
+
+  // Determine AM or PM and convert hours to 12-hour format
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convert 0 to 12 for 12 AM and handle other hours
+
+  return `${day}/${month}/${year} at ${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
 }
-const IST_OFFSET = getISTOffsetForUser();
 
-
-export function formatDate(inputDate) {
-  // const date = new Date(inputDate);
-
-  // const day = String(date.getUTCDate()).padStart(2, '0');
-  // const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
-  // const year = date.getUTCFullYear();
-  // const hours = String(date.getUTCHours()).padStart(2, '0');
-  // const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-  // const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-  const date = new Date(inputDate);
-  const utcTime = date.getTime();
-  const istTime = utcTime + (IST_OFFSET.istOffset * 60 * 60 * 1000); // Convert hours to milliseconds and add the offset
-  const istDate = new Date(istTime);
-
-  const day = String(istDate.getDate()).padStart(2, '0');
-  const month = String(istDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-  const year = istDate.getFullYear();
-  const hours = String(istDate.getHours()).padStart(2, '0');
-  const minutes = String(istDate.getMinutes()).padStart(2, '0');
-  const seconds = String(istDate.getSeconds()).padStart(2, '0');
-
-  return `${day}/${month}/${year} at ${hours}:${minutes}:${seconds}`;
-}
 
 
 export function formatCurrency(amount) {

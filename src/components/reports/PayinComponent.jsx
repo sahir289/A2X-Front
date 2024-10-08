@@ -11,9 +11,11 @@ const PayinComponent = () => {
 
   //handlePayInFunction
   const handlePayIn = async (data) => {
-    const formattedDates = data.range.map(date =>  new Date(date).toLocaleDateString('en-CA'));
+    const formattedDates = data.range.map(date => new Date(date));
     const startDate = formattedDates[0];
+    startDate.setHours(0, 0, 0, 0)
     const endDate = formattedDates[1];
+    endDate.setHours(23, 59, 59, 0);
     delete data.range;
     const completeData = {
       ...data,
@@ -62,8 +64,8 @@ const PayinComponent = () => {
 
   }
 
-  const options = statusOptions.map(el=>{
-    if(el.label == "All"){
+  const options = statusOptions.map(el => {
+    if (el.label == "All") {
       return {
         label: "All",
         value: "All",
