@@ -56,7 +56,7 @@ const MerchantCodeSelectBox = ({
       setMerchantCodeOptions(formattedMerchantCodes);
       setSelectedMerchantCode(merchants);
     } else {
-      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.map(
+      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.filter((merchant) => !merchant.is_deleted).map(
         (merchant) => ({
           label: merchant.code,
           value: merchant.code,

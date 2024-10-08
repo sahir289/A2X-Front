@@ -181,7 +181,7 @@ const UpdateMerchant = ({
               options={allMerchants
                 ?.filter((filter) => {
                   return (
-                    !record?.merchants?.find(
+                    !filter.is_deleted && !record?.merchants?.find(
                       (merchant) => merchant?.id === filter?.id
                     ) &&
                     !selectedMerchant?.find(
