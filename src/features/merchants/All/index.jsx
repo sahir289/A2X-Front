@@ -19,7 +19,7 @@ function All() {
 
   const fetchUsersData = async () => {
     setIsFetchBanksLoading(true);
-    const backAccount = await getApi("/getall-merchant", filterValues);
+    const backAccount = await getApi("/getall-merchant-data", filterValues);
     setIsFetchBanksLoading(false);
     if (backAccount.error?.error?.response?.status === 401) {
       NotificationManager.error(backAccount?.error?.message, 401);

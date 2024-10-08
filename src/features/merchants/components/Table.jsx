@@ -9,7 +9,7 @@ import DeleteModal from "./DeleteModal";
 import { NotificationManager } from 'react-notifications';
 import UpdateMerchant from "./UpdateMerchant";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
-import { postApi } from "../../../redux/api";
+import { getApi, postApi } from "../../../redux/api";
 
 const TableComponent = ({
   data,
@@ -144,7 +144,7 @@ const TableComponent = ({
         </div>
       </div>
       <Table
-        dataSource={data?.merchants}
+        dataSource={data?.merchantData}
         rowKey={(item) => item.id}
         scroll={{
           // y: 240,
@@ -193,7 +193,35 @@ const TableComponent = ({
           key="balance"
           className="bg-white"
           width={"4%"}
-          render={(value) => formatCurrency(value)}
+          render={ (_, record) => {
+
+            let payInAmount = 0;
+            let payInCommission = 0;
+            let payInCount = 0;
+            let payOutAmount = 0;
+            let payOutCommission = 0;
+            let payOutCount = 0;
+            let settlementAmount = 0;
+      
+            record.payInData?.forEach((data) => {
+              payInAmount += Number(data.amount);
+              payInCommission += Number(data.payin_commission);
+              payInCount += 1;
+            });
+      
+            record.payOutData?.forEach((data) => {
+              payOutAmount += Number(data.amount);
+              payOutCommission += Number(data.payout_commision);
+              payOutCount += 1;
+            });
+      
+            record.settlementData?.forEach((data) => {
+              settlementAmount += Number(data.amount);
+            });
+            const value = payInAmount - (payOutAmount + (payInCommission + payOutCommission)) - settlementAmount
+            console.log(`${record.code}`,value)
+            return formatCurrency(value)
+          }}
         />
         <Column
           title="Payin"
