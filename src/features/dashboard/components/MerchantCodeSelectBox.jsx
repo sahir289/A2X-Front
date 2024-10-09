@@ -97,6 +97,7 @@ const MerchantCodeSelectBox = ({
             options={merchantCodeOptions}
             value={selectedMerchantCode}
             className={userData?.role === "MERCHANT" ? "bg-white" : userData?.role === "OPERATIONS" ? "bg-white" : false}
+            allowClear
           />
         </div>
       </div>

@@ -150,7 +150,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                             </div>
                         );
                     }
-                    return <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />;
+                    return <ColumnSearch name="acc_no" onChange={onChange} filters={filters} isNumeric />;
                 }}
             />
             <Column
@@ -187,7 +187,7 @@ export const Columns = (merchantOptions, filters, onChange, updateSettlementStat
                     if (i) {
                         return v || "--";
                     }
-                    return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} />;
+                    return <ColumnSearch name="refrence_id" onChange={onChange} filters={filters} isNumeric />;
                 }}
             />
 

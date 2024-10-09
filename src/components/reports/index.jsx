@@ -25,7 +25,7 @@ const PayDesign = ({ handleFinish, title, loading, statusOptions }) => {
           label="Merchant Codes"
           rules={[{ required: true, message: "Please select merchant code!" }]}
         >
-          <Select placeholder="Please select" options={merchantOptions} mode='multiple' />
+          <Select placeholder="Please select" options={merchantOptions} mode='multiple' allowClear />
         </Form.Item>
         <Form.Item
           name="status"

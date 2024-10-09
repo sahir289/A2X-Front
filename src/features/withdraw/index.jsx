@@ -38,8 +38,8 @@ const Withdraw = ({ type }) => {
   const [modal, contextHolder] = Modal.useModal();
   const [api, notificationContext] = notification.useNotification();
   const [filters, setFilters] = useState({
-    code: userData?.code || "",
-    vendorCode: userData?.vendorCode || "",
+    code: `${userData?.code || ""}`,
+    vendorCode: `${userData?.vendorCode || ""}`,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
