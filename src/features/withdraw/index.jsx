@@ -76,6 +76,9 @@ const Withdraw = ({ type }) => {
     label: payOutBank.name,
     value: payOutBank.name,
   }));
+  const [filterValues, setFilterValues] = useState({
+    vendor_code:`${userData?.vendorCode}`,
+  });
 
 
   useEffect(() => {
@@ -142,7 +145,7 @@ const Withdraw = ({ type }) => {
 
   //Function to fetch all the payout banks
   const fetchPayoutBankData = async () => {
-    const res = await getApi("/get-payout-bank");
+    const res = await getApi("/get-payout-bank",filterValues);
     setPayOutBankData(res?.data?.data);
   };
 
@@ -304,6 +307,7 @@ const Withdraw = ({ type }) => {
     }
     handleToggleAddVendorModal();
     setSelectedData([])
+    handleGetWithdraws();
   };
 
   const handleData = (data) => {
@@ -435,7 +439,16 @@ const Withdraw = ({ type }) => {
                 <Form.Item
                   name="utr_id"
                   label="UTR Number"
-                  rules={RequiredRule}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter UTR no",
+                    },
+                    {
+                      pattern: /^\d{12}$/,
+                      message: "UTR number must be exactly 12 digits",
+                    },
+                  ]}
                 >
                   <Input />
                 </Form.Item>
@@ -453,7 +466,7 @@ const Withdraw = ({ type }) => {
               </Form.Item>
             </>
           )}
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" loading={isLoading} htmlType="submit">
             {editWithdraw?.key == "approve" ? "Approve" : "Reject"}
           </Button>
         </Form>

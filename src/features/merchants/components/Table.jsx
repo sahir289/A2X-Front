@@ -219,7 +219,6 @@ const TableComponent = ({
               settlementAmount += Number(data.amount);
             });
             const value = payInAmount - (payOutAmount + (payInCommission + payOutCommission)) - settlementAmount
-            console.log(`${record.code}`,value)
             return formatCurrency(value)
           }}
         />
