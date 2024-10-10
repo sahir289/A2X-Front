@@ -571,7 +571,11 @@ const TableComponent = ({
                 value={filterValues?.merchantCode}
                 options={merchantOptions}
                 className="flex"
-                disabled={userData?.role === "MERCHANT" ? true : userData?.role === "OPERATIONS" ? true : userData?.role === "MERCHANT_OPERATIONS" ? true : false}
+                disabled={[
+                  "MERCHANT",
+                  "OPERATIONS",
+                  "MERCHANT_OPERATIONS",
+                ].includes(userData?.role)}
                 onChange={(value) =>
                   handleFilterValuesChange(value, "merchantCode")
                 }
@@ -861,6 +865,7 @@ const TableComponent = ({
         >
           <Form.Item name="code" label="Merchant" rules={RequiredRule}>
             <Select
+              showSearch
               options={merchantOptions}
               onSelect={(e) => {
                 setSelectedMerchant(merchants.find((item) => item.code === e));
@@ -926,8 +931,6 @@ const TableComponent = ({
           labelAlign="left"
           labelCol={labelCol}
           onFinish={handleResetModal}
-
-
         >
           {recordStatus === "DUPLICATE" && (
             <>
