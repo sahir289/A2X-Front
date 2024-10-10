@@ -20,10 +20,9 @@ const TableComponent = ({
   const lastLogIn = (record) => {
     return formatDate(record?.updatedAt) || "N/A"; // Safely access nested property
   };
-
   const paginationConfig = {
-    current: data?.pagination?.page ?? 1,
-    pageSize: data?.pagination?.pageSize ?? 20,
+    current: filterValues?.page ?? 1, 
+    pageSize: filterValues?.pageSize ?? 20, 
     total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
     pageSizeOptions: ["20", "50", "100"],
@@ -35,7 +34,11 @@ const TableComponent = ({
   };
 
   const handleTableChange = ({ current, pageSize }) => {
-    setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
+    setFilterValues((prev) => ({
+      ...prev,
+      page: current,
+      pageSize, 
+    }));
   };
 
   return (
