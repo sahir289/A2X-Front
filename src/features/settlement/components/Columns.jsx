@@ -52,7 +52,7 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
             onChange={(v) => {
                 onChange(name, v)
             }}
-            allowClear={false}
+            allowClear
         />
     )
 }
