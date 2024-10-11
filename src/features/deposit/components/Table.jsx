@@ -261,8 +261,8 @@ const TableComponent = ({
   };
 
   const handleResetModal = async (data) => {
-
     try {
+      setAddLoading(true)
       const values = await resetForm.validateFields();
       let payload = {}
       if (recordStatus === "DUPLICATE") {
@@ -280,6 +280,7 @@ const TableComponent = ({
       const resetTransaction = `/update-duplicatedisputetransaction/${resetRecord.id}`;
 
       const response = await putApi(resetTransaction, payload);
+      setAddLoading(false);
 
       if (response.data.statusCode === 200) {
         NotificationManager.success("Transaction reset successfully");

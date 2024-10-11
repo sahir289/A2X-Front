@@ -87,6 +87,7 @@ export const payoutInOutStatusOptions = [
   { value: 'INITIATED', label: 'INITIATED' },
   { value: 'SUCCESS', label: 'SUCCESS' },
   { value: 'DROPPED', label: 'DROPPED' },
+  { value: 'REJECTED', label: 'REJECTED' },
 ]
 
 //With draw all status options list.

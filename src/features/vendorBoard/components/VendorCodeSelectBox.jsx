@@ -69,6 +69,7 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
             }}
             options={vendorCodeOptions}
             value={selectedVendorCode}
+            allowClear
           />
         </div>
       </div>
