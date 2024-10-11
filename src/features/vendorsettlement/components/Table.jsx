@@ -8,6 +8,7 @@ export const statusOptions = [
   "SUCCESS",
   "DROPPED",
   "DUPLICATE",
+  "REVERSED",
 ]
   .map(el => ({
     value: el,
