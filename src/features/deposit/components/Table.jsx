@@ -42,6 +42,7 @@ const TableComponent = ({
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [open, setOpen] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
+  const [imgUtrSubmitLoading, setImgUtrSubmitLoading] = useState(false);
   const [form] = Form.useForm();
   const [paymentUrlModal, setPaymentUrlModal] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
@@ -126,6 +127,7 @@ const TableComponent = ({
   ];
 
   const handleUtrSubmit = async (values) => {
+    setImgUtrSubmitLoading(true);
     const data = {
       usrSubmittedUtr: values?.utrNumber,
       code: selectedRecord?.upi_short_code,
@@ -139,6 +141,7 @@ const TableComponent = ({
     ).finally(() => {
       setIsModalVisible(false);
       form.resetFields();
+      setImgUtrSubmitLoading(false);
     });
   };
 
@@ -180,18 +183,27 @@ const TableComponent = ({
     },
   ];
 
-  const handleSubmit = (data) => {
+  const handleSubmit = async (data) => {
     setAddLoading(true);
     if (data?.paymentLink === undefined || data?.paymentLink === false) {
-      const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n&ap=${selectedMerchant.api_key}`;
+      const merchantId = merchants?.find(merchant => merchant.code === data?.code)?.id;
+      const merchantBanks = await getApi(`/merchant-bank?id=${merchantId}`);
+      const merchantPayinBanks = merchantBanks?.data?.data?.filter(bank => bank?.bankAccount?.bank_used_for === "payIn");
+      if (merchantPayinBanks.length > 0) {
+        const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n&ap=${selectedMerchant.api_key}`;
 
-      setPaymentUrl(unlimitedUrl);
-      handleToggleModal();
-      setSelectedMerchant("");
-      setPaymentUrlModal(true);
-      handleCopy(unlimitedUrl);
-      setAddLoading(false);
-      setIsOneTimeLinkTrue(false);
+        setPaymentUrl(unlimitedUrl);
+        handleToggleModal();
+        setSelectedMerchant("");
+        setPaymentUrlModal(true);
+        handleCopy(unlimitedUrl);
+        setAddLoading(false);
+        setIsOneTimeLinkTrue(false);
+      }
+      else {
+        NotificationManager.error("No payin bank found for this merchant");
+        setAddLoading(false);
+      }
     } else {
       const oneTimeUrlRes = getApiForGeneratePaymentUrl(
         `/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${
@@ -816,6 +828,7 @@ const TableComponent = ({
       <Modal open={isModalVisible} footer={null} onCancel={handleModalClose}>
         <img src={selectedImageUrl} alt="Enlarged" style={{ width: "50%" }} />
         <Form
+          form={form}
           layout="vertical"
           onFinish={handleUtrSubmit}
           className="mt-3 mb-2"
@@ -840,6 +853,7 @@ const TableComponent = ({
                 type="primary"
                 size="middle"
                 htmlType="submit"
+                loading={imgUtrSubmitLoading}
                 className="pe-5 mr-2 w-[132px] mb-3"
               >
                 Submit
