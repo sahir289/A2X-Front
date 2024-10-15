@@ -263,7 +263,7 @@ export const Columns = (
           );
         }}
       />
-      // Colunm to display the selected payout bank and it's filter
+      {/* Colunm to display the selected payout bank and it's filter */}
       <Column
         title="From Bank"
         dataIndex="from_bank"
@@ -283,7 +283,7 @@ export const Columns = (
           );
         }}
       />
-      {type == "All" && (
+      {(type == "All" || type == "Completed") && (
         <Column
           title="UTR Id"
           dataIndex="utr_id"

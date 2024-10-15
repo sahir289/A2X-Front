@@ -321,7 +321,7 @@ const TableComponent = ({
           className="bg-white"
           width={"4%"}
         />
-        // Column to display useage of bank and it's bank
+        {/* Column to display useage of bank and it's bank */}
         <Column
           title={
             <>
@@ -388,7 +388,23 @@ const TableComponent = ({
           key="balance"
           className="bg-white"
           width={"3%"}
-          render={(value) => formatCurrency(value)}
+          render={(_, record) => {
+            let payInBalance = 0;
+            let payInBalanceCount = 0;
+
+            record.payInData?.forEach((data) => {
+              payInBalance += Number(data.amount);
+              payInBalanceCount += 1;
+            });
+
+            return (
+              <>
+                {payInBalance ? formatCurrency(payInBalance) : formatCurrency(0)}
+                <br />
+                {payInBalanceCount ? `( ${payInBalanceCount} )` : ""}
+              </>
+            );
+          }}
         />
         <Column
           title={
