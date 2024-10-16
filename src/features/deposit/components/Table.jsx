@@ -776,6 +776,13 @@ const TableComponent = ({
                 />
               </>
             }
+            hidden={
+              filterValues?.loggedInUserRole === "VENDOR"
+                ? true
+                : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS"
+                ? true
+                : false
+            }
             dataIndex="user_submitted_image"
             key="user_submitted_image"
             className="bg-white"
@@ -803,6 +810,15 @@ const TableComponent = ({
         )}
         <Column
           title="Action"
+          hidden={
+            filterValues?.loggedInUserRole === "ADMIN"
+              ? false
+              : filterValues?.loggedInUserRole === "OPERATIONS"
+              ? false
+              : filterValues?.loggedInUserRole === "TRANSACTIONS"
+              ? false
+              : true
+          }
           className="bg-white"
           width={"24px"}
           render={(text, record) =>
