@@ -153,7 +153,7 @@ const TableComponent = ({
     }
     return item;
   });
-  
+
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
       <div className="flex">
@@ -393,7 +393,7 @@ const TableComponent = ({
             let payInBalanceCount = 0;
 
             record.payInData?.forEach((data) => {
-              payInBalance += Number(data.amount);
+              payInBalance += Number(data?.confirmed);
               payInBalanceCount += 1;
             });
 
@@ -608,7 +608,7 @@ const TableComponent = ({
         handleTableChange={handleTableChange}
       />
       <NotificationContainer />
-      
+
       {/* Password verification Modal */}
       <Modal
         title="Password Verification"
