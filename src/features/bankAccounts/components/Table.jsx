@@ -571,6 +571,7 @@ const TableComponent = ({
                   <Button
                     type="text"
                     icon={<EditOutlined />}
+                    disabled={record?.bank_used_for === "payIn" ? false : true }
                     title="Edit"
                     onClick={() => showModal(record)}
                   />
