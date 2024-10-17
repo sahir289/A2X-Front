@@ -128,3 +128,30 @@ export function formatString(input) {
     ?.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
     ?.join(' '); // Join the words with spaces
 }
+
+
+export const roleOptionsMap = {
+  ADMIN: [
+    { label: "Merchant", value: "MERCHANT" },
+    { label: "Transactions", value: "TRANSACTIONS" },
+    { label: "Operations", value: "OPERATIONS" },
+    { label: "Vendor", value: "VENDOR" },
+    { label: "Merchant-Admin", value: "MERCHANT_ADMIN" },
+  ],
+  VENDOR: [
+    { label: "Vendor-Operations", value: "VENDOR_OPERATIONS" },
+  ],
+  MERCHANT: [
+    { label: "Merchant-Operations", value: "MERCHANT_OPERATIONS" },
+  ],
+  MERCHANT_ADMIN: [
+    { label: "Merchant", value: "MERCHANT" },
+    { label: "Merchant-Operations", value: "MERCHANT_OPERATIONS" },
+  ],
+  DEFAULT: [
+    { label: "Merchant", value: "MERCHANT" },
+    { label: "Operations", value: "OPERATIONS" },
+    { label: "Vendor", value: "VENDOR" },
+    { label: "Merchant-Admin", value: "MERCHANT_ADMIN" },
+  ],
+};
