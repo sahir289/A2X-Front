@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
-import { postApi } from "../../../redux/api";
+import { getApi, postApi } from "../../../redux/api";
 
 const AddBankAccount = ({
   isAddBankAccountModelOpen,
@@ -58,7 +58,18 @@ const AddBankAccount = ({
       return;
     }
 
-    // Proceed with form data submission after IFSC validation
+    const bankNameNotAvailable = await getApi(`/find-bank-nickname?nick_name=${values.ac_name}`)
+    if (bankNameNotAvailable?.data?.message && bankNameNotAvailable?.data?.data !== null) {
+      setLoading(false)
+      api.error({
+        message: "Bank Account Name already exists",
+        description: "Please choose a different name for your bank account.",
+        duration: 10
+      });
+      return;
+    }
+    else {
+       // Proceed with form data submission after IFSC validation
     const formData = {
       upi_id: values.upi_id,
       upi_params: "",
@@ -95,6 +106,7 @@ const AddBankAccount = ({
       handleTableChange({ current: 1, pageSize: 20 });
       form.resetFields();
     });
+    }
   };
 
   return (
