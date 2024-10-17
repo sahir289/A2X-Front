@@ -147,6 +147,7 @@ const TableComponent = ({
 
   const handleToggleModal = () => {
     setOpen(!open);
+    setIsOneTimeLinkTrue(false);
     form.resetFields();
   };
 
@@ -189,7 +190,8 @@ const TableComponent = ({
       const merchantId = merchants?.find(merchant => merchant.code === data?.code)?.id;
       const merchantBanks = await getApi(`/merchant-bank?id=${merchantId}`);
       const merchantPayinBanks = merchantBanks?.data?.data?.filter(bank => bank?.bankAccount?.bank_used_for === "payIn");
-      if (merchantPayinBanks.length > 0) {
+      const availableBank = merchantPayinBanks?.filter(bank => ( bank?.bankAccount?.is_bank === true || bank?.bankAccount?.is_qr === true ) && bank?.bankAccount?.is_enabled === true);
+      if (availableBank.length > 0) {
         const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n&ap=${selectedMerchant.api_key}`;
 
         setPaymentUrl(unlimitedUrl);
@@ -217,6 +219,7 @@ const TableComponent = ({
             setPaymentUrl(res?.data?.data?.payInUrl);
             handleToggleModal();
             setSelectedMerchant("");
+            setIsOneTimeLinkTrue(false);
             setPaymentUrlModal(true);
             handleCopy(res?.data?.data?.payInUrl);
           } else {
@@ -230,7 +233,6 @@ const TableComponent = ({
         })
         .finally(() => {
           setAddLoading(false);
-          setIsOneTimeLinkTrue(false);
         });
     }
   };
