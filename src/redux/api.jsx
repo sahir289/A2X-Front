@@ -56,13 +56,7 @@ export const postApi = async (url, apiData, flag) => {
   }
 };
 
-// export const putApi = async (url, apiData, flag) => {
-//   return axios.put(`${endPoint}${url}`, apiData, apiConfig(flag)).catch((err) => {
-//     if (err?.response?.data?.error?.name) {
-//       localStorage.clear()
-//     }
-//   });
-// };
+
 export const putApi = async (url, apiData, flag) => {
   try {
     const response = await axios.put(`${endPoint}${url}`, apiData, apiConfig(flag));

@@ -49,7 +49,6 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue }) {
         startDate: startDate,
         endDate: endDate,
       };
-      console.log("🚀 ~ onRangeChange ~ newRange:", newRange)
       updateDashboardPeriod(newRange);
     }
   };

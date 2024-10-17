@@ -1,11 +1,23 @@
 import { Button, Form, Input, InputNumber, notification, Select } from "antd";
-import React, { useState } from "react";
-import { postApi } from "../../../redux/api";
+import React, { useEffect, useState } from "react";
+import { getApi, postApi } from "../../../redux/api";
 
 const AddTelegramResponse = ({ handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false)
+  const [bankOptions, setBankOptions] = useState([])
+  const fetchAllPayInBank = async () => {
+    const data = await getApi("/getAll-Payin-bank").then((res) => {
+      setBankOptions(res?.data?.data)
+    }).catch((err) => {
+    })
+
+  }
+
+  useEffect(() => {
+    fetchAllPayInBank()
+  }, [])
 
   const onFinish = async (values) => {
     setIsLoading(true)
@@ -35,6 +47,12 @@ const AddTelegramResponse = ({ handleTableChange }) => {
     form.resetFields();
   };
 
+  const bankOptionsData = bankOptions.map(bank => ({
+    label: bank?.ac_name,
+    value: bank?.ac_name,
+  }))
+
+
   return (
     <>
       {contextHolder}
@@ -42,7 +60,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
         form={form}
         layout="vertical"
         name="add_data"
-        className="grid grid-rows-1 md:grid-cols-5 gap-2"
+        className="grid grid-rows-1 md:grid-cols-6 gap-2"
         onFinish={onFinish}
         autoComplete="off"
         initialValues={{
@@ -117,6 +135,23 @@ const AddTelegramResponse = ({ handleTableChange }) => {
           ]}
         >
           <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Bank"
+          name="bank"
+
+          rules={[
+            {
+              required: true,
+              message: "Please select the bank!",
+            },
+          ]}
+        >
+          <Select placeholder="Please select"
+            showSearch={true}
+            options={bankOptionsData}
+          />
         </Form.Item>
 
         <div className="flex flex-row justify-end items-end gap-1">

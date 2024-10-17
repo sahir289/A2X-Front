@@ -121,6 +121,7 @@ const AddBankAccount = ({
             is_bank: true,
           }}
         >
+
           <Form.Item
             label="Bank Account Nick Name"
             name="ac_name"
@@ -129,18 +130,16 @@ const AddBankAccount = ({
                 required: true,
                 message: "Please input your bank account nick name!",
               },
+              {
+                pattern: /^\S+$/,
+                message: "Spaces are not allowed in the bank account nickname!",
+              },
             ]}
-            
           >
-            <Input
-             onKeyDown={(e) => {
-              if (!/[A-Za-z\s]/.test(e.key)) {
-                e.preventDefault(); 
-              }
-            }}
-            
-            />
+            <Input />
           </Form.Item>
+
+
           <Form.Item
             label="Bank Name"
             name="bank_name"
@@ -165,12 +164,12 @@ const AddBankAccount = ({
             ]}
           >
             <Input
-             onKeyDown={(e) => {
-              if (!/[A-Za-z\s]/.test(e.key)) {
-                e.preventDefault(); 
-              }
-            }}
-            
+              onKeyDown={(e) => {
+                if (!/[A-Za-z\s]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+
             />
           </Form.Item>
 
@@ -202,11 +201,11 @@ const AddBankAccount = ({
             ]}
           >
             <Input
-            type="number" onKeyUp={(e)=>{
-              if (!/[0-9]/.test(e.key)) {
-                e.preventDefault(); 
-              }
-            }}/>
+              type="number" onKeyUp={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }} />
           </Form.Item>
 
           <Form.Item
