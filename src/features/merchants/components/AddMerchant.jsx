@@ -8,8 +8,9 @@ import {
   Select,
   Switch,
 } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { postApi } from "../../../redux/api";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 const selectBefore = (name) => {
   return (
@@ -42,10 +43,13 @@ const AddMerchant = ({
   const [loading, setLoading] = useState(false);
   const [minPayin, setMinPayin] = useState(0);
   const [minPayout, setMinPayout] = useState(0);
+
+  const context = useContext(PermissionContext);
   const handleModalOk = () => {
     setIsAddModelOpen(false);
     form.resetFields();
   };
+
 
   const handleModalCancel = () => {
     setIsAddModelOpen(false);
@@ -59,7 +63,7 @@ const AddMerchant = ({
       site_url: `${values.site_url_protocol}${values.site_url}`,
       return_url: `${values.return_url_protocol}${values.return_url}`,
       notify_url: `${values.notify_url_protocol}${values.notify_url}`,
-      payout_notify_url:`${values.notify_url_protocol}${values.payout_notify_url}`,
+      payout_notify_url: `${values.notify_url_protocol}${values.payout_notify_url}`,
       payin_commission: `${values.payin_commission}`,
       payout_commission: `${values.payout_commission}`,
       min_payin: `${values.min_payin}`,
@@ -71,6 +75,14 @@ const AddMerchant = ({
     };
 
     const AddMerchant = await postApi("/create-merchant", formData).then((res) => {
+      const updatedCode = Array.isArray(context.code)
+      ? context.code
+      : [];
+      updatedCode.push(res?.data?.data?.code)
+      const codeData =updatedCode
+
+      context.permissionHandle(context?.id, context?.userName, context?.role, codeData)
+
       if (res.error) {
         api.error({
           description: `Error: ${res.error.message}`,
@@ -78,7 +90,6 @@ const AddMerchant = ({
         return;
       }
     }).catch((err) => {
-      console.log("🚀 ~ AddMerchant ~ err:", err)
     }).finally(() => {
       setLoading(false)
       setIsAddModelOpen(false);
