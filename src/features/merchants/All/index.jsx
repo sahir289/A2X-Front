@@ -29,7 +29,6 @@ function All() {
       code: context?.role === "MERCHANT_ADMIN" ? context?.code : null
     })
 
-    console.log("In useeffct")
   }, [context?.code]);
 
   // Fetch user data based on filter values

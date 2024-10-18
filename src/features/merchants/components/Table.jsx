@@ -1,5 +1,5 @@
 import { Button, Switch, Table, Form, Input, Modal } from "antd";
-import { DeleteOutlined, EditOutlined, CopyOutlined, EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, CopyOutlined, EyeTwoTone, EyeInvisibleOutlined, CaretDownOutlined, CaretRightOutlined } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
 import React, { useState, useContext } from "react";
 import { PlusIcon, Reload } from "../../../utils/constants";
@@ -103,7 +103,11 @@ const TableComponent = ({
   };
 
   const rowClassName = (record) => {
-    return record.is_deleted ? 'ant-table-row-disabled' : '';
+    if (record.is_deleted) {
+      return 'ant-table-row-disabled';
+    }
+
+    return '';
   };
 
   const rowStyles = (record) => {
@@ -114,7 +118,8 @@ const TableComponent = ({
         backgroundColor: '#f5f5f5', // Light gray background
       };
     }
-    return {};
+
+    return {}; // Default styles
   };
 
   return (
@@ -143,20 +148,184 @@ const TableComponent = ({
           />
         </div>
       </div>
+
       <Table
-        dataSource={data?.merchantData}
+        dataSource={data?.transformedData}
         rowKey={(item) => item.id}
         scroll={{
-          // y: 240,
           x: "120vw",
         }}
         rowClassName={(record) => rowClassName(record)}
-          onRow={(record) => ({
-            style: rowStyles(record),
-          })}
-        className="font-serif px-3"
+        onRow={(record) => ({
+          style: rowStyles(record),
+        })}
+        className="font-serif px-3 "
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
+        expandable={{
+          expandedRowRender: (record) => {
+
+            return (
+              <>
+                <Table
+                  dataSource={record.children} // Use subData to get nested data for the expanded table
+                  rowKey="id"
+                  pagination={false} // Disable pagination for the expanded table
+                >
+                  <Column
+                    title="Code"
+                    dataIndex="code"
+                    key="code"
+                    className="bg-white"
+                    width={"1%"}
+                    // added copy button
+                    render={(text) => (
+                      <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+                    )}
+                  />
+                  <Column
+                    title="Site"
+                    dataIndex="site_url"
+                    key="site_url"
+                    className="bg-white"
+                    width={"3%"}
+                  />
+                  <Column
+                    title="API Key"
+                    dataIndex="api_key"
+                    key="api_key"
+                    className="bg-white"
+                    width={"12%"}
+                    // added copy button
+                    render={(text) => (
+                      <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+                    )}
+                  />
+                  <Column
+                    title="Balance"
+                    dataIndex="balance"
+                    key="balance"
+                    className="bg-white"
+                    width={"4%"}
+                    render={(_, record) => {
+                      return formatCurrency(record?.balance)
+                    }}
+                  />
+                  <Column
+                    title="Payin"
+                    dataIndex="payin"
+                    key="payin"
+                    className="bg-white"
+                    width={"4%"}
+                    render={(text, record) => {
+                      return (
+                        <>
+                          {formatCurrency(record?.min_payin)} -{" "}
+                          {formatCurrency(record?.max_payin)}
+                        </>
+                      );
+                    }}
+                  />
+                  <Column
+                    title="Payin Commission"
+                    dataIndex="payin_commission"
+                    key="payin_commission"
+                    className="bg-white"
+                    width={"2%"}
+                    render={(text) => {
+                      return <>{text} %</>;
+                    }}
+                  />
+                  <Column
+                    title="Max Payout"
+                    dataIndex="max_payout"
+                    key="max_payout"
+                    className="bg-white"
+                    width={"3%"}
+                    render={(text, record) => {
+                      return (
+                        <>
+                          {formatCurrency(record?.min_payout)} -{" "}
+                          {formatCurrency(record?.max_payout)}
+                        </>
+                      );
+                    }}
+                  />
+                  <Column
+                    title="Payout Commission"
+                    dataIndex="payout_commission"
+                    key="payout_commission"
+                    className="bg-white"
+                    width={"2%"}
+                    render={(text) => {
+                      return <>{text} %</>;
+                    }}
+                  />
+                  <Column
+                    title="Test mode?"
+                    dataIndex="is_test_mode"
+                    key="is_test_mode"
+                    className="bg-white"
+                    width={"2%"}
+                    render={(_, record) => {
+                      return <Switch checked={record?.is_test_mode} />;
+                    }}
+                  />
+                  <Column
+                    title={
+                      <>
+                        Actions
+                      </>
+                    }
+                    dataIndex="merchants"
+                    key="merchants"
+                    className="bg-white"
+                    width={"6%"}
+                    render={(_, record) => {
+                      return (
+                        <div className="whitespace-nowrap flex gap-2">
+                          <Button
+                            type="text"
+                            icon={<EditOutlined />}
+                            title="Edit"
+                            onClick={() => { setActionValue("UPDATE"); showModal(record) }} // Password verification while edit and delete merchant
+                          />
+
+                          <Button
+                            type="text"
+                            icon={<DeleteOutlined />}
+                            title="Delete"
+                            onClick={() => { setActionValue("DELETE"); deleteMerchantData(record) }} // Password verification while edit and delete merchant
+                          />
+                        </div>
+                      );
+                    }}
+                  />
+
+                </Table>
+              </>
+            );
+          },
+          expandIcon: ({ onExpand, expanded, record }) => {
+            // Only show expand icon for records where is_merchant_Admin is true
+            if (!record.is_merchant_Admin) return null; // Return null if not expandable
+            return (
+              <div
+                onClick={e => {
+                  e.stopPropagation(); // Prevent triggering the row click
+                  onExpand(record); // Expand/collapse the row
+                }}
+                style={{ cursor: 'pointer', width: '4px', textAlign: 'center' }} // Adjust width here
+              >
+                {expanded ? '-' : '+'}
+              </div>
+            );
+          },
+
+          rowExpandable: (record) => record.is_merchant_Admin === true,
+
+        }}
+
       >
         <Column
           title="Code"
@@ -193,33 +362,8 @@ const TableComponent = ({
           key="balance"
           className="bg-white"
           width={"4%"}
-          render={ (_, record) => {
-
-            let payInAmount = 0;
-            let payInCommission = 0;
-            let payInCount = 0;
-            let payOutAmount = 0;
-            let payOutCommission = 0;
-            let payOutCount = 0;
-            let settlementAmount = 0;
-      
-            record.payInData?.forEach((data) => {
-              payInAmount += Number(data.amount);
-              payInCommission += Number(data.payin_commission);
-              payInCount += 1;
-            });
-      
-            record.payOutData?.forEach((data) => {
-              payOutAmount += Number(data.amount);
-              payOutCommission += Number(data.payout_commision);
-              payOutCount += 1;
-            });
-      
-            record.settlementData?.forEach((data) => {
-              settlementAmount += Number(data.amount);
-            });
-            const value = payInAmount - (payOutAmount + (payInCommission + payOutCommission)) - settlementAmount
-            return formatCurrency(value)
+          render={(_, record) => {
+            return formatCurrency(record?.balance)
           }}
         />
         <Column
@@ -282,7 +426,6 @@ const TableComponent = ({
             return <Switch checked={record?.is_test_mode} />;
           }}
         />
-        {/* {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && ( */}
         <Column
           title={
             <>
@@ -300,7 +443,7 @@ const TableComponent = ({
                   type="text"
                   icon={<EditOutlined />}
                   title="Edit"
-                  onClick={() => { setActionValue("UPDATE"); showModal(record)} } // Password verification while edit and delete merchant
+                  onClick={() => { setActionValue("UPDATE"); showModal(record) }} // Password verification while edit and delete merchant
                 />
 
                 <Button
@@ -313,7 +456,6 @@ const TableComponent = ({
             );
           }}
         />
-        {/* )} */}
       </Table>
 
       {/* Password verification Modal */}
@@ -339,7 +481,7 @@ const TableComponent = ({
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
-             />
+            />
           </Form.Item>
 
           <div className='flex justify-end'>
