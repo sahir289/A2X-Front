@@ -153,7 +153,7 @@ const TableComponent = ({
         dataSource={data?.transformedData}
         rowKey={(item) => item.id}
         scroll={{
-          x: "120vw",
+          x: "80vw",
         }}
         rowClassName={(record) => rowClassName(record)}
         onRow={(record) => ({
@@ -163,14 +163,21 @@ const TableComponent = ({
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
         expandable={{
+          columnTitle: "",
+          columnWidth: "10px",
+          indentSize: 2,
           expandedRowRender: (record) => {
-
             return (
               <>
                 <Table
-                  dataSource={record.children} // Use subData to get nested data for the expanded table
+                  dataSource={record.children}
                   rowKey="id"
-                  pagination={false} // Disable pagination for the expanded table
+                  pagination={false}
+                  scroll={{
+                    x: "80vw",
+                  }}
+                  bordered
+                  className="mb-10 mt-5"
                 >
                   <Column
                     title="Code"
@@ -306,18 +313,18 @@ const TableComponent = ({
               </>
             );
           },
+
           expandIcon: ({ onExpand, expanded, record }) => {
-            // Only show expand icon for records where is_merchant_Admin is true
-            if (!record.is_merchant_Admin) return null; // Return null if not expandable
+            if (!record.is_merchant_Admin) return null;
             return (
               <div
                 onClick={e => {
-                  e.stopPropagation(); // Prevent triggering the row click
-                  onExpand(record); // Expand/collapse the row
+                  e.stopPropagation();
+                  onExpand(record);
                 }}
-                style={{ cursor: 'pointer', width: '4px', textAlign: 'center' }} // Adjust width here
+                className="expand-icon cursor-pointer"
               >
-                {expanded ? '-' : '+'}
+                {expanded ? <CaretDownOutlined/> : <CaretRightOutlined/>}
               </div>
             );
           },
@@ -511,7 +518,7 @@ const TableComponent = ({
         displayItem={`${deleteRecord?.merchantCode}?`}
         handleTableChange={handleTableChange}
       />
-    </div>
+    </div >
   );
 };
 
