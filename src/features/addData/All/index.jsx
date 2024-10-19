@@ -11,6 +11,7 @@ function All() {
     amount: "",
     amount_code: "",
     utr: "",
+    bankName:"",
     page: 1,
     pageSize: 20,
   });

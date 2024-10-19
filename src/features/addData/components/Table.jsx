@@ -169,6 +169,25 @@ const TableComponent = ({
           <Column
             title={
               <>
+                <span className="whitespace-nowrap">Bank Name</span>
+                <br />
+                <Input
+                  value={filterValues?.bankName}
+                  onChange={(e) =>
+                    handleFilterValuesChange(e.target.value, "bankName")
+                  }
+                  allowClear
+                />
+              </>
+            }
+            dataIndex="bankName"
+            key="bankName"
+            className="bg-white"
+            width={"1%"}
+          />
+          <Column
+            title={
+              <>
                 <span className="whitespace-nowrap">Used</span>
                 <br />
                 <Select
