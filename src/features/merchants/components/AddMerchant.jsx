@@ -75,13 +75,16 @@ const AddMerchant = ({
     };
 
     const AddMerchant = await postApi("/create-merchant", formData).then((res) => {
-      const updatedCode = Array.isArray(context.code)
-      ? context.code
-      : [];
-      updatedCode.push(res?.data?.data?.code)
-      const codeData =updatedCode
 
-      context.permissionHandle(context?.id, context?.userName, context?.role, codeData)
+      if (context.role === "MERCHANT_ADMIN") {
+        const updatedCode = Array.isArray(context.code)
+          ? context.code
+          : [];
+        updatedCode.push(res?.data?.data?.code)
+        const codeData = updatedCode
+
+        context.permissionHandle(context?.id, context?.userName, context?.role, codeData)
+      }
 
       if (res.error) {
         api.error({
