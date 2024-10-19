@@ -4,6 +4,7 @@ import initializeApp from "./app/init";
 import AuthLayout from "./components/AuthLayout/AuthLayout"; // Adjust the path as necessary
 import Layout from "./containers/Layout";
 import SuspenseContent from "./containers/SuspenseContent";
+import './App.css'
 
 const Login = lazy(() => import('./pages/Login'));
 const Page404 = lazy(() => import('./pages/protected/404'));

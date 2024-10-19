@@ -162,7 +162,7 @@ const TableComponent = ({
             <>
               <span>Role</span>
               <br />
-              {filterValues.userRole == "ADMIN" && 
+              {filterValues.userRole == "ADMIN" &&
                 <Input
                   value={filterValues.role}
                   onChange={(e) => { handleFilterValuesChange(e.target.value, 'role') }}

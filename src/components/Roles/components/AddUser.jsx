@@ -1,10 +1,11 @@
 import { Button, Form, Input, notification, Select } from "antd";
 import Modal from "antd/es/modal/Modal";
 import React, { useContext, useEffect, useState } from "react";
-import { getApi, postApi } from "../../../redux/api";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { useNavigate } from "react-router-dom";
+import { getApi, postApi } from "../../../redux/api";
 import { PermissionContext } from "../../AuthLayout/AuthLayout";
+import { roleOptionsMap } from "../../../utils/utils";
 
 
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
@@ -19,21 +20,8 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
   const context = useContext(PermissionContext)
 
-  const commonOptions = [
-    { label: "Merchant", value: "MERCHANT" },
-    { label: "Transactions", value: "TRANSACTIONS" },
-    { label: "Operations", value: "OPERATIONS" },
-    { label: 'Vendor', value: 'VENDOR' }
-  ];
-  const merchantOptions = [
-    { label: "Merchant-Operations", value: "MERCHANT_OPERATIONS" },
-  ];
-  const vendorOptions = [
-    { label: "Vendor-Operations", value: "VENDOR_OPERATIONS" },
-  ];
-  const roleOptions = context?.role === "ADMIN"
-    ? commonOptions
-    : context?.role === "VENDOR" ? vendorOptions : merchantOptions
+  // We are adding roles options acc to role.
+  const roleOptions = roleOptionsMap[context?.role] || roleOptionsMap.DEFAULT;
 
   const fetchMerchantData = async () => {
     const merchantApiRes = await getApi("/getall-merchant");
@@ -179,7 +167,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
             <Select placeholder="Please select" options={roleOptions} />
           </Form.Item>
 
-          {(selectedRole === "MERCHANT") && (
+          {(selectedRole === "MERCHANT" || selectedRole === "MERCHANT_ADMIN") && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -194,7 +182,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={merchantCodeOptions}
-              // mode={selectedRole ==="OPERATIONS" ?"multiple":undefined}
+                showSearch={true}
               />
             </Form.Item>
           )}
@@ -213,6 +201,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
                 placeholder="Please select"
                 options={merchantCodeOptions}
                 mode="multiple"
+                showSearch={true}
               />
             </Form.Item>
           )}
@@ -230,6 +219,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={merchantCodeOptions}
+                showSearch={true}
               />
             </Form.Item>
           )}
@@ -247,6 +237,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               <Select
                 placeholder="Please select"
                 options={vendorCodeOptions}
+                showSearch={true}
               />
             </Form.Item>
           )}

@@ -1,31 +1,63 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
-import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 function All() {
   const [tableData, setTableData] = useState([]);
+  const context = useContext(PermissionContext);
+  // Set initial filter values based on the context
   const [filterValues, setFilterValues] = useState({
     page: 1,
     pageSize: 20,
+    code: context?.role === "MERCHANT_ADMIN" ? context?.code : null
   });
+
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsersData();
   }, [filterValues]);
 
+  useEffect(() => {
+    setFilterValues({
+      page: 1,
+      pageSize: 20,
+      code: context?.role === "MERCHANT_ADMIN" ? context?.code : null
+    })
+
+  }, [context?.code]);
+
+  // Fetch user data based on filter values
   const fetchUsersData = async () => {
     setIsFetchBanksLoading(true);
-    const backAccount = await getApi("/getall-merchant-data", filterValues);
+
+    // Construct the query manually if code is an array
+    let url = "/getall-merchant-data";
+    let params = { ...filterValues };
+
+    // Check if code is an array and append it manually
+    if (Array.isArray(filterValues.code)) {
+      const codeQueryString = filterValues.code
+        .map(code => `code=${encodeURIComponent(code)}`)
+        .join('&');
+      url = `${url}?${codeQueryString}`;
+    }
+
+    const backAccount = await getApi(url, params);
+
     setIsFetchBanksLoading(false);
+
     if (backAccount.error?.error?.response?.status === 401) {
       NotificationManager.error(backAccount?.error?.message, 401);
       localStorage.clear();
-      navigate('/')
+      navigate('/');
+      return;
     }
+
     setTableData(backAccount?.data?.data);
   };
 
