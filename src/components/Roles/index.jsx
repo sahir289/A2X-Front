@@ -17,9 +17,6 @@ const RolesComponent = () => {
   });
   const [isFetchUsersLoading, setIsFetchUsersLoading] = useState(false);
 
-
-
-
   useEffect(() => {
     fetchUsersData();
   }, [filterValues]);

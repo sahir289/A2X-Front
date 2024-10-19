@@ -31,12 +31,18 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       navigate('/')
     }
 
-    const dropdownOptions = merchantApiRes?.data?.data?.merchants
+    //Remove logged in in merchant from the user merchant selection
+
+    const removedLoggedInMerchant = merchantApiRes?.data?.data?.merchants
+    ?.filter(merchant => merchant?.is_merchant_Admin === false)
+    
+    const dropdownOptions = removedLoggedInMerchant
       ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
       .map(merchant => ({
         label: merchant.code,
         value: merchant.code,
       }));
+
     setMerchantCodeOptions(dropdownOptions);
   };
 
