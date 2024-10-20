@@ -166,11 +166,12 @@ const TableComponent = ({
           columnTitle: "",
           columnWidth: "10px",
           indentSize: 2,
+          rowExpandable: (record) => record.is_merchant_Admin === true && record.childrenData?.length > 0,
           expandedRowRender: (record) => {
             return (
               <>
                 <Table
-                  dataSource={record.children}
+                  dataSource={record.childrenData}
                   rowKey="id"
                   pagination={false}
                   scroll={{
@@ -315,7 +316,7 @@ const TableComponent = ({
           },
 
           expandIcon: ({ onExpand, expanded, record }) => {
-            if (!record.is_merchant_Admin) return null;
+            if (!record.is_merchant_Admin || !record.childrenData?.length) return null;
             return (
               <div
                 onClick={e => {
@@ -328,9 +329,6 @@ const TableComponent = ({
               </div>
             );
           },
-
-          rowExpandable: (record) => record.is_merchant_Admin === true,
-
         }}
 
       >
