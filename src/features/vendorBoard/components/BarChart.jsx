@@ -8,9 +8,9 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import dayjs from "dayjs";
 import TitleCard from "../../../components/Cards/TitleCard";
 import { formatCurrency } from "../../../utils/utils";
 
@@ -67,10 +67,10 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
     const result = [];
     let currentDate = dayjs(startDate);
 
-    if (interval === "12h" || dayjs(startDate).isSame(endDate, "day")) {
+    if (interval === "24h" || dayjs(startDate).isSame(endDate, "day")) {
       const hoursInterval =
-        interval === "12h" || dayjs(startDate).isSame(endDate, "day") ? 1 : 2;
-      const hoursToShow = interval === "12h" ? 12 : 24;
+        interval === "24h" || dayjs(startDate).isSame(endDate, "day") ? 1 : 2;
+      const hoursToShow = interval === "24h" ? 24 : 12;
 
       for (let i = 0; i < hoursToShow; i++) {
         result.push(
@@ -106,7 +106,7 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
     interval
   ).map((date) => {
     if (
-      interval === "12h" ||
+      interval === "24h" ||
       dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
     ) {
       return formatTime(date);
@@ -119,14 +119,14 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
       const currentData = labels.map((date) => {
         let dayData;
         if (
-          interval === "12h" ||
+          interval === "24" ||
           dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
         ) {
           dayData = data.filter(
             (item) =>
               dayjs(item.createdAt).startOf("hour").format("h:mm A") == date &&
               new Date(item.createdAt).getDate() ==
-                new Date(dateRange.startDate).getDate()
+              new Date(dateRange.startDate).getDate()
           );
         } else {
           dayData = data.filter(
@@ -217,7 +217,7 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
         >
           <Radio.Button value="15d">15D</Radio.Button>
           <Radio.Button value="7d">7D</Radio.Button>
-          <Radio.Button value="12h">12H</Radio.Button>
+          <Radio.Button value="24h">24H</Radio.Button>
         </Radio.Group>
       </Flex>
       <Bar options={options} data={chartData} height="30px" width="100%" />
