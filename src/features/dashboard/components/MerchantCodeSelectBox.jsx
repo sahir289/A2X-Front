@@ -80,7 +80,8 @@ const MerchantCodeSelectBox = ({
         </div>
         <div className="w-full">
           <Select
-            mode="tags"
+            mode={userData?.role === "MERCHANT_ADMIN" ? "multiple" : "tags"}
+            showSearch={userData?.role === "MERCHANT_ADMIN" ? false : true}
             size={"large"}
             placeholder="Please select"
             onChange={handleChange}
@@ -93,7 +94,8 @@ const MerchantCodeSelectBox = ({
               userData?.role === "MERCHANT" ||
               userData?.role === "OPERATIONS" ||
               userData?.role === "MERCHANT_OPERATIONS"
-          } //Selecting and Locking the merchant name while logged in user is merchant
+            } 
+            // Selecting and Locking the merchant name while logged in user is merchant
             options={merchantCodeOptions}
             value={selectedMerchantCode}
             className={userData?.role === "MERCHANT" ? "bg-white" : userData?.role === "OPERATIONS" ? "bg-white" : false}
