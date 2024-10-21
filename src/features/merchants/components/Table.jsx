@@ -163,7 +163,7 @@ const TableComponent = ({
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
         expandable={{
-          columnTitle: "",
+          columnTitle: "Sub Merchant",
           columnWidth: "10px",
           indentSize: 2,
           rowExpandable: (record) => record.is_merchant_Admin === true && record.childrenData?.length > 0,

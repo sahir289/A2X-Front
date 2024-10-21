@@ -124,6 +124,7 @@ const TableComponent = ({
     { value: "DISPUTE", label: "DISPUTE" },
     { value: "PENDING", label: "PENDING" },
     { value: "IMG_PENDING", label: "IMG_PENDING" },
+    { value: "BANK_MISMATCH", label: "BANK_MISMATCH" }
   ];
 
   const handleUtrSubmit = async (values) => {
@@ -190,7 +191,7 @@ const TableComponent = ({
       const merchantId = merchants?.find(merchant => merchant.code === data?.code)?.id;
       const merchantBanks = await getApi(`/merchant-bank?id=${merchantId}`);
       const merchantPayinBanks = merchantBanks?.data?.data?.filter(bank => bank?.bankAccount?.bank_used_for === "payIn");
-      const availableBank = merchantPayinBanks?.filter(bank => ( bank?.bankAccount?.is_bank === true || bank?.bankAccount?.is_qr === true ) && bank?.bankAccount?.is_enabled === true);
+      const availableBank = merchantPayinBanks?.filter(bank => (bank?.bankAccount?.is_bank === true || bank?.bankAccount?.is_qr === true) && bank?.bankAccount?.is_enabled === true);
       if (availableBank.length > 0) {
         const unlimitedUrl = `${process.env.REACT_APP_BASE_URL}/payIn?code=${data?.code}&user_id=${data?.userId}&ot=n&ap=${selectedMerchant.api_key}`;
 
@@ -208,8 +209,7 @@ const TableComponent = ({
       }
     } else {
       const oneTimeUrlRes = getApiForGeneratePaymentUrl(
-        `/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${
-          data.isTest ?? false
+        `/payIn?code=${data?.code}&user_id=${data?.userId}&ot=y&isTest=${data.isTest ?? false
         }`,
         {},
         { "x-api-key": `${selectedMerchant.api_key}` }
@@ -282,7 +282,7 @@ const TableComponent = ({
       if (recordStatus === "DUPLICATE") {
         payload = {
           ...data,
-          confirmed : confirmAmount
+          confirmed: confirmAmount
         }
       }
       else {
@@ -321,18 +321,17 @@ const TableComponent = ({
             {allTable === true
               ? "All"
               : completedTable === true
-              ? "Confirmed"
-              : inProgressTable === true
-              ? "In Progress"
-              : "Dropped"}
+                ? "Confirmed"
+                : inProgressTable === true
+                  ? "In Progress"
+                  : "Dropped"}
           </p>
         </div>
 
         <div className="pt-2 flex items-start">
           <div
-            className={`flex flex-col ${
-              !(allTable || inProgressTable) ? "mr-2" : ""
-            }`}
+            className={`flex flex-col ${!(allTable || inProgressTable) ? "mr-2" : ""
+              }`}
           >
             <>
               {!(
@@ -349,14 +348,12 @@ const TableComponent = ({
                   </Button>
                 )}
               <Button
-                className={`${
-                  userData?.role === "VENDOR" ||
-                  userData?.role === "VENDOR_OPERATIONS"
+                className={`${userData?.role === "VENDOR" ||
+                    userData?.role === "VENDOR_OPERATIONS"
                     ? `w-[80px] ${(allTable || inProgressTable) && "mr-2"}`
-                    : `${
-                        !(allTable || inProgressTable) ? "w-full" : "w-[178px]"
-                      }`
-                }`}
+                    : `${!(allTable || inProgressTable) ? "w-full" : "w-[178px]"
+                    }`
+                  }`}
                 onClick={handleResetSearchFields}
               >
                 Reset
@@ -511,18 +508,18 @@ const TableComponent = ({
                     value === "ASSIGNED"
                       ? "blue"
                       : value === "SUCCESS"
-                      ? "green"
-                      : value === "INITIATED"
-                      ? "grey"
-                      : value === "PENDING"
-                      ? "yellow"
-                      : value === "DROPPED"
-                      ? "red"
-                      : value === "DISPUTE"
-                      ? "#FF6600"
-                      : value === "TEST_SUCCESS"
-                      ? "green-inverse"
-                      : "gold-inverse"
+                        ? "green"
+                        : value === "INITIATED"
+                          ? "grey"
+                          : value === "PENDING"
+                            ? "yellow"
+                            : value === "DROPPED"
+                              ? "red"
+                              : value === "DISPUTE"
+                                ? "#FF6600"
+                                : value === "TEST_SUCCESS"
+                                  ? "green-inverse"
+                                  : "gold-inverse"
                   }
                   key={value}
                   icon={
@@ -562,8 +559,8 @@ const TableComponent = ({
             filterValues?.loggedInUserRole === "VENDOR"
               ? true
               : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS"
-              ? true
-              : false
+                ? true
+                : false
           }
           width={"150px"}
           render={(text) => (
@@ -604,8 +601,8 @@ const TableComponent = ({
             filterValues?.loggedInUserRole === "VENDOR"
               ? true
               : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS"
-              ? true
-              : false
+                ? true
+                : false
           }
           width={"150px"}
           render={(text, record) => (
@@ -637,8 +634,8 @@ const TableComponent = ({
             filterValues?.loggedInUserRole === "VENDOR"
               ? true
               : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS"
-              ? true
-              : false
+                ? true
+                : false
           }
           dataIndex="user_id"
           key="user_id"
@@ -753,7 +750,7 @@ const TableComponent = ({
           key="bank_name"
           className="bg-white"
           width={"24px"}
-          // render={(text, record) => getBankCode(record)}
+        // render={(text, record) => getBankCode(record)}
         />
 
         <Column
@@ -782,8 +779,8 @@ const TableComponent = ({
               filterValues?.loggedInUserRole === "VENDOR"
                 ? true
                 : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS"
-                ? true
-                : false
+                  ? true
+                  : false
             }
             dataIndex="user_submitted_image"
             key="user_submitted_image"
@@ -816,10 +813,10 @@ const TableComponent = ({
             filterValues?.loggedInUserRole === "ADMIN"
               ? false
               : filterValues?.loggedInUserRole === "OPERATIONS"
-              ? false
-              : filterValues?.loggedInUserRole === "TRANSACTIONS"
-              ? false
-              : true
+                ? false
+                : filterValues?.loggedInUserRole === "TRANSACTIONS"
+                  ? false
+                  : true
           }
           className="bg-white"
           width={"24px"}
@@ -969,7 +966,7 @@ const TableComponent = ({
               <Form.Item
                 name="user_submitted_utr"
                 label="User Submitted UTR"
-                // initialValue={generatedUtr}
+              // initialValue={generatedUtr}
               >
                 <Input type="text" disabled />
               </Form.Item>
