@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined, EyeOutlined, EyeTwoTone, EyeInvisibleOutl
 import { Button, Empty, Input, Switch, Table, Tooltip, Select, Modal, Form } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useState, useEffect } from "react";
-import { getApi } from "../../../redux/api";
+import { getApi, putApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { postApi } from "../../../redux/api";
+import axios from "axios";
+
 
 
 const TableComponent = ({
@@ -25,6 +27,8 @@ const TableComponent = ({
     useState(false);
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [isAddMerchantModalOpen, setIsAddMerchantModalOpen] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const [allMerchants, setAllMerchants] = useState([]);
   const [allVendors, setAllVendors] = useState([]);
   const vendorOptions = allVendors.map((vendor) => ({
@@ -106,6 +110,18 @@ const TableComponent = ({
     form.resetFields();
   };
 
+  const openEditModal = (record) => {
+    form.setFieldsValue({
+      name: record.name,
+      ac_no: record.ac_no,
+      ifsc: record.ifsc,
+      upi_id: record.upi_id,
+      min_payin: record.min_payin,
+      max_payin: record.max_payin,
+    });
+    setSelectedRecord(record);
+    setIsEditModalVisible(true);
+  };
   const verifyPassword = async (data) => {
     setAddLoading(true)
     const verifyPasswordData = {
@@ -123,6 +139,29 @@ const TableComponent = ({
     }
   };
 
+  const handleEditSubmit = async () => {
+    setAddLoading(true)
+    try {
+      const updatedValues = await form.validateFields();
+      const  updatedData = {
+        id:  selectedRecord.id,
+        name: updatedValues.name,
+        ac_no: updatedValues.ac_no,
+        ifsc: updatedValues.ifsc,
+        upi_id: updatedValues.upi_id,
+        min_payin: updatedValues.min_payin,
+        max_payin: updatedValues.max_payin,
+      };
+      const res = await putApi("/update-bank-details",  updatedData);
+      setAddLoading(false)
+      if (res?.data?.statusCode === 200) {
+        NotificationManager.success(res?.data?.message);
+      }
+      setIsEditModalVisible(false);
+    } catch (error) {
+      console.log("Edit failed:", error);
+    }
+  };
   //reset filter from search fields
   const handleResetSearchFields = () => {
     setFilterValues({
@@ -153,6 +192,14 @@ const TableComponent = ({
     }
     return item;
   });
+  const validateIfscCode = async (ifsc) => {
+    try {
+      const response = await axios.get(`https://ifsc.razorpay.com/${ifsc}`);
+      return response.data;
+    } catch (error) {
+      return null; // If invalid IFSC or error in API request
+    }
+  };
 
   return (
     <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
@@ -237,13 +284,26 @@ const TableComponent = ({
           className="bg-white"
           width={"3%"}
           render={(_, record) => (
-            <>
-              {record.name}
-              <br />
-              {record.ac_no}
-              <br />
-              {record.ifsc}
-            </>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                {record.name}
+                <br />
+                {record.ac_no}
+                <br />
+                {record.ifsc}
+              </div>
+              <Button
+                type="link"
+                icon={<EditOutlined />}
+                onClick={() => openEditModal(record)}
+              />
+            </div>
           )}
         />
         <Column
@@ -328,17 +388,17 @@ const TableComponent = ({
               <span className="whitespace-nowrap">Bank Used For</span>
               <br />
               <Select
-                  className="flex"
-                  value={filterValues?.bank_used_for}
-                  onChange={(value) =>
-                    handleFilterValuesChange(value, "bank_used_for")
-                  }
-                  allowClear
-                >
-                  <Select.Option value="">Select</Select.Option>
-                  <Select.Option value="payIn">PayIn</Select.Option>
-                  <Select.Option value="payOut">PayOut</Select.Option>
-                </Select>
+                className="flex"
+                value={filterValues?.bank_used_for}
+                onChange={(value) =>
+                  handleFilterValuesChange(value, "bank_used_for")
+                }
+                allowClear
+              >
+                <Select.Option value="">Select</Select.Option>
+                <Select.Option value="payIn">PayIn</Select.Option>
+                <Select.Option value="payOut">PayOut</Select.Option>
+              </Select>
             </>
           }
           dataIndex="bank_used_for"
@@ -355,10 +415,8 @@ const TableComponent = ({
               <Select
                 value={filterValues?.vendor_code}
                 options={vendorOptions}
-                style={{ width: '90%' }}
-                onChange={(e) =>
-                  handleFilterValuesChange(e, "vendor_code")
-                }
+                style={{ width: "90%" }}
+                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
                 allowClear
               />
             </>
@@ -399,7 +457,9 @@ const TableComponent = ({
 
             return (
               <>
-                {payInBalance ? formatCurrency(payInBalance) : formatCurrency(0)}
+                {payInBalance
+                  ? formatCurrency(payInBalance)
+                  : formatCurrency(0)}
                 <br />
                 {payInBalanceCount ? `( ${payInBalanceCount} )` : ""}
               </>
@@ -529,7 +589,9 @@ const TableComponent = ({
           width={"6%"}
           render={(text, record) => lastLogIn(record)}
         />
-        {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && (
+        {(userData?.role === "ADMIN" ||
+          userData?.role === "TRANSACTIONS" ||
+          userData?.role === "OPERATIONS") && (
           <Column
             title={
               <>
@@ -571,7 +633,7 @@ const TableComponent = ({
                   <Button
                     type="text"
                     icon={<EditOutlined />}
-                    disabled={record?.bank_used_for === "payIn" ? false : true }
+                    disabled={record?.bank_used_for === "payIn" ? false : true}
                     title="Edit"
                     onClick={() => showModal(record)}
                   />
@@ -587,7 +649,6 @@ const TableComponent = ({
             }}
           />
         )}
-
       </Table>
 
       <UpdateMerchant
@@ -614,11 +675,12 @@ const TableComponent = ({
         title="Password Verification"
         onCancel={handleToggleModal}
         open={verification}
-        footer={false}>
+        footer={false}
+      >
         <Form
           form={form}
-          className='pt-[10px]'
-          labelAlign='left'
+          className="pt-[10px]"
+          labelAlign="left"
           labelCol={labelCol}
           onFinish={verifyPassword}
         >
@@ -632,17 +694,102 @@ const TableComponent = ({
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
-             />
+            />
           </Form.Item>
 
-          <div className='flex justify-end'>
-            <Button type='primary'
-              loading={addLoading}
-              htmlType='submit'
-            >
+          <div className="flex justify-end">
+            <Button type="primary" loading={addLoading} htmlType="submit">
               Verify
             </Button>
           </div>
+        </Form>
+      </Modal>
+      <Modal
+        title="Edit Bank Details"
+        open={isEditModalVisible}
+        onOk={handleEditSubmit}
+        onCancel={() => setIsEditModalVisible(false)}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: "Please enter the bank name" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Account Number"
+            name="ac_no"
+            rules={[
+              { required: true, message: "Please enter the account number" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="IFSC Code"
+            name="ifsc"
+            rules={[
+              {
+                required: true,
+                message: "Please input your IFSC code!",
+              },
+              {
+                validator: async (_, value) => {
+                  if (!value) {
+                    return Promise.reject("Please input your IFSC code!");
+                  }
+                  const ifscValidation = await validateIfscCode(value);
+                  if (!ifscValidation) {
+                    return Promise.reject(
+                      "Invalid IFSC Code. Please enter a valid one."
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="UPI ID"
+            name="upi_id"
+            rules={[
+              {
+                required: true,
+                message: "Please input your UPI ID!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Min Payin"
+            name="min_payin"
+            rules={[
+              {
+                required: true,
+                message: "Please input your min payin!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Max Payin"
+            name="max_payin"
+            rules={[
+              {
+                required: true,
+                message: "Please input your max payin!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
         </Form>
       </Modal>
     </div>
