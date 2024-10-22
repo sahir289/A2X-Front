@@ -56,11 +56,11 @@ function Dashboard() {
   ]);
   const [depositData, setDepositData] = useState([]);
   const [withdrawData, setWithdrawData] = useState([]);
-  const [intervalDeposit, setIntervalDeposit] = useState("15d");
-  const [intervalWithdraw, setIntervalWithdraw] = useState("15d");
+  const [intervalDeposit, setIntervalDeposit] = useState("24h");
+  const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().add(-14, "d"),
-    endDate: dayjs(),
+    startDate: dayjs().add(0, "day").startOf("day"),
+    endDate: dayjs().add(0, "day").endOf("day"),
   });
   const dispatch = useDispatch();
   const debounceRef = useRef();
