@@ -56,6 +56,7 @@ const TableComponent = ({
   const [generatedUtr, setGenereatedUtr] = useState("");
   const [confirmAmount, setConfirmAmount] = useState("");
   const [recordStatus, setRecordStatus] = useState();
+  const [showImageColumn, setShowImageColumn] = useState(true);
 
   useEffect(() => {
     if (generatedUtr) {
@@ -254,6 +255,10 @@ const TableComponent = ({
       pageSize: 20,
       page: 1,
     });
+    
+    if (filterValues?.loggedInUserRole === "VENDOR" || filterValues?.loggedInUserRole === "VENDOR_OPERATIONS") {
+      setShowImageColumn(false);
+    }
   };
 
   const showResetModal = (record) => {
@@ -776,12 +781,10 @@ const TableComponent = ({
               </>
             }
             hidden={
-              filterValues?.loggedInUserRole === "VENDOR"
-                ? true
-                : filterValues?.loggedInUserRole === "VENDOR_OPERATIONS"
-                  ? true
-                  : false
-            }
+              (filterValues?.loggedInUserRole === "VENDOR" ||
+                filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" || 
+                !showImageColumn)
+              }
             dataIndex="user_submitted_image"
             key="user_submitted_image"
             className="bg-white"
