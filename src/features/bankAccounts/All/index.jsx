@@ -4,6 +4,7 @@ import TableComponent from "../components/Table";
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import dayjs from "dayjs";
 
 function All() {
   const [tableData, setTableData] = useState([]);
@@ -16,6 +17,8 @@ function All() {
     role:`${userData?.role}`,
     vendor_code: `${userData?.vendorCode || ""}`,
     code: `${userData?.code || ""}`,
+    startDate: dayjs().add(0, "day").startOf("day"),
+    endDate: dayjs().add(0, "day").endOf("day"),
     page: 1,
     pageSize: 20,
   });
