@@ -586,6 +586,7 @@ const TableComponent = ({
                   "MERCHANT",
                   "OPERATIONS",
                   "MERCHANT_OPERATIONS",
+                  "MERCHANT_ADMIN"
                 ].includes(userData?.role)}
                 onChange={(value) =>
                   handleFilterValuesChange(value, "merchantCode")

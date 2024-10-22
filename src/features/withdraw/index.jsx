@@ -4,10 +4,11 @@ import {
   Form,
   Input,
   Modal,
-  notification,
   Pagination,
   Select,
+  notification,
 } from "antd";
+import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   NotificationContainer,
@@ -16,14 +17,13 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
-import { getApi, postApi, postApiForWithdrawCreation, putApi } from "../../redux/api";
+import { getApi, postApiForWithdrawCreation, putApi } from "../../redux/api";
 import {
+  RequiredRule,
   getQueryFromObject,
   reasonOptions,
-  RequiredRule,
 } from "../../utils/utils";
 import Table from "./components/Table";
-import axios from "axios";
 
 const Withdraw = ({ type }) => {
 
@@ -123,18 +123,21 @@ const Withdraw = ({ type }) => {
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      if (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS') { // enable the merchant code filtering for transactions
-        getPayoutList({
-          ...queryObj,
-          code: queryObj.code || null,
-        });
-      } else {
-        getPayoutList({
-          ...queryObj,
-          code: userData?.code || queryObj.code || null,
-          vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
-        });
-      }
+      const isAdminOrTransactions = userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS';
+      const isMerchantAdmin = userData.role === 'MERCHANT_ADMIN';
+
+      const updatedQuery = {
+        ...queryObj,
+        code: isAdminOrTransactions
+          ? queryObj.code || null
+          : isMerchantAdmin
+            ? queryObj.code || userData?.code
+            : userData?.code || queryObj.code || null,
+        ...(isAdminOrTransactions
+          ? {}
+          : { vendorCode: userData?.vendorCode || queryObj.vendorCode || null })
+      };
+      getPayoutList(updatedQuery);
     }, 1500);
   };
 

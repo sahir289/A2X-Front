@@ -1,15 +1,15 @@
-import { Button, Switch, Table, Form, Input, Modal } from "antd";
-import { DeleteOutlined, EditOutlined, CopyOutlined, EyeTwoTone, EyeInvisibleOutlined, CaretDownOutlined, CaretRightOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, CaretRightOutlined, CopyOutlined, DeleteOutlined, EditOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import { Button, Form, Input, Modal, Switch, Table } from "antd";
 import Column from "antd/es/table/Column";
-import React, { useState, useContext } from "react";
+import React, { useContext, useState } from "react";
+import { NotificationManager } from 'react-notifications';
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { postApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency } from "../../../utils/utils";
 import AddMerchant from "./AddMerchant";
 import DeleteModal from "./DeleteModal";
-import { NotificationManager } from 'react-notifications';
 import UpdateMerchant from "./UpdateMerchant";
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
-import { getApi, postApi } from "../../../redux/api";
 
 const TableComponent = ({
   data,
@@ -38,10 +38,10 @@ const TableComponent = ({
 
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
-    pageSize: data?.pagination?.pageSize ?? 20,
+    pageSize: data?.pagination?.pageSize ?? 100,
     total: data?.pagination?.total ?? 0,
     showSizeChanger: true,
-    pageSizeOptions: ["20", "50", "100"],
+    pageSizeOptions: ["100"],
     onChange: (page, size) =>
       handleTableChange({ current: page, pageSize: size }),
     onShowSizeChange: (current, size) =>
@@ -144,7 +144,7 @@ const TableComponent = ({
           <Button
             className="mr-5 hover:bg-slate-300"
             icon={<Reload />}
-            onClick={() => handleTableChange({ current: 1, pageSize: 20 })}
+            onClick={() => handleTableChange({ current: 1, pageSize: 100 })}
           />
         </div>
       </div>
@@ -325,7 +325,7 @@ const TableComponent = ({
                 }}
                 className="expand-icon cursor-pointer"
               >
-                {expanded ? <CaretDownOutlined/> : <CaretRightOutlined/>}
+                {expanded ? <CaretDownOutlined /> : <CaretRightOutlined />}
               </div>
             );
           },

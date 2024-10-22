@@ -8,11 +8,16 @@ import TableComponent from "../components/Table";
 function All() {
   const [tableData, setTableData] = useState([]);
   const context = useContext(PermissionContext);
+
+
+  let getMerchantCodes =JSON.parse(localStorage.getItem("merchantCodes"));
+
+
   // Set initial filter values based on the context
   const [filterValues, setFilterValues] = useState({
     page: 1,
-    pageSize: 20,
-    code: context?.role === "MERCHANT_ADMIN" ? context?.code : null
+    pageSize: 100,
+    code: context?.role === "MERCHANT_ADMIN" ? getMerchantCodes : null
   });
 
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
@@ -25,11 +30,11 @@ function All() {
   useEffect(() => {
     setFilterValues({
       page: 1,
-      pageSize: 20,
-      code: context?.role === "MERCHANT_ADMIN" ? context?.code : null
+      pageSize: 100,
+      code: context?.role === "MERCHANT_ADMIN" ? getMerchantCodes : null
     })
 
-  }, [context?.code]);
+  }, [context?.code, JSON.stringify(getMerchantCodes)]);
 
   // Fetch user data based on filter values
   const fetchUsersData = async () => {
@@ -38,7 +43,6 @@ function All() {
     // Construct the query manually if code is an array
     let url = "/getall-merchant-data";
     let params = { ...filterValues };
-
     // Check if code is an array and append it manually
     if (Array.isArray(filterValues.code)) {
       const codeQueryString = filterValues.code
@@ -46,7 +50,6 @@ function All() {
         .join('&');
       url = `${url}?${codeQueryString}`;
     }
-
     const backAccount = await getApi(url, params);
 
     setIsFetchBanksLoading(false);

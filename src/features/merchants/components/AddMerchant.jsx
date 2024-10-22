@@ -11,6 +11,7 @@ import {
 import React, { useContext, useState } from "react";
 import { postApi } from "../../../redux/api";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { jwtDecode } from 'jwt-decode'
 
 const selectBefore = (name) => {
   return (
@@ -43,6 +44,8 @@ const AddMerchant = ({
   const [loading, setLoading] = useState(false);
   const [minPayin, setMinPayin] = useState(0);
   const [minPayout, setMinPayout] = useState(0);
+
+
 
   const context = useContext(PermissionContext);
   const handleModalOk = () => {
@@ -77,13 +80,23 @@ const AddMerchant = ({
     const AddMerchant = await postApi("/create-merchant", formData).then((res) => {
 
       if (context.role === "MERCHANT_ADMIN") {
+        
         const updatedCode = Array.isArray(context.code)
           ? context.code
           : [];
         updatedCode.push(res?.data?.data?.code)
+
         const codeData = updatedCode
+        const getMerchantCodes = JSON.parse(localStorage.getItem("merchantCodes"))
+
+        const addMerchantCodes = Array.isArray(getMerchantCodes)
+        ? getMerchantCodes
+        : [];
+        addMerchantCodes.push(res?.data?.data?.code)
+        localStorage.setItem("merchantCodes", JSON.stringify(addMerchantCodes));
 
         context.permissionHandle(context?.id, context?.userName, context?.role, codeData)
+
       }
 
       if (res.error) {
