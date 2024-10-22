@@ -781,10 +781,13 @@ const TableComponent = ({
               </>
             }
             hidden={
-              (filterValues?.loggedInUserRole === "VENDOR" ||
-                filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" || 
-                !showImageColumn)
-              }
+              filterValues?.loggedInUserRole === "VENDOR" ||
+              filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ||
+              filterValues?.loggedInUserRole === "MERCHANT_ADMIN" ||
+              filterValues?.loggedInUserRole === "MERCHANT_OPERATIONS" ||
+              filterValues?.loggedInUserRole === "MERCHANT" ||
+              !showImageColumn
+            }
             dataIndex="user_submitted_image"
             key="user_submitted_image"
             className="bg-white"
