@@ -5,10 +5,9 @@ import {
   InputNumber,
   Modal,
   notification,
-  Select,
-  Switch,
+  Switch
 } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { putApi } from "../../../redux/api";
 
 

@@ -47,8 +47,12 @@ function Login() {
         if (res?.data?.statusCode === 200) {
           localStorage.setItem("accessToken", res?.data?.data);
           const userData = jwtDecode(res?.data?.data);
+          
           localStorage.setItem("userData", JSON.stringify({ name: userData?.userName, role: userData?.role }))
           context.permissionHandle(userData?.id, userData?.userName, userData?.role, userData?.code)
+
+          localStorage.setItem("merchantCodes", JSON.stringify(userData?.code));
+
           const isVendor = userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS";
           navigate(isVendor ? "/app/vendor-board" : "/app/dashboard");
         }
@@ -111,6 +115,9 @@ function Login() {
         const userData = jwtDecode(res?.data?.data);
         localStorage.setItem("userData", JSON.stringify({ name: userData?.userName, role: userData?.role }))
         context.permissionHandle(userData?.id, userData?.userName, userData?.role, userData?.code)
+
+        localStorage.setItem("merchantCodes", JSON.stringify(userData?.code));
+
         const isVendor = userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS";
         navigate(isVendor ? "/app/vendor-board" : "/app/dashboard");
       }
