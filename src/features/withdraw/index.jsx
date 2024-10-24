@@ -278,6 +278,21 @@ const Withdraw = ({ type }) => {
       });
       return;
     }
+    const payOutAmount = parseFloat(data.amount);
+    const merchant = merchantData.find(element => element.code === data.code);
+    
+    // Validate if the amount is within the ranges
+    const minPayout = parseFloat(merchant.min_payout);
+    const maxPayout = parseFloat(merchant.max_payout);
+    // Check if the amount is within the valid range
+    if (payOutAmount < minPayout || payOutAmount > maxPayout) {
+      notification.error({
+        message: `Amount must be between ${minPayout} and ${maxPayout}!`,
+      });
+      
+      setAddLoading(false);
+      return; 
+    }
 
     const res = await postApiForWithdrawCreation("/create-payout", { ...data, vendor_code: userData?.vendorCode }, { "x-api-key": `${selectedMerchant?.api_key}` }).then((res) => {
       if (res?.error) {
@@ -535,14 +550,7 @@ const Withdraw = ({ type }) => {
             <Input />
           </Form.Item>
           <Form.Item name="amount" label="Amount" rules={RequiredRule}>
-            <Input addonAfter="₹" min={1} onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
-                  e.preventDefault();
-                }
-              }
-            }} />
+            <Input addonAfter="₹" min={1} />
           </Form.Item>
           <div className="flex justify-end items-center gap-2">
             <Button onClick={handleToggleModal}>Cancel</Button>

@@ -134,6 +134,23 @@ export default function Settlement() {
         return;
       }
     }
+
+    const payOutAmount = parseFloat(data.amount);
+    const merchant = merchants.find(element => element.code === data.code);
+    
+    // Validate if the amount is within the ranges
+    const minPayout = parseFloat(merchant.min_payout);
+    const maxPayout = parseFloat(merchant.max_payout);
+    // Check if the amount is within the valid range
+    if (payOutAmount < minPayout || payOutAmount > maxPayout) {
+      notification.error({
+        message: `Amount must be between ${minPayout} and ${maxPayout}!`,
+      });
+      
+      setAddLoading(false);
+      return; 
+    }
+
     const res = await postApi("/create-settlement", data)
     if (res?.error) {
       api.error({ description: res.error.message });
@@ -195,9 +212,6 @@ export default function Settlement() {
     setEditSettlement(null);
     handleGetSettlements();
   }
-
-
-
 
   const merchantOptions = merchants
     ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code?.includes(merchant?.code))
@@ -330,14 +344,7 @@ export default function Settlement() {
             label="Amount"
             rules={RequiredRule}
           >
-            <Input type="number" min={1} addonAfter="₹" onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
-                  e.preventDefault();
-                }
-              }
-            }} />
+            <Input type="number" min={1} addonAfter="₹" />
           </Form.Item>
           <Form.Item
             name="method"
