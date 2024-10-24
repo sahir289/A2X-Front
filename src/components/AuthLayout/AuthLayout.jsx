@@ -1,8 +1,7 @@
-import { useEffect } from "react";
+import { jwtDecode } from 'jwt-decode';
+import { createContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { createContext, useState } from 'react';
-import { jwtDecode } from 'jwt-decode'
 
 
 export const PermissionContext = createContext({
@@ -44,6 +43,7 @@ const AuthLayout = () => {
       }
     }
   }, [pathname]);
+
   useEffect(() => {
     if (token) {
       try {
@@ -62,7 +62,7 @@ const AuthLayout = () => {
     }
   }, [token])
 
-  const permissionHandle = (userId, userName, role, code,vendorCode) => {
+  const permissionHandle = (userId, userName, role, code, vendorCode) => {
     setUserId(userId)
     setUserName(userName)
     setRole(role)

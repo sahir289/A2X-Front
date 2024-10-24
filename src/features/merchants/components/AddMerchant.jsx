@@ -45,7 +45,6 @@ const AddMerchant = ({
   const [minPayout, setMinPayout] = useState(0);
 
 
-
   const context = useContext(PermissionContext);
   const handleModalOk = () => {
     setIsAddModelOpen(false);

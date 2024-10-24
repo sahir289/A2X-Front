@@ -5,10 +5,9 @@ import {
   InputNumber,
   Modal,
   notification,
-  Select,
-  Switch,
+  Switch
 } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { putApi } from "../../../redux/api";
 
 
@@ -79,6 +78,7 @@ const UpdateMerchant = ({
   }, [record]);
 
   const handleModalCancel = () => {
+    handleTableChange({ current: 1, pageSize: 20 });
     setIsAddMerchantModalOpen(false);
     form.resetFields();
   };
@@ -274,14 +274,26 @@ const UpdateMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" min={1} onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
+            <InputNumber
+              className="w-full"
+              min={1}
+              step={0.01} // Allow decimal steps
+              onKeyDown={(e) => {
+                // Allow numbers, decimal points, and control keys
+                const isNumberOrDecimal = /[0-9.]/.test(e.key);
                 const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
+
+                // Prevent invalid characters
+                if (!isNumberOrDecimal && !isControlKey) {
                   e.preventDefault();
                 }
-              }
-            }} />
+
+                // Prevent multiple decimal points
+                if (e.key === '.' && e.target.value.includes('.')) {
+                  e.preventDefault();
+                }
+              }}
+            />
           </Form.Item>
 
           <Form.Item
@@ -346,14 +358,26 @@ const UpdateMerchant = ({
               },
             ]}
           >
-            <InputNumber className="w-full" min={1} onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
+            <InputNumber
+              className="w-full"
+              min={1}
+              step={0.01} // Allow decimal steps
+              onKeyDown={(e) => {
+                // Allow numbers, decimal points, and control keys
+                const isNumberOrDecimal = /[0-9.]/.test(e.key);
                 const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
+
+                // Prevent invalid characters
+                if (!isNumberOrDecimal && !isControlKey) {
                   e.preventDefault();
                 }
-              }
-            }} />
+
+                // Prevent multiple decimal points
+                if (e.key === '.' && e.target.value.includes('.')) {
+                  e.preventDefault();
+                }
+              }}
+            />
           </Form.Item>
 
           <Form.Item
