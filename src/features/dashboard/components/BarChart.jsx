@@ -70,7 +70,7 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
     if (interval === "24h" || dayjs(startDate).isSame(endDate, "day")) {
       const hoursInterval =
         interval === "24h" || dayjs(startDate).isSame(endDate, "day") ? 1 : 2;
-      const hoursToShow = interval === "24h" ? 24 : 12;
+      const hoursToShow = interval === "24h" ? 24 : 24;
 
       for (let i = 0; i < hoursToShow; i++) {
         result.push(
