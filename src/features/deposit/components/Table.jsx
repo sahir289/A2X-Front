@@ -2,6 +2,7 @@ import {
   CopyOutlined,
   ExclamationCircleOutlined,
   SyncOutlined,
+  BellTwoTone
 } from "@ant-design/icons";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from "antd";
@@ -319,6 +320,15 @@ const TableComponent = ({
     }
   };
 
+  const setNotified = async (data) => {
+    const response = await postApi(`/update-payment-notified-status/${data}`)
+    if (response.data.statusCode === 200) {
+      NotificationManager.success("Merchant Notified successfully");
+
+      fetchUsersData();
+    }
+  }
+
 
   return (
     <>
@@ -541,6 +551,8 @@ const TableComponent = ({
                 >
                   {value}
                 </Tag>
+                {(record.is_notified === false && value === "SUCCESS")&& <BellTwoTone onClick={() => setNotified(record.id)} />}
+                {(record.is_notified && value === "SUCCESS")&& <BellTwoTone twoToneColor="#52c41a" />}
               </span>
             </>
           )}
