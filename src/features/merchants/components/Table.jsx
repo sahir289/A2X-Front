@@ -1,5 +1,5 @@
 import { CaretDownOutlined, CaretRightOutlined, CopyOutlined, DeleteOutlined, EditOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Switch, Table } from "antd";
+import { Button, Form, Input, Modal, Switch, Table, Select } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useState } from "react";
 import { NotificationManager } from 'react-notifications';
@@ -10,6 +10,7 @@ import { formatCurrency } from "../../../utils/utils";
 import AddMerchant from "./AddMerchant";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
+import { useSelector } from "react-redux";
 
 const TableComponent = ({
   data,
@@ -47,6 +48,18 @@ const TableComponent = ({
     onShowSizeChange: (current, size) =>
       handleTableChange({ current, pageSize: size }),
     showTotal: (total) => `Total ${total} items`,
+  };
+
+  const merchantData = useSelector((state) => state.merchant.data);
+  const merchantOptions = merchantData
+    ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code.includes(merchant.code))
+    .map(merchant => ({
+      label: merchant.code,
+      value: merchant.code,
+    }));
+
+  const handleFilterValuesChange = (value, fieldName) => {
+    setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
 
   const handleTableChange = ({ current, pageSize }) => {
@@ -333,7 +346,22 @@ const TableComponent = ({
 
       >
         <Column
-          title="Code"
+          title={
+            <>
+              <span>Code</span>
+              <br />
+              <Select
+                value={filterValues?.merchantCode}
+                showSearch
+                options={merchantOptions}
+                className="flex"
+                onChange={(value) =>
+                  handleFilterValuesChange(value, "code")
+                }
+                allowClear
+              />
+            </>
+          }
           dataIndex="code"
           key="code"
           className="bg-white"
