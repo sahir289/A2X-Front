@@ -39,7 +39,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
       setIsLoading(false)
 
       handleTableChange({ current: 1, pageSize: 20 });
-      form.resetFields();
+      form.resetFields(["amount", "amount_code", "utr"]);
     })
   };
 
@@ -80,6 +80,23 @@ const AddTelegramResponse = ({ handleTableChange }) => {
           <Select>
             <Select.Option value="/success">Success</Select.Option>
           </Select>
+        </Form.Item>
+
+        <Form.Item
+          label="Bank"
+          name="bank"
+
+          rules={[
+            {
+              required: true,
+              message: "Please select the bank!",
+            },
+          ]}
+        >
+          <Select placeholder="Please select"
+            showSearch={true}
+            options={bankOptionsData}
+          />
         </Form.Item>
 
         <Form.Item
@@ -137,32 +154,15 @@ const AddTelegramResponse = ({ handleTableChange }) => {
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label="Bank"
-          name="bank"
-
-          rules={[
-            {
-              required: true,
-              message: "Please select the bank!",
-            },
-          ]}
-        >
-          <Select placeholder="Please select"
-            showSearch={true}
-            options={bankOptionsData}
-          />
-        </Form.Item>
-
         <div className="flex flex-row justify-end items-end gap-1">
-          <Form.Item>
-            <Button key="back" onClick={resetForm}>
-              Reset
-            </Button>
-          </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={isLoading}>
               Add Data
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Button key="back" onClick={resetForm}>
+              Reset
             </Button>
           </Form.Item>
         </div>

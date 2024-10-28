@@ -150,7 +150,7 @@ const TableComponent = ({
           <Column
             title={
               <>
-                <span className="whitespace-nowrap">utr</span>
+                <span className="whitespace-nowrap">UTR</span>
                 <br />
                 <Input
                   value={filterValues?.utr}
