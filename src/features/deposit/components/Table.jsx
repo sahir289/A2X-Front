@@ -599,6 +599,7 @@ const TableComponent = ({
               <br />
               <Select
                 value={filterValues?.merchantCode}
+                showSearch
                 options={merchantOptions}
                 className="flex"
                 disabled={[

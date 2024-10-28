@@ -55,6 +55,7 @@ const ColumnSelect = ({ name, options, filters, onChange, ...props }) => {
         onChange(name, v);
       }}
       allowClear
+      showSearch
     />
   );
 };
