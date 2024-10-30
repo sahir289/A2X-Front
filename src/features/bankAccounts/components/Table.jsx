@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, EyeOutlined, EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined, EyeTwoTone, EyeInvisibleOutlined, DownloadOutlined } from "@ant-design/icons";
 import { Button, Empty, Input, Switch, Table, Tooltip, Select, Modal, Form } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useState, useEffect } from "react";
@@ -13,6 +13,7 @@ import { NotificationContainer, NotificationManager } from 'react-notifications'
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { postApi } from "../../../redux/api";
 import axios from "axios";
+import { json2csv } from "json-2-csv";
 
 
 
@@ -102,6 +103,36 @@ const TableComponent = ({
     };
 
     setDeleteRecord(deleteData);
+  };
+
+  const downloadReport = async (record) => {
+    const formatSetting = {
+      'ID': record.id || '',
+      'Account Name': record.ac_name || '',
+      'Account Number': record.ac_no || '',
+      'Bank': record.bank_name || '',
+      'IFSC Code': record.ifsc || '',
+      'Account Holder Name': record.name || '',
+      'UPI ID': record.upi_id || '',
+      'BALANCE': record.balance || '',
+      'Bank Used For': record.bank_used_for || '',
+      'MIN Payin/Payout': record.min_payin || '',
+      'MAX Payin/Payout': record.max_payin || '',
+    }
+    try {
+      const csv = await json2csv(formatSetting);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      const fileName = `${record.ac_name}-Report-${formatDate(Date.now())}`.toLowerCase();
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error converting data to CSV:', error);
+    }
   };
 
   // Password verification while deleting bank account
@@ -643,6 +674,13 @@ const TableComponent = ({
                     icon={<DeleteOutlined />}
                     title="Delete"
                     onClick={() => deleteBank(record)}
+                  />
+
+                  <Button
+                    type="text"
+                    icon={<DownloadOutlined />}
+                    title="Download Report"
+                    onClick={() => downloadReport(record)}
                   />
                 </div>
               );
