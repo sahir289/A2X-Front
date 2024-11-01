@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined, EyeTwoTone, EyeInvisibleOutlined, DownloadOutlined } from "@ant-design/icons";
-import { Button, Empty, Input, Switch, Table, Tooltip, Select, Modal, Form } from "antd";
+import { Button, Empty, Input, Switch, Table, Tooltip, Select, Modal, Form, DatePicker } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useState, useEffect } from "react";
 import { getApi, putApi } from "../../../redux/api";
@@ -14,8 +14,45 @@ import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { postApi } from "../../../redux/api";
 import axios from "axios";
 import { json2csv } from "json-2-csv";
-
-
+import dayjs from "dayjs";
+import { useDispatch } from "react-redux";
+import { showNotification } from "../../../redux/slice/headerSlice";
+const { RangePicker } = DatePicker;
+const rangePresets = [
+  {
+    label: "Today",
+    value: [
+      dayjs().add(0, "day").startOf("day"),
+      dayjs().add(0, "day").endOf("day"),
+    ],
+  },
+  {
+    label: "Yesterday",
+    value: [
+      dayjs().add(-1, "day").startOf("day"),
+      dayjs().add(-1, "day").endOf("day"),
+    ],
+  },
+  {
+    label: "Last 7 days",
+    value: [dayjs().add(-7, "d"), dayjs().endOf("day")],
+  },
+  {
+    label: "Last 30 days",
+    value: [dayjs().add(-30, "d"), dayjs().endOf("day")],
+  },
+  {
+    label: "This Month",
+    value: [dayjs().startOf("month"), dayjs().endOf("month")],
+  },
+  {
+    label: "Last Month",
+    value: [
+      dayjs().add(-1, "month").startOf("month"),
+      dayjs().add(-1, "month").endOf("month"),
+    ],
+  },
+];
 
 const TableComponent = ({
   data,
@@ -24,6 +61,7 @@ const TableComponent = ({
   isFetchBanksLoading,
   handleStatusChange,
 }) => {
+  const dispatch = useDispatch();
   const [isAddBankAccountModelOpen, setIsAddBankAccountModelOpen] =
     useState(false);
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
@@ -40,6 +78,7 @@ const TableComponent = ({
   const [deleteRecord, setDeleteRecord] = useState(null);
   // Password verification while deleting bank account
   const [verification, setVerification] = useState(false);
+  const [downloadReport, setDownloadReport] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [form] = Form.useForm();
   const labelCol = { span: 10 };
@@ -49,7 +88,10 @@ const TableComponent = ({
       message: "${label} is Required!",
     }
   ]
-
+  const [dateRange, setDateRange] = useState({
+    startDate: dayjs().add(0, "day").startOf("day"),
+    endDate: dayjs().add(0, "day").endOf("day"),
+  });
   const navigate = useNavigate()
   const userData = useContext(PermissionContext)
   const handleFilterValuesChange = (value, fieldName) => {
@@ -105,7 +147,7 @@ const TableComponent = ({
     setDeleteRecord(deleteData);
   };
 
-  const downloadReport = async (record) => {
+  const downloadBankReport = async (record) => {
     const formatSetting = {
       'ID': record.id || '',
       'Account Name': record.ac_name || '',
@@ -133,6 +175,34 @@ const TableComponent = ({
     } catch (error) {
       console.error('Error converting data to CSV:', error);
     }
+  };
+
+  const onRangeChange = (dates, dateStrings) => {
+    console.log(dates)
+    if (dates) {
+      let startDate = new Date(dateStrings[0]);
+      startDate.setHours(0, 0, 0, 0)
+      let endDate = new Date(dateStrings[1]);
+      endDate.setHours(23, 59, 59, 999);
+      const newRange = {
+        startDate: startDate,
+        endDate: endDate,
+      };
+      updateDashboardPeriod(newRange);
+    }
+  };
+
+  const updateDashboardPeriod = (newRange) => {
+    setDateRange({
+      startDate: newRange.startDate,
+      endDate: newRange.endDate,
+    });
+    dispatch(
+      showNotification({
+        message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
+        status: 1,
+      })
+    );
   };
 
   // Password verification while deleting bank account
@@ -680,7 +750,7 @@ const TableComponent = ({
                     type="text"
                     icon={<DownloadOutlined />}
                     title="Download Report"
-                    onClick={() => downloadReport(record)}
+                    onClick={() => setDownloadReport(true)}
                   />
                 </div>
               );
@@ -828,6 +898,33 @@ const TableComponent = ({
           >
             <Input />
           </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Bank Report"
+        onCancel={handleToggleModal}
+        open={downloadReport}
+        footer={false}
+      >
+        <Form
+          form={form}
+          className="pt-[10px]"
+          labelAlign="left"
+          labelCol={labelCol}
+          onFinish={downloadBankReport}
+        >
+          <RangePicker
+          className="w-72 h-12"
+          defaultValue={[dateRange.startDate, dateRange.endDate]}
+          presets={rangePresets}
+          onChange={onRangeChange}
+        />
+
+          <div className="flex justify-end">
+            <Button type="primary" loading={addLoading} htmlType="submit">
+              Download
+            </Button>
+          </div>
         </Form>
       </Modal>
     </div>
