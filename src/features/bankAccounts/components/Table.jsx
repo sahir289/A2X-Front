@@ -79,6 +79,7 @@ const TableComponent = ({
   // Password verification while deleting bank account
   const [verification, setVerification] = useState(false);
   const [downloadReport, setDownloadReport] = useState(false);
+  const [bankName, setBankName] = useState();
   const [addLoading, setAddLoading] = useState(false);
   const [form] = Form.useForm();
   const labelCol = { span: 10 };
@@ -147,27 +148,30 @@ const TableComponent = ({
     setDeleteRecord(deleteData);
   };
 
-  const downloadBankReport = async (record) => {
-    const formatSetting = {
-      'ID': record.id || '',
-      'Account Name': record.ac_name || '',
-      'Account Number': record.ac_no || '',
-      'Bank': record.bank_name || '',
-      'IFSC Code': record.ifsc || '',
-      'Account Holder Name': record.name || '',
-      'UPI ID': record.upi_id || '',
-      'BALANCE': record.balance || '',
-      'Bank Used For': record.bank_used_for || '',
-      'MIN Payin/Payout': record.min_payin || '',
-      'MAX Payin/Payout': record.max_payin || '',
+  const downloadBankReport = async () => {
+    const data = {
+      bankName: bankName,
+      startDate: dateRange.startDate.toISOString(),
+      endDate: dateRange.endDate.toISOString(),
     }
+    const res = await getApi("/get-bank-message",data)
+    const formatSetting = res?.data?.data?.map((record) => ({
+      'SNO': record.sno || '',
+      'ID': record.id || '',
+      'Status': record.status || '',
+      'Bank': record.bankName || '',
+      'Amount Code': record.amount_code || '',
+      'Amount': record.amount || '',
+      'UTR': record.utr || '',
+      'IS Used': record.is_used || '',
+    }))
     try {
       const csv = await json2csv(formatSetting);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      const fileName = `${record.ac_name}-Report-${formatDate(Date.now())}`.toLowerCase();
+      const fileName = `${bankName}-Report-${formatDate(Date.now())}`.toLowerCase();
       link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
@@ -178,7 +182,6 @@ const TableComponent = ({
   };
 
   const onRangeChange = (dates, dateStrings) => {
-    console.log(dates)
     if (dates) {
       let startDate = new Date(dateStrings[0]);
       startDate.setHours(0, 0, 0, 0)
@@ -188,26 +191,17 @@ const TableComponent = ({
         startDate: startDate,
         endDate: endDate,
       };
-      updateDashboardPeriod(newRange);
     }
-  };
-
-  const updateDashboardPeriod = (newRange) => {
-    setDateRange({
-      startDate: newRange.startDate,
-      endDate: newRange.endDate,
-    });
-    dispatch(
-      showNotification({
-        message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
-        status: 1,
-      })
-    );
   };
 
   // Password verification while deleting bank account
   const handleToggleModal = () => {
     setVerification(!verification);
+    form.resetFields();
+  };
+
+  const handleReportToggleModal = () => {
+    setDownloadReport(!downloadReport);
     form.resetFields();
   };
 
@@ -750,7 +744,10 @@ const TableComponent = ({
                     type="text"
                     icon={<DownloadOutlined />}
                     title="Download Report"
-                    onClick={() => setDownloadReport(true)}
+                    onClick={() => {
+                      setDownloadReport(true);
+                      setBankName(record.ac_name);
+                    }}
                   />
                 </div>
               );
@@ -901,31 +898,23 @@ const TableComponent = ({
         </Form>
       </Modal>
       <Modal
-        title="Bank Report"
-        onCancel={handleToggleModal}
+        title="Download Bank Report"
+        onCancel={handleReportToggleModal}
         open={downloadReport}
         footer={false}
       >
-        <Form
-          form={form}
-          className="pt-[10px]"
-          labelAlign="left"
-          labelCol={labelCol}
-          onFinish={downloadBankReport}
-        >
-          <RangePicker
-          className="w-72 h-12"
-          defaultValue={[dateRange.startDate, dateRange.endDate]}
-          presets={rangePresets}
-          onChange={onRangeChange}
-        />
+      <RangePicker
+      className="w-72 h-12"
+      defaultValue={[dateRange.startDate, dateRange.endDate]}
+      presets={rangePresets}
+      onChange={onRangeChange}
+      />
 
-          <div className="flex justify-end">
-            <Button type="primary" loading={addLoading} htmlType="submit">
-              Download
-            </Button>
-          </div>
-        </Form>
+      <div className="flex justify-end">
+        <Button type="primary" loading={addLoading} onClick={downloadBankReport} htmlType="submit">
+          Download
+        </Button>
+      </div>
       </Modal>
     </div>
   );
