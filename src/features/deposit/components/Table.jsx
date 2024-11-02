@@ -250,13 +250,25 @@ const TableComponent = ({
   //reset search fields
   const handleResetSearchFields = () => {
     setFilterValues({
-      status: allTable ? "" : filterValues?.status || "",
+      loggedInUserRole: userData.role,
+      sno: '',
+      upiShortCode: '',
+      confirmed: '',
+      amount: '',
+      merchantOrderId: '',
       merchantCode: `${userData?.code || ""}`,
       vendorCode: `${userData?.vendorCode || ""}`,
-      pageSize: 20,
-      page: 1,
+      userId: '',
+      userSubmittedUtr: '',
+      utr: '',
+      payInId: '',
+      dur: '',
+      bank: '',
+      status: '',
+      pageSize: 20,   // initial size
+      page: 1,  // initial size
     });
-    
+
     if (filterValues?.loggedInUserRole === "VENDOR" || filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ||filterValues?.loggedInUserRole === "MERCHANT_ADMIN" ||
       filterValues?.loggedInUserRole === "MERCHANT_OPERATIONS" ||
       filterValues?.loggedInUserRole === "MERCHANT" ) {
