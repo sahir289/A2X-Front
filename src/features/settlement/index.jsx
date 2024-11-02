@@ -137,7 +137,7 @@ export default function Settlement() {
 
     const payOutAmount = parseFloat(data.amount);
     const merchant = merchants.find(element => element.code === data.code);
-    
+
     // Validate if the amount is within the ranges
     const minPayout = parseFloat(merchant.min_payout);
     const maxPayout = parseFloat(merchant.max_payout);
@@ -146,9 +146,9 @@ export default function Settlement() {
       notification.error({
         message: `Amount must be between ${minPayout} and ${maxPayout}!`,
       });
-      
+
       setAddLoading(false);
-      return; 
+      return;
     }
 
     const res = await postApi("/create-settlement", data)
@@ -336,6 +336,7 @@ export default function Settlement() {
             rules={RequiredRule}
           >
             <Select
+              showSearch
               options={merchantOptions}
             />
           </Form.Item>
