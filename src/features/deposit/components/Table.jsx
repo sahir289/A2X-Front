@@ -1,8 +1,8 @@
 import {
+  BellTwoTone,
   CopyOutlined,
   ExclamationCircleOutlined,
-  SyncOutlined,
-  BellTwoTone
+  SyncOutlined
 } from "@ant-design/icons";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from "antd";
@@ -138,6 +138,7 @@ const TableComponent = ({
       isFront: true,
       filePath: selectedRecord?.user_submitted_image,
     };
+    const newNotificationMessage = "UTR Submitted Successfully"
     const utrRes = await postApi(
       `/process/${selectedRecord?.id}`,
       data
@@ -145,7 +146,10 @@ const TableComponent = ({
       setIsModalVisible(false);
       form.resetFields();
       setImgUtrSubmitLoading(false);
+      setFilterValues();
+      NotificationManager.success(newNotificationMessage, 'Success');
     });
+
   };
 
   const handleToggleModal = () => {
@@ -269,9 +273,9 @@ const TableComponent = ({
       page: 1,  // initial size
     });
 
-    if (filterValues?.loggedInUserRole === "VENDOR" || filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ||filterValues?.loggedInUserRole === "MERCHANT_ADMIN" ||
+    if (filterValues?.loggedInUserRole === "VENDOR" || filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" || filterValues?.loggedInUserRole === "MERCHANT_ADMIN" ||
       filterValues?.loggedInUserRole === "MERCHANT_OPERATIONS" ||
-      filterValues?.loggedInUserRole === "MERCHANT" ) {
+      filterValues?.loggedInUserRole === "MERCHANT") {
       setShowImageColumn(false);
     }
   };
@@ -378,10 +382,10 @@ const TableComponent = ({
                 )}
               <Button
                 className={`${userData?.role === "VENDOR" ||
-                    userData?.role === "VENDOR_OPERATIONS"
-                    ? `w-[80px] ${(allTable || inProgressTable) && "mr-2"}`
-                    : `${!(allTable || inProgressTable) ? "w-full" : "w-[178px]"
-                    }`
+                  userData?.role === "VENDOR_OPERATIONS"
+                  ? `w-[80px] ${(allTable || inProgressTable) && "mr-2"}`
+                  : `${!(allTable || inProgressTable) ? "w-full" : "w-[178px]"
+                  }`
                   }`}
                 onClick={handleResetSearchFields}
               >
@@ -563,8 +567,8 @@ const TableComponent = ({
                 >
                   {value}
                 </Tag>
-                {(record.is_notified === false && value === "SUCCESS")&& <BellTwoTone onClick={() => setNotified(record.id)} />}
-                {(record.is_notified && value === "SUCCESS")&& <BellTwoTone twoToneColor="#52c41a" />}
+                {(record.is_notified === false && value === "SUCCESS") && <BellTwoTone onClick={() => setNotified(record.id)} />}
+                {(record.is_notified && value === "SUCCESS") && <BellTwoTone twoToneColor="#52c41a" />}
               </span>
             </>
           )}
