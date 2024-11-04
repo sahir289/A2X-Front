@@ -264,7 +264,7 @@ const TableComponent = ({
       payInId: '',
       dur: '',
       bank: '',
-      status: '',
+      status: allTable ? "" : filterValues?.status || "",
       pageSize: 20,   // initial size
       page: 1,  // initial size
     });

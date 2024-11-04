@@ -267,6 +267,8 @@ const TableComponent = ({
       role:`${userData?.role}`,
       vendor_code: `${userData?.vendorCode || ""}`,
       code: `${userData?.code || ""}`,
+      startDate: dayjs().add(0, "day").startOf("day"),
+      endDate: dayjs().add(0, "day").endOf("day"),
       page: 1,
       pageSize: 20,
     });
