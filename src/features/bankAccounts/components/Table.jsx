@@ -1,22 +1,41 @@
-import { DeleteOutlined, EditOutlined, EyeOutlined, EyeTwoTone, EyeInvisibleOutlined, DownloadOutlined } from "@ant-design/icons";
-import { Button, Empty, Input, Switch, Table, Tooltip, Select, Modal, Form, DatePicker } from "antd";
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  EyeTwoTone,
+} from "@ant-design/icons";
+import {
+  Button,
+  DatePicker,
+  Empty,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Switch,
+  Table,
+  Tooltip,
+} from "antd";
 import Column from "antd/es/table/Column";
-import React, { useContext, useState, useEffect } from "react";
-import { getApi, putApi } from "../../../redux/api";
+import axios from "axios";
+import dayjs from "dayjs";
+import { json2csv } from "json-2-csv";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { getApi, postApi, putApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
-import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
-import { postApi } from "../../../redux/api";
-import axios from "axios";
-import { json2csv } from "json-2-csv";
-import dayjs from "dayjs";
-import { useDispatch } from "react-redux";
-import { showNotification } from "../../../redux/slice/headerSlice";
 const { RangePicker } = DatePicker;
 const rangePresets = [
   {
@@ -87,14 +106,14 @@ const TableComponent = ({
     {
       required: true,
       message: "${label} is Required!",
-    }
-  ]
+    },
+  ];
   const [dateRange, setDateRange] = useState({
     startDate: dayjs().add(0, "day").startOf("day"),
     endDate: dayjs().add(0, "day").endOf("day"),
   });
-  const navigate = useNavigate()
-  const userData = useContext(PermissionContext)
+  const navigate = useNavigate();
+  const userData = useContext(PermissionContext);
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -130,7 +149,7 @@ const TableComponent = ({
     if (merchant.error?.error?.response?.status === 401) {
       NotificationManager.error(merchant?.error?.message, 401);
       localStorage.clear();
-      navigate('/')
+      navigate("/");
     }
 
     setAllMerchants(merchant?.data?.data?.merchants);
@@ -153,38 +172,40 @@ const TableComponent = ({
       bankName: bankName,
       startDate: dateRange.startDate.toISOString(),
       endDate: dateRange.endDate.toISOString(),
-    }
-    const res = await getApi("/get-bank-message",data)
+    };
+    const res = await getApi("/get-bank-message", data);
     const formatSetting = res?.data?.data?.map((record) => ({
-      'SNO': record.sno || '',
-      'ID': record.id || '',
-      'Status': record.status || '',
-      'Bank': record.bankName || '',
-      'Amount Code': record.amount_code || '',
-      'Amount': record.amount || '',
-      'UTR': record.utr || '',
-      'IS Used': record.is_used || '',
-    }))
+      SNO: record.sno || "",
+      ID: record.id || "",
+      Status: record.status || "",
+      Bank: record.bankName || "",
+      "Amount Code": record.amount_code || "",
+      Amount: record.amount || "",
+      UTR: record.utr || "",
+      "IS Used": record.is_used || "",
+    }));
     try {
       const csv = await json2csv(formatSetting);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.href = url;
-      const fileName = `${bankName}-Report-${formatDate(Date.now())}`.toLowerCase();
-      link.setAttribute('download', fileName);
+      const fileName = `${bankName}-Report-${formatDate(
+        Date.now()
+      )}`.toLowerCase();
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error converting data to CSV:', error);
+      console.error("Error converting data to CSV:", error);
     }
   };
 
   const onRangeChange = (dates, dateStrings) => {
     if (dates) {
       let startDate = new Date(dateStrings[0]);
-      startDate.setHours(0, 0, 0, 0)
+      startDate.setHours(0, 0, 0, 0);
       let endDate = new Date(dateStrings[1]);
       endDate.setHours(23, 59, 59, 999);
       const newRange = {
@@ -218,28 +239,27 @@ const TableComponent = ({
     setIsEditModalVisible(true);
   };
   const verifyPassword = async (data) => {
-    setAddLoading(true)
+    setAddLoading(true);
     const verifyPasswordData = {
       userName: userData.userName,
       password: data.password,
-    }
+    };
     const res = await postApi("/verify-password", verifyPasswordData);
-    setAddLoading(false)
+    setAddLoading(false);
     if (res?.data?.statusCode === 200) {
       setIsDeletePanelOpen(true);
       handleToggleModal();
-    }
-    else {
-      NotificationManager.error(res?.error?.message)
+    } else {
+      NotificationManager.error(res?.error?.message);
     }
   };
 
   const handleEditSubmit = async () => {
-    setAddLoading(true)
+    setAddLoading(true);
     try {
       const updatedValues = await form.validateFields();
-      const  updatedData = {
-        id:  selectedRecord.id,
+      const updatedData = {
+        id: selectedRecord.id,
         name: updatedValues.name,
         ac_no: updatedValues.ac_no,
         ifsc: updatedValues.ifsc,
@@ -247,8 +267,8 @@ const TableComponent = ({
         min_payin: updatedValues.min_payin,
         max_payin: updatedValues.max_payin,
       };
-      const res = await putApi("/update-bank-details",  updatedData);
-      setAddLoading(false)
+      const res = await putApi("/update-bank-details", updatedData);
+      setAddLoading(false);
       if (res?.data?.statusCode === 200) {
         NotificationManager.success(res?.data?.message);
       }
@@ -264,7 +284,7 @@ const TableComponent = ({
       ac_no: "",
       upi_id: "",
       bank_used_for: "", // bank used for filtering
-      role:`${userData?.role}`,
+      role: `${userData?.role}`,
       vendor_code: `${userData?.vendorCode || ""}`,
       code: `${userData?.code || ""}`,
       startDate: dayjs().add(0, "day").startOf("day"),
@@ -279,11 +299,11 @@ const TableComponent = ({
   }, []);
 
   const getAllVendor = async () => {
-    let data = await getApi("/getall-vendor")
+    let data = await getApi("/getall-vendor");
     setAllVendors(data.data.data);
-  }
+  };
 
-  let tableData = data?.bankAccRes?.map(item => {
+  let tableData = data?.bankAccRes?.map((item) => {
     if (item.vendor_code === "null") {
       return { ...item, vendor_code: "" };
     }
@@ -905,18 +925,26 @@ const TableComponent = ({
         open={downloadReport}
         footer={false}
       >
-      <RangePicker
-      className="w-72 h-12"
-      defaultValue={[dateRange.startDate, dateRange.endDate]}
-      presets={rangePresets}
-      onChange={onRangeChange}
-      />
+        <RangePicker
+          className="w-72 h-12"
+          defaultValue={[dateRange.startDate, dateRange.endDate]}
+          presets={rangePresets}
+          onChange={onRangeChange}
+          disabledDate={(current) =>
+            current && current > new Date().setHours(23, 59, 59, 999)
+          }
+        />
 
-      <div className="flex justify-end">
-        <Button type="primary" loading={addLoading} onClick={downloadBankReport} htmlType="submit">
-          Download
-        </Button>
-      </div>
+        <div className="flex justify-end">
+          <Button
+            type="primary"
+            loading={addLoading}
+            onClick={downloadBankReport}
+            htmlType="submit"
+          >
+            Download
+          </Button>
+        </div>
       </Modal>
     </div>
   );
