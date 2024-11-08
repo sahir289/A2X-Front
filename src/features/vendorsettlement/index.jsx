@@ -288,8 +288,7 @@ export default function Settlement() {
                 name="refrence_id"
                 label="UTR Number"
                 rules={[
-                  { RequiredRule },
-                  { pattern: /^\d{12}$/, message: 'UTR Number must be exactly 12 digits' }
+                  { RequiredRule }
                 ]}
               >
                 <Input size="large" />

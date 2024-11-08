@@ -36,6 +36,7 @@ const PayinComponent = () => {
     const formatSetting = res.data.data.map((el) => ({
       'ID': el.sno || '',
       'Short Code': el.upi_short_code || '',
+      'Commission': el.payin_commission || '',
       'User Amount': el.amount || '',
       'UTR': el.utr || '',
       'Received Amount': el.confirmed || '',

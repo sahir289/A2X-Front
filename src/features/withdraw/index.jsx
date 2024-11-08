@@ -280,7 +280,7 @@ const Withdraw = ({ type }) => {
     }
     const payOutAmount = parseFloat(data.amount);
     const merchant = merchantData.find(element => element.code === data.code);
-    
+
     // Validate if the amount is within the ranges
     const minPayout = parseFloat(merchant.min_payout);
     const maxPayout = parseFloat(merchant.max_payout);
@@ -289,9 +289,9 @@ const Withdraw = ({ type }) => {
       notification.error({
         message: `Amount must be between ${minPayout} and ${maxPayout}!`,
       });
-      
+
       setAddLoading(false);
-      return; 
+      return;
     }
 
     const res = await postApiForWithdrawCreation("/create-payout", { ...data, vendor_code: userData?.vendorCode }, { "x-api-key": `${selectedMerchant?.api_key}` }).then((res) => {
@@ -461,11 +461,7 @@ const Withdraw = ({ type }) => {
                     {
                       required: true,
                       message: "Please enter UTR no",
-                    },
-                    {
-                      pattern: /^\d{12}$/,
-                      message: "UTR number must be exactly 12 digits",
-                    },
+                    }
                   ]}
                 >
                   <Input />
