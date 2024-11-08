@@ -26,9 +26,8 @@ import {
 import Table from "./components/Table";
 
 const Withdraw = ({ type }) => {
-
   const style = {
-    width: 'calc(100% - 256px)'
+    width: "calc(100% - 256px)",
   };
 
   const timer = useRef(null);
@@ -56,30 +55,33 @@ const Withdraw = ({ type }) => {
     page: 1,
     take: 20,
   });
-  const [selectedMerchant, setSelectedMerchant] = useState('')
+  const [selectedMerchant, setSelectedMerchant] = useState("");
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
-    ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code.includes(merchant.code))
-    .map(merchant => ({
+    ?.filter(
+      (merchant) =>
+        (!merchant.is_deleted && !userData?.code?.length) ||
+        userData?.code.includes(merchant.code)
+    )
+    .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
     }));
   const [vendorData, setVendorData] = useState([]);
-  const vendorOptions = vendorData?.map(vendor => ({
+  const vendorOptions = vendorData?.map((vendor) => ({
     label: vendor.vendor_code,
     value: vendor.vendor_code,
   }));
   // State to store the payout banks
   const [payOutBankData, setPayOutBankData] = useState([]);
-  const payOutBankOptions = payOutBankData?.map(payOutBank => ({
+  const payOutBankOptions = payOutBankData?.map((payOutBank) => ({
     label: payOutBank.name,
     value: payOutBank.name,
   }));
   const [filterValues, setFilterValues] = useState({
-    vendor_code:`${userData?.vendorCode}`,
+    vendor_code: `${userData?.vendorCode}`,
   });
-
 
   useEffect(() => {
     handleGetWithdraws();
@@ -123,19 +125,22 @@ const Withdraw = ({ type }) => {
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      const isAdminOrTransactions = userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS';
-      const isMerchantAdmin = userData.role === 'MERCHANT_ADMIN';
+      const isAdminOrTransactions =
+        userData.role === "ADMIN" || userData.role === "TRANSACTIONS";
+      const isMerchantAdmin = userData.role === "MERCHANT_ADMIN";
 
       const updatedQuery = {
         ...queryObj,
         code: isAdminOrTransactions
           ? queryObj.code || null
           : isMerchantAdmin
-            ? queryObj.code || userData?.code
-            : userData?.code || queryObj.code || null,
+          ? queryObj.code || userData?.code
+          : userData?.code || queryObj.code || null,
         ...(isAdminOrTransactions
           ? {}
-          : { vendorCode: userData?.vendorCode || queryObj.vendorCode || null })
+          : {
+              vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
+            }),
       };
       getPayoutList(updatedQuery);
     }, 1500);
@@ -148,7 +153,7 @@ const Withdraw = ({ type }) => {
 
   //Function to fetch all the payout banks
   const fetchPayoutBankData = async () => {
-    const res = await getApi("/get-payout-bank",filterValues);
+    const res = await getApi("/get-payout-bank", filterValues);
     setPayOutBankData(res?.data?.data);
   };
 
@@ -161,12 +166,12 @@ const Withdraw = ({ type }) => {
         type == "In Progress"
           ? "INITIATED"
           : type == "Completed"
-            ? "SUCCESS"
-            : "";
+          ? "SUCCESS"
+          : "";
     }
     if (queryObj?.vendor_code) {
       queryObject.vendorCode = queryObj.vendor_code;
-      delete queryObject.vendor_code
+      delete queryObject.vendor_code;
     }
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
@@ -265,13 +270,12 @@ const Withdraw = ({ type }) => {
     }
   };
 
-
   const handleSubmit = async (data) => {
     setAddLoading(true);
     // Validate the IFSC code before proceeding
     const ifscValidation = await validateIfscCode(data?.ifsc_code);
     if (!ifscValidation) {
-      setAddLoading(false)
+      setAddLoading(false);
       api.error({
         message: "Invalid IFSC Code",
         description: "Please enter a valid IFSC code.",
@@ -279,7 +283,7 @@ const Withdraw = ({ type }) => {
       return;
     }
     const payOutAmount = parseFloat(data.amount);
-    const merchant = merchantData.find(element => element.code === data.code);
+    const merchant = merchantData.find((element) => element.code === data.code);
 
     // Validate if the amount is within the ranges
     const minPayout = parseFloat(merchant.min_payout);
@@ -294,19 +298,24 @@ const Withdraw = ({ type }) => {
       return;
     }
 
-    const res = await postApiForWithdrawCreation("/create-payout", { ...data, vendor_code: userData?.vendorCode }, { "x-api-key": `${selectedMerchant?.api_key}` }).then((res) => {
-      if (res?.error) {
-        api.error({ description: res.error.message });
-        return;
-      }
-    }).catch((err) => {
-    }).finally(() => {
-      setAddLoading(false);
-      handleToggleModal();
-      handleGetWithdraws();
-      setSelectedMerchant('')
-    });
-
+    const res = await postApiForWithdrawCreation(
+      "/create-payout",
+      { ...data, vendor_code: userData?.vendorCode },
+      { "x-api-key": `${selectedMerchant?.api_key}` }
+    )
+      .then((res) => {
+        if (res?.error) {
+          api.error({ description: res.error.message });
+          return;
+        }
+      })
+      .catch((err) => {})
+      .finally(() => {
+        setAddLoading(false);
+        handleToggleModal();
+        handleGetWithdraws();
+        setSelectedMerchant("");
+      });
   };
 
   const handleAddVendor = async (data) => {
@@ -314,8 +323,8 @@ const Withdraw = ({ type }) => {
     let apiData = {
       withdrawId: selectedData,
       // here i have changed code to vendor code.
-      vendorCode: data.vendorCode.toString()
-    }
+      vendorCode: data.vendorCode.toString(),
+    };
 
     const res = await putApi("/update-vendor-code", apiData);
     setAddLoading(false);
@@ -324,13 +333,13 @@ const Withdraw = ({ type }) => {
       return;
     }
     handleToggleAddVendorModal();
-    setSelectedData([])
+    setSelectedData([]);
     handleGetWithdraws();
   };
 
   const handleData = (data) => {
-    setSelectedData(data)
-  }
+    setSelectedData(data);
+  };
 
   //Select UTR Method
   const handleSelectUTRMethod = (selectedMethod) => {
@@ -341,6 +350,7 @@ const Withdraw = ({ type }) => {
   const handleResetSearchFields = () => {
     setFilters({});
   };
+  const handleDownloadExcel = () => {};
 
   const hasSelected = selectedData.length > 0;
 
@@ -352,19 +362,34 @@ const Withdraw = ({ type }) => {
         <div className="flex justify-between mb-[10px] max-[500px]:flex-col max-[500px]:gap-[10px]">
           <p className="text-lg font-medium p-[5px]">{type}</p>
           <div className="flex items-start gap-4 max-[500px]:justify-end">
-            <div className="flex flex-col items-start">
-              {!(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
-                (<Button
+            <div className="flex flex-col items-end">
+              {!(
+                userData?.role === "VENDOR" ||
+                userData?.role === "VENDOR_OPERATIONS"
+              ) && (
+                <Button
                   icon={<PlusOutlined />}
                   type="primary"
                   onClick={handleToggleModal}
                 >
                   New Payout
-                </Button>)}
-
-              <Button className="mt-2 w-full" onClick={handleResetSearchFields}>
-                Reset
-              </Button>
+                </Button>
+              )}
+              <div className="flex gap-2">
+                <Button
+                  className="mt-2 w-full"
+                  onClick={handleResetSearchFields}
+                >
+                  Reset
+                </Button>
+                <Button
+                  className="mt-2 w-full"
+                  type="primary"
+                  onClick={handleDownloadExcel}
+                >
+                  Download Excel
+                </Button>
+              </div>
             </div>
             <Button
               type="text"
@@ -403,7 +428,7 @@ const Withdraw = ({ type }) => {
           />
         </div>
       </div>
-      {hasSelected ?
+      {hasSelected ? (
         <div className="fixed bottom-0 w-full z-99" style={style}>
           <div className="bg-white p-[8px] font-serif">
             <div className="flex justify-between">
@@ -420,12 +445,10 @@ const Withdraw = ({ type }) => {
               >
                 Add Vendor
               </Button>
-
             </div>
           </div>
         </div>
-        : null
-      }
+      ) : null}
 
       <Modal
         title="Withdraw"
@@ -449,9 +472,7 @@ const Withdraw = ({ type }) => {
               </Form.Item>
               {/* Select to choose payout bank */}
               <Form.Item name="from_bank" label="Select Bank">
-                <Select
-                  options={payOutBankOptions}
-                />
+                <Select options={payOutBankOptions} />
               </Form.Item>
               {selectedUTRMethod === "manual" && (
                 <Form.Item
@@ -461,7 +482,7 @@ const Withdraw = ({ type }) => {
                     {
                       required: true,
                       message: "Please enter UTR no",
-                    }
+                    },
                   ]}
                 >
                   <Input />
@@ -496,8 +517,16 @@ const Withdraw = ({ type }) => {
       >
         <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleSubmit}>
           <Form.Item name="code" label="Merchant Code" rules={RequiredRule}>
-            <Select showSearch placeholder={""} defaultActiveFirstOption={false} options={merchantOptions}
-              onSelect={(e) => { setSelectedMerchant(merchantData?.find(item => item.code === e)) }}
+            <Select
+              showSearch
+              placeholder={""}
+              defaultActiveFirstOption={false}
+              options={merchantOptions}
+              onSelect={(e) => {
+                setSelectedMerchant(
+                  merchantData?.find((item) => item.code === e)
+                );
+              }}
             />
           </Form.Item>
           <Form.Item
@@ -511,11 +540,14 @@ const Withdraw = ({ type }) => {
             <Input />
           </Form.Item>
           <Form.Item name="acc_no" label="Account Number">
-            <Input type="number" onKeyUp={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                e.preventDefault();
-              }
-            }} />
+            <Input
+              type="number"
+              onKeyUp={(e) => {
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item
             name="acc_holder_name"
@@ -525,7 +557,9 @@ const Withdraw = ({ type }) => {
               {
                 validator: (_, value) => {
                   if (!/^[A-Za-z\s]*$/.test(value)) {
-                    return Promise.reject(new Error('Name must contain only alphabets.'));
+                    return Promise.reject(
+                      new Error("Name must contain only alphabets.")
+                    );
                   }
                   return Promise.resolve();
                 },
@@ -538,7 +572,6 @@ const Withdraw = ({ type }) => {
                   e.preventDefault();
                 }
               }}
-
             />
           </Form.Item>
 
@@ -565,7 +598,11 @@ const Withdraw = ({ type }) => {
         width={600}
         destroyOnClose
       >
-        <Form labelAlign="left" labelCol={{ span: 8 }} onFinish={handleAddVendor}>
+        <Form
+          labelAlign="left"
+          labelCol={{ span: 8 }}
+          onFinish={handleAddVendor}
+        >
           <Form.Item name="vendorCode" label="Vendor Code" rules={RequiredRule}>
             <Select options={vendorOptions} />
           </Form.Item>
