@@ -11,6 +11,14 @@ import { showNotification } from "../../redux/slice/headerSlice";
 import { formatCurrency } from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// Set default timezone globally to IST
+dayjs.tz.setDefault("Asia/Kolkata");
 
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
@@ -59,9 +67,10 @@ function Dashboard() {
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().add(0, "day").startOf("day"),
-    endDate: dayjs().add(0, "day").endOf("day"),
+    startDate : dayjs().tz('Asia/Kolkata').startOf("day"),
+    endDate : dayjs().tz('Asia/Kolkata').endOf("day"),
   });
+
   const dispatch = useDispatch();
   const debounceRef = useRef();
 
