@@ -9,6 +9,8 @@ import {
   Tooltip,
 } from "chart.js";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import TitleCard from "../../../components/Cards/TitleCard";
@@ -23,15 +25,23 @@ ChartJS.register(
   Legend
 );
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// Set default timezone globally to IST
+dayjs.tz.setDefault("Asia/Kolkata");
+
 function BarChart({ title, data, interval, setInterval, currentCateRange }) {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [{ label: "", data: [], backgroundColor: "" }],
   });
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().subtract(15, "day"),
-    endDate: dayjs(),
+    startDate: dayjs.tz(dayjs().subtract(15, "day"), "Asia/Kolkata"),
+    endDate: dayjs.tz(dayjs(), "Asia/Kolkata"),
   });
+
+
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -124,13 +134,13 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
         ) {
           dayData = data.filter(
             (item) =>
-              dayjs(item.createdAt).startOf("hour").format("h:mm A") == date &&
-              new Date(item.createdAt).getDate() ==
-              new Date(dateRange.startDate).getDate()
+              dayjs(item.updatedAt).startOf("hour").format("h:mm A") == date &&
+              new Date(item.updatedAt).getDate() ==
+                new Date(dateRange.startDate).getDate()
           );
         } else {
           dayData = data.filter(
-            (item) => dayjs(item.createdAt).format("YYYY-MM-DD") === date
+            (item) => dayjs(item.updatedAt).format("YYYY-MM-DD") === date
           );
         }
         const total = dayData.reduce(
