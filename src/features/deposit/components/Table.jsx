@@ -302,6 +302,7 @@ const TableComponent = ({
     try {
       setAddLoading(true)
       const values = await resetForm.validateFields();
+      let resetTransaction
       let payload = {}
       if (recordStatus === "DUPLICATE") {
         payload = {
@@ -315,8 +316,13 @@ const TableComponent = ({
         }
       }
 
-      const resetTransaction = `/update-duplicatedisputetransaction/${resetRecord.id}`;
-
+      if (recordStatus === "BANK_MISMATCH")
+      {
+        resetTransaction = `/update-deposit-status/${resetRecord.merchant_order_id}`;
+      }
+      else {
+        resetTransaction = `/update-duplicatedisputetransaction/${resetRecord.id}`;
+      }
       const response = await putApi(resetTransaction, payload);
       setAddLoading(false);
 
@@ -859,7 +865,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
           render={(text, record) =>
-            record.status === "DISPUTE" || record.status === "DUPLICATE" ? (
+            record.status === "DISPUTE" || record.status === "DUPLICATE"  || record.status === "BANK_MISMATCH" ? (
               <Button
                 onClick={() => {
                   showResetModal(record);
@@ -986,6 +992,7 @@ const TableComponent = ({
           {paymentUrl}
         </div>
       </Modal>
+
       <Modal
         title={<div className="flex">Update Transaction</div>}
         open={isResetModalVisible}
@@ -1050,6 +1057,19 @@ const TableComponent = ({
               </Form.Item>
             </>
           )}
+
+          {recordStatus === "BANK_MISMATCH" && (
+            <>
+              <Form.Item
+                name="bank_name"
+                label="Enter Bank Name"
+              // initialValue={generatedUtr}
+              >
+                <Input type="text" />
+              </Form.Item>
+            </>
+          )}
+
           <div className="flex justify-end">
             <Button type="primary" loading={addLoading} htmlType="submit" >
               Success
