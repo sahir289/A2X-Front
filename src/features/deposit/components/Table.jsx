@@ -58,11 +58,12 @@ const TableComponent = ({
   const [confirmAmount, setConfirmAmount] = useState("");
   const [recordStatus, setRecordStatus] = useState();
   const [showImageColumn, setShowImageColumn] = useState(true);
+  const [merchantCodeList, setMerchantCodeList] = useState(["mgm91", "LS", "dreamcasino", "khelomama", "matkafun", "shakunimama", "kbc", "easygames"])
 
   useEffect(() => {
     if (generatedUtr) {
       // Programmatically set the form values after fetching data
-      form.setFieldsValue({
+      resetForm.setFieldsValue({
         utr: generatedUtr,
         user_submitted_utr: generatedUtr,
       });
@@ -300,45 +301,39 @@ const TableComponent = ({
 
   const handleResetModal = async (data) => {
     try {
-      setAddLoading(true)
+      setAddLoading(true);
       const values = await resetForm.validateFields();
-      let resetTransaction
-      let payload = {}
+      let resetTransaction;
+      let payload = {};
+
       if (recordStatus === "DUPLICATE") {
         payload = {
           ...data,
-          confirmed: confirmAmount
-        }
-      }
-      else {
-        payload = {
-          ...data,
-        }
+          confirmed: confirmAmount,
+        };
+      } else {
+        payload = { ...data };
       }
 
-      if (recordStatus === "BANK_MISMATCH")
-      {
+      if (recordStatus === "BANK_MISMATCH") {
         resetTransaction = `/update-deposit-status/${resetRecord.merchant_order_id}`;
-      }
-      else {
+      } else {
         resetTransaction = `/update-duplicatedisputetransaction/${resetRecord.id}`;
       }
+
       const response = await putApi(resetTransaction, payload);
-      setAddLoading(false);
 
       if (response.data.statusCode === 200) {
         NotificationManager.success("Transaction reset successfully");
-
         setIsResetModalVisible(false);
-
         fetchUsersData();
       } else {
         NotificationManager.error("Failed to reset transaction");
       }
     } catch (error) {
-      NotificationManager.error(
-        "An error occurred while resetting the transaction"
-      );
+      NotificationManager.error("An error occurred while resetting the transaction");
+    } finally {
+      setAddLoading(false);
     }
   };
 
@@ -865,7 +860,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
           render={(text, record) =>
-            record.status === "DISPUTE" || record.status === "DUPLICATE"  || record.status === "BANK_MISMATCH" ? (
+            record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH" ? (
               <Button
                 onClick={() => {
                   showResetModal(record);
@@ -875,6 +870,7 @@ const TableComponent = ({
                     : setConfirmAmount(record.amount);
                 }}
                 style={{ marginLeft: "8px" }}
+                disabled={(record.status === "DISPUTE" && merchantCodeList.includes(record?.Merchant?.code)) ? true : false}
               >
                 Reset
               </Button>
@@ -1000,7 +996,7 @@ const TableComponent = ({
         footer={false}
       >
         <Form
-          form={form}
+          form={resetForm}
           className="pt-[10px]"
           labelAlign="left"
           labelCol={labelCol}
@@ -1011,7 +1007,6 @@ const TableComponent = ({
               <Form.Item
                 name="user_submitted_utr"
                 label="User Submitted UTR"
-              // initialValue={generatedUtr}
               >
                 <Input type="text" disabled />
               </Form.Item>
@@ -1063,18 +1058,17 @@ const TableComponent = ({
               <Form.Item
                 name="bank_name"
                 label="Enter Bank Name"
-              // initialValue={generatedUtr}
               >
                 <Input type="text" />
               </Form.Item>
             </>
           )}
 
-          <div className="flex justify-end">
-            <Button type="primary" loading={addLoading} htmlType="submit" >
+          <Form.Item className="flex justify-end">
+            <Button type="primary" loading={addLoading} htmlType="submit">
               Success
             </Button>
-          </div>
+          </Form.Item>
         </Form>
       </Modal>
 
