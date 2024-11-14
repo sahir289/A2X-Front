@@ -70,6 +70,7 @@ function Dashboard() {
     startDate : dayjs().tz('Asia/Kolkata').startOf("day"),
     endDate : dayjs().tz('Asia/Kolkata').endOf("day"),
   });
+  const [getnetBalance, setNetBalance] = useState();
 
   const dispatch = useDispatch();
   const debounceRef = useRef();
@@ -104,9 +105,20 @@ function Dashboard() {
         `/get-payInDataMerchant?${query}`,
         dateRange
       );
+      const netBalance = await getApi(
+        `/get-merchants-net-balance?${query}`
+      );
+
+      if (netBalance.error) {
+        return;
+      }
+
       if (payInOutData.error) {
         return;
       }
+
+      const netBalanceAmount = netBalance?.data?.data?.totalNetBalance;
+      setNetBalance(netBalanceAmount);
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
@@ -256,7 +268,7 @@ function Dashboard() {
                       <div className="flex justify-between">
                         <p>Net Balance</p>
                         <p className="font-bold">
-                          {formatCurrency(data.value)}
+                          {formatCurrency(getnetBalance)}
                         </p>
                       </div>
                     )}
