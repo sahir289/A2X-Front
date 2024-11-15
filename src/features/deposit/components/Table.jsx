@@ -56,9 +56,26 @@ const TableComponent = ({
   const [amount, setAmount] = useState("");
   const [generatedUtr, setGenereatedUtr] = useState("");
   const [confirmAmount, setConfirmAmount] = useState("");
+  const [bankOptions, setBankOptions] = useState([])
   const [recordStatus, setRecordStatus] = useState();
   const [showImageColumn, setShowImageColumn] = useState(true);
   const [merchantCodeList, setMerchantCodeList] = useState(["mgm91", "LS", "dreamcasino", "khelomama", "matkafun", "shakunimama", "kbc", "easygames"])
+  const fetchAllPayInBank = async () => {
+    const data = await getApi("/getAll-Payin-bank").then((res) => {
+      setBankOptions(res?.data?.data)
+    }).catch((err) => {
+    })
+
+  }
+
+  useEffect(() => {
+    fetchAllPayInBank()
+  }, [])
+
+  const bankOptionsData = bankOptions.map(bank => ({
+    label: bank?.ac_name,
+    value: bank?.ac_name,
+  }))
 
   useEffect(() => {
     if (generatedUtr) {
@@ -1058,8 +1075,17 @@ const TableComponent = ({
               <Form.Item
                 name="bank_name"
                 label="Enter Bank Name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the bank!",
+                  },
+                ]}
               >
-                <Input type="text" />
+                <Select placeholder="Please select"
+                  showSearch={true}
+                  options={bankOptionsData}
+                />
               </Form.Item>
             </>
           )}
