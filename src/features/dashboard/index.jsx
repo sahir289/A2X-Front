@@ -194,6 +194,11 @@ function Dashboard() {
             settlementAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
+        {
+          title: "Total Net Balance",
+          value: getnetBalance,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
       ]);
     } catch (error) {
       console.log(error);
@@ -268,7 +273,15 @@ function Dashboard() {
                       <div className="flex justify-between">
                         <p>Net Balance</p>
                         <p className="font-bold">
-                          {formatCurrency(getnetBalance)}
+                          {formatCurrency(data.value)}
+                        </p>
+                      </div>
+                    )}
+                    {data.title === "Total Net Balance" && (
+                      <div className="flex justify-between">
+                        <p>Lifetime Net Balance</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
                         </p>
                       </div>
                     )}
