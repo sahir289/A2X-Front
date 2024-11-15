@@ -70,7 +70,6 @@ function Dashboard() {
     startDate : dayjs().tz('Asia/Kolkata').startOf("day"),
     endDate : dayjs().tz('Asia/Kolkata').endOf("day"),
   });
-  const [getnetBalance, setNetBalance] = useState();
 
   const dispatch = useDispatch();
   const debounceRef = useRef();
@@ -118,7 +117,6 @@ function Dashboard() {
       }
 
       const netBalanceAmount = netBalance?.data?.data?.totalNetBalance;
-      setNetBalance(netBalanceAmount);
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
@@ -196,7 +194,7 @@ function Dashboard() {
         },
         {
           title: "Total Net Balance",
-          value: getnetBalance,
+          value: netBalanceAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
       ]);
@@ -220,7 +218,8 @@ function Dashboard() {
             return (
               data.title !== "Commission" &&
               data.title !== "Net Balance" &&
-              data.title !== "Settlement" && (
+              data.title !== "Settlement" &&
+              data.title !== "Total Net Balance" && (
                 <DashboardStats key={index} {...data} colorIndex={index} />
               )
             );
@@ -279,7 +278,7 @@ function Dashboard() {
                     )}
                     {data.title === "Total Net Balance" && (
                       <div className="flex justify-between">
-                        <p>Lifetime Net Balance</p>
+                        <p>Lifetime Balance</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>
