@@ -135,7 +135,7 @@ function Dashboard() {
       let settlementAmount = 0;
 
       payInData?.forEach((data) => {
-        payInAmount += Number(data.amount);
+        payInAmount += Number(data.confirmed);
         payInCommission += Number(data.payin_commission);
         payInCount += 1;
       });
