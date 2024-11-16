@@ -21,6 +21,8 @@ import {
 import Column from "antd/es/table/Column";
 import axios from "axios";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { json2csv } from "json-2-csv";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -36,39 +38,59 @@ import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const { RangePicker } = DatePicker;
 const rangePresets = [
   {
     label: "Today",
     value: [
-      dayjs().add(0, "day").startOf("day"),
-      dayjs().add(0, "day").endOf("day"),
+      dayjs().tz("Asia/Kolkata").startOf("day"),
+      dayjs().tz("Asia/Kolkata").endOf("day"),
     ],
   },
   {
     label: "Yesterday",
     value: [
-      dayjs().add(-1, "day").startOf("day"),
-      dayjs().add(-1, "day").endOf("day"),
+      dayjs().tz("Asia/Kolkata").subtract(1, "day").startOf("day"),
+      dayjs().tz("Asia/Kolkata").subtract(1, "day").endOf("day"),
     ],
   },
   {
     label: "Last 7 days",
-    value: [dayjs().add(-7, "d"), dayjs().endOf("day")],
+    value: [
+      dayjs().tz("Asia/Kolkata").subtract(7, "day"),
+      dayjs().tz("Asia/Kolkata").endOf("day"),
+    ],
+  },
+  {
+    label: "Last 15 days",
+    value: [
+      dayjs().tz("Asia/Kolkata").subtract(15, "day"),
+      dayjs().tz("Asia/Kolkata").endOf("day"),
+    ],
   },
   {
     label: "Last 30 days",
-    value: [dayjs().add(-30, "d"), dayjs().endOf("day")],
+    value: [
+      dayjs().tz("Asia/Kolkata").subtract(30, "day"),
+      dayjs().tz("Asia/Kolkata").endOf("day"),
+    ],
   },
   {
     label: "This Month",
-    value: [dayjs().startOf("month"), dayjs().endOf("month")],
+    value: [
+      dayjs().tz("Asia/Kolkata").startOf("month"),
+      dayjs().tz("Asia/Kolkata").endOf("month"),
+    ],
   },
   {
     label: "Last Month",
     value: [
-      dayjs().add(-1, "month").startOf("month"),
-      dayjs().add(-1, "month").endOf("month"),
+      dayjs().tz("Asia/Kolkata").subtract(1, "month").startOf("month"),
+      dayjs().tz("Asia/Kolkata").subtract(1, "month").endOf("month"),
     ],
   },
 ];
@@ -109,8 +131,8 @@ const TableComponent = ({
     },
   ];
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().add(0, "day").startOf("day"),
-    endDate: dayjs().add(0, "day").endOf("day"),
+    startDate: dayjs().tz("Asia/Kolkata").startOf("day"),
+    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
   });
   const navigate = useNavigate();
   const userData = useContext(PermissionContext);
@@ -204,10 +226,11 @@ const TableComponent = ({
 
   const onRangeChange = (dates, dateStrings) => {
     if (dates) {
-      let startDate = new Date(dateStrings[0]);
-      startDate.setHours(0, 0, 0, 0);
-      let endDate = new Date(dateStrings[1]);
-      endDate.setHours(23, 59, 59, 999);
+      const startDate = dayjs(dates[0])
+        .tz("Asia/Kolkata")
+        .startOf("day")
+        .toDate();
+      const endDate = dayjs(dates[1]).tz("Asia/Kolkata").endOf("day").toDate();
       const newRange = {
         startDate: startDate,
         endDate: endDate,
@@ -709,73 +732,73 @@ const TableComponent = ({
         {(userData?.role === "ADMIN" ||
           userData?.role === "TRANSACTIONS" ||
           userData?.role === "OPERATIONS") && (
-          <Column
-            title={
-              <>
-                Merchants
-                <br />
-                <Input
-                  disabled
-                  style={{
-                    backgroundColor: "#fafafa",
-                    border: "none",
-                    cursor: "auto",
-                  }}
-                />
-              </>
-            }
-            dataIndex="merchants"
-            key="merchants"
-            className="bg-white"
-            width={"6%"}
-            render={(_, record) => {
-              return (
-                <div className="whitespace-nowrap flex gap-2">
-                  <Tooltip
-                    color="white"
-                    placement="bottomRight"
-                    title={
-                      <div className="flex flex-col gap-1 text-black p-2">
-                        <div className="font-bold">Merchant List</div>
-                        {(record?.merchants?.length > 0 &&
-                          record?.merchants?.map((merchant) => (
-                            <p key={merchant?.id}>{merchant?.code}</p>
-                          ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                      </div>
-                    }
-                  >
-                    <Button type="text" icon={<EyeOutlined />} />
-                  </Tooltip>
-
-                  <Button
-                    type="text"
-                    icon={<EditOutlined />}
-                    disabled={record?.bank_used_for === "payIn" ? false : true}
-                    title="Edit"
-                    onClick={() => showModal(record)}
-                  />
-
-                  <Button
-                    type="text"
-                    icon={<DeleteOutlined />}
-                    title="Delete"
-                    onClick={() => deleteBank(record)}
-                  />
-
-                  <Button
-                    type="text"
-                    icon={<DownloadOutlined />}
-                    title="Download Report"
-                    onClick={() => {
-                      setDownloadReport(true);
-                      setBankName(record.ac_name);
+            <Column
+              title={
+                <>
+                  Merchants
+                  <br />
+                  <Input
+                    disabled
+                    style={{
+                      backgroundColor: "#fafafa",
+                      border: "none",
+                      cursor: "auto",
                     }}
                   />
-                </div>
-              );
-            }}
-          />
-        )}
+                </>
+              }
+              dataIndex="merchants"
+              key="merchants"
+              className="bg-white"
+              width={"6%"}
+              render={(_, record) => {
+                return (
+                  <div className="whitespace-nowrap flex gap-2">
+                    <Tooltip
+                      color="white"
+                      placement="bottomRight"
+                      title={
+                        <div className="flex flex-col gap-1 text-black p-2">
+                          <div className="font-bold">Merchant List</div>
+                          {(record?.merchants?.length > 0 &&
+                            record?.merchants?.map((merchant) => (
+                              <p key={merchant?.id}>{merchant?.code}</p>
+                            ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+                        </div>
+                      }
+                    >
+                      <Button type="text" icon={<EyeOutlined />} />
+                    </Tooltip>
+
+                    <Button
+                      type="text"
+                      icon={<EditOutlined />}
+                      disabled={record?.bank_used_for === "payIn" ? false : true}
+                      title="Edit"
+                      onClick={() => showModal(record)}
+                    />
+
+                    <Button
+                      type="text"
+                      icon={<DeleteOutlined />}
+                      title="Delete"
+                      onClick={() => deleteBank(record)}
+                    />
+
+                    <Button
+                      type="text"
+                      icon={<DownloadOutlined />}
+                      title="Download Report"
+                      onClick={() => {
+                        setDownloadReport(true);
+                        setBankName(record.ac_name);
+                      }}
+                    />
+                  </div>
+                );
+              }}
+            />
+          )}
       </Table>
 
       <UpdateMerchant

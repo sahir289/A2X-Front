@@ -167,7 +167,7 @@ export const Columns = (
           />
       }
       { (userData?.role === "ADMIN" ||
-          userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? 
+          userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
       <Column
         title="Vendor"
         dataIndex="vendor_code"
@@ -288,7 +288,7 @@ export const Columns = (
         <Column
           title="UTR Id"
           dataIndex="utr_id"
-          width="140px"
+          width="180px"
           ellipsis
           render={(v, r, i) => {
             if (i) {
