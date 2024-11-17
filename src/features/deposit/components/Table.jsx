@@ -344,6 +344,7 @@ const TableComponent = ({
         NotificationManager.success("Transaction reset successfully");
         setIsResetModalVisible(false);
         fetchUsersData();
+        resetForm.resetFields()
       } else {
         NotificationManager.error("Failed to reset transaction");
       }
@@ -351,7 +352,6 @@ const TableComponent = ({
       NotificationManager.error("An error occurred while resetting the transaction");
     } finally {
       setAddLoading(false);
-      resetForm.resetFields()
     }
   };
 
@@ -380,7 +380,6 @@ const TableComponent = ({
       NotificationManager.error("An error occurred while resetting the transaction");
     } finally {
       setHardResetLoading(false);
-      resetForm.resetFields()
     }
   }
 
