@@ -43,6 +43,7 @@ const TableComponent = ({
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [open, setOpen] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
+  const [hardResetLoading, setHardResetLoading] = useState(false);
   const [imgUtrSubmitLoading, setImgUtrSubmitLoading] = useState(false);
   const [form] = Form.useForm();
   const [paymentUrlModal, setPaymentUrlModal] = useState(false);
@@ -363,6 +364,23 @@ const TableComponent = ({
     }
   }
 
+  const handleHardReset = async (data) => {
+    try {
+      setHardResetLoading(true);
+      const response = await putApi(`/hard-reset-payment-status/${resetRecord.id}`)
+      if (response.data.statusCode === 200) {
+        NotificationManager.success("Payment status reset successfully");
+        setIsResetModalVisible(false);
+        fetchUsersData();
+      } else {
+        NotificationManager.error("Failed to reset transaction");
+      }
+    } catch (error) {
+      NotificationManager.error("An error occurred while resetting the transaction");
+    } finally {
+      setHardResetLoading(false);
+    }
+  }
 
   return (
     <>
@@ -1091,6 +1109,9 @@ const TableComponent = ({
           )}
 
           <Form.Item className="flex justify-end">
+            {recordStatus !== "BANK_MISMATCH" && <Button loading={hardResetLoading} className="mr-2" type="primary" danger onClick={handleHardReset}  >
+              Hard Reset
+            </Button>}
             <Button type="primary" loading={addLoading} htmlType="submit">
               Success
             </Button>
