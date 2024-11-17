@@ -60,7 +60,6 @@ const TableComponent = ({
   const [bankOptions, setBankOptions] = useState([])
   const [recordStatus, setRecordStatus] = useState();
   const [showImageColumn, setShowImageColumn] = useState(true);
-  const [merchantCodeList, setMerchantCodeList] = useState(["mgm91", "LS", "dreamcasino", "khelomama", "matkafun", "shakunimama", "kbc", "easygames"])
   const fetchAllPayInBank = async () => {
     const data = await getApi("/getAll-Payin-bank").then((res) => {
       setBankOptions(res?.data?.data)
@@ -352,6 +351,7 @@ const TableComponent = ({
       NotificationManager.error("An error occurred while resetting the transaction");
     } finally {
       setAddLoading(false);
+      resetForm.resetFields()
     }
   };
 
@@ -367,6 +367,7 @@ const TableComponent = ({
   const handleHardReset = async (data) => {
     try {
       setHardResetLoading(true);
+      const values = await resetForm.validateFields();
       const response = await putApi(`/hard-reset-payment-status/${resetRecord.id}`)
       if (response.data.statusCode === 200) {
         NotificationManager.success("Payment status reset successfully");
@@ -379,6 +380,7 @@ const TableComponent = ({
       NotificationManager.error("An error occurred while resetting the transaction");
     } finally {
       setHardResetLoading(false);
+      resetForm.resetFields()
     }
   }
 
@@ -905,7 +907,6 @@ const TableComponent = ({
                     : setConfirmAmount(record.amount);
                 }}
                 style={{ marginLeft: "8px" }}
-                disabled={(record.status === "DISPUTE" && merchantCodeList.includes(record?.Merchant?.code)) ? true : false}
               >
                 Reset
               </Button>
@@ -1084,6 +1085,13 @@ const TableComponent = ({
 
               <Form.Item label="Confirm Amount">
                 <Input value={confirmAmount} disabled />
+              </Form.Item>
+
+              <Form.Item
+                name="merchant_order_id"
+                label="Merchant Order ID"
+              >
+                <Input />
               </Form.Item>
             </>
           )}
