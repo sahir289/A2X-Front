@@ -4,6 +4,8 @@ import React from "react";
 import { Reload } from "../../../utils/constants";
 import { formatCurrency } from "../../../utils/utils";
 import AddTelegramResponse from "./AddTelegramResponse";
+import CheckUTR from "./CheckUTR";
+import ResetEntry from "./ResetEntry";
 
 const TableComponent = ({
   data,
@@ -38,8 +40,16 @@ const TableComponent = ({
 
   return (
     <>
-      <div className="font-serif p-3 flex bg-zinc-50 rounded-lg mb-2">
-        <AddTelegramResponse handleTableChange={handleTableChange} />
+      <div className="font-serif p-3 bg-zinc-50 rounded-lg mb-2">
+        <div className="flex">
+          <AddTelegramResponse handleTableChange={handleTableChange} />
+        </div>
+        <div className="flex">
+          <CheckUTR handleTableChange={handleTableChange} />
+        </div>
+        <div className="flex">
+          <ResetEntry handleTableChange={handleTableChange} />
+        </div>
       </div>
       <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
         <div className="flex">
