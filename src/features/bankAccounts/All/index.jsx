@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function All() {
   const [tableData, setTableData] = useState([]);
@@ -17,8 +22,8 @@ function All() {
     role:`${userData?.role}`,
     vendor_code: `${userData?.vendorCode || ""}`,
     code: `${userData?.code || ""}`,
-    startDate: dayjs().add(0, "day").startOf("day"),
-    endDate: dayjs().add(0, "day").endOf("day"),
+    startDate: dayjs().tz("Asia/Kolkata").startOf("day"),
+    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
     page: 1,
     pageSize: 20,
   });
