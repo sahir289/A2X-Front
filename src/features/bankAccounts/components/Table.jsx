@@ -38,6 +38,7 @@ import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
+import { debounce } from 'lodash';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -594,6 +595,16 @@ const TableComponent = ({
               payInBalance += Number(data?.confirmed);
               payInBalanceCount += 1;
             });
+
+            const handleStatusChangeDebounced = debounce(handleStatusChange, 300);
+            const startsWithTID = record?.ac_name.slice(0, 3).toUpperCase() === "TID";
+            if (startsWithTID && payInBalance === 400000 && record?.is_enabled) {
+              handleStatusChange({
+                id: record.id,
+                fieldName: "is_enabled",
+                value: false,
+              });
+            }
 
             return (
               <>
