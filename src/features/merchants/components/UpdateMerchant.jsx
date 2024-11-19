@@ -80,7 +80,7 @@ const UpdateMerchant = ({
   }, [record]);
 
   const handleModalCancel = () => {
-    handleTableChange({ current: 1, pageSize: 20 });
+    handleTableChange({ current: 1, pageSize: 100 });
     setIsAddMerchantModalOpen(false);
     form.resetFields();
   };

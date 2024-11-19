@@ -16,7 +16,7 @@ root.render(
           colorPrimary: "rgb(22 163 74)",
         }
       }}>
-        <div className="font-serif">
+        <div className="font-sans">
           <App />
         </div>
       </ConfigProvider>

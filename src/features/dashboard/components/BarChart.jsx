@@ -37,8 +37,8 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
     datasets: [{ label: "", data: [], backgroundColor: "" }],
   });
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs.tz(dayjs().subtract(15, "day"), "Asia/Kolkata"),
-    endDate: dayjs.tz(dayjs(), "Asia/Kolkata"),
+    startDate: dayjs().tz("Asia/Kolkata").subtract(30, "day"),
+    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
   });
 
 
@@ -132,22 +132,16 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
           interval === "24h" ||
           dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
         ) {
-          dayData = data.filter(
-            (item) =>
-              dayjs(item.updatedAt).startOf("hour").format("h:mm A") == date &&
-              new Date(item.updatedAt).getDate() ==
-                new Date(dateRange.startDate).getDate()
-          );
+          dayData = data.filter((item) => dayjs(item.updatedAt).startOf("hour").format("h:mm A") === date && dayjs(item.updatedAt).date() === dayjs(dateRange.startDate).date());
+
         } else {
-          dayData = data.filter(
-            (item) => dayjs(item.updatedAt).format("YYYY-MM-DD") === date
-          );
+          dayData = data.filter((item) => dayjs(item.updatedAt).format("YYYY-MM-DD") === date);
         }
-        const total = dayData.reduce(
+        const total = dayData?.reduce(
           (sum, item) => sum + parseFloat(item.amount),
           0
         );
-        return { total, count: dayData.length };
+        return { total, count: dayData?.length };
       });
 
       const amounts = currentData.map((item) => item.total);
@@ -184,17 +178,31 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
 
   const onChange = (e) => {
     setInterval(e.target.value);
-    const today = dayjs();
 
-    if (e.target.value === "15d") {
+    // const today = {
+    //   startDate : dayjs().tz('Asia/Kolkata').startOf("day"),
+    //   endDate : dayjs().tz('Asia/Kolkata').endOf("day"),
+    // };
+
+    const rangeMap = {
+      "30d": { value: 30, unit: "day" },
+      "15d": { value: 15, unit: "day" },
+      "7d": { value: 7, unit: "day" },
+      "24h": { value:0, unit: "day" },
+    };
+
+    const selectedRange = rangeMap[e.target.value];
+
+    if (selectedRange === "24h") {
       setDateRange({
-        startDate: today.subtract(15, "day"),
-        endDate: today,
+        startDate: dateRange.startDate.subtract(selectedRange.value, selectedRange.unit),
+        endDate: dateRange.endDate.subtract(selectedRange.value, selectedRange.unit),
       });
-    } else if (e.target.value === "7d") {
+    }
+    else {
       setDateRange({
-        startDate: today.subtract(7, "day"),
-        endDate: today,
+        startDate: dateRange.startDate.subtract(selectedRange.value, selectedRange.unit),
+        endDate: dateRange.endDate,
       });
     }
   };
@@ -225,9 +233,10 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
           defaultValue={interval}
           value={interval}
         >
+          {/* <Radio.Button value="30d">30D</Radio.Button>
           <Radio.Button value="15d">15D</Radio.Button>
           <Radio.Button value="7d">7D</Radio.Button>
-          <Radio.Button value="24h">24H</Radio.Button>
+          <Radio.Button value="24h">24H</Radio.Button> */}
         </Radio.Group>
       </Flex>
       <Bar options={options} data={chartData} height="30px" width="100%" />
