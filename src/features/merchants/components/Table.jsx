@@ -11,6 +11,7 @@ import AddMerchant from "./AddMerchant";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
 import { useSelector } from "react-redux";
+import { formatDate } from "../../../utils/utils";
 
 const TableComponent = ({
   data,
@@ -133,6 +134,10 @@ const TableComponent = ({
     }
 
     return {}; // Default styles
+  };
+
+  const createdAT = (record) => {
+    return formatDate(record?.createdAt) || "N/A"; // Safely access nested property
   };
 
   return (
@@ -458,6 +463,14 @@ const TableComponent = ({
           render={(_, record) => {
             return <Switch checked={record?.is_test_mode} />;
           }}
+        />
+        <Column
+          title="Created at (IST)"
+          dataIndex="Merchant"
+          key="Merchant"
+          className="bg-white"
+          width={"24px"}
+          render={(text, record) => createdAT(record)}
         />
         <Column
           title={
