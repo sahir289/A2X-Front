@@ -1,10 +1,14 @@
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Select, notification } from "antd";
 import React, { useState } from "react";
 import { postApi } from "../../../redux/api";
+import {
+  NotificationManager,
+} from "react-notifications";
 
 const CheckUTR = ({ handleTableChange }) => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false)
+  const [api, contextHolder] = notification.useNotification();
 
   const onFinish = async (values) => {
     setIsLoading(true)
@@ -17,11 +21,15 @@ const CheckUTR = ({ handleTableChange }) => {
 
     await postApi("/tele-check-utr", formData).then((res) => {
       setIsLoading(false)
-
+      api.open({
+        message: res?.data?.message,
+      });
+        // NotificationManager.success(res?.data?.message)
+      form.resetFields(["merchant_order_id", "utr"]);
       handleTableChange({ current: 1, pageSize: 20 });
-      form.resetFields(["amount", "amount_code", "utr"]);
     })
   };
+
 
   const resetForm = () => {
     form.resetFields();
@@ -29,6 +37,7 @@ const CheckUTR = ({ handleTableChange }) => {
 
   return (
     <>
+      {contextHolder}
       <Form
         form={form}
         layout="vertical"

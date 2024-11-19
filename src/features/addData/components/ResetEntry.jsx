@@ -2,7 +2,6 @@ import { Button, Form, Input, Select } from "antd";
 import React, { useState } from "react";
 import { postApi } from "../../../redux/api";
 import {
-  NotificationContainer,
   NotificationManager,
 } from "react-notifications";
 
@@ -67,7 +66,7 @@ const ResetEntry = ({ handleTableChange }) => {
         <div className="flex flex-row justify-end items-end gap-1">
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={isLoading}>
-              Reset Diposit
+              Reset Deposit
             </Button>
           </Form.Item>
           <Form.Item>
