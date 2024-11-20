@@ -5,14 +5,14 @@ import { useDispatch } from "react-redux";
 import BarChart from "./components/BarChart";
 import DashboardTopBar from "./components/DashboardTopBar";
 // import {showNotification} from ''
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { useEffect, useRef, useState } from "react";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
 import { formatCurrency } from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
-import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,6 +22,7 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
+  console.log(selectedMerchantCode.length)
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -66,9 +67,20 @@ function Dashboard() {
   const [withdrawData, setWithdrawData] = useState([]);
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
+  const [istDateRange, setIstDateRange] = useState({
+    startDate: dayjs().tz("Asia/Kolkata").startOf("day"),
+    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
+  })
+
+  const istStartDate = dayjs(istDateRange.startDate).utc();
+  const istEndDate = dayjs(istDateRange.endDate).utc();
+
+  const adjustedISTStartDate = istStartDate.add(5, 'hour').add(30, 'minute');
+  const adjustedISTEndDate = istEndDate.add(5, 'hour').add(30, 'minute');
+
   const [dateRange, setDateRange] = useState({
-    startDate : dayjs().tz('Asia/Kolkata').startOf("day"),
-    endDate : dayjs().tz('Asia/Kolkata').endOf("day"),
+    startDate: adjustedISTStartDate,
+    endDate: adjustedISTEndDate,
   });
 
   const dispatch = useDispatch();
@@ -79,16 +91,32 @@ function Dashboard() {
     debounceRef.current = setTimeout(fetchPayInDataMerchant, 400);
   }, [selectedMerchantCode, dateRange]);
 
-  const updateDashboardPeriod = (newRange) => {
+  const updateDashboardPeriod = (newRange, intervalValue) => {
+
+    const startDate = dayjs(newRange.startDate).utc();
+    const endDate = dayjs(newRange.endDate).utc();
+
+    const adjustedStartDate = startDate.add(5, 'hour').add(30, 'minute');
+    const adjustedEndDate = endDate.add(5, 'hour').add(30, 'minute');
+
     setDateRange({
-      startDate: newRange.startDate,
-      endDate: newRange.endDate,
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
     });
-    setIntervalDeposit("");
-    setIntervalWithdraw("");
+
+    setIntervalDeposit(intervalValue);
+    setIntervalWithdraw(intervalValue);
+
+    const formattedStartDate = dayjs(adjustedStartDate)
+      .tz("Asia/Kolkata")
+      .format("ddd MMM DD YYYY HH:mm:ss [IST]");
+    const formattedEndDate = dayjs(adjustedEndDate)
+      .tz("Asia/Kolkata")
+      .format("ddd MMM DD YYYY HH:mm:ss [IST]");
+
     dispatch(
       showNotification({
-        message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
+        message: `Period updated to ${formattedStartDate} to ${formattedEndDate}`,
         status: 1,
       })
     );
