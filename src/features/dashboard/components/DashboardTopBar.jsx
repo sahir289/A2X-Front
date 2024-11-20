@@ -67,11 +67,6 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue, selectedMerchantCod
         userData?.code.includes(merchant.code)
     )
 
-  if (selectedMerchantCode.length === 1) {
-    const merchant = merchantOptions.find(option => option.code === selectedMerchantCode[0])
-    console.log(merchant)
-  }
-
   const onRangeChange = (dates, dateStrings) => {
     if (dates) {
       const startDate = dayjs(dates[0])
