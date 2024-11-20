@@ -298,6 +298,14 @@ const TableComponent = ({
                     }}
                   />
                   <Column
+                    title="Created at (IST)"
+                    dataIndex="Merchant"
+                    key="Merchant"
+                    className="bg-white"
+                    width={"24px"}
+                    render={(text, record) => createdAT(record)}
+                  />
+                  <Column
                     title={
                       <>
                         Actions
