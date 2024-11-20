@@ -228,6 +228,17 @@ const TableComponent = ({
                     )}
                   />
                   <Column
+                    title="Public API Key"
+                    dataIndex="public_api_key"
+                    key="public_api_key"
+                    className="bg-white"
+                    width={"12%"}
+                    // added copy button
+                    render={(text) => (
+                      <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+                    )}
+                  />
+                  <Column
                     title="Balance"
                     dataIndex="balance"
                     key="balance"
@@ -395,6 +406,17 @@ const TableComponent = ({
           title="API Key"
           dataIndex="api_key"
           key="api_key"
+          className="bg-white"
+          width={"12%"}
+          // added copy button
+          render={(text) => (
+            <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
+          )}
+        />
+        <Column
+          title="Public API Key"
+          dataIndex="public_api_key"
+          key="public_api_key"
           className="bg-white"
           width={"12%"}
           // added copy button
