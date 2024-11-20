@@ -67,8 +67,8 @@ function Dashboard() {
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
   const [istDateRange, setIstDateRange] = useState({
-    startDate: dayjs().tz("Asia/Kolkata").startOf("day"),
-    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
+    startDate: dayjs().startOf("day"),
+    endDate: dayjs().subtract(1, "day").endOf("day"),
   })
 
   const istStartDate = dayjs(istDateRange.startDate).utc();
@@ -96,7 +96,7 @@ function Dashboard() {
     const endDate = dayjs(newRange.endDate).utc();
 
     const adjustedStartDate = startDate.add(5, 'hour').add(30, 'minute');
-    const adjustedEndDate = endDate.add(5, 'hour').add(30, 'minute');
+    const adjustedEndDate = endDate.subtract(1, "day").add(5, 'hour').add(30, 'minute');
 
     setDateRange({
       startDate: adjustedStartDate,
@@ -106,16 +106,9 @@ function Dashboard() {
     setIntervalDeposit(intervalValue);
     setIntervalWithdraw(intervalValue);
 
-    const formattedStartDate = dayjs(adjustedStartDate)
-      .tz("Asia/Kolkata")
-      .format("ddd MMM DD YYYY HH:mm:ss [IST]");
-    const formattedEndDate = dayjs(adjustedEndDate)
-      .tz("Asia/Kolkata")
-      .format("ddd MMM DD YYYY HH:mm:ss [IST]");
-
     dispatch(
       showNotification({
-        message: `Period updated to ${formattedStartDate} to ${formattedEndDate}`,
+        message: `Period updated to ${adjustedStartDate} to ${adjustedEndDate}`,
         status: 1,
       })
     );
@@ -256,6 +249,7 @@ function Dashboard() {
         <div className="grid grid-row-1">
           <DashboardTopBar
             updateDashboardPeriod={updateDashboardPeriod}
+            selectedMerchantCode={selectedMerchantCode}
             dateValue={dateRange}
           />
           <div className="stats shadow col-span-2">
