@@ -36,9 +36,20 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
     labels: [],
     datasets: [{ label: "", data: [], backgroundColor: "" }],
   });
+  const [istDateRange, setIstDateRange] = useState({
+    startDate: dayjs().subtract(30, "day"),
+    endDate: dayjs().endOf("day"),
+  })
+
+  const istStartDate = dayjs(istDateRange.startDate).utc();
+  const istEndDate = dayjs(istDateRange.endDate).utc();
+
+  const adjustedISTStartDate = istStartDate.add(5, 'hour').add(30, 'minute');
+  const adjustedISTEndDate = istEndDate.add(5, 'hour').add(30, 'minute');
+
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().tz("Asia/Kolkata").subtract(30, "day"),
-    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
+    startDate: adjustedISTStartDate,
+    endDate: adjustedISTEndDate,
   });
 
 
@@ -132,10 +143,10 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
           interval === "24h" ||
           dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
         ) {
-          dayData = data.filter((item) => dayjs(item.updatedAt).startOf("hour").format("h:mm A") === date && dayjs(item.updatedAt).date() === dayjs(dateRange.startDate).date());
+          dayData = data.filter((item) => dayjs(item.updatedAt).utc().startOf("hour").add(5, 'hour').add(30, 'minute').format("h:mm A") === date && dayjs(item.updatedAt).utc().add(5, 'hour').add(30, 'minute').date() === dayjs(dateRange.startDate).date());
 
         } else {
-          dayData = data.filter((item) => dayjs(item.updatedAt).format("YYYY-MM-DD") === date);
+          dayData = data.filter((item) => dayjs(item.updatedAt).utc().add(5, 'hour').add(30, 'minute').format("YYYY-MM-DD") === date);
         }
         const total = dayData?.reduce(
           (sum, item) => sum + parseFloat(item.amount),
