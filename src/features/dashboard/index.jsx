@@ -22,7 +22,6 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
-  console.log(selectedMerchantCode.length)
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
