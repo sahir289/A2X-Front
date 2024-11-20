@@ -267,7 +267,7 @@ const TableComponent = ({
   const handleResetCancel = () => {
     setGenereatedUtr("");
     setIsResetModalVisible(false);
-    form.resetFields();
+    resetForm.resetFields();
   };
   //reset search fields
   const handleResetSearchFields = () => {
@@ -367,7 +367,6 @@ const TableComponent = ({
   const handleHardReset = async (data) => {
     try {
       setHardResetLoading(true);
-      const values = await resetForm.validateFields();
       const response = await putApi(`/hard-reset-payment-status/${resetRecord.id}`)
       if (response.data.statusCode === 200) {
         NotificationManager.success("Payment status reset successfully");
