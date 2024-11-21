@@ -73,14 +73,15 @@ function Dashboard() {
 
   const istStartDate = dayjs(istDateRange.startDate).utc();
   const istEndDate = dayjs(istDateRange.endDate).utc();
+  console.log(dayjs(istDateRange.startDate).utc(),istDateRange.startDate, "++++++")
 
   const differenceInMs = istEndDate - istStartDate;
   const globalDifferenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
-  const adjustedISTStartDate = globalDifferenceInDays === 1 ? istStartDate : istStartDate.add(5, 'hour').add(30, 'minute');
-  const adjustedISTEndDate = globalDifferenceInDays === 1 ? istEndDate : istEndDate.subtract(1, "day").add(5, 'hour').add(30, 'minute')
+  const adjustedISTStartDate = istStartDate;
+  const adjustedISTEndDate = globalDifferenceInDays === 1 ? istEndDate : istEndDate.subtract(1, "day")
 
-  console.log(adjustedISTStartDate, adjustedISTEndDate)
+  // console.log(adjustedISTStartDate, adjustedISTEndDate)
 
   const [dateRange, setDateRange] = useState({
     startDate: adjustedISTStartDate,
@@ -103,8 +104,8 @@ function Dashboard() {
     const differenceInMs = endDate - startDate;
     const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
-    const adjustedStartDate = differenceInDays === 1 ? startDate : startDate.add(5, 'hour').add(30, 'minute');
-    const adjustedEndDate = differenceInDays === 1 ? endDate : endDate.subtract(1, "day").add(5, 'hour').add(30, 'minute');
+    const adjustedStartDate = startDate;
+    const adjustedEndDate = differenceInDays === 1 ? endDate : endDate.subtract(1, "day");
 
     setDateRange({
       startDate: adjustedStartDate,
