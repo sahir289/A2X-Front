@@ -47,8 +47,8 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
   const differenceInMs = istEndDate - istStartDate;
   const globalDifferenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
-  const adjustedISTStartDate = globalDifferenceInDays === 1 ? istStartDate : istStartDate.add(5, 'hour').add(30, 'minute');
-  const adjustedISTEndDate = globalDifferenceInDays === 1 ? istEndDate.add(5, 'hour').add(30, 'minute') : istEndDate.subtract(1, "day").add(5, 'hour').add(30, 'minute')
+  const adjustedISTStartDate = istStartDate;
+  const adjustedISTEndDate = globalDifferenceInDays === 1 ? istEndDate : istEndDate.subtract(1, "day")
 
   const [dateRange, setDateRange] = useState({
     startDate: adjustedISTStartDate,
@@ -146,9 +146,9 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
           interval === "24h" ||
           dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
         ) {
-          dayData = data.filter((item) => dayjs(item.updatedAt).startOf("hour").format("h:mm A") === date && dayjs(item.updatedAt).add(5, 'hour').add(30, 'minute').date() === dayjs(dateRange.startDate).utc().add(5, 'hour').add(30, 'minute').date());
+          dayData = data.filter((item) => dayjs(item.updatedAt).startOf("hour").format("h:mm A") === date && dayjs(item.updatedAt).date() === dayjs(dateRange.startDate).utc().date());
         } else {
-          dayData = data.filter((item) => dayjs(item.updatedAt).utc().add(5, 'hour').add(30, 'minute').format("YYYY-MM-DD") === date);
+          dayData = data.filter((item) => dayjs(item.updatedAt).utc().format("YYYY-MM-DD") === date);
         }
         const total = dayData?.reduce(
           (sum, item) => sum + parseFloat(item.amount),

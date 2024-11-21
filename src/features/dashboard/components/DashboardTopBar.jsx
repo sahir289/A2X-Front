@@ -71,14 +71,10 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue, selectedMerchantCod
     if (dates) {
       const startDate = dayjs(dates[0])
         .utc()
-        .add(5, 'hour')
-        .add(30, 'minute')
         .startOf("day")
         .toDate();
       const endDate = dayjs(dates[1])
         .utc()
-        .add(5, 'hour')
-        .add(30, 'minute')
         .endOf("day")
         .toDate();
 
@@ -120,8 +116,8 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue, selectedMerchantCod
         <RangePicker
           className="w-72 h-12"
           defaultValue={[
-            dayjs(dateValue.startDate).utc().add(5, 'hour').add(30, 'minute'),
-            dayjs(dateValue.endDate).utc().add(5, 'hour').add(30, 'minute'),
+            dayjs(dateValue.startDate).utc(),
+            dayjs(dateValue.endDate).utc(),
           ]}
           presets={rangePresets}
           onChange={onRangeChange}
@@ -129,7 +125,7 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue, selectedMerchantCod
             const today = dayjs().endOf("day"); // End of today
             if (selectedMerchantCode.length === 1) {
               const merchant = merchantOptions.find(option => option.code === selectedMerchantCode[0])
-              const minDate = dayjs(merchant.createdAt).utc().add(5, 'hour').add(30, 'minute'); // Replace with your minimum date
+              const minDate = dayjs(merchant.createdAt).utc(); // Replace with your minimum date
               return (
                 current && (current.isBefore(minDate, "day") && current.isAfter(today))
               );
