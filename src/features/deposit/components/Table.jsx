@@ -143,6 +143,7 @@ const TableComponent = ({
     { value: "DUPLICATE", label: "DUPLICATE" },
     { value: "DISPUTE", label: "DISPUTE" },
     { value: "PENDING", label: "PENDING" },
+    { value: "FAILED", label: "FAILED" },
     { value: "IMG_PENDING", label: "IMG_PENDING" },
     { value: "BANK_MISMATCH", label: "BANK_MISMATCH" }
   ];
@@ -584,11 +585,13 @@ const TableComponent = ({
                             ? "yellow"
                             : value === "DROPPED"
                               ? "red"
-                              : value === "DISPUTE"
-                                ? "#FF6600"
-                                : value === "TEST_SUCCESS"
-                                  ? "green-inverse"
-                                  : "gold-inverse"
+                              : value === "FAILED"
+                                ? "red"
+                                : value === "DISPUTE"
+                                  ? "#FF6600"
+                                  : value === "TEST_SUCCESS"
+                                    ? "green-inverse"
+                                    : "gold-inverse"
                   }
                   key={value}
                   icon={
