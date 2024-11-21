@@ -107,7 +107,7 @@ const AddMerchant = ({
     }).finally(() => {
       setLoading(false)
       setIsAddModelOpen(false);
-      handleTableChange({ current: 1, pageSize: 20 });
+      handleTableChange({ current: 1, pageSize: 100 });
       form.resetFields();
     });
 
