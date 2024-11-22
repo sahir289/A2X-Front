@@ -141,14 +141,6 @@ const AddTelegramResponse = ({ handleTableChange }) => {
               required: true,
               message: "Please input your UTR!",
             },
-            {
-              pattern: /^\d{12}$/,
-              message: "Please input 12 digit UTR!",
-            },
-            {
-              pattern: /^(?:\d*)$/,
-              message: "Please input only numbers!",
-            },
           ]}
         >
           <Input />
