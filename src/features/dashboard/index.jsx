@@ -126,7 +126,7 @@ function Dashboard() {
 
     dispatch(
       showNotification({
-        message: `Period updated to ${adjustedStartDate.toISOString()} to ${adjustedEndDate.toISOString()}`,
+        message: `Period updated to ${startDate.toDateString()} to ${adjustedEndDate.toDateString()}`,
         status: 1,
       })
     );
