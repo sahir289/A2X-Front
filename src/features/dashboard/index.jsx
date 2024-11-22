@@ -11,7 +11,11 @@ import utc from "dayjs/plugin/utc";
 import { useEffect, useRef, useState } from "react";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
-import { formatCurrency } from "../../utils/utils";
+import {
+  calculateISTDateRange,
+  formatCurrency,
+  formatDateToISTString,
+} from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
 
 dayjs.extend(utc);
@@ -66,27 +70,34 @@ function Dashboard() {
   const [withdrawData, setWithdrawData] = useState([]);
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
-  const [istDateRange, setIstDateRange] = useState({
-    startDate: dayjs().startOf("day"),
-    endDate: dayjs().endOf("day"),
-  })
 
-  const istStartDate = dayjs(istDateRange.startDate).utc();
-  const istEndDate = dayjs(istDateRange.endDate).utc();
-  console.log(dayjs(istDateRange.startDate).utc(),istDateRange.startDate, "++++++")
+  const nowUTC = new Date();
+  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+  const nowIST = new Date(nowUTC.getTime() + istOffset);
 
-  const differenceInMs = istEndDate - istStartDate;
-  const globalDifferenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
+  const year = nowIST.getUTCFullYear();
+  const month = nowIST.getUTCMonth();
+  const date = nowIST.getUTCDate();
 
-  const adjustedISTStartDate = istStartDate;
-  const adjustedISTEndDate = globalDifferenceInDays === 1 ? istEndDate : istEndDate.subtract(1, "day")
+  const startIST = new Date(Date.UTC(year, month, date, 0, 0, 0, 0)); // 12:00 AM IST
+  const endIST = new Date(Date.UTC(year, month, date, 23, 59, 59, 999)); // 11:59 PM IST
 
-  // console.log(adjustedISTStartDate, adjustedISTEndDate)
+  const adjustedISTStartDate = new Date(startIST.getTime() - istOffset);
+  const adjustedISTEndDate = new Date(endIST.getTime() - istOffset);
 
   const [dateRange, setDateRange] = useState({
     startDate: adjustedISTStartDate,
     endDate: adjustedISTEndDate,
   });
+
+  useEffect(() => {
+    const { startUTC, endUTC } = calculateISTDateRange();
+
+    setDateRange({
+      startDate: formatDateToISTString(startUTC),
+      endDate: formatDateToISTString(endUTC),
+    });
+  }, []);
 
   const dispatch = useDispatch();
   const debounceRef = useRef();
@@ -97,19 +108,17 @@ function Dashboard() {
   }, [selectedMerchantCode, dateRange]);
 
   const updateDashboardPeriod = (newRange, intervalValue) => {
+    const startDate = newRange.startDate;
+    const endDate = newRange.endDate;
 
-    const startDate = dayjs(newRange.startDate).utc();
-    const endDate = dayjs(newRange.endDate).utc();
+    const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
 
-    const differenceInMs = endDate - startDate;
-    const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
-
-    const adjustedStartDate = startDate;
-    const adjustedEndDate = differenceInDays === 1 ? endDate : endDate.subtract(1, "day");
+    const adjustedStartDate = new Date(startDate.getTime() - istOffset);
+    const adjustedEndDate = new Date(endDate.getTime() - istOffset);
 
     setDateRange({
-      startDate: adjustedStartDate,
-      endDate: adjustedEndDate,
+      startDate: formatDateToISTString(adjustedStartDate),
+      endDate: formatDateToISTString(adjustedEndDate),
     });
 
     setIntervalDeposit(intervalValue);
@@ -117,11 +126,12 @@ function Dashboard() {
 
     dispatch(
       showNotification({
-        message: `Period updated to ${adjustedStartDate} to ${adjustedEndDate}`,
+        message: `Period updated to ${startDate.toDateString()} to ${adjustedEndDate.toDateString()}`,
         status: 1,
       })
     );
   };
+
 
   const fetchPayInDataMerchant = async () => {
     try {
@@ -133,9 +143,7 @@ function Dashboard() {
         `/get-payInDataMerchant?${query}`,
         dateRange
       );
-      const netBalance = await getApi(
-        `/get-merchants-net-balance?${query}`
-      );
+      const netBalance = await getApi(`/get-merchants-net-balance?${query}`);
 
       if (netBalance.error) {
         return;

@@ -29,7 +29,36 @@ export function formatDate(utcDate) {
   return `${day}/${month}/${year} at ${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
 }
 
+export function calculateISTDateRange() {
+  const nowUTC = new Date();
+  console.log("UTC time ", nowUTC.toISOString());
+  // Calculate current IST time by adding 5 hours and 30 minutes to UTC
+  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+  const nowIST = new Date(nowUTC.getTime() + istOffset);
 
+  // extract IST date components
+  const year = nowIST.getUTCFullYear();
+  const month = nowIST.getUTCMonth(); // months are zero-based
+  const date = nowIST.getUTCDate();
+
+  // calculate start and end of the day in IST
+  const startIST = new Date(Date.UTC(year, month, date, 0, 0, 0, 0)); // 12:00 AM IST
+  const endIST = new Date(Date.UTC(year, month, date, 23, 59, 59, 999)); // 11:59 PM IST
+
+  // convert IST to UTC for query
+  const startUTC = new Date(startIST.getTime() - istOffset);
+  const endUTC = new Date(endIST.getTime() - istOffset);
+
+  return {
+    startUTC,
+    endUTC,
+  };
+}
+
+export function formatDateToISTString(date) {
+  const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' };
+  return date.toLocaleString('en-US', options).replace(',', '');
+}
 
 export function formatCurrency(amount) {
   // Check if the amount is null or undefined
