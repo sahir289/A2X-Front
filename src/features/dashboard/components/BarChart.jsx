@@ -41,14 +41,24 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
     endDate: dayjs().endOf("day"),
   })
 
-  const istStartDate = dayjs(istDateRange.startDate).utc();
-  const istEndDate = dayjs(istDateRange.endDate).utc();
+  const istStartDate = dayjs(istDateRange.startDate).isValid()
+  ? dayjs(istDateRange.startDate).utc()
+  : dayjs().subtract(30, "day").utc();
+
+const istEndDate = dayjs(istDateRange.endDate).isValid()
+  ? dayjs(istDateRange.endDate).utc()
+  : dayjs().endOf("day").utc();
 
   const differenceInMs = istEndDate - istStartDate;
   const globalDifferenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
   const adjustedISTStartDate = istStartDate;
-  const adjustedISTEndDate = globalDifferenceInDays === 1 ? istEndDate : istEndDate.subtract(1, "day")
+  const adjustedISTEndDate = dayjs(istEndDate).isValid()
+  ? (globalDifferenceInDays === 1
+      ? istEndDate
+      : istEndDate.subtract(1, "day"))
+  : dayjs().utc();
+
 
   const [dateRange, setDateRange] = useState({
     startDate: adjustedISTStartDate,
@@ -89,25 +99,22 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
 
   const getDateRangeLabels = (startDate, endDate, interval) => {
     const result = [];
-    let currentDate = dayjs(startDate);
+    let currentDate = dayjs(startDate).isValid()
+      ? dayjs(startDate)
+      : dayjs();
 
-    if (interval === "24h" || dayjs(startDate).isSame(endDate, "day")) {
-      const hoursInterval =
-        interval === "24h" || dayjs(startDate).isSame(endDate, "day") ? 1 : 2;
-      const hoursToShow = interval === "24h" ? 24 : 24;
+    if (interval === "24h" || currentDate.isSame(endDate, "day")) {
+      const hoursInterval = interval === "24h" ? 1 : 2;
+      const hoursToShow = 24;
 
       for (let i = 0; i < hoursToShow; i++) {
-        result.push(
-          dayjs(startDate)
-            .add(i * hoursInterval, "hour")
-            .toISOString()
-        );
+        const date = currentDate.add(i * hoursInterval, "hour");
+        if (date.isValid()) {
+          result.push(date.toISOString());
+        }
       }
     } else {
-      while (
-        currentDate.isBefore(endDate) ||
-        currentDate.isSame(endDate, "day")
-      ) {
+      while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, "day")) {
         result.push(currentDate.format("YYYY-MM-DD"));
         currentDate = currentDate.add(1, "day");
       }
@@ -115,6 +122,7 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
 
     return result;
   };
+
 
   const formatTime = (dateString) => {
     const date = dayjs(dateString);
