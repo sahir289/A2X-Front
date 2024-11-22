@@ -11,7 +11,11 @@ import utc from "dayjs/plugin/utc";
 import { useEffect, useRef, useState } from "react";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
-import { formatCurrency } from "../../utils/utils";
+import {
+  calculateISTDateRange,
+  formatCurrency,
+  formatDateToISTString,
+} from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
 
 dayjs.extend(utc);
@@ -69,24 +73,38 @@ function Dashboard() {
   const [istDateRange, setIstDateRange] = useState({
     startDate: dayjs().startOf("day"),
     endDate: dayjs().endOf("day"),
-  })
+  });
 
   const istStartDate = dayjs(istDateRange.startDate).utc();
   const istEndDate = dayjs(istDateRange.endDate).utc();
-  console.log(dayjs(istDateRange.startDate).utc(),istDateRange.startDate, "++++++")
+  console.log(
+    dayjs(istDateRange.startDate).utc(),
+    istDateRange.startDate,
+    "++++++"
+  );
 
   const differenceInMs = istEndDate - istStartDate;
-  const globalDifferenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
+  const globalDifferenceInDays = Math.ceil(
+    differenceInMs / (1000 * 60 * 60 * 24)
+  );
 
   const adjustedISTStartDate = istStartDate;
-  const adjustedISTEndDate = globalDifferenceInDays === 1 ? istEndDate : istEndDate.subtract(1, "day")
-
-  // console.log(adjustedISTStartDate, adjustedISTEndDate)
+  const adjustedISTEndDate =
+    globalDifferenceInDays === 1 ? istEndDate : istEndDate.subtract(1, "day");
 
   const [dateRange, setDateRange] = useState({
     startDate: adjustedISTStartDate,
     endDate: adjustedISTEndDate,
   });
+
+  useEffect(() => {
+    const { startUTC, endUTC } = calculateISTDateRange();
+
+    setDateRange({
+      startDate: formatDateToISTString(startUTC),
+      endDate: formatDateToISTString(endUTC),
+    });
+  }, []);
 
   const dispatch = useDispatch();
   const debounceRef = useRef();
@@ -97,7 +115,6 @@ function Dashboard() {
   }, [selectedMerchantCode, dateRange]);
 
   const updateDashboardPeriod = (newRange, intervalValue) => {
-
     const startDate = dayjs(newRange.startDate).utc();
     const endDate = dayjs(newRange.endDate).utc();
 
@@ -105,7 +122,8 @@ function Dashboard() {
     const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
     const adjustedStartDate = startDate;
-    const adjustedEndDate = differenceInDays === 1 ? endDate : endDate.subtract(1, "day");
+    const adjustedEndDate =
+      differenceInDays === 1 ? endDate : endDate.subtract(1, "day");
 
     setDateRange({
       startDate: adjustedStartDate,
@@ -133,9 +151,7 @@ function Dashboard() {
         `/get-payInDataMerchant?${query}`,
         dateRange
       );
-      const netBalance = await getApi(
-        `/get-merchants-net-balance?${query}`
-      );
+      const netBalance = await getApi(`/get-merchants-net-balance?${query}`);
 
       if (netBalance.error) {
         return;
