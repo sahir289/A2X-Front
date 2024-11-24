@@ -339,14 +339,7 @@ export default function Settlement() {
             label="Amount"
             rules={RequiredRule}
           >
-            <Input type="number" min={1} addonAfter="₹" onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
-                  e.preventDefault();
-                }
-              }
-            }} />
+            <Input type="number" addonAfter="₹" />
           </Form.Item>
           <Form.Item
             name="method"
