@@ -59,20 +59,24 @@ const Withdraw = ({ type }) => {
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
-    ?.filter(
+  ?.filter(
       (merchant) =>
-        (!merchant.is_deleted && !userData?.code?.length) ||
-        userData?.code.includes(merchant.code)
-    )
-    .map((merchant) => ({
+          (!merchant.is_deleted && !userData?.code?.length) ||
+          userData?.code.includes(merchant.code)
+  )
+  .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
-    }));
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
   const [vendorData, setVendorData] = useState([]);
-  const vendorOptions = vendorData?.map((vendor) => ({
-    label: vendor.vendor_code,
-    value: vendor.vendor_code,
-  }));
+  const vendorOptions = vendorData
+    ?.map((vendor) => ({
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
   // State to store the payout banks
   const [payOutBankData, setPayOutBankData] = useState([]);
   const payOutBankOptions = payOutBankData?.map((payOutBank) => ({

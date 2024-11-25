@@ -112,10 +112,13 @@ const TableComponent = ({
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [allMerchants, setAllMerchants] = useState([]);
   const [allVendors, setAllVendors] = useState([]);
-  const vendorOptions = allVendors.map((vendor) => ({
-    label: vendor.vendor_code,
-    value: vendor.vendor_code,
-  }));
+  const vendorOptions = allVendors
+    .map((vendor) => ({
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
   const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
   // Password verification while deleting bank account

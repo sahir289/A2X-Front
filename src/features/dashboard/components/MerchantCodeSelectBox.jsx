@@ -22,7 +22,8 @@ const MerchantCodeSelectBox = ({
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
-    setSelectedMerchantCode(value);
+    const selectedMerchantSortedList = [...value].sort((a, b) => a.localeCompare(b));
+    setSelectedMerchantCode(selectedMerchantSortedList);
     setDropdownOpen(false);
   };
 
@@ -53,8 +54,10 @@ const MerchantCodeSelectBox = ({
         "selectedMerchantCode",
         JSON.stringify(merchants)
       );
-      setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(merchants);
+      const sortedList = [...formattedMerchantCodes].sort((a, b) => a.label.localeCompare(b.label));
+      setMerchantCodeOptions(sortedList);
+      const selectedMerchantSortedList = [...merchants].sort((a, b) => a.localeCompare(b));
+      setSelectedMerchantCode(selectedMerchantSortedList);
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.filter((merchant) => !merchant.is_deleted).map(
         (merchant) => ({
@@ -67,8 +70,10 @@ const MerchantCodeSelectBox = ({
         "selectedMerchantCode",
         JSON.stringify(merchants)
       );
-      setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(merchants);
+      const sortedList = [...formattedMerchantCodes].sort((a, b) => a.label.localeCompare(b.label));
+      setMerchantCodeOptions(sortedList);
+      const selectedMerchantSortedList = [...merchants].sort((a, b) => a.localeCompare(b));
+      setSelectedMerchantCode(selectedMerchantSortedList);
     }
   };
 
@@ -85,7 +90,7 @@ const MerchantCodeSelectBox = ({
             size={"large"}
             placeholder="Please select"
             onChange={handleChange}
-            onDropdownVisibleChange={(open) => setDropdownOpen(open)} 
+            onDropdownVisibleChange={(open) => setDropdownOpen(open)}
             open={dropdownOpen}
             style={{
               width: "98%",
@@ -94,7 +99,7 @@ const MerchantCodeSelectBox = ({
               userData?.role === "MERCHANT" ||
               userData?.role === "OPERATIONS" ||
               userData?.role === "MERCHANT_OPERATIONS"
-            } 
+            }
             // Selecting and Locking the merchant name while logged in user is merchant
             options={merchantCodeOptions}
             value={selectedMerchantCode}
