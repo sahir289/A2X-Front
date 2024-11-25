@@ -329,10 +329,12 @@ const TableComponent = ({
           if (data.merchant_order_id === resetRecord.merchant_order_id){
             NotificationManager.error("Please Enter New Mercahnt Order ID");
             setAddLoading(false);
+            return;
           }
         } else {
           NotificationManager.error("Please Enter Mercahnt Order ID");
           setAddLoading(false);
+          return;
         }
       }
 
