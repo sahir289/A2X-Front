@@ -324,6 +324,18 @@ const TableComponent = ({
       let resetTransaction;
       let payload = {};
 
+      if (recordStatus === "DISPUTE" && !resetRecord.Merchant.dispute_enabled) {
+        if (data.merchant_order_id){
+          if (data.merchant_order_id === resetRecord.merchant_order_id){
+            NotificationManager.error("Please Enter New Mercahnt Order ID");
+            setAddLoading(false);
+          }
+        } else {
+          NotificationManager.error("Please Enter Mercahnt Order ID");
+          setAddLoading(false);
+        }
+      }
+
       if (recordStatus === "DUPLICATE") {
         payload = {
           ...data,
