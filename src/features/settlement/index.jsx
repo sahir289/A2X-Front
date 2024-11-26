@@ -198,11 +198,17 @@ export default function Settlement() {
   }
 
   const merchantOptions = merchants
-    ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code?.includes(merchant?.code))
-    .map(merchant => ({
+    ?.filter(
+      (merchant) =>
+        !merchant.is_deleted &&
+        (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+    )
+    .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
-    }));
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
 
   const labelCol = { span: 6 };
   //reset search fields

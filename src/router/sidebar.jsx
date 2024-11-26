@@ -1,5 +1,6 @@
 import {
   ArrowRightCircleIcon,
+  ArrowLeftCircleIcon,
   ArrowTrendingUpIcon,
   BanknotesIcon,
   BuildingLibraryIcon,
@@ -111,6 +112,11 @@ const routes = [
         name: "Accounts",
       },
     ],
+  },
+  {
+    path: "/app/lien",
+    icon: <ArrowLeftCircleIcon className={iconClasses} />,
+    name: "Lien",
   },
   {
     path: "/app/merchant",

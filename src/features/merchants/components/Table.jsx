@@ -53,11 +53,17 @@ const TableComponent = ({
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
-    ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code.includes(merchant.code))
-    .map(merchant => ({
-      label: merchant.code,
-      value: merchant.code,
-    }));
+    ?.filter(
+        (merchant) =>
+            (!merchant.is_deleted && !userData?.code?.length) ||
+            userData?.code.includes(merchant.code)
+    )
+    .map((merchant) => ({
+        label: merchant.code,
+        value: merchant.code,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
 
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));

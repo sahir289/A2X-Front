@@ -60,6 +60,11 @@ function Dashboard() {
       icon: <UserGroupIcon className="w-8 h-8" />,
     },
     {
+      title: "Lien",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+    },
+    {
       title: "Net Balance",
       // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
       value: 0,
@@ -157,8 +162,8 @@ function Dashboard() {
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
-      const settlementData =
-        payInOutData?.data?.data?.payInOutData?.settlementData;
+      const settlementData = payInOutData?.data?.data?.payInOutData?.settlementData;
+      const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
 
       setDepositData(payInData);
       setWithdrawData(payOutData);
@@ -170,6 +175,7 @@ function Dashboard() {
       let payOutCommission = 0;
       let payOutCount = 0;
       let settlementAmount = 0;
+      let lienAmount = 0;
 
       payInData?.forEach((data) => {
         payInAmount += Number(data.confirmed);
@@ -185,6 +191,10 @@ function Dashboard() {
 
       settlementData?.forEach((data) => {
         settlementAmount += Number(data.amount);
+      });
+
+      lienData?.forEach((data) => {
+        lienAmount += Number(data.amount);
       });
 
       setPayInOutData([
@@ -221,12 +231,17 @@ function Dashboard() {
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
+          title: "Lien",
+          value: lienAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
           title: "Net Balance",
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
           value:
             payInAmount -
-            (payOutAmount + (payInCommission + payOutCommission)) -
-            settlementAmount,
+            ((payOutAmount + (payInCommission + payOutCommission)) -
+            settlementAmount) - lienAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -256,6 +271,7 @@ function Dashboard() {
               data.title !== "Commission" &&
               data.title !== "Net Balance" &&
               data.title !== "Settlement" &&
+              data.title !== "Lien" &&
               data.title !== "Total Net Balance" && (
                 <DashboardStats key={index} {...data} colorIndex={index} />
               )
@@ -301,6 +317,14 @@ function Dashboard() {
                     {data.title === "Settlement" && (
                       <div className="flex justify-between">
                         <p>Settlement</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
+                      </div>
+                    )}
+                    {data.title === "Lien" && (
+                      <div className="flex justify-between">
+                        <p>Lien</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>

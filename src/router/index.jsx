@@ -5,6 +5,7 @@ import { lazy } from "react";
 const Dashboard = lazy(() => import("../pages/protected/Dashboard"));
 const VendorBoard = lazy(() => import("../pages/protected/VendorBoard"));
 const AddData = lazy(() => import("../pages/protected/addData/AddData"));
+const Lien = lazy(() => import("../pages/protected/lien/Lien"));
 const InProgress = lazy(() => import("../pages/protected/deposit/InProgress"));
 const Completed = lazy(() => import("../pages/protected/deposit/Completed"));
 const Dropped = lazy(() => import("../pages/protected/deposit/Dropped"));
@@ -83,6 +84,12 @@ const routes = [
   {
     path: "/vendorsettlements",
     component: VendorSettlementsAccounts,
+  },
+
+  // lien
+  {
+    path: "/lien",
+    component: Lien,
   },
 
   //Merchant

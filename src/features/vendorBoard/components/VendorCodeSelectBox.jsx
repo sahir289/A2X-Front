@@ -17,7 +17,8 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
 
   const handleChange = (value) => {
     localStorage.setItem("selectedVendorCode", JSON.stringify(value));
-    setSelectedVendorCode(value);
+    const selectedVendorSortedList = [...value].sort((a, b) => a.localeCompare(b));
+    setSelectedVendorCode(selectedVendorSortedList);
     setDropdownOpen(false)
   };
 
@@ -40,14 +41,17 @@ const VendorCodeSelectBox = ({ selectedVendorCode, setSelectedVendorCode }) => {
       value: vendor.vendor_code,
     })) : [];
 
-    setVendorCodeOptions(formattedVendorCodes);
+    const sortedList = [...formattedVendorCodes].sort((a, b) => a.label.localeCompare(b.label));
+    setVendorCodeOptions(sortedList);
 
     const vendors = formattedVendorCodes?.map((item) => item.value);
     localStorage.setItem(
       "selectedVendorCode",
       JSON.stringify(vendors)
     );
-    setSelectedVendorCode(vendors);
+
+    const selectedVendorSortedList = [...vendors].sort((a, b) => a.localeCompare(b));
+    setSelectedVendorCode(selectedVendorSortedList);
   };
 
   return (

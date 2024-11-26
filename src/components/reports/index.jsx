@@ -10,11 +10,16 @@ const PayDesign = ({ handleFinish, title, loading, statusOptions }) => {
   const merchantCodes = useSelector((state) => state.merchant.data)
   const userData = useContext(PermissionContext);
   const merchantOptions = merchantCodes
-    ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code.includes(merchant.code))
-    .map(merchant => ({
+    ?.filter(
+      (merchant) =>
+        (!merchant.is_deleted && !userData?.code?.length) ||
+        userData?.code.includes(merchant.code)
+    )
+    .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
-    }));
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
 
   return (
     <div className='bg-white p-4'>
