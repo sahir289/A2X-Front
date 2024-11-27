@@ -286,7 +286,7 @@ function VendorBoard() {
                     )}
                     {data.title === "Lien" && (
                       <div className="flex justify-between">
-                        <p>Lien</p>
+                        <p className="font-bold">ChargeBack</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>

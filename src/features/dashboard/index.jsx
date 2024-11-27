@@ -240,8 +240,8 @@ function Dashboard() {
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
           value:
             payInAmount -
-            ((payOutAmount + (payInCommission + payOutCommission)) -
-            settlementAmount) - lienAmount,
+            payOutAmount - (payInCommission + payOutCommission) -
+            settlementAmount - lienAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -324,7 +324,7 @@ function Dashboard() {
                     )}
                     {data.title === "Lien" && (
                       <div className="flex justify-between">
-                        <p>Lien</p>
+                        <p>ChargeBack</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>
@@ -332,15 +332,15 @@ function Dashboard() {
                     )}
                     {data.title === "Net Balance" && (
                       <div className="flex justify-between">
-                        <p>Net Balance</p>
+                        <p className="font-bold">Current Balance</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>
                       </div>
                     )}
                     {data.title === "Total Net Balance" && (
-                      <div className="flex justify-between">
-                        <p>Lifetime Balance</p>
+                      <div className="flex justify-between text-4xl" style={{color: "cornflowerblue"}}>
+                        <p className="font-bold" >Net Balance</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>
