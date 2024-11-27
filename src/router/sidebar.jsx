@@ -116,7 +116,7 @@ const routes = [
   {
     path: "/app/lien",
     icon: <ArrowLeftCircleIcon className={iconClasses} />,
-    name: "Lien",
+    name: "ChargeBack",
   },
   {
     path: "/app/merchant",

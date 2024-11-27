@@ -213,10 +213,22 @@ const Withdraw = ({ type }) => {
       return;
     }
     setIsLoading(true);
-    const res = await putApi(`/update-payout/${withdrawId}`, data);
-    setIsLoading(false);
-    if (res.error) {
-      return;
+    console.log(data);
+    return
+    if (data.method == "manual") {
+      const res = await putApi(`/update-payout/${withdrawId}`, data);
+      setIsLoading(false);
+      if (res.error) {
+        return;
+      }
+    }
+    else if (data.method == "eko") {
+      const options = { method: 'GET', headers: { accept: 'application/json' } };
+
+      fetch('https://staging.eko.in/ekoapi/v2/banks', options)
+        .then(res => res.json())
+        .then(res => console.log(res))
+        .catch(err => console.error(err));
     }
     setEditWithdraw(null);
     handleGetWithdraws();
@@ -468,29 +480,31 @@ const Withdraw = ({ type }) => {
                 <Select
                   options={[
                     { value: "manual", key: "manual" },
-                    { value: "accure", key: "accure" },
+                    { value: "eko", key: "eko" },
                   ]}
                   onChange={handleSelectUTRMethod}
                   defaultValue={selectedUTRMethod}
                 />
               </Form.Item>
-              {/* Select to choose payout bank */}
-              <Form.Item name="from_bank" label="Select Bank">
-                <Select options={payOutBankOptions} />
-              </Form.Item>
               {selectedUTRMethod === "manual" && (
-                <Form.Item
-                  name="utr_id"
-                  label="UTR Number"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter UTR no",
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
+                <>
+                  {/* Select to choose payout bank */}
+                  <Form.Item name="from_bank" label="Select Bank">
+                    <Select options={payOutBankOptions} />
+                  </Form.Item>
+                  <Form.Item
+                    name="utr_id"
+                    label="UTR Number"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter UTR no",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </>
               )}
             </>
           )}

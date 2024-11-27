@@ -8,8 +8,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
-const { RangePicker } = DatePicker;
-
 const AddLien = ({ handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
@@ -25,10 +23,10 @@ const AddLien = ({ handleTableChange }) => {
       code: values.code,
       merchant_order_id: values.merchant_order_id,
       user_id: values.user_id,
-      when: values.when[0].toISOString(),
+      when: values.when.toISOString(),
     }
 
-    const AddLien = await postApi("/create-lien", lien);
+      await postApi("/create-lien", lien);
       setIsLoading(false)
       handleTableChange({ current: 1, pageSize: 20 });
       form.resetFields();
@@ -144,7 +142,7 @@ const AddLien = ({ handleTableChange }) => {
             },
           ]}
         >
-          <RangePicker className="h-8" />
+          <DatePicker className="h-8" />
         </Form.Item>
 
         <div className="flex flex-row items-end gap-1">
