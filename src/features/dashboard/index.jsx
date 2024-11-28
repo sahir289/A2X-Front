@@ -331,20 +331,26 @@ function Dashboard() {
                       </div>
                     )}
                     {data.title === "Net Balance" && (
-                      <div className="flex justify-between">
-                        <p className="font-bold">Current Balance</p>
-                        <p className="font-bold">
-                          {formatCurrency(data.value)}
-                        </p>
-                      </div>
+                      <>
+                        <br />
+                        <div className="flex justify-between text-xl">
+                          <p className="font-bold">Current Balance</p>
+                          <p className="font-bold">
+                            {formatCurrency(data.value)}
+                          </p>
+                        </div>
+                      </>
                     )}
                     {data.title === "Total Net Balance" && (
-                      <div className="flex justify-between text-4xl" style={{color: "cornflowerblue"}}>
-                        <p className="font-bold" >Net Balance</p>
-                        <p className="font-bold">
-                          {formatCurrency(data.value)}
-                        </p>
-                      </div>
+                      <>
+                        <br />
+                        <div className="flex justify-between text-4xl" style={{ color: "cornflowerblue" }}>
+                          <p className="font-bold" >Net Balance</p>
+                          <p className="font-bold">
+                            {formatCurrency(data.value)}
+                          </p>
+                        </div>
+                      </>
                     )}
                   </div>
                 );
