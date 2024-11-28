@@ -221,7 +221,7 @@ const TableComponent = ({
             render={(text) => formatCurrency(text)}
           />
           <Column
-            title="When (IST)"
+            title="Reference Date (IST)"
             dataIndex="Merchant"
             key="Merchant"
             className="bg-white"
