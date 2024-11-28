@@ -87,11 +87,11 @@ const TableComponent = ({
 
   return (
     <>
-      <div className="font-serif p-3 bg-zinc-50 rounded-lg mb-2">
+      {!["MERCHANT","OPERATIONS","MERCHANT_OPERATIONS","MERCHANT_ADMIN"].includes(userData?.role) && <div className="font-serif p-3 bg-zinc-50 rounded-lg mb-2">
         <div className="flex">
           <AddLien handleTableChange={handleTableChange} />
         </div>
-      </div>
+      </div>}
       <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
         <div className="flex">
           <div className=" w-full h-12  pb-3">
@@ -145,6 +145,12 @@ const TableComponent = ({
                   showSearch
                   options={merchantOptions}
                   className="flex"
+                  disabled={[
+                    "MERCHANT",
+                    "OPERATIONS",
+                    "MERCHANT_OPERATIONS",
+                    "MERCHANT_ADMIN"
+                  ].includes(userData?.role)}
                   onChange={(value) =>
                     handleFilterValuesChange(value, "merchantCode")
                   }
