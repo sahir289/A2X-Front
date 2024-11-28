@@ -34,7 +34,7 @@ const AddLien = ({ handleTableChange }) => {
       return;
     }
     else {
-      NotificationManager.success("Lien created successfully");
+      NotificationManager.success("ChargeBack added successfully");
       handleTableChange({ current: 1, pageSize: 20 });
     }
   }
