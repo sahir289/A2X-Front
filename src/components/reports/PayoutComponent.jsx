@@ -1,10 +1,9 @@
-import { notification } from 'antd';
-import { json2csv } from 'json-2-csv';
-import React, { useState } from 'react';
-import { postApi } from '../../redux/api';
-import { formatDate, payoutInOutStatusOptions } from '../../utils/utils';
-import PayDesign from './index';
-
+import { notification } from "antd";
+import { json2csv } from "json-2-csv";
+import React, { useState } from "react";
+import { postApi } from "../../redux/api";
+import { formatDate, payoutInOutStatusOptions } from "../../utils/utils";
+import PayDesign from "./index";
 
 const PayoutComponent = () => {
   const [loading, setLoading] = useState(false);
@@ -12,70 +11,81 @@ const PayoutComponent = () => {
 
   //handlePayInFunction
   const handlePayOut = async (data) => {
-    const formattedDates = data.range.map(date =>  new Date(date));
-    const startDate = formattedDates[0];
-    startDate.setHours(0, 0, 0, 0)
-    const endDate = formattedDates[1];
-    endDate.setHours(23, 59, 59, 0);
+    const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+    const formattedDates = data.range.map((date) => new Date(date));
     delete data.range;
+
+    const startDate = formattedDates[0];
+    const endDate = formattedDates[1];
+
+    const adjustedStartDate = new Date(startDate.getTime() - istOffset);
+    const adjustedEndDate = new Date(endDate.getTime() - istOffset);
+
+    adjustedStartDate.setUTCDate(adjustedStartDate.getUTCDate());
+    adjustedEndDate.setUTCDate(adjustedEndDate.getUTCDate() + 1);
+
+    adjustedStartDate.setUTCHours(18, 0, 0, 0);
+    adjustedEndDate.setUTCHours(18, 29, 59, 999);
+
     const completeData = {
       ...data,
-      startDate,
-      endDate
-    }
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
+    };
     setLoading(true);
-    const res = await postApi('/get-all-payouts', completeData);
+    const res = await postApi("/get-all-payouts", completeData);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
       return;
     }
     if (!res.data.data?.length) {
-      api.warning({ description: 'No data found!' });
+      api.warning({ description: "No data found!" });
       return;
     }
     const formatSetting = res.data.data.map((el) => ({
-      'ID': el.sno || '',
-      'Status': el.status || '',
-      'User Amount': el.amount || '',
-      'Commission': el.payout_commision || '',
-      'UTR': el.utr_id || '',
-      'Merchant': el?.Merchant?.code || '',
-      'Merchant Order Id': el.merchant_order_id || '',
-      'User': el.user_id || '',
-      'Account Number': el.acc_no || '',
-      'Account Holder Name': el.acc_holder_name || '',
-      'IFSC': el.ifsc_code || '',
-      'Initiated At': formatDate(el.createdAt) || '',
-      'Confirmed At': formatDate(el.updatedAt) || '',
-    }))
+      ID: el.sno || "",
+      Status: el.status || "",
+      "User Amount": el.amount || "",
+      Commission: el.payout_commision || "",
+      UTR: el.utr_id || "",
+      Merchant: el?.Merchant?.code || "",
+      "Merchant Order Id": el.merchant_order_id || "",
+      User: el.user_id || "",
+      "Account Number": el.acc_no || "",
+      "Account Holder Name": el.acc_holder_name || "",
+      IFSC: el.ifsc_code || "",
+      "Initiated At": formatDate(el.createdAt) || "",
+      "Confirmed At": formatDate(el.updatedAt) || "",
+    }));
     try {
       const csv = await json2csv(formatSetting);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.href = url;
-      const fileName = `payout-${data.status}-${formatDate(Date.now())}`.toLowerCase();
-      link.setAttribute('download', fileName);
+      const fileName = `payout-${data.status}-${formatDate(
+        Date.now()
+      )}`.toLowerCase();
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error converting data to CSV:', error);
+      console.error("Error converting data to CSV:", error);
     }
-
-  }
+  };
   return (
     <>
       {notificationContext}
       <PayDesign
         handleFinish={handlePayOut}
-        title='Payouts'
+        title="Payouts"
         loading={loading}
         statusOptions={payoutInOutStatusOptions}
       />
     </>
-  )
-}
+  );
+};
 
 export default PayoutComponent;
