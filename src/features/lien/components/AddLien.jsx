@@ -26,10 +26,17 @@ const AddLien = ({ handleTableChange }) => {
       when: values.when.toISOString(),
     }
 
-      await postApi("/create-lien", lien);
-      setIsLoading(false)
+    const lienData = await postApi("/create-lien", lien);
+    setIsLoading(false)
+    form.resetFields();
+    if (lienData.error) {
+      NotificationManager.error(lienData.error.message);
+      return;
+    }
+    else {
+      NotificationManager.success("Lien created successfully");
       handleTableChange({ current: 1, pageSize: 20 });
-      form.resetFields();
+    }
   }
 
   const resetForm = () => {
@@ -138,7 +145,7 @@ const AddLien = ({ handleTableChange }) => {
           rules={[
             {
               required: true,
-              message: "Please input your amount!",
+              message: "Please select date!",
             },
           ]}
         >
@@ -148,7 +155,7 @@ const AddLien = ({ handleTableChange }) => {
         <div className="flex flex-row items-end gap-1">
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={isLoading}>
-              Add Lien
+              Add ChargeBack
             </Button>
           </Form.Item>
           <Form.Item>
