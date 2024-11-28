@@ -24,7 +24,7 @@ const PayinComponent = () => {
     adjustedStartDate.setUTCDate(adjustedStartDate.getUTCDate());
     adjustedEndDate.setUTCDate(adjustedEndDate.getUTCDate() + 1);
 
-    adjustedStartDate.setUTCHours(18, 0, 0, 0);
+    adjustedStartDate.setUTCHours(18, 30, 0, 0);
     adjustedEndDate.setUTCHours(18, 29, 59, 999);
 
     const completeData = {
