@@ -77,6 +77,10 @@ const TableComponent = ({
     return formatDate(record?.when) || "N/A"; // Safely access nested property
   };
 
+  const createdAtIST = (record) => {
+    return formatDate(record?.createdAt) || "N/A"; // Safely access nested property
+  };
+
   const getMerchantCode = (record) => {
     return record?.Merchant?.code || "N/A"; // Safely access nested property
   };
@@ -91,7 +95,7 @@ const TableComponent = ({
       <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
         <div className="flex">
           <div className=" w-full h-12  pb-3">
-            <p className="pt-4 ps-4 text-xl "> Lien</p>
+            <p className="pt-4 ps-4 text-xl ">ChargeBack</p>
           </div>
           <div className="pt-2 flex items-center gap-2">
             <Button className='' onClick={handleResetSearchFields}>Reset</Button>
@@ -223,6 +227,14 @@ const TableComponent = ({
             className="bg-white"
             width={"1%"}
             render={(text, record) => lastLogIn(record)}
+          />
+          <Column
+            title="Created AT (IST)"
+            dataIndex="Merchant"
+            key="Merchant"
+            className="bg-white"
+            width={"1%"}
+            render={(text, record) => createdAtIST(record)}
           />
         </Table>
       </div>

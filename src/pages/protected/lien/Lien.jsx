@@ -10,7 +10,7 @@ const Lien = () => {
   const context = useContext(PermissionContext)
 
   useEffect(() => {
-    dispatch(setPageTitle({ title: "Lien" }));
+    dispatch(setPageTitle({ title: "ChargeBack" }));
   }, []);
 
   return <>{AllowedRoles?.includes(context.role) && < All />}</>

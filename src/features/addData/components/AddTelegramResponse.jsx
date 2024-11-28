@@ -37,7 +37,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
     }).catch((err) => {
     }).finally(() => {
       setIsLoading(false)
-      handleTableChange({ current: 1, pageSize: 20 });
+      // handleTableChange({ current: 1, pageSize: 20 });
       form.resetFields(["amount", "amount_code", "utr"]);
     })
   };
