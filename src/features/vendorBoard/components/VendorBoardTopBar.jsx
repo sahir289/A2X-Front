@@ -6,34 +6,50 @@ const rangePresets = [
   {
     label: "Today",
     value: [
-      dayjs().add(0, "day").startOf("day"),
-      dayjs().add(0, "day").endOf("day"),
+      dayjs().startOf("day"),
+      dayjs().endOf("day"),
     ],
   },
   {
     label: "Yesterday",
     value: [
-      dayjs().add(-1, "day").startOf("day"),
-      dayjs().add(-1, "day").endOf("day"),
+      dayjs().subtract(1, "day").startOf("day"),
+      dayjs().subtract(1, "day").endOf("day"),
     ],
   },
   {
     label: "Last 7 days",
-    value: [dayjs().add(-7, "d"), dayjs().endOf("day")],
+    value: [
+      dayjs().subtract(7, "day"),
+      dayjs().endOf("day"),
+    ],
+  },
+  {
+    label: "Last 15 days",
+    value: [
+      dayjs().subtract(15, "day"),
+      dayjs().endOf("day"),
+    ],
   },
   {
     label: "Last 30 days",
-    value: [dayjs().add(-30, "d"), dayjs().endOf("day")],
+    value: [
+      dayjs().subtract(30, "day"),
+      dayjs().endOf("day"),
+    ],
   },
   {
     label: "This Month",
-    value: [dayjs().startOf("month"), dayjs().endOf("month")],
+    value: [
+      dayjs().startOf("month"),
+      dayjs().endOf("month"),
+    ],
   },
   {
     label: "Last Month",
     value: [
-      dayjs().add(-1, "month").startOf("month"),
-      dayjs().add(-1, "month").endOf("month"),
+      dayjs().subtract(1, "month").startOf("month"),
+      dayjs().subtract(1, "month").endOf("month"),
     ],
   },
 ];
@@ -41,15 +57,44 @@ const rangePresets = [
 function VendorBoardTopBar({ updateVendorBoardPeriod, dateValue }) {
   const onRangeChange = (dates, dateStrings) => {
     if (dates) {
-      let startDate = new Date(dateStrings[0]);
-      startDate.setHours(0,0,0,0)
-      let endDate = new Date(dateStrings[1]);
-      endDate.setHours(23, 59, 59, 999);
+      const startDate = dayjs(dates[0])
+        .utc()
+        .startOf("day")
+        .toDate();
+      const endDate = dayjs(dates[1])
+        .utc()
+        .endOf("day")
+        .toDate();
+
+
+      const selectedPreset = rangePresets.find(
+        (preset) =>
+          dayjs(dates[0]).isSame(preset.value[0], "day") &&
+          dayjs(dates[1]).isSame(preset.value[1], "day")
+      );
+
+      const intervalMapping = {
+        "Today": "24h",
+        "Yesterday": "24h",
+        "Last 7 days": "7d",
+        "Last 15 days": "15d",
+        "Last 30 days": "30d",
+        "This Month": "30d",
+        "Last Month": "30d"
+      };
+
+      const differenceInMs = endDate - startDate;
+      const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
+      const differenceInterval = differenceInDays === 1 ? "24h" : `${differenceInDays}d`
+
+      const intervalValue = intervalMapping[selectedPreset?.label] || differenceInterval;
+
+
       const newRange = {
         startDate: startDate,
         endDate: endDate,
       };
-      updateVendorBoardPeriod(newRange);
+      updateVendorBoardPeriod(newRange, intervalValue);
     }
   };
 
@@ -58,7 +103,10 @@ function VendorBoardTopBar({ updateVendorBoardPeriod, dateValue }) {
       <div className="">
         <RangePicker
           className="w-72 h-12"
-          defaultValue={[dateValue.startDate, dateValue.endDate]}
+          defaultValue={[
+            dayjs(dateValue.startDate).utc(),
+            dayjs(dateValue.endDate).utc(),
+          ]}
           presets={rangePresets}
           onChange={onRangeChange}
         />

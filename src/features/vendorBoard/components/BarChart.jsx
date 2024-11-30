@@ -9,6 +9,8 @@ import {
   Tooltip,
 } from "chart.js";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import TitleCard from "../../../components/Cards/TitleCard";
@@ -23,14 +25,44 @@ ChartJS.register(
   Legend
 );
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// Set default timezone globally to IST
+dayjs.tz.setDefault("Asia/Kolkata");
+
 function BarChart({ title, data, interval, setInterval, currentCateRange }) {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [{ label: "", data: [], backgroundColor: "" }],
   });
+  const [istDateRange, setIstDateRange] = useState({
+    startDate: dayjs().subtract(30, "day"),
+    endDate: dayjs().endOf("day"),
+  })
+
+  const istStartDate = dayjs(istDateRange.startDate).isValid()
+  ? dayjs(istDateRange.startDate).utc()
+  : dayjs().subtract(30, "day").utc();
+
+const istEndDate = dayjs(istDateRange.endDate).isValid()
+  ? dayjs(istDateRange.endDate).utc()
+  : dayjs().endOf("day").utc();
+
+  const differenceInMs = istEndDate - istStartDate;
+  const globalDifferenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
+
+  const adjustedISTStartDate = istStartDate;
+  const adjustedISTEndDate = dayjs(istEndDate).isValid()
+  ? (globalDifferenceInDays === 1
+      ? istEndDate
+      : istEndDate.subtract(1, "day"))
+  : dayjs().utc();
+
+
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().add(-14, "d"),
-    endDate: dayjs(),
+    startDate: adjustedISTStartDate,
+    endDate: adjustedISTEndDate,
   });
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
@@ -174,17 +206,31 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
 
   const onChange = (e) => {
     setInterval(e.target.value);
-    const today = dayjs();
 
-    if (e.target.value === "15d") {
+    // const today = {
+    //   startDate : dayjs().tz('Asia/Kolkata').startOf("day"),
+    //   endDate : dayjs().tz('Asia/Kolkata').endOf("day"),
+    // };
+
+    const rangeMap = {
+      "30d": { value: 30, unit: "day" },
+      "15d": { value: 15, unit: "day" },
+      "7d": { value: 7, unit: "day" },
+      "24h": { value:0, unit: "day" },
+    };
+
+    const selectedRange = rangeMap[e.target.value];
+
+    if (selectedRange === "24h") {
       setDateRange({
-        startDate: today.subtract(15, "day"),
-        endDate: today,
+        startDate: dateRange.startDate.subtract(selectedRange.value, selectedRange.unit),
+        endDate: dateRange.endDate.subtract(selectedRange.value, selectedRange.unit),
       });
-    } else if (e.target.value === "7d") {
+    }
+    else {
       setDateRange({
-        startDate: today.subtract(7, "day"),
-        endDate: today,
+        startDate: dateRange.startDate.subtract(selectedRange.value, selectedRange.unit),
+        endDate: dateRange.endDate,
       });
     }
   };
@@ -215,9 +261,9 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
           defaultValue={interval}
           value={interval}
         >
-          <Radio.Button value="15d">15D</Radio.Button>
+          {/* <Radio.Button value="15d">15D</Radio.Button>
           <Radio.Button value="7d">7D</Radio.Button>
-          <Radio.Button value="24h">24H</Radio.Button>
+          <Radio.Button value="24h">24H</Radio.Button> */}
         </Radio.Group>
       </Flex>
       <Bar options={options} data={chartData} height="30px" width="100%" />
