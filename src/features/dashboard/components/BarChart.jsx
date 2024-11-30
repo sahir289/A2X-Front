@@ -42,22 +42,22 @@ function BarChart({ title, data, interval, setInterval, currentCateRange }) {
   })
 
   const istStartDate = dayjs(istDateRange.startDate).isValid()
-  ? dayjs(istDateRange.startDate).utc()
-  : dayjs().subtract(30, "day").utc();
+    ? dayjs(istDateRange.startDate).utc()
+    : dayjs().subtract(30, "day").utc();
 
-const istEndDate = dayjs(istDateRange.endDate).isValid()
-  ? dayjs(istDateRange.endDate).utc()
-  : dayjs().endOf("day").utc();
+  const istEndDate = dayjs(istDateRange.endDate).isValid()
+    ? dayjs(istDateRange.endDate).utc()
+    : dayjs().endOf("day").utc();
 
   const differenceInMs = istEndDate - istStartDate;
   const globalDifferenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24));
 
   const adjustedISTStartDate = istStartDate;
   const adjustedISTEndDate = dayjs(istEndDate).isValid()
-  ? (globalDifferenceInDays === 1
+    ? (globalDifferenceInDays === 1
       ? istEndDate
       : istEndDate.subtract(1, "day"))
-  : dayjs().utc();
+    : dayjs().utc();
 
 
   const [dateRange, setDateRange] = useState({
@@ -154,9 +154,9 @@ const istEndDate = dayjs(istDateRange.endDate).isValid()
           interval === "24h" ||
           dayjs(dateRange.startDate).isSame(dateRange.endDate, "day")
         ) {
-          dayData = data.filter((item) => dayjs(item.updatedAt).startOf("hour").format("h:mm A") === date && dayjs(item.updatedAt).date() === dayjs(dateRange.startDate).utc().date());
+          dayData = data.filter((item) => dayjs(item.updatedAt).startOf("hour").format("h:mm A") === date && dayjs(item.updatedAt).date() === dayjs(dateRange.startDate).date());
         } else {
-          dayData = data.filter((item) => dayjs(item.updatedAt).utc().format("YYYY-MM-DD") === date);
+          dayData = data.filter((item) => dayjs(item.updatedAt).format("YYYY-MM-DD") === date);
         }
         const total = dayData?.reduce(
           (sum, item) => sum + parseFloat(item.amount),
@@ -209,7 +209,7 @@ const istEndDate = dayjs(istDateRange.endDate).isValid()
       "30d": { value: 30, unit: "day" },
       "15d": { value: 15, unit: "day" },
       "7d": { value: 7, unit: "day" },
-      "24h": { value:0, unit: "day" },
+      "24h": { value: 0, unit: "day" },
     };
 
     const selectedRange = rangeMap[e.target.value];
