@@ -174,12 +174,12 @@ function VendorBoard() {
         },
         {
           title: "Deposit %",
-          value: payInCommission,
+          value: 0,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Withdraw",
-          value: payOutAmount,
+          value: 0,
           icon: <UserGroupIcon className="w-8 h-8" />,
           count: payOutCount,
         },
@@ -272,7 +272,7 @@ function VendorBoard() {
                       <div className="flex justify-between">
                         <p>Commission</p>
                         <p className="font-bold">
-                          {formatCurrency(data.value)}
+                          {formatCurrency(0)}
                         </p>
                       </div>
                     )}
