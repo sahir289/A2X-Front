@@ -43,7 +43,15 @@ const TableComponent = ({
   };
   //reset search fields
   const handleResetSearchFields = () => {
-    setFilterValues({})
+    setFilterValues({
+      sno: "",
+      merchantCode: `${userData?.code || ""}`,
+      merchant_order_id: "",
+      user_id: "",
+      amount: "",
+      page: 1,
+      pageSize: 20,
+    })
   }
 
   const handleGetMerchants = async () => {
