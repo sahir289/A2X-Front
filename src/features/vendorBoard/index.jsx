@@ -245,13 +245,13 @@ function VendorBoard() {
         },
         {
           title: "Lien",
-          value: settlementAmount,
+          value: 0,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Net Balance",
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
-          value: payInAmount - payOutAmount - settlementAmount - lienAmount,
+          value: payInAmount - payOutAmount - settlementAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
