@@ -57,7 +57,7 @@ const PayinComponent = () => {
       User: el.user_id || "",
       "Merchant Order Id": el.merchant_order_id || "",
       "Initiated At": formatDate(el.createdAt) || "",
-      "Confirmed At": formatDate(el.updatedAt) || "",
+      "Confirmed At": el.status === "SUCCESS" ? formatDate(el.approved_at) || "" : formatDate(el.updatedAt) || "",
     }));
     try {
       const csv = await json2csv(formatSetting);

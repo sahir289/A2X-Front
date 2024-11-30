@@ -32,13 +32,13 @@ const PayDesign = ({ handleFinish, title, loading, statusOptions }) => {
         >
           <Select placeholder="Please select" options={merchantOptions} mode='multiple' allowClear />
         </Form.Item>
-        <Form.Item
+        {statusOptions && <Form.Item
           name="status"
           label="Status"
           rules={[{ required: true, message: "Please select status!" }]}
         >
           <Select placeholder="Please select" options={statusOptions} />
-        </Form.Item>
+        </Form.Item>}
         <div className='my-2 px-3 py-2 rounded shadow-md'>
           <Form.Item
             name="range"
