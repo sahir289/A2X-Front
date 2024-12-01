@@ -4,12 +4,20 @@ import { useDispatch } from "react-redux";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
-import { formatCurrency } from "../../utils/utils";
+import { calculateISTDateRange, formatCurrency, formatDateToISTString } from "../../utils/utils";
 import BarChart from "./components/BarChart";
 import VendorBoardStats from "./components/VendorBoardStats";
 import VendorBoardTopBar from "./components/VendorBoardTopBar";
 import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// Set default timezone globally to IST
+dayjs.tz.setDefault("Asia/Kolkata");
 
 function VendorBoard() {
   const context = useContext(PermissionContext);
@@ -64,10 +72,34 @@ function VendorBoard() {
   const [withdrawData, setWithdrawData] = useState([]);
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
+
+  const nowUTC = new Date();
+  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+  const nowIST = new Date(nowUTC.getTime() + istOffset);
+
+  const year = nowIST.getUTCFullYear();
+  const month = nowIST.getUTCMonth();
+  const date = nowIST.getUTCDate();
+
+  const startIST = new Date(Date.UTC(year, month, date, 0, 0, 0, 0)); // 12:00 AM IST
+  const endIST = new Date(Date.UTC(year, month, date, 23, 59, 59, 999)); // 11:59 PM IST
+
+  const adjustedISTStartDate = new Date(startIST.getTime() - istOffset);
+  const adjustedISTEndDate = new Date(endIST.getTime() - istOffset);
+
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().add(0, "day").startOf("day"),
-    endDate: dayjs().add(0, "day").endOf("day"),
+    startDate: adjustedISTStartDate,
+    endDate: adjustedISTEndDate,
   });
+
+  useEffect(() => {
+    const { startUTC, endUTC } = calculateISTDateRange();
+
+    setDateRange({
+      startDate: formatDateToISTString(startUTC),
+      endDate: formatDateToISTString(endUTC),
+    });
+  }, []);
   const dispatch = useDispatch();
   const debounceRef = useRef();
 
@@ -76,16 +108,26 @@ function VendorBoard() {
     debounceRef.current = setTimeout(fetchPayInDataVendor, 400);
   }, [selectedVendorCode, dateRange]);
 
-  const updateVendorBoardPeriod = (newRange) => {
+  const updateVendorBoardPeriod = (newRange, intervalValue) => {
+    const startDate = newRange.startDate;
+    const endDate = newRange.endDate;
+
+    const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+
+    const adjustedStartDate = new Date(startDate.getTime() - istOffset);
+    const adjustedEndDate = new Date(endDate.getTime() - istOffset);
+
     setDateRange({
-      startDate: newRange.startDate,
-      endDate: newRange.endDate,
+      startDate: formatDateToISTString(adjustedStartDate),
+      endDate: formatDateToISTString(adjustedEndDate),
     });
-    setIntervalDeposit("");
-    setIntervalWithdraw("");
+
+    setIntervalDeposit(intervalValue);
+    setIntervalWithdraw(intervalValue);
+
     dispatch(
       showNotification({
-        message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
+        message: `Period updated to ${startDate.toDateString()} to ${adjustedEndDate.toDateString()}`,
         status: 1,
       })
     );
@@ -123,10 +165,13 @@ function VendorBoard() {
         `/get-payInDataVendor?${query}`,
         dateRange
       );
+      const netBalance = await getApi(`/get-vendors-net-balance?${query}`);
 
       if (payInOutData.error) {
         return;
       }
+
+      const netBalanceAmount = netBalance?.data?.data;
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
@@ -179,13 +224,13 @@ function VendorBoard() {
         },
         {
           title: "Withdraw",
-          value: 0,
+          value: payOutAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
           count: payOutCount,
         },
         {
           title: "Withdraw %",
-          value: payOutCommission,
+          value: 0,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -200,16 +245,18 @@ function VendorBoard() {
         },
         {
           title: "Lien",
-          value: settlementAmount,
+          value: 0,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Net Balance",
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
-          value:
-            payInAmount -
-            ((payOutAmount + (payInCommission + payOutCommission)) -
-            settlementAmount) - lienAmount,
+          value: payInAmount - payOutAmount - settlementAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Total Net Balance",
+          value: netBalanceAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
       ]);
@@ -235,7 +282,8 @@ function VendorBoard() {
               data.title !== "Commission" &&
               data.title !== "Net Balance" &&
               data.title !== "Lien" &&
-              data.title !== "Settlement" && (
+              data.title !== "Settlement" &&
+              data.title !== "Total Net Balance" && (
                 <VendorBoardStats key={index} {...data} colorIndex={index} />
               )
             );
@@ -293,12 +341,26 @@ function VendorBoard() {
                       </div>
                     )}
                     {data.title === "Net Balance" && (
-                      <div className="flex justify-between">
-                        <p>Net Balance</p>
-                        <p className="font-bold">
-                          {formatCurrency(data.value)}
-                        </p>
-                      </div>
+                      <>
+                        <br />
+                        <div className="flex justify-between text-xl">
+                          <p className="font-bold">Current Balance</p>
+                          <p className="font-bold">
+                            {formatCurrency(data.value)}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                    {data.title === "Total Net Balance" && (
+                      <>
+                        <br />
+                        <div className="flex justify-between text-4xl" style={{ color: "cornflowerblue" }}>
+                          <p className="font-bold" >Net Balance</p>
+                          <p className="font-bold">
+                            {formatCurrency(data.value)}
+                          </p>
+                        </div>
+                      </>
                     )}
                   </div>
                 );
