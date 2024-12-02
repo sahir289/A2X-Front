@@ -19,6 +19,7 @@ function LeftSidebar() {
     const filterRoutes = routes.filter(route => {
       if (context.role === "MERCHANT" && (route.name === "Bank Accounts" || route.name === "Vendor" || route.name === "Merchant" || route.name === "Add data" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
         return false;
+
       if (context.role === "MERCHANT_ADMIN" && (route.name === "Bank Accounts" || route.name === "Vendor" || route.name === "Add data" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
         return false;
 
@@ -27,9 +28,8 @@ function LeftSidebar() {
         return false;
 
       if ((context?.role === "OPERATIONS") &&
-        (route.name === "Bank Accounts" || route.name === "Merchant" || route.name === "User" || route.name === "Vendor"))
+        (route.name === "Bank Accounts" || route.name === "Merchant" || route.name === "User" || route.name === "Vendor" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
         return false;
-
 
       if (context?.role === "VENDOR" &&
         (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports" || route.name === "Settlements" || route.name === "ChargeBack"))
