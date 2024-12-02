@@ -54,7 +54,6 @@ export function formatDate1(utcDate) {
 
 export function calculateISTDateRange() {
   const nowUTC = new Date();
-  console.log("UTC time ", nowUTC.toISOString());
   // Calculate current IST time by adding 5 hours and 30 minutes to UTC
   const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
   const nowIST = new Date(nowUTC.getTime() + istOffset);
