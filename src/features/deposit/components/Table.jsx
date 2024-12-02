@@ -675,7 +675,6 @@ const TableComponent = ({
                 className="flex"
                 disabled={[
                   "MERCHANT",
-                  "OPERATIONS",
                   "MERCHANT_OPERATIONS",
                   "MERCHANT_ADMIN"
                 ].includes(userData?.role)}
@@ -905,8 +904,6 @@ const TableComponent = ({
           hidden={
             filterValues?.loggedInUserRole === "ADMIN"
               ? false
-              : filterValues?.loggedInUserRole === "OPERATIONS"
-                ? false
                 : filterValues?.loggedInUserRole === "TRANSACTIONS"
                   ? false
                   : true

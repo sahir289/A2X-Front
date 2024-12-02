@@ -175,7 +175,7 @@ function VendorBoard() {
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
-      const reversePayOutData = payInOutData?.data?.data?.payInOutData?.reversePayOutData;
+      const reversePayOutData = payInOutData?.data?.data?.payInOutData?.reversedPayOutData;
       const settlementData = payInOutData?.data?.data?.payInOutData?.settlementData;
       const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
 

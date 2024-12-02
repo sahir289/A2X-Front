@@ -137,7 +137,6 @@ export const Columns = (
                   filters={filters}
                   disabled={[
                     "MERCHANT",
-                    "OPERATIONS",
                     "MERCHANT_OPERATIONS",
                   ].includes(userData?.role)}
                 />

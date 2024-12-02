@@ -97,7 +97,6 @@ const MerchantCodeSelectBox = ({
             }}
             disabled={
               userData?.role === "MERCHANT" ||
-              userData?.role === "OPERATIONS" ||
               userData?.role === "MERCHANT_OPERATIONS"
             }
             // Selecting and Locking the merchant name while logged in user is merchant

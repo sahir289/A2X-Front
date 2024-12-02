@@ -200,7 +200,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-          {(selectedRole === "OPERATIONS") && (
+          {/* {(selectedRole === "OPERATIONS") && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -218,7 +218,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
                 showSearch={true}
               />
             </Form.Item>
-          )}
+          )} */}
           {(selectedRole === "MERCHANT_OPERATIONS") && (
             <Form.Item
               label="Merchant Code"
