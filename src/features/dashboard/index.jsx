@@ -162,6 +162,7 @@ function Dashboard() {
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
+      const reversePayOutData = payInOutData?.data?.data?.payInOutData?.reversePayOutData;
       const settlementData = payInOutData?.data?.data?.payInOutData?.settlementData;
       const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
 
@@ -173,6 +174,8 @@ function Dashboard() {
       let payInCount = 0;
       let payOutAmount = 0;
       let payOutCommission = 0;
+      let reversePayOutAmount = 0;
+      let reversePayOutCommission = 0;
       let payOutCount = 0;
       let settlementAmount = 0;
       let lienAmount = 0;
@@ -187,6 +190,11 @@ function Dashboard() {
         payOutAmount += Number(data.amount);
         payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
         payOutCount += 1;
+      });
+
+      reversePayOutData?.forEach((data) => {
+        reversePayOutAmount += Number(data.amount);
+        reversePayOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
       });
 
       settlementData?.forEach((data) => {
@@ -216,13 +224,19 @@ function Dashboard() {
           count: payOutCount,
         },
         {
+          title: "Reversed Withdraw",
+          value: reversePayOutAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: payOutCount,
+        },
+        {
           title: "Withdraw %",
           value: payOutCommission,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Commission",
-          value: payInCommission + payOutCommission,
+          value: payInCommission + payOutCommission - reversePayOutCommission,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -241,7 +255,7 @@ function Dashboard() {
           value:
             payInAmount -
             payOutAmount - (payInCommission + payOutCommission) -
-            settlementAmount - lienAmount,
+            settlementAmount - lienAmount + reversePayOutAmount - reversePayOutCommission ,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -272,6 +286,7 @@ function Dashboard() {
               data.title !== "Net Balance" &&
               data.title !== "Settlement" &&
               data.title !== "Lien" &&
+              data.title !== "Reversed Withdraw" &&
               data.title !== "Total Net Balance" && (
                 <DashboardStats key={index} {...data} colorIndex={index} />
               )
@@ -301,6 +316,14 @@ function Dashboard() {
                     {data.title === "Withdraw" && (
                       <div className="flex justify-between">
                         <p>Withdraw</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
+                      </div>
+                    )}
+                    {data.title === "Reversed Withdraw" && (
+                      <div className="flex justify-between">
+                        <p>Reversed Withdraw</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>
