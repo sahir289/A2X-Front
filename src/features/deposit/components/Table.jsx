@@ -916,6 +916,7 @@ const TableComponent = ({
           render={(text, record) =>
             record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH" ? (
               <Button
+                disabled={record.status === "DUPLICATE"}
                 onClick={() => {
                   showResetModal(record);
                   setRecordStatus(record.status);
