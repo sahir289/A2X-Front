@@ -28,7 +28,7 @@ function LeftSidebar() {
         return false;
 
       if ((context?.role === "OPERATIONS") &&
-        (route.name === "Bank Accounts" || route.name === "Merchant" || route.name === "Settlements" || route.name === "User" || route.name === "ChargeBack" || route.name === "Vendor" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
+        (route.name === "Merchant" || route.name === "Settlements" || route.name === "User" || route.name === "ChargeBack" || route.name === "Vendor" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
         return false;
 
       if (context?.role === "VENDOR" &&
