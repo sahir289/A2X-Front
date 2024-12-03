@@ -122,8 +122,8 @@ const Withdraw = ({ type }) => {
     if (!debounced) {
       getPayoutList({
         ...queryObj,
-        // code: userData?.code || queryObj.code || null,
-        // vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
+        code: userData?.code || queryObj.code || null,
+        vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
       });
       return;
     }
