@@ -264,7 +264,8 @@ export const Columns = (
         }}
       />
       {/* Colunm to display the selected payout bank and it's filter */}
-      <Column
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
         title="From Bank"
         dataIndex="from_bank"
         width="130px"
@@ -282,7 +283,7 @@ export const Columns = (
             />
           );
         }}
-      />
+      /> : " "}
       {(type == "All" || type == "Completed") && (
         <Column
           title="UTR Id"
