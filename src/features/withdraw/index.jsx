@@ -122,15 +122,15 @@ const Withdraw = ({ type }) => {
     if (!debounced) {
       getPayoutList({
         ...queryObj,
-        code: userData?.code || queryObj.code || null,
-        vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
+        // code: userData?.code || queryObj.code || null,
+        // vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
       });
       return;
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       const isAdminOrTransactions =
-        userData.role === "ADMIN" || userData.role === "TRANSACTIONS";
+        userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS";
       const isMerchantAdmin = userData.role === "MERCHANT_ADMIN";
 
       const updatedQuery = {
