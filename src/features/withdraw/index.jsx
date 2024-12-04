@@ -219,7 +219,7 @@ const Withdraw = ({ type }) => {
       return;
     }
     setEditWithdraw(null);
-    handleGetWithdraws();
+    handleGetWithdraws({ ...pagination, ...filters });
   };
 
   const handleResetWithdraws = async (id) => {
