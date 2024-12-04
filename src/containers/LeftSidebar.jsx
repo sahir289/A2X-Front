@@ -1,13 +1,14 @@
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
 import { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { PermissionContext } from '../components/AuthLayout/AuthLayout.jsx';
 import routes from '../router/sidebar.jsx';
 import SidebarSubmenu from './SidebarSubmenu.jsx';
 
 function LeftSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [filteredRoutes, setFilteredRoutes] = useState(routes)
 
   const dispatch = useDispatch()
@@ -46,6 +47,14 @@ function LeftSidebar() {
     setFilteredRoutes(filterRoutes);
   }, [routes, context]);
 
+  const navigateToDashboard = () => {
+    if (context.role === "VENDOR_OPERATIONS" || context.role === "VENDOR") {
+      navigate("/app/vendor-board");
+    }
+    else {
+      navigate("/app/dashboard");
+    }
+  }
 
   return (
     <div className="drawer-side z-30  ">
@@ -57,7 +66,7 @@ function LeftSidebar() {
 
         <li className="mb-2 font-semibold text-xl">
 
-          <p><img className="mask mask-squircle w-10" src="/blueLogo.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
+          <p onClick={navigateToDashboard}><img className="mask mask-squircle w-10" src="/blueLogo.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
         {
           filteredRoutes.map((route, k) => {
             return (
