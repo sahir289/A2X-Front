@@ -1,13 +1,14 @@
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
 import { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { PermissionContext } from '../components/AuthLayout/AuthLayout.jsx';
 import routes from '../router/sidebar.jsx';
 import SidebarSubmenu from './SidebarSubmenu.jsx';
 
 function LeftSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [filteredRoutes, setFilteredRoutes] = useState(routes)
 
   const dispatch = useDispatch()
@@ -19,6 +20,7 @@ function LeftSidebar() {
     const filterRoutes = routes.filter(route => {
       if (context.role === "MERCHANT" && (route.name === "Bank Accounts" || route.name === "Vendor" || route.name === "Merchant" || route.name === "Add data" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
         return false;
+
       if (context.role === "MERCHANT_ADMIN" && (route.name === "Bank Accounts" || route.name === "Vendor" || route.name === "Add data" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
         return false;
 
@@ -27,9 +29,8 @@ function LeftSidebar() {
         return false;
 
       if ((context?.role === "OPERATIONS") &&
-        (route.name === "Bank Accounts" || route.name === "Merchant" || route.name === "User" || route.name === "Vendor"))
+        (route.name === "Merchant" || route.name === "Settlements" || route.name === "User" || route.name === "ChargeBack" || route.name === "Vendor" || route.name === "Vendor Board" || route.name === "Vendor Settlements"))
         return false;
-
 
       if (context?.role === "VENDOR" &&
         (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports" || route.name === "Settlements" || route.name === "ChargeBack"))
@@ -46,6 +47,14 @@ function LeftSidebar() {
     setFilteredRoutes(filterRoutes);
   }, [routes, context]);
 
+  const navigateToDashboard = () => {
+    if (context.role === "VENDOR_OPERATIONS" || context.role === "VENDOR") {
+      navigate("/app/vendor-board");
+    }
+    else {
+      navigate("/app/dashboard");
+    }
+  }
 
   return (
     <div className="drawer-side z-30  ">
@@ -57,7 +66,7 @@ function LeftSidebar() {
 
         <li className="mb-2 font-semibold text-xl">
 
-          <p><img className="mask mask-squircle w-10" src="/blueLogo.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
+          <p onClick={navigateToDashboard}><img className="mask mask-squircle w-10" src="/blueLogo.png" alt="A2X-PAY logo" />Trust-Pay</p> </li>
         {
           filteredRoutes.map((route, k) => {
             return (

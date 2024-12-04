@@ -675,7 +675,6 @@ const TableComponent = ({
                 className="flex"
                 disabled={[
                   "MERCHANT",
-                  "OPERATIONS",
                   "MERCHANT_OPERATIONS",
                   "MERCHANT_ADMIN"
                 ].includes(userData?.role)}
@@ -905,17 +904,18 @@ const TableComponent = ({
           hidden={
             filterValues?.loggedInUserRole === "ADMIN"
               ? false
-              : filterValues?.loggedInUserRole === "OPERATIONS"
-                ? false
                 : filterValues?.loggedInUserRole === "TRANSACTIONS"
                   ? false
-                  : true
+                  : filterValues?.loggedInUserRole === "OPERATIONS"
+                    ? false
+                      : true
           }
           className="bg-white"
           width={"24px"}
           render={(text, record) =>
             record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH" ? (
               <Button
+                disabled={record.status === "DUPLICATE"}
                 onClick={() => {
                   showResetModal(record);
                   setRecordStatus(record.status);

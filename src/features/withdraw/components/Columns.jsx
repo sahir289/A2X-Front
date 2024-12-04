@@ -1,8 +1,8 @@
-import { ExclamationCircleOutlined, CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Input, Select, Tag } from "antd";
+import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Button, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
+import { NotificationManager } from 'react-notifications';
 import { formatCurrency, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 
 const renderStatusTag = (status) => {
@@ -137,7 +137,6 @@ export const Columns = (
                   filters={filters}
                   disabled={[
                     "MERCHANT",
-                    "OPERATIONS",
                     "MERCHANT_OPERATIONS",
                   ].includes(userData?.role)}
                 />
@@ -166,28 +165,28 @@ export const Columns = (
             }}
           />
       }
-      { (userData?.role === "ADMIN" ||
-          userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
-      <Column
-        title="Vendor"
-        dataIndex="vendor_code"
-        width="140px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return v;
-          }
-          return (
-            <ColumnSelect
-              name="vendor_code"
-              options={vendorOptions}
-              onChange={onChange}
-              filters={filters}
-            />
-          );
-        }}
-      />
-    : " "}
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
+        <Column
+          title="Vendor"
+          dataIndex="vendor_code"
+          width="140px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v;
+            }
+            return (
+              <ColumnSelect
+                name="vendor_code"
+                options={vendorOptions}
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />
+        : " "}
       <Column
         title="Status"
         dataIndex="status"
@@ -265,7 +264,8 @@ export const Columns = (
         }}
       />
       {/* Colunm to display the selected payout bank and it's filter */}
-      <Column
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
         title="From Bank"
         dataIndex="from_bank"
         width="130px"
@@ -283,7 +283,7 @@ export const Columns = (
             />
           );
         }}
-      />
+      /> : " "}
       {(type == "All" || type == "Completed") && (
         <Column
           title="UTR Id"
@@ -368,6 +368,7 @@ export const Columns = (
             }
             return (
               <Button
+                disabled={r.status === "REJECTED"}
                 onClick={() =>
                   updateWithdraw({
                     record: r,

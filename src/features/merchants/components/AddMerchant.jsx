@@ -134,10 +134,10 @@ const AddMerchant = ({
           onFinish={onFinish}
           autoComplete="off"
           initialValues={{
-            site_url_protocol: "http://",
-            return_url_protocol: "http://",
-            notify_url_protocol: "http://",
-            payout_notify_url_protocol: "http://", // Added payout notify url protocol for payout feature
+            site_url_protocol: "https://",
+            return_url_protocol: "https://",
+            notify_url_protocol: "https://",
+            payout_notify_url_protocol: "https://", // Added payout notify url protocol for payout feature
             is_test_mode: true,
           }}
         >

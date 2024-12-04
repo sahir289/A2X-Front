@@ -59,16 +59,16 @@ const Withdraw = ({ type }) => {
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
-  ?.filter(
+    ?.filter(
       (merchant) =>
-          (!merchant.is_deleted && !userData?.code?.length) ||
-          userData?.code.includes(merchant.code)
-  )
-  .map((merchant) => ({
+        (!merchant.is_deleted && !userData?.code?.length) ||
+        userData?.code.includes(merchant.code)
+    )
+    .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
-  }))
-  .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
 
   const [vendorData, setVendorData] = useState([]);
   const vendorOptions = vendorData
@@ -130,7 +130,7 @@ const Withdraw = ({ type }) => {
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       const isAdminOrTransactions =
-        userData.role === "ADMIN" || userData.role === "TRANSACTIONS";
+        userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS";
       const isMerchantAdmin = userData.role === "MERCHANT_ADMIN";
 
       const updatedQuery = {
@@ -138,13 +138,13 @@ const Withdraw = ({ type }) => {
         code: isAdminOrTransactions
           ? queryObj.code || null
           : isMerchantAdmin
-          ? queryObj.code || userData?.code
-          : userData?.code || queryObj.code || null,
+            ? queryObj.code || userData?.code
+            : userData?.code || queryObj.code || null,
         ...(isAdminOrTransactions
           ? {}
           : {
-              vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
-            }),
+            vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
+          }),
       };
       getPayoutList(updatedQuery);
     }, 1500);
@@ -170,8 +170,8 @@ const Withdraw = ({ type }) => {
         type == "In Progress"
           ? "INITIATED"
           : type == "Completed"
-          ? "SUCCESS"
-          : "";
+            ? "SUCCESS"
+            : "";
     }
     if (queryObj?.vendor_code) {
       queryObject.vendorCode = queryObj.vendor_code;
@@ -219,7 +219,7 @@ const Withdraw = ({ type }) => {
       return;
     }
     setEditWithdraw(null);
-    handleGetWithdraws();
+    handleGetWithdraws({ ...pagination, ...filters }, true);
   };
 
   const handleResetWithdraws = async (id) => {
@@ -313,7 +313,7 @@ const Withdraw = ({ type }) => {
           return;
         }
       })
-      .catch((err) => {})
+      .catch((err) => { })
       .finally(() => {
         setAddLoading(false);
         handleToggleModal();
@@ -354,7 +354,7 @@ const Withdraw = ({ type }) => {
   const handleResetSearchFields = () => {
     setFilters({});
   };
-  const handleDownloadExcel = () => {};
+  const handleDownloadExcel = () => { };
 
   const hasSelected = selectedData.length > 0;
 
@@ -371,14 +371,14 @@ const Withdraw = ({ type }) => {
                 userData?.role === "VENDOR" ||
                 userData?.role === "VENDOR_OPERATIONS"
               ) && (
-                <Button
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  onClick={handleToggleModal}
-                >
-                  New Payout
-                </Button>
-              )}
+                  <Button
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    onClick={handleToggleModal}
+                  >
+                    New Payout
+                  </Button>
+                )}
               <div className="flex gap-2">
                 <Button
                   className="mt-2 w-full"
@@ -398,7 +398,7 @@ const Withdraw = ({ type }) => {
             <Button
               type="text"
               className="rounded-full h-[40px] w-[40px] p-[0px] flex items-center justify-center"
-              onClick={() => handleGetWithdraws({ ...pagination, ...filters })}
+              onClick={() => handleGetWithdraws({ ...pagination, ...filters }, true)}
             >
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
