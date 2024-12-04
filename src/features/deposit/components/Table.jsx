@@ -906,7 +906,9 @@ const TableComponent = ({
               ? false
                 : filterValues?.loggedInUserRole === "TRANSACTIONS"
                   ? false
-                  : true
+                  : filterValues?.loggedInUserRole === "OPERATIONS"
+                    ? false
+                      : true
           }
           className="bg-white"
           width={"24px"}
