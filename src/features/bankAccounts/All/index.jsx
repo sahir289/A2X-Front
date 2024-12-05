@@ -14,6 +14,22 @@ dayjs.extend(timezone);
 function All() {
   const [tableData, setTableData] = useState([]);
   const userData = useContext(PermissionContext)
+
+
+  const nowUTC = new Date();
+  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+  const nowIST = new Date(nowUTC.getTime() + istOffset);
+
+  const year = nowIST.getUTCFullYear();
+  const month = nowIST.getUTCMonth();
+  const date = nowIST.getUTCDate();
+
+  const startIST = new Date(Date.UTC(year, month, date, 0, 0, 0, 0)); // 12:00 AM IST
+  const endIST = new Date(Date.UTC(year, month, date, 23, 59, 59, 999)); // 11:59 PM IST
+
+  const adjustedISTStartDate = new Date(startIST.getTime() - istOffset);
+  const adjustedISTEndDate = new Date(endIST.getTime() - istOffset);
+
   const [filterValues, setFilterValues] = useState({
     ac_name: "",
     ac_no: "",
@@ -22,8 +38,8 @@ function All() {
     role:`${userData?.role}`,
     vendor_code: `${userData?.vendorCode || ""}`,
     code: `${userData?.code || ""}`,
-    startDate: dayjs().tz("Asia/Kolkata").startOf("day"),
-    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
+    startDate: adjustedISTStartDate,
+    endDate: adjustedISTEndDate,
     page: 1,
     pageSize: 20,
   });
