@@ -119,7 +119,7 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue, selectedMerchantCod
             dayjs(dateValue.startDate).utc(),
             dayjs(dateValue.endDate).utc(),
           ]}
-          presets={rangePresets}
+          // presets={rangePresets}
           onChange={onRangeChange}
           disabledDate={(current) => {
             const today = dayjs().endOf("day"); // End of today

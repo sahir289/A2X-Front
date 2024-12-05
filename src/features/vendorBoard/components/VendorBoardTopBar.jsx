@@ -107,7 +107,7 @@ function VendorBoardTopBar({ updateVendorBoardPeriod, dateValue }) {
             dayjs(dateValue.startDate).utc(),
             dayjs(dateValue.endDate).utc(),
           ]}
-          presets={rangePresets}
+          // presets={rangePresets}
           onChange={onRangeChange}
         />
       </div>
