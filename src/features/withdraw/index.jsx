@@ -80,8 +80,8 @@ const Withdraw = ({ type }) => {
   // State to store the payout banks
   const [payOutBankData, setPayOutBankData] = useState([]);
   const payOutBankOptions = payOutBankData?.map((payOutBank) => ({
-    label: payOutBank.name,
-    value: payOutBank.name,
+    label: payOutBank.ac_name,
+    value: payOutBank.ac_name,
   }));
   const [filterValues, setFilterValues] = useState({
     vendor_code: `${userData?.vendorCode}`,

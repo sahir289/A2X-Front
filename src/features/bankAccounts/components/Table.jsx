@@ -663,7 +663,7 @@ const TableComponent = ({
               <>
                 {payInBalance
                   ? formatCurrency(payInBalance)
-                  : formatCurrency(0)}
+                  : formatCurrency(record.balance)}
                 <br />
                 {payInBalanceCount ? `( ${payInBalanceCount} )` : ""}
               </>
