@@ -207,7 +207,7 @@ function VendorBoard() {
 
       reversePayOutData?.forEach((data) => {
         reversePayOutAmount += Number(data.amount);
-        reversePayOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+        reversePayOutCommission += Number(0); // name changed to handle the spelling err.
       });
 
       settlementData?.forEach((data) => {
