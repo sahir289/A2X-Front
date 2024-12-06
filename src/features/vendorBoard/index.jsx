@@ -171,7 +171,7 @@ function VendorBoard() {
         return;
       }
 
-      const netBalanceAmount = netBalance?.data?.data;
+      let netBalanceAmount = netBalance?.data?.data;
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
@@ -217,6 +217,8 @@ function VendorBoard() {
       lienData?.forEach((data) => {
         lienAmount += Number(0);
       });
+
+      let currentBalance = payInAmount - payOutAmount - (payInCommission + payOutCommission - reversePayOutCommission) + settlementAmount + reversePayOutAmount - lienAmount
 
       setPayInOutData([
         {
@@ -265,12 +267,12 @@ function VendorBoard() {
         {
           title: "Net Balance",
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
-          value: payInAmount - payOutAmount - (payInCommission + payOutCommission - reversePayOutCommission) + settlementAmount + reversePayOutAmount - lienAmount,
+          value: currentBalance *= -1,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Total Net Balance",
-          value: netBalanceAmount,
+          value: netBalanceAmount *= -1,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
       ]);
