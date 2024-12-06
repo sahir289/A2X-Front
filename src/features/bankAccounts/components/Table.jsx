@@ -661,9 +661,11 @@ const TableComponent = ({
 
             return (
               <>
-                {payInBalance
+                {record.bank_used_for === "payIn"
                   ? formatCurrency(payInBalance)
-                  : formatCurrency(record.balance)}
+                  : record.bank_used_for === "payout"
+                    ? formatCurrency(record.balance)
+                    : formatCurrency(0)}
                 <br />
                 {payInBalanceCount ? `( ${payInBalanceCount} )` : ""}
               </>
