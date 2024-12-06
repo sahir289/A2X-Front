@@ -195,13 +195,13 @@ function VendorBoard() {
 
       payInData?.forEach((data) => {
         payInAmount += Number(data.amount);
-        payInCommission += Number(data.payin_commission);
+        payInCommission += Number(0);
         payInCount += 1;
       });
 
       payOutData?.forEach((data) => {
         payOutAmount += Number(data.amount);
-        payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+        payOutCommission += Number(0); // name changed to handle the spelling err.
         payOutCount += 1;
       });
 
@@ -215,7 +215,7 @@ function VendorBoard() {
       });
 
       lienData?.forEach((data) => {
-        lienAmount += Number(data.amount);
+        lienAmount += Number(0);
       });
 
       setPayInOutData([
@@ -265,7 +265,7 @@ function VendorBoard() {
         {
           title: "Net Balance",
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
-          value: payInAmount - payOutAmount - settlementAmount + reversePayOutAmount - reversePayOutCommission,
+          value: payInAmount - payOutAmount - (payInCommission + payOutCommission - reversePayOutCommission) + settlementAmount + reversePayOutAmount - lienAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
