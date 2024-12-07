@@ -284,6 +284,24 @@ export const Columns = (
           );
         }}
       /> : " "}
+      <Column
+          title="Method"
+          dataIndex="method"
+          width="180px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v || "-";
+            }
+            return (
+              <ColumnSearch
+                name="method"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />
       {(type == "All" || type == "Completed") && (
         <Column
           title="UTR Id"
