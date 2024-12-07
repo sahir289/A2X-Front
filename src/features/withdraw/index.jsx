@@ -88,6 +88,15 @@ const Withdraw = ({ type }) => {
     vendor_code: `${userData?.vendorCode}`,
   });
 
+  const methodOptions = (userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS")
+  ? [
+      { value: "manual", label: "Manual", key: "manual" },
+      { value: "eko", label: "Eko", key: "eko" },
+    ]
+  : [
+      { value: "manual", label: "Manual", key: "manual" },
+    ];
+
   useEffect(() => {
     handleGetWithdraws();
     fetchUsersData();
@@ -490,10 +499,7 @@ const Withdraw = ({ type }) => {
                   },
                 ]}>
                 <Select
-                  options={[
-                    { value: "manual", key: "manual" },
-                    { value: "eko", key: "eko" },
-                  ]}
+                  options={methodOptions}
                   onChange={handleSelectUTRMethod}
                   // defaultValue={selectedUTRMethod}
                 />
