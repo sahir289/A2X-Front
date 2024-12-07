@@ -89,11 +89,11 @@ const Withdraw = ({ type }) => {
   });
 
   const methodOptions = (userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS")
-  ? [
+    ? [
       { value: "manual", label: "Manual", key: "manual" },
       { value: "eko", label: "Eko", key: "eko" },
     ]
-  : [
+    : [
       { value: "manual", label: "Manual", key: "manual" },
     ];
 
@@ -373,7 +373,7 @@ const Withdraw = ({ type }) => {
     };
 
     fetchData();
-  }, [selectedUTRMethod]);
+  }, []);
 
   //reset search fields
   const handleResetSearchFields = () => {
