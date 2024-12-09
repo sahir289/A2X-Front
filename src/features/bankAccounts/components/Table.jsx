@@ -573,7 +573,20 @@ const TableComponent = ({
           dataIndex="upi_id"
           key="upi_id"
           className="bg-white"
-          width={"4%"}
+          width={"10%"}
+          render={(text) => (
+            <div
+              style={{
+                maxWidth: "200px", // Adjust the maximum width as needed
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={text} // Tooltip for full text
+            >
+              {text}
+            </div>
+          )}
         />
         {/* Column to display useage of bank and it's bank */}
         <Column
