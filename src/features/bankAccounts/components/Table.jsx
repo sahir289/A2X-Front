@@ -34,7 +34,7 @@ import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi, postApi, putApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
-import { formatCurrency, formatDate } from "../../../utils/utils";
+import { formatCurrency, formatDate, formatDate1, formatDateToISTString } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
@@ -134,10 +134,26 @@ const TableComponent = ({
       message: "${label} is Required!",
     },
   ];
+
+  const nowUTC = new Date();
+  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+  const nowIST = new Date(nowUTC.getTime() + istOffset);
+
+  const year = nowIST.getUTCFullYear();
+  const month = nowIST.getUTCMonth();
+  const date = nowIST.getUTCDate();
+
+  const startIST = new Date(Date.UTC(year, month, date, 0, 0, 0, 0)); // 12:00 AM IST
+  const endIST = new Date(Date.UTC(year, month, date, 23, 59, 59, 999)); // 11:59 PM IST
+
+  const adjustedISTStartDate = new Date(startIST.getTime() - istOffset);
+  const adjustedISTEndDate = new Date(endIST.getTime() - istOffset);
+
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().tz("Asia/Kolkata").startOf("day"),
-    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
+    startDate: adjustedISTStartDate,
+    endDate: adjustedISTEndDate,
   });
+
   const navigate = useNavigate();
   const userData = useContext(PermissionContext);
   const handleFilterValuesChange = (value, fieldName) => {
@@ -194,21 +210,50 @@ const TableComponent = ({
   };
 
   const downloadBankReport = async () => {
+    const startDate = dateRange.startDate;
+    const endDate = dateRange.endDate;
+
+    const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+
+    const adjustedStartDate = new Date(startDate.getTime() - istOffset);
+    const adjustedEndDate = new Date(endDate.getTime() - istOffset);
+
     const data = {
       bankName: bankName,
-      startDate: dateRange.startDate.toISOString(),
-      endDate: dateRange.endDate.toISOString(),
+      startDate: formatDateToISTString(adjustedStartDate),
+      endDate: formatDateToISTString(adjustedEndDate),
     };
     const res = await getApi("/get-bank-message", data);
+
+    const uniqueUTRs = new Set();
+    let totalAmount = 0;
+
+    res?.data?.data?.forEach((data) => {
+      if (!uniqueUTRs.has(data.utr)) {
+        uniqueUTRs.add(data.utr);
+        totalAmount += Number(data.amount);
+      }
+    });
+
+    res?.data?.data.push({
+      sno: "",
+      updatedAt: "",
+      status: "",
+      bankName: "",
+      amount_code: "",
+      amount: `Total Amount = ${totalAmount.toFixed(2)}`,
+      utr: "",
+      is_used: "",
+    });
     const formatSetting = res?.data?.data?.map((record) => ({
       SNO: record.sno || "",
-      ID: record.id || "",
+      "Date": record.updatedAt ? formatDate1(record.updatedAt) : "" || "",
       Status: record.status || "",
       Bank: record.bankName || "",
       "Amount Code": record.amount_code || "",
       Amount: record.amount || "",
       UTR: record.utr || "",
-      "IS Used": record.is_used || "",
+      "Used/Unused": record.is_used === true ? "Used" : record.is_used === false ? "Unused" : "" || "",
     }));
     try {
       const csv = await json2csv(formatSetting);
@@ -223,6 +268,7 @@ const TableComponent = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setDownloadReport(false);
     } catch (error) {
       console.error("Error converting data to CSV:", error);
     }
@@ -231,14 +277,18 @@ const TableComponent = ({
   const onRangeChange = (dates, dateStrings) => {
     if (dates) {
       const startDate = dayjs(dates[0])
-        .tz("Asia/Kolkata")
+        .utc()
         .startOf("day")
         .toDate();
-      const endDate = dayjs(dates[1]).tz("Asia/Kolkata").endOf("day").toDate();
+      const endDate = dayjs(dates[1])
+        .utc()
+        .endOf("day")
+        .toDate();
       const newRange = {
         startDate: startDate,
         endDate: endDate,
       };
+      setDateRange(newRange);
     }
   };
 
@@ -314,8 +364,8 @@ const TableComponent = ({
       role: `${userData?.role}`,
       vendor_code: `${userData?.vendorCode || ""}`,
       code: `${userData?.code || ""}`,
-      startDate: dayjs().add(0, "day").startOf("day"),
-      endDate: dayjs().add(0, "day").endOf("day"),
+      startDate: adjustedISTStartDate,
+      endDate: adjustedISTEndDate,
       page: 1,
       pageSize: 20,
     });
@@ -611,9 +661,11 @@ const TableComponent = ({
 
             return (
               <>
-                {payInBalance
+                {record.bank_used_for === "payIn"
                   ? formatCurrency(payInBalance)
-                  : formatCurrency(0)}
+                  : record.bank_used_for === "payout"
+                    ? formatCurrency(record.balance)
+                    : formatCurrency(0)}
                 <br />
                 {payInBalanceCount ? `( ${payInBalanceCount} )` : ""}
               </>
@@ -964,8 +1016,11 @@ const TableComponent = ({
       >
         <RangePicker
           className="w-72 h-12"
-          defaultValue={[dateRange.startDate, dateRange.endDate]}
-          presets={rangePresets}
+          defaultValue={[
+            dayjs(dateRange.startDate).utc(),
+            dayjs(dateRange.endDate).utc(),
+          ]}
+          // presets={rangePresets}
           onChange={onRangeChange}
           disabledDate={(current) =>
             current && current > new Date().setHours(23, 59, 59, 999)

@@ -171,7 +171,7 @@ function VendorBoard() {
         return;
       }
 
-      const netBalanceAmount = netBalance?.data?.data;
+      let netBalanceAmount = netBalance?.data?.data;
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
@@ -195,19 +195,19 @@ function VendorBoard() {
 
       payInData?.forEach((data) => {
         payInAmount += Number(data.amount);
-        payInCommission += Number(data.payin_commission);
+        payInCommission += Number(0);
         payInCount += 1;
       });
 
       payOutData?.forEach((data) => {
         payOutAmount += Number(data.amount);
-        payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+        payOutCommission += Number(0); // name changed to handle the spelling err.
         payOutCount += 1;
       });
 
       reversePayOutData?.forEach((data) => {
         reversePayOutAmount += Number(data.amount);
-        reversePayOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+        reversePayOutCommission += Number(0); // name changed to handle the spelling err.
       });
 
       settlementData?.forEach((data) => {
@@ -215,8 +215,10 @@ function VendorBoard() {
       });
 
       lienData?.forEach((data) => {
-        lienAmount += Number(data.amount);
+        lienAmount += Number(0);
       });
+
+      let currentBalance = payInAmount - payOutAmount - (payInCommission + payOutCommission - reversePayOutCommission) + settlementAmount + reversePayOutAmount - lienAmount
 
       setPayInOutData([
         {
@@ -265,12 +267,12 @@ function VendorBoard() {
         {
           title: "Net Balance",
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
-          value: payInAmount - payOutAmount - settlementAmount + reversePayOutAmount - reversePayOutCommission,
+          value: currentBalance *= -1,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Total Net Balance",
-          value: netBalanceAmount,
+          value: netBalanceAmount *= -1,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
       ]);

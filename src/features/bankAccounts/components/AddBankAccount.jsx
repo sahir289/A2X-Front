@@ -21,6 +21,10 @@ const AddBankAccount = ({
   const [loading, setLoading] = useState(false)
   const [api, contextHolder] = notification.useNotification();
   const [minPayin, setMinPayin] = useState(0);
+  const [name, setName] = useState({
+    min: "Min Payin",
+    max: "Max Payin",
+  })
   const [form] = Form.useForm();
 
   const handleModalOk = () => {
@@ -69,43 +73,43 @@ const AddBankAccount = ({
       return;
     }
     else {
-       // Proceed with form data submission after IFSC validation
-    const formData = {
-      upi_id: values.upi_id,
-      upi_params: "",
-      name: values.name,
-      ac_no: values.ac_no,
-      ac_name: values.ac_name,
-      ifsc: values.ifsc,
-      bank_name: values.bank_name,
-      bank_used_for: values.bank_used_for, //sending bank_used_for data
-      is_qr: !!values.is_qr,
-      is_bank: !!values.is_bank,
-      min_payin: values.min_payin,
-      max_payin: values.max_payin,
-      is_enabled: !!values.status,
-      payin_count: 0,
-      balance: 0,
-      createdBy: `${userData?.userId}`,
-      code: `${userData?.code}`,
-      vendor_code: `${userData?.vendorCode}`,
-    };
+      // Proceed with form data submission after IFSC validation
+      const formData = {
+        upi_id: values.upi_id,
+        upi_params: "",
+        name: values.name,
+        ac_no: values.ac_no,
+        ac_name: values.ac_name,
+        ifsc: values.ifsc,
+        bank_name: values.bank_name,
+        bank_used_for: values.bank_used_for, //sending bank_used_for data
+        is_qr: !!values.is_qr,
+        is_bank: !!values.is_bank,
+        min_payin: values.min_payin,
+        max_payin: values.max_payin,
+        is_enabled: !!values.status,
+        payin_count: 0,
+        balance: 0,
+        createdBy: `${userData?.userId}`,
+        code: `${userData?.code}`,
+        vendor_code: `${userData?.vendorCode}`,
+      };
 
-    const AddBankAcc = await postApi("/create-bank", formData).then((res) => {
-      if (res?.error) {
-        api.error({
-          description: `Error: ${res?.error.message}`,
-        });
-        return;
-      }
-    }).catch((err) => {
+      const AddBankAcc = await postApi("/create-bank", formData).then((res) => {
+        if (res?.error) {
+          api.error({
+            description: `Error: ${res?.error.message}`,
+          });
+          return;
+        }
+      }).catch((err) => {
 
-    }).finally(() => {
-      setLoading(false)
-      setIsAddBankAccountModelOpen(false);
-      handleTableChange({ current: 1, pageSize: 20 });
-      form.resetFields();
-    });
+      }).finally(() => {
+        setLoading(false)
+        setIsAddBankAccountModelOpen(false);
+        handleTableChange({ current: 1, pageSize: 20 });
+        form.resetFields();
+      });
     }
   };
 
@@ -196,7 +200,21 @@ const AddBankAccount = ({
               },
             ]}
           >
-            <Select>
+            <Select
+              onChange={(value) => {
+                if (value === "payIn") {
+                  setName({
+                    min: "Min Payin",
+                    max: "Max Payin",
+                  })
+                } else {
+                  setName({
+                    min: "Min Payout",
+                    max: "Max Payout",
+                  })
+                }
+              }}
+            >
               <Select.Option value="payIn">PayIn</Select.Option>
               <Select.Option value="payOut">PayOut</Select.Option>
             </Select>
@@ -289,7 +307,7 @@ const AddBankAccount = ({
             </Form.Item>
           </div>
           <Form.Item
-            label="Min Payin"
+            label={name.min}
             name="min_payin"
             rules={[
               {
@@ -309,7 +327,7 @@ const AddBankAccount = ({
           </Form.Item>
 
           <Form.Item
-            label="Max Payin"
+            label={name.max}
             name="max_payin"
             rules={[
               {

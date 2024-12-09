@@ -2,7 +2,7 @@ import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, ExclamationCircle
 import { Button, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
 import { NotificationManager } from 'react-notifications';
-import { formatCurrency, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
+import { formatCurrency, formatDate, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
 
 
 const renderStatusTag = (status) => {
@@ -284,6 +284,24 @@ export const Columns = (
           );
         }}
       /> : " "}
+      {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
+        title="Method"
+        dataIndex="method"
+        width="180px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return v || "-";
+          }
+          return (
+            <ColumnSearch
+              name="method"
+              onChange={onChange}
+              filters={filters}
+            />
+          );
+        }}
+      /> : " "}
       {(type == "All" || type == "Completed") && (
         <Column
           title="UTR Id"
@@ -321,9 +339,9 @@ export const Columns = (
       <Column
         title="Last Updated"
         dataIndex="updatedAt"
-        width="160px"
+        width="240px"
         ellipsis
-        render={(v) => (v ? new Date(v).toDateString() : "")}
+        render={(v) => (v ? formatDate(v) : "")}
       />
       {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
         <Column
