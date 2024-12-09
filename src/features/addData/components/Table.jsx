@@ -52,7 +52,17 @@ const TableComponent = ({
   };
   //reset search fields
   const handleResetSearchFields = () => {
-    setFilterValues({})
+    setFilterValues({
+      loggedInUserRole: userData.role,
+      sno: "",
+      status: "/success",
+      amount: "",
+      amount_code: "",
+      utr: "",
+      bankName:"",
+      page: 1,
+      pageSize: 20,
+    })
   }
 
   const passwordVerificationModal = async (record) => {
