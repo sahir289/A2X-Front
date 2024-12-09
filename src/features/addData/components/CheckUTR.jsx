@@ -1,9 +1,6 @@
 import { Button, Form, Input, Select, notification } from "antd";
 import React, { useState } from "react";
 import { postApi } from "../../../redux/api";
-import {
-  NotificationManager,
-} from "react-notifications";
 
 const CheckUTR = ({ handleTableChange }) => {
   const [form] = Form.useForm();
@@ -24,7 +21,6 @@ const CheckUTR = ({ handleTableChange }) => {
       api.open({
         message: res?.data?.message,
       });
-        // NotificationManager.success(res?.data?.message)
       form.resetFields(["merchant_order_id", "utr"]);
       handleTableChange({ current: 1, pageSize: 20 });
     })
