@@ -1,11 +1,15 @@
-import { Button, Input, Select, Table, Tag } from "antd";
+import { Button, Input, Select, Table, Tag, Modal, Form } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Reload } from "../../../utils/constants";
 import { formatCurrency } from "../../../utils/utils";
 import AddTelegramResponse from "./AddTelegramResponse";
 import CheckUTR from "./CheckUTR";
 import ResetEntry from "./ResetEntry";
+import { postApi, putApi } from "../../../redux/api";
+import { NotificationManager } from "react-notifications";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 const TableComponent = ({
   data,
@@ -13,6 +17,19 @@ const TableComponent = ({
   setFilterValues,
   isFetchBanksLoading,
 }) => {
+  const [modal, contextHolder] = Modal.useModal();
+  const [verification, setVerification] = useState(false);
+  const [entryResetData, setEntryResetData] = useState();
+  const [addLoading, setAddLoading] = useState(false);
+  const [form] = Form.useForm();
+  const userData = useContext(PermissionContext)
+  const labelCol = { span: 10 };
+  const RequiredRule = [
+    {
+      required: true,
+      message: "${label} is Required!",
+    }
+  ]
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -38,8 +55,59 @@ const TableComponent = ({
     setFilterValues({})
   }
 
+  const passwordVerificationModal = async (record) => {
+    setVerification(true); //Password verification while edit and delete merchant
+    setEntryResetData(record);
+  };
+
+  const handleToggleModal = () => {
+    setVerification(!verification);
+    form.resetFields();
+  };
+
+  const verifyPassword = async (data) => {
+    setAddLoading(true)
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    }
+    const res = await postApi("/verify-password", verifyPasswordData);
+    setAddLoading(false)
+    if (res?.data?.statusCode === 200) {
+      handleEntryReset(entryResetData);
+      handleToggleModal();
+    }
+    else {
+      NotificationManager.error(res?.error?.message)
+    }
+  };
+
+  const handleEntryReset = async (data) => {
+    const isReset = await modal.confirm({
+      title: "Confirmation",
+      type: "confirm",
+      content: "Are you sure you want to reset this Entry?",
+    });
+
+    const apiData = {
+      id: data.id,
+    }
+
+    if (isReset) {
+      const res = await putApi("/reset-message",apiData);
+      if (res.error) {
+        NotificationManager.error(res?.error?.message)
+      }
+      else {
+        NotificationManager.success(res?.data?.message);
+        handleTableChange({ current: 1, pageSize: 20 });
+      }
+    }
+  }
+
   return (
     <>
+      {contextHolder}
       <div className="font-serif p-3 bg-zinc-50 rounded-lg mb-2">
         <div className="flex">
           <AddTelegramResponse handleTableChange={handleTableChange} />
@@ -220,8 +288,64 @@ const TableComponent = ({
               return <Tag color={text ? "green" : "red"}>{`${text=== true ? "Used" : "Un-Used"}`}</Tag>;
             }}
           />
+          <Column
+          title="Action"
+          hidden={
+            filterValues?.loggedInUserRole === "ADMIN"
+              ? false
+              : true
+          }
+          className="bg-white"
+          width={"1%"}
+          render={(text, record) =>
+            record.is_used ? (
+              <Button
+              onClick={() => passwordVerificationModal(record)}
+                style={{ marginLeft: "8px" }}
+              >
+                Reset
+              </Button>
+            ) : null
+          }
+        />
         </Table>
       </div>
+
+      <Modal
+        title="Password Verification"
+        onCancel={handleToggleModal}
+        open={verification}
+        footer={false}>
+        <Form
+          form={form}
+          className='pt-[10px]'
+          labelAlign='left'
+          labelCol={labelCol}
+          onFinish={verifyPassword}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+
+          <div className='flex justify-end'>
+            <Button type='primary'
+              loading={addLoading}
+              htmlType='submit'
+            >
+              Verify
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </>
   );
 };

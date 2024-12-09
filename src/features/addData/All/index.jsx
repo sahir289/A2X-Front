@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { getApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
 import WebSockets from "../../../components/WebSockets/WebSockets";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 function All() {
   const [tableData, setTableData] = useState([]);
+  const userData = useContext(PermissionContext)
   const [filterValues, setFilterValues] = useState({
+    loggedInUserRole: userData.role,
     sno: "",
     status: "/success",
     amount: "",
