@@ -485,7 +485,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
         />
-        <Column
+        { filterValues?.loggedInUserRole === "ADMIN" && <Column
           title={
             <>
               <span>Code</span>
@@ -505,6 +505,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
         />
+        }
         <Column
           title={
             <>
