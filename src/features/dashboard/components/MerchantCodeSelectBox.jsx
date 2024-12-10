@@ -1,4 +1,4 @@
-import { Select } from "antd";
+import { Select, Checkbox } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import {
   NotificationContainer,
@@ -16,6 +16,7 @@ const MerchantCodeSelectBox = ({
 }) => {
   const userData = useContext(PermissionContext)
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const context = useContext(PermissionContext);
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -29,10 +30,21 @@ const MerchantCodeSelectBox = ({
 
   useEffect(() => {
     fetchMerchantData();
-  }, []);
+  }, [includeSubMerchant]);
 
   const fetchMerchantData = async () => {
-    const merchantCodes = await getApi("/getall-merchant");
+    let merchantCodes;
+    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
+      if (!includeSubMerchant){
+        merchantCodes = await getApi("/getall-merchant-grouping");
+      }
+      else {
+        merchantCodes = await getApi("/getall-merchant");
+      }
+    }
+    else {
+      merchantCodes = await getApi("/getall-merchant");
+    }
 
     if (merchantCodes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantCodes?.error?.message, 401);
@@ -82,6 +94,13 @@ const MerchantCodeSelectBox = ({
       <div className="w-full flex">
         <div className="w-44">
           <span className="text-red-800">*</span> Merchant code:
+          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+            onClick={() => {
+              setIncludeSubMerchant((prevState) => !prevState);
+            }}
+          >
+            <span style={{color: "#a6adbb"}}>Include Sub Merchant</span>
+          </Checkbox>}
         </div>
         <div className="w-full">
           <Select
