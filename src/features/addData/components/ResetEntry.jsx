@@ -12,7 +12,7 @@ const ResetEntry = ({ handleTableChange }) => {
   const onFinish = async (values) => {
     setIsLoading(true)
     const formData = {
-      amount_code: `${values.amount_code}`,
+      merchant_order_id: `${values.merchant_order_id}`,
     };
 
     await postApi("/reset-payment", formData).then((res) => {
@@ -24,7 +24,7 @@ const ResetEntry = ({ handleTableChange }) => {
         handleTableChange({ current: 1, pageSize: 20 });
       }
       setIsLoading(false)
-      form.resetFields(["amount_code"]);
+      form.resetFields(["merchant_order_id"]);
     })
   };
 
@@ -43,20 +43,12 @@ const ResetEntry = ({ handleTableChange }) => {
         autoComplete="off"
       >
         <Form.Item
-          label="Amount Code"
-          name="amount_code"
+          label="Merchant Order ID"
+          name="merchant_order_id"
           rules={[
             {
               required: true,
-              message: "Please input your amount code!",
-            },
-            {
-              min: 5,
-              message: "Minimum 5 characters required",
-            },
-            {
-              max: 5,
-              message: "Maximum 5 characters required",
+              message: "Please input your Mercahant Order ID!",
             },
           ]}
         >
