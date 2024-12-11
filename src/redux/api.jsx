@@ -1,15 +1,13 @@
 import axios from "axios";
 import { parseErrorFromAxios } from "../utils/utils";
 
-
 const endPoint = process.env.REACT_APP_BASE_URL;
 
 const apiConfig = (flag = false) => {
-
-  if (localStorage.getItem('accessToken')) {
+  if (localStorage.getItem("accessToken")) {
     return {
       headers: {
-        Authorization: `bearer ${localStorage.getItem('accessToken')}`,
+        Authorization: `bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": flag ? "multipart/form-data" : "application/json",
       },
       method: "PUT,DELETE,POST,GET,OPTION",
@@ -28,7 +26,6 @@ export const getApi = async (url, params = {}, includeSubMerchant = false) => {
     if (url.includes("getall-merchant") && !params.pageSize) {
       params.pageSize = 1000;
     }
-    console.log(url, params, '00000', includeSubMerchant)
     const response = await axios.get(`${endPoint}${url}`, {
       params: params,
       ...apiConfig(),
@@ -47,7 +44,11 @@ export const getApi = async (url, params = {}, includeSubMerchant = false) => {
 
 export const postApi = async (url, apiData, flag) => {
   try {
-    const response = await axios.post(`${endPoint}${url}`, apiData, apiConfig(flag));
+    const response = await axios.post(
+      `${endPoint}${url}`,
+      apiData,
+      apiConfig(flag)
+    );
     return {
       data: response.data,
       error: null,
@@ -60,26 +61,32 @@ export const postApi = async (url, apiData, flag) => {
   }
 };
 
-
 export const putApi = async (url, apiData, flag) => {
   try {
-    const response = await axios.put(`${endPoint}${url}`, apiData, apiConfig(flag));
+    const response = await axios.put(
+      `${endPoint}${url}`,
+      apiData,
+      apiConfig(flag)
+    );
     return {
       data: response.data,
       error: null,
     };
   } catch (err) {
-    if (err?.response?.data?.error?.name==="") {
+    if (err?.response?.data?.error?.name === "") {
       // localStorage.clear();
     }
     return { data: null, error: parseErrorFromAxios(err) };
   }
 };
 
-
 export const patchApi = async (url, apiData, flag) => {
   try {
-    const response = await axios.patch(`${endPoint}${url}`, apiData, apiConfig(flag));
+    const response = await axios.patch(
+      `${endPoint}${url}`,
+      apiData,
+      apiConfig(flag)
+    );
     return {
       data: response.data,
       error: null,
@@ -94,10 +101,10 @@ export const patchApi = async (url, apiData, flag) => {
 
 export const putApiNoHeader = async (url, apiData) => {
   try {
-    if (localStorage.getItem('accessToken')) {
+    if (localStorage.getItem("accessToken")) {
       const response = await axios.put(`${endPoint}${url}`, apiData, {
         headers: {
-          Authorization: `bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `bearer ${localStorage.getItem("accessToken")}`,
         },
       });
       return {
@@ -110,15 +117,13 @@ export const putApiNoHeader = async (url, apiData) => {
         error: {
           error: null,
           message: "No access token available",
-        }
+        },
       };
     }
   } catch (err) {
     return { data: null, error: parseErrorFromAxios(err) };
   }
 };
-
-
 
 export const deleteApi = async (url) => {
   try {
@@ -153,14 +158,17 @@ export const deleteApiWithData = async (url, apiData) => {
   }
 };
 
-
-export const getApiForGeneratePaymentUrl = async (url, params = {},header={}) => {
+export const getApiForGeneratePaymentUrl = async (
+  url,
+  params = {},
+  header = {}
+) => {
   try {
     // this is the temporary solution for getting all merchants in dropdowns.
     // will improves this in future.
     const response = await axios.get(`${endPoint}${url}`, {
       params: params,
-      headers:header,
+      headers: header,
       // ...apiConfig(),
     });
     return {
@@ -175,12 +183,16 @@ export const getApiForGeneratePaymentUrl = async (url, params = {},header={}) =>
   }
 };
 
-export const postApiForWithdrawCreation = async (url, data = {},header={}) => {
+export const postApiForWithdrawCreation = async (
+  url,
+  data = {},
+  header = {}
+) => {
   try {
     // this is the temporary solution for getting all merchants in dropdowns.
     // will improves this in future.
-    const response = await axios.post(`${endPoint}${url}`,data, {
-      headers:header,
+    const response = await axios.post(`${endPoint}${url}`, data, {
+      headers: header,
       // ...apiConfig(),
     });
     return {

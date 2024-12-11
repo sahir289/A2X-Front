@@ -150,7 +150,6 @@ function Dashboard() {
         dateRange,
         includeSubMerchant
       );
-      console.log(includeSubMerchant, "includeSubMerchantincludeSubMerchant")
       const netBalance = await getApi(`/get-merchants-net-balance?${query}`);
 
       if (netBalance.error) {
