@@ -75,6 +75,7 @@ function Dashboard() {
   const [withdrawData, setWithdrawData] = useState([]);
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
 
   const nowUTC = new Date();
   const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
@@ -110,7 +111,7 @@ function Dashboard() {
   useEffect(() => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(fetchPayInDataMerchant, 400);
-  }, [selectedMerchantCode, dateRange]);
+  }, [selectedMerchantCode, dateRange, includeSubMerchant]);
 
   const updateDashboardPeriod = (newRange, intervalValue) => {
     const startDate = newRange.startDate;
@@ -146,8 +147,10 @@ function Dashboard() {
 
       const payInOutData = await getApi(
         `/get-payInDataMerchant?${query}`,
-        dateRange
+        dateRange,
+        includeSubMerchant
       );
+      console.log(includeSubMerchant, "includeSubMerchantincludeSubMerchant")
       const netBalance = await getApi(`/get-merchants-net-balance?${query}`);
 
       if (netBalance.error) {
@@ -275,6 +278,7 @@ function Dashboard() {
       <MerchantCodeSelectBox
         selectedMerchantCode={selectedMerchantCode}
         setSelectedMerchantCode={setSelectedMerchantCode}
+        setIncludeSubMerchantFlag={setIncludeSubMerchant}
       />
 
       {/** ---------------------- Different stats content 1 ------------------------- */}

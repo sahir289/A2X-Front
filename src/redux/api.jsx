@@ -18,13 +18,17 @@ const apiConfig = (flag = false) => {
   return { withCredentials: false };
 };
 
-export const getApi = async (url, params = {}) => {
+export const getApi = async (url, params = {}, includeSubMerchant = false) => {
   try {
     // this is the temporary solution for getting all merchants in dropdowns.
     // will improves this in future.
+    if (includeSubMerchant !== undefined) {
+      params.includeSubMerchant = includeSubMerchant;
+    }
     if (url.includes("getall-merchant") && !params.pageSize) {
       params.pageSize = 1000;
     }
+    console.log(url, params, '00000', includeSubMerchant)
     const response = await axios.get(`${endPoint}${url}`, {
       params: params,
       ...apiConfig(),

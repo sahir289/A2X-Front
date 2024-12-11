@@ -13,6 +13,7 @@ import { invalidText } from "../../../utils/utils";
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
   setSelectedMerchantCode,
+  setIncludeSubMerchantFlag
 }) => {
   const userData = useContext(PermissionContext)
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
@@ -124,6 +125,7 @@ const MerchantCodeSelectBox = ({
           {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
+              setIncludeSubMerchantFlag((prevState) => !prevState);
             }}
           >
             <span style={{ color: "cornflowerblue"}}>Include Sub Merchant</span>
