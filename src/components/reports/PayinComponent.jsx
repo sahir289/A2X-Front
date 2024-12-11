@@ -32,10 +32,11 @@ const PayinComponent = () => {
       ...data,
       startDate: adjustedStartDate,
       endDate: adjustedEndDate,
+      includeSubMerchant,
     };
 
     setLoading(true);
-    const res = await postApi(`/get-all-payins`, completeData, includeSubMerchant);
+    const res = await postApi(`/get-all-payins`, completeData);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });

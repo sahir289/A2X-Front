@@ -35,7 +35,7 @@ const MerchantCodeSelectBox = ({
 
   const fetchMerchantData = async () => {
     let merchantCodes;
-    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
+    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === 'MERCHANT_ADMIN') {
       if (!includeSubMerchant) {
         merchantCodes = await getApi("/getall-merchant-grouping");
       }
@@ -122,7 +122,7 @@ const MerchantCodeSelectBox = ({
         </div>
         <NotificationContainer />
         <div className="flex" style={{alignSelf: "end"}}>
-          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === 'MERCHANT_ADMIN') && <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
               setIncludeSubMerchantFlag((prevState) => !prevState);
