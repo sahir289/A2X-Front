@@ -373,7 +373,7 @@ const Withdraw = ({ type }) => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedUTRMethod]);
 
   //reset search fields
   const handleResetSearchFields = () => {
