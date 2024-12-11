@@ -8,6 +8,7 @@ import PayDesign from "./index";
 const PayoutComponent = () => {
   const [loading, setLoading] = useState(false);
   const [api, notificationContext] = notification.useNotification();
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
 
   //handlePayInFunction
   const handlePayOut = async (data) => {
@@ -33,7 +34,7 @@ const PayoutComponent = () => {
       endDate: adjustedEndDate,
     };
     setLoading(true);
-    const res = await postApi("/get-all-payouts", completeData);
+    const res = await postApi("/get-all-payouts", completeData, includeSubMerchant);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
@@ -80,6 +81,7 @@ const PayoutComponent = () => {
       {notificationContext}
       <PayDesign
         handleFinish={handlePayOut}
+        setIncludeSubMerchantFlag={setIncludeSubMerchant}
         title="Payouts"
         loading={loading}
         statusOptions={payoutInOutStatusOptions}
