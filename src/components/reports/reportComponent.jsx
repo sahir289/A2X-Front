@@ -31,7 +31,7 @@ const ReportComponent = () => {
       .map((code) => "merchantCode=" + encodeURIComponent(code))
       .join("&");
     const completeData = {
-      startDate: (adjustedStartDate),
+      startDate: adjustedStartDate,
       endDate: adjustedEndDate
     }
     setLoading(true);

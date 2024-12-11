@@ -18,7 +18,8 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
         if (
           userData.role === 'ADMIN' ||
           userData.role === 'TRANSACTIONS' ||
-          userData.role === 'OPERATIONS'
+          userData.role === 'OPERATIONS' ||
+          userData.role === 'MERCHANT_ADMIN'
         ) {
           merchantCodes = await getApi(
             includeSubMerchant ? '/getall-merchant' : '/getall-merchant-grouping'
@@ -67,7 +68,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
               allowClear
             />
           </Form.Item>
-          {(userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS') && (
+          {(userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && (
             <Checkbox
               onClick={() => {
                 setIncludeSubMerchant((prevState) => !prevState);

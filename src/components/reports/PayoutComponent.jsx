@@ -32,9 +32,10 @@ const PayoutComponent = () => {
       ...data,
       startDate: adjustedStartDate,
       endDate: adjustedEndDate,
+      includeSubMerchant,
     };
     setLoading(true);
-    const res = await postApi("/get-all-payouts", completeData, includeSubMerchant);
+    const res = await postApi("/get-all-payouts", completeData);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
