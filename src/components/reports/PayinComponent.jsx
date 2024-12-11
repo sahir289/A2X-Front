@@ -8,6 +8,7 @@ import PayDesign from "./index";
 const PayinComponent = () => {
   const [loading, setLoading] = useState(false);
   const [api, notificationContext] = notification.useNotification();
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
 
   //handlePayInFunction
   const handlePayIn = async (data) => {
@@ -34,7 +35,7 @@ const PayinComponent = () => {
     };
 
     setLoading(true);
-    const res = await postApi(`/get-all-payins`, completeData);
+    const res = await postApi(`/get-all-payins`, completeData, includeSubMerchant);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
@@ -92,6 +93,7 @@ const PayinComponent = () => {
       {notificationContext}
       <PayDesign
         handleFinish={handlePayIn}
+        setIncludeSubMerchantFlag={setIncludeSubMerchant}
         title="Payins"
         loading={loading}
         statusOptions={options}
