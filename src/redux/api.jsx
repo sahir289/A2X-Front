@@ -23,6 +23,7 @@ export const getApi = async (url, params = {}, includeSubMerchant = false) => {
     if (includeSubMerchant !== undefined) {
       params.includeSubMerchant = includeSubMerchant;
     }
+
     if (url.includes("getall-merchant") && !params.pageSize) {
       params.pageSize = 1000;
     }

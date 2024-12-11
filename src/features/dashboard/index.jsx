@@ -138,7 +138,6 @@ function Dashboard() {
     );
   };
 
-
   const fetchPayInDataMerchant = async () => {
     try {
       let query = selectedMerchantCode
@@ -150,7 +149,11 @@ function Dashboard() {
         dateRange,
         includeSubMerchant
       );
-      const netBalance = await getApi(`/get-merchants-net-balance?${query}`);
+      const netBalance = await getApi(
+        `/get-merchants-net-balance?${query}`,
+        {},
+        includeSubMerchant
+      );
 
       if (netBalance.error) {
         return;
@@ -164,8 +167,10 @@ function Dashboard() {
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
-      const reversePayOutData = payInOutData?.data?.data?.payInOutData?.reversedPayOutData;
-      const settlementData = payInOutData?.data?.data?.payInOutData?.settlementData;
+      const reversePayOutData =
+        payInOutData?.data?.data?.payInOutData?.reversedPayOutData;
+      const settlementData =
+        payInOutData?.data?.data?.payInOutData?.settlementData;
       const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
 
       setDepositData(payInData);
@@ -256,8 +261,11 @@ function Dashboard() {
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
           value:
             payInAmount -
-            payOutAmount - (payInCommission + payOutCommission - reversePayOutCommission) -
-            settlementAmount - lienAmount + reversePayOutAmount ,
+            payOutAmount -
+            (payInCommission + payOutCommission - reversePayOutCommission) -
+            settlementAmount -
+            lienAmount +
+            reversePayOutAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -370,8 +378,11 @@ function Dashboard() {
                     {data.title === "Total Net Balance" && (
                       <>
                         <br />
-                        <div className="flex justify-between text-4xl" style={{ color: "cornflowerblue" }}>
-                          <p className="font-bold" >Net Balance</p>
+                        <div
+                          className="flex justify-between text-4xl"
+                          style={{ color: "cornflowerblue" }}
+                        >
+                          <p className="font-bold">Net Balance</p>
                           <p className="font-bold">
                             {formatCurrency(data.value)}
                           </p>
