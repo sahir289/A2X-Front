@@ -46,25 +46,52 @@ const ReportComponent = () => {
       api.warning({ description: 'No data found!' });
       return;
     }
-    const formatSetting = res?.data?.data.map(el => ({
-      'Date': formatDate1(el.date) || '',
-      'Merchant Code': el.merchant_code || '',
-      'PayIn Count': el.payInCount || 0,
-      'Payin Amount': el.totalPayinAmount || 0,
-      'PayIn Commission': el.payinCommission || 0,
-      'PayOut Count': el.payOutCount || 0,
-      'PayOut Amount': el.totalPayoutAmount || 0,
-      'PayOut Commission': el.payoutCommission || 0,
-      'Reversed PayOut Count': el.reversedPayOutCount || 0,
-      'Reversed PayOut Amount': el.reversedTotalPayoutAmount || 0,
-      'Reversed PayOut Commission': el.reversedPayoutCommission || 0,
-      'Settlement Count': el.settlementCount || 0,
-      'Settlement Amount': el.totalSettlementAmount || 0,
-      'Lien Count': el.lienCount || 0,
-      'Lien Amount': el.totalLienAmount || 0,
-      'Current Balance': el.netBalance || '',
-      'Net Balance': el.totalBalance || '',
-    }));
+    const formatSetting = [];
+    res?.data?.data.forEach((el, index, array) => {
+      // Add the current element to the formatted array
+      formatSetting.push({
+        'Date': formatDate1(el.date) || '',
+        'Merchant Code': el.merchant_code || '',
+        'PayIn Count': el.payInCount || 0,
+        'Payin Amount': el.totalPayinAmount || 0,
+        'PayIn Commission': el.payinCommission || 0,
+        'PayOut Count': el.payOutCount || 0,
+        'PayOut Amount': el.totalPayoutAmount || 0,
+        'PayOut Commission': el.payoutCommission || 0,
+        'Reversed PayOut Count': el.reversedPayOutCount || 0,
+        'Reversed PayOut Amount': el.reversedTotalPayoutAmount || 0,
+        'Reversed PayOut Commission': el.reversedPayoutCommission || 0,
+        'Settlement Count': el.settlementCount || 0,
+        'Settlement Amount': el.totalSettlementAmount || 0,
+        'Lien Count': el.lienCount || 0,
+        'Lien Amount': el.totalLienAmount || 0,
+        'Current Balance': el.netBalance || '',
+        'Net Balance': el.totalBalance || '',
+      });
+
+      // Add a blank row if the merchant_code changes and it's not the last element
+      if (array[index + 1] && el.merchant_code !== array[index + 1].merchant_code) {
+        formatSetting.push({
+          'Date': '',
+          'Merchant Code': '',
+          'PayIn Count': '',
+          'Payin Amount': '',
+          'PayIn Commission': '',
+          'PayOut Count': '',
+          'PayOut Amount': '',
+          'PayOut Commission': '',
+          'Reversed PayOut Count': '',
+          'Reversed PayOut Amount': '',
+          'Reversed PayOut Commission': '',
+          'Settlement Count': '',
+          'Settlement Amount': '',
+          'Lien Count': '',
+          'Lien Amount': '',
+          'Current Balance': '',
+          'Net Balance': '',
+        });
+      }
+    });
     try {
       const csv = await json2csv(formatSetting);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
