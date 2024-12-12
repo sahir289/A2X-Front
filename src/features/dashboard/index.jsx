@@ -144,15 +144,21 @@ function Dashboard() {
         .map((code) => "merchantCode=" + encodeURIComponent(code))
         .join("&");
 
+      let apidata = {
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        includeSubMerchant
+      }
       const payInOutData = await getApi(
         `/get-payInDataMerchant?${query}`,
-        dateRange,
-        includeSubMerchant
+        apidata,
       );
+      let data = {
+        includeSubMerchant
+      }
       const netBalance = await getApi(
         `/get-merchants-net-balance?${query}`,
-        {},
-        includeSubMerchant
+        data,
       );
 
       if (netBalance.error) {
