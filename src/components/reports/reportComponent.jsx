@@ -32,10 +32,11 @@ const ReportComponent = () => {
       .join("&");
     const completeData = {
       startDate: adjustedStartDate,
-      endDate: adjustedEndDate
+      endDate: adjustedEndDate,
+      includeSubMerchant
     }
     setLoading(true);
-    const res = await getApi(`/weekly-report?${query}`, completeData, includeSubMerchant);
+    const res = await getApi(`/weekly-report?${query}`, completeData);
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
