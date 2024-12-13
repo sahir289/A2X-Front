@@ -12,6 +12,7 @@ const DeleteModal = ({
   handleTableChange,
   deletedId,
   setDeletedId,
+  includeSubMerchant
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,6 +20,7 @@ const DeleteModal = ({
     const formData = {
       bankAccountId: record?.bankAccountId,
       merchantId: record?.merchantId,
+      includeSubMerchant,
     };
 
     setIsLoading(true);
@@ -35,8 +37,10 @@ const DeleteModal = ({
     handleTableChange({ current: 1, pageSize: 20 });
 
     if (
-      deleteBankMerchant.data.data.count &&
-      deleteBankMerchant.data.data.count === 1 &&
+      (deleteBankMerchant.data.data.count &&
+      deleteBankMerchant.data.data.count === 1) ||
+      (deleteBankMerchant.data.data[0].count &&
+      deleteBankMerchant.data.data[0].count === 1) &&
       !Array.isArray(record?.merchantId)
     ) {
       setDeletedId(record?.merchantId);
