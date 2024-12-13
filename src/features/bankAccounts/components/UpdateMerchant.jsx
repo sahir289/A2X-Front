@@ -10,6 +10,7 @@ const UpdateMerchant = ({
   isAddMerchantModalOpen,
   setIsAddMerchantModalOpen,
   handleTableChange,
+  includeSubMerchant
 }) => {
   const [deleteRecord, setDeleteRecord] = useState({});
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
@@ -61,7 +62,13 @@ const UpdateMerchant = ({
         return;
       }
 
-      const addBankMerchant = await postApi("/add-bank-merchant", element).then(async(res) => {
+      const data = {
+        bankAccountId: element?.bankAccountId,
+        merchantId: element?.merchantId,
+        includeSubMerchant
+      }
+
+      await postApi("/add-bank-merchant", data).then(async(res) => {
         if (res?.error) {
           return;
         }
@@ -71,14 +78,10 @@ const UpdateMerchant = ({
         );
       }).catch((err) => {
         console.log("🚀 ~ addBankMerchant ~ err:", err)
-
       }).finally(async() => {
         setLoading(false)
         handleModalCancel()
       });
-
-
-
     }
 
     handleTableChange({ current: 1, pageSize: 20 });

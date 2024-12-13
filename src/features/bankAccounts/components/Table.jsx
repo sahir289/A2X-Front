@@ -17,6 +17,7 @@ import {
   Switch,
   Table,
   Tooltip,
+  Checkbox
 } from "antd";
 import Column from "antd/es/table/Column";
 import axios from "axios";
@@ -126,6 +127,7 @@ const TableComponent = ({
   const [downloadReport, setDownloadReport] = useState(false);
   const [bankName, setBankName] = useState();
   const [addLoading, setAddLoading] = useState(false);
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [form] = Form.useForm();
   const labelCol = { span: 10 };
   const RequiredRule = [
@@ -184,10 +186,27 @@ const TableComponent = ({
   const showModal = async (record) => {
     setIsAddMerchantModalOpen(true);
     setUpdateRecord(record);
-    const merchant = await getApi("/getall-merchant", {
-      page: 1,
-      pageSize: 10000,
-    });
+    let merchant;
+    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
+      if (!includeSubMerchant) {
+        merchant = await getApi("/getall-merchant-grouping", {
+          page: 1,
+          pageSize: 1000,
+        });
+      }
+      else {
+        merchant = await getApi("/getall-merchant", {
+          page: 1,
+          pageSize: 1000,
+        });
+      }
+    }
+    else {
+      merchant = await getApi("/getall-merchant", {
+        page: 1,
+        pageSize: 1000,
+      });
+    }
     if (merchant.error?.error?.response?.status === 401) {
       NotificationManager.error(merchant?.error?.message, 401);
       localStorage.clear();
@@ -428,6 +447,17 @@ const TableComponent = ({
             onClick={() => handleTableChange({ current: 1, pageSize: 20 })}
           />
         </div>
+        <div>
+        </div>
+      </div>
+      <div className="flex" style={{justifySelf: "end", marginRight: "68px"}}>
+        {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+          onClick={() => {
+            setIncludeSubMerchant((prevState) => !prevState);
+          }}
+        >
+          <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
+        </Checkbox>}
       </div>
       <Table
         dataSource={tableData}
@@ -886,6 +916,7 @@ const TableComponent = ({
         isAddMerchantModalOpen={isAddMerchantModalOpen}
         setIsAddMerchantModalOpen={setIsAddMerchantModalOpen}
         handleTableChange={handleTableChange}
+        includeSubMerchant={includeSubMerchant}
       />
 
       <DeleteModal
@@ -896,6 +927,7 @@ const TableComponent = ({
         deleteMessage="Are you sure you want to delete this bank account "
         displayItem={`${deleteRecord?.ac_name}?`}
         handleTableChange={handleTableChange}
+        includeSubMerchant={includeSubMerchant}
       />
       <NotificationContainer />
 
@@ -933,6 +965,7 @@ const TableComponent = ({
           </div>
         </Form>
       </Modal>
+
       <Modal
         title="Edit Bank Details"
         open={isEditModalVisible}
