@@ -299,13 +299,13 @@ function Dashboard() {
 
   return (
     <>
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <Button
           className={addLoading ? "mr-5 hover:bg-slate-300 bg-green-500" : "mr-5 hover:bg-slate-300"}
           icon={<Reload />}
           onClick={fetchPayInDataMerchant}
         />
-      </div>
+      </div> */}
       {/*------------------------ Merchant Code --------------------------------- */}
       <MerchantCodeSelectBox
         selectedMerchantCode={selectedMerchantCode}
@@ -336,13 +336,13 @@ function Dashboard() {
             selectedMerchantCode={selectedMerchantCode}
             dateValue={dateRange}
           />
-          {/* <Button type='primary'
+          <Button type='primary'
             loading={addLoading}
             htmlType='submit'
             onClick={fetchPayInDataMerchant}
           >
             Search
-          </Button> */}
+          </Button>
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
