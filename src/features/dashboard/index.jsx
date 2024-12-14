@@ -4,7 +4,7 @@ import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
 import { useDispatch } from "react-redux";
 import BarChart from "./components/BarChart";
 import DashboardTopBar from "./components/DashboardTopBar";
-// import {showNotification} from ''
+import { Reload } from "../../utils/constants";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -299,6 +299,13 @@ function Dashboard() {
 
   return (
     <>
+      <div className="flex justify-end">
+        <Button
+          className={addLoading ? "mr-5 hover:bg-slate-300 bg-green-500" : "mr-5 hover:bg-slate-300"}
+          icon={<Reload />}
+          onClick={fetchPayInDataMerchant}
+        />
+      </div>
       {/*------------------------ Merchant Code --------------------------------- */}
       <MerchantCodeSelectBox
         selectedMerchantCode={selectedMerchantCode}
@@ -329,13 +336,13 @@ function Dashboard() {
             selectedMerchantCode={selectedMerchantCode}
             dateValue={dateRange}
           />
-          <Button type='primary'
+          {/* <Button type='primary'
             loading={addLoading}
             htmlType='submit'
             onClick={fetchPayInDataMerchant}
           >
             Search
-          </Button>
+          </Button> */}
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
