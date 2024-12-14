@@ -104,8 +104,8 @@ const MerchantCodeSelectBox = ({
               size={"large"}
               placeholder="Please select"
               onChange={handleChange}
-              onDropdownVisibleChange={(open) => setDropdownOpen(open)}
-              open={dropdownOpen}
+              // onDropdownVisibleChange={(open) => setDropdownOpen(open)}
+              // open={dropdownOpen}
               style={{
                 width: "98%",
               }}

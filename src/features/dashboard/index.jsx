@@ -17,6 +17,7 @@ import {
   formatDateToISTString,
 } from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
+import { Button } from "antd";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -26,6 +27,7 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
+  const [addLoading, setAddLoading] = useState(false);
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -108,10 +110,15 @@ function Dashboard() {
   const dispatch = useDispatch();
   const debounceRef = useRef();
 
+  const hasFetchedData = useRef(false); // Track if fetch has been done already
+
   useEffect(() => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(fetchPayInDataMerchant, 400);
-  }, [selectedMerchantCode, dateRange, includeSubMerchant]);
+    // Check if fetch has already been done
+    if (!hasFetchedData.current && selectedMerchantCode.length > 0) {
+      fetchPayInDataMerchant();
+      hasFetchedData.current = true; // Set it to true after the initial fetch
+    }
+  }, [selectedMerchantCode, dateRange, includeSubMerchant])
 
   const updateDashboardPeriod = (newRange, intervalValue) => {
     const startDate = newRange.startDate;
@@ -140,6 +147,7 @@ function Dashboard() {
 
   const fetchPayInDataMerchant = async () => {
     try {
+      setAddLoading(true);
       let query = selectedMerchantCode
         .map((code) => "merchantCode=" + encodeURIComponent(code))
         .join("&");
@@ -162,10 +170,12 @@ function Dashboard() {
       );
 
       if (netBalance.error) {
+        setAddLoading(false);
         return;
       }
 
       if (payInOutData.error) {
+        setAddLoading(false);
         return;
       }
 
@@ -282,6 +292,8 @@ function Dashboard() {
       ]);
     } catch (error) {
       console.log(error);
+    } finally {
+      setAddLoading(false);
     }
   };
 
@@ -317,6 +329,13 @@ function Dashboard() {
             selectedMerchantCode={selectedMerchantCode}
             dateValue={dateRange}
           />
+          <Button type='primary'
+            loading={addLoading}
+            htmlType='submit'
+            onClick={fetchPayInDataMerchant}
+          >
+            Search
+          </Button>
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
