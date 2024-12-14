@@ -229,6 +229,7 @@ const Withdraw = ({ type }) => {
       return;
     }
     setEditWithdraw(null);
+    setSelectedUTRMethod("manual");
     handleGetWithdraws({ ...pagination, ...filters }, true);
   };
 
@@ -378,6 +379,7 @@ const Withdraw = ({ type }) => {
   //reset search fields
   const handleResetSearchFields = () => {
     setFilters({});
+    setSelectedUTRMethod("manual");
   };
   const handleDownloadExcel = () => { };
 
@@ -423,7 +425,7 @@ const Withdraw = ({ type }) => {
             <Button
               type="text"
               className="rounded-full h-[40px] w-[40px] p-[0px] flex items-center justify-center"
-              onClick={() => handleGetWithdraws({ ...pagination, ...filters }, true)}
+              onClick={() => {handleGetWithdraws({ ...pagination, ...filters }, true);setSelectedUTRMethod("manual");}}
             >
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
@@ -482,11 +484,17 @@ const Withdraw = ({ type }) => {
       <Modal
         title="Withdraw"
         open={!!editWithdraw}
-        onCancel={() => setEditWithdraw(null)}
+        onCancel={() => {setEditWithdraw(null);setSelectedUTRMethod("manual");}}
         footer={false}
         destroyOnClose
       >
-        <Form layout="vertical" onFinish={updateWithdraw}>
+        <Form
+          layout="vertical"
+          onFinish={updateWithdraw}
+          initialValues={{
+            method: selectedUTRMethod, // Set initial value for the "method" field
+          }}
+        >
           {editWithdraw?.key == "approve" && (
             <>
               <Form.Item
@@ -501,7 +509,6 @@ const Withdraw = ({ type }) => {
                 <Select
                   options={methodOptions}
                   onChange={handleSelectUTRMethod}
-                  // defaultValue={selectedUTRMethod}
                 />
               </Form.Item>
               {selectedUTRMethod === "manual" && (
