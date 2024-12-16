@@ -3,6 +3,7 @@ import { Button, DatePicker, Form, Select, Spin, Checkbox } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { PermissionContext } from '../AuthLayout/AuthLayout';
 import { getApi } from '../../redux/api';
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -10,6 +11,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
   const userData = useContext(PermissionContext);
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [merchantOptions, setMerchantOptions] = useState([]);
+  const [selectedDates, setSelectedDates] = useState([]);
 
   useEffect(() => {
     const fetchMerchantCodes = async () => {
@@ -52,6 +54,37 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     fetchMerchantCodes();
   }, [includeSubMerchant, userData]);
 
+  const onCalendarChange = (dates) => {
+    setSelectedDates(dates);
+  };
+
+  const disabledDate = (current) => {
+    const today = dayjs();
+
+    // Disable dates in the future
+    if (current && current.isAfter(today, "day")) {
+      return true;
+    }
+
+    // If no start date is selected, allow dates up to today
+    if (!selectedDates || selectedDates.length === 0) {
+      return false;
+    }
+
+    // Restrict range to 15 days from the start date
+    const [startDate] = selectedDates;
+    if (startDate) {
+      const maxDate = startDate.add(15, "day");
+      const minDate = startDate.subtract(15, "day");
+      return (
+        current &&
+        (current.isAfter(maxDate, "day") || current.isBefore(minDate, "day"))
+      );
+    }
+
+    return false;
+  };
+
   return (
     <div className="bg-white p-4">
       <p className="font-bold text-lg">{title}</p>
@@ -93,7 +126,17 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
               rules={[{ required: true, message: 'Please select duration!' }]}
               label="Select Duration"
             >
-              <RangePicker />
+            {statusOptions && (
+              <RangePicker
+                onCalendarChange={onCalendarChange}
+                disabledDate={disabledDate}
+              />
+            )}
+            {!statusOptions && (
+              <RangePicker
+                disabledDate={disabledDate}
+              />
+            )}
             </Form.Item>
           </div>
           <Button
