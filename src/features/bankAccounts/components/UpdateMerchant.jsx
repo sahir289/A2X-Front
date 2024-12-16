@@ -27,17 +27,19 @@ const UpdateMerchant = ({
   };
 
   const handleSelectMerchant = async (values) => {
+    const merchantIds = values?.merchantId || [];
+
     setSelectedMerchant((prev) => [
       ...prev,
-      {
-        id: values?.merchantId,
-        code: allMerchants.find(
-          (merchant) => merchant?.id === values?.merchantId
-        )?.code,
-      },
+      ...merchantIds.map((id) => ({
+        id,
+        code: allMerchants.find((merchant) => merchant?.id === id)?.code,
+      })),
     ]);
+
     form.resetFields();
   };
+
 
   const deleteSelectedMerchant = (merchant) => {
     setSelectedMerchant((prev) =>
@@ -174,6 +176,7 @@ const UpdateMerchant = ({
           >
             <Select
               showSearch
+              mode="multiple"
               placeholder="Search to Select"
               optionFilterProp="label"
               filterSort={(optionA, optionB) =>

@@ -48,8 +48,7 @@ function All() {
   const debounceRef = useRef();
 
   useEffect(() => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(fetchBankData, 400);
+    fetchBankData();
   }, [filterValues]);
 
   const fetchBankData = async () => {
@@ -76,7 +75,7 @@ function All() {
     if (BankApiRes.error) {
       return;
     }
-    fetchBankData();
+    // fetchBankData();
   };
 
   return (
