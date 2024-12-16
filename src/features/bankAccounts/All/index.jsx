@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { getApi, putApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
 import { useNavigate } from "react-router-dom";
@@ -45,9 +45,11 @@ function All() {
   });
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
   const navigate = useNavigate()
+  const debounceRef = useRef();
 
   useEffect(() => {
-    fetchBankData();
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(fetchBankData, 400);
   }, [filterValues]);
 
   const fetchBankData = async () => {
@@ -64,13 +66,13 @@ function All() {
   };
 
   const handleStatusChange = async (data) => {
-    setIsFetchBanksLoading(true);
+    // setIsFetchBanksLoading(true);
     const BankApiRes = await putApi("/update-bank-states", {
       id: data.id,
       fieldName: data.fieldName,
       value: data.value,
     });
-    setIsFetchBanksLoading(false);
+    // setIsFetchBanksLoading(false);
     if (BankApiRes.error) {
       return;
     }
