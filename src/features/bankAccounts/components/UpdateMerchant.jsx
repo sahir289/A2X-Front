@@ -12,6 +12,7 @@ const UpdateMerchant = ({
   handleTableChange,
   includeSubMerchant
 }) => {
+  const [merchantRecord, setRecord] = useState([]);
   const [deleteRecord, setDeleteRecord] = useState({});
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [deletedId, setDeletedId] = useState(null);
@@ -22,6 +23,10 @@ const UpdateMerchant = ({
   const [selectedDeletedMerchant, setSelectedDeletedMerchant] = useState([]);
   const [loading,setLoading]=useState(false)
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    setRecord({ ...record });
+  }, [record]);
 
   const handleModalCancel = () => {
     setIsAddMerchantModalOpen(false);
@@ -109,6 +114,17 @@ const UpdateMerchant = ({
     setSelectedDeletedMerchantCodes((prevSelected) => [...prevSelected, merchant.code])
   };
 
+  useEffect(() => {
+    if (selectedDeletedMerchantIDs?.length) {
+      setRecord((prevRecord) => {
+        const updatedMerchants = prevRecord.merchants.filter(
+          (merchant) => !selectedDeletedMerchantIDs.includes(merchant?.id)
+        );
+        return { ...prevRecord, merchants: updatedMerchants };
+      });
+    }
+  }, [selectedDeletedMerchantIDs]);
+
   const deleteMerchant = (merchantIds, merchantCodes) => {
     const deleteData = {
       bankAccountId: record?.id,
@@ -119,16 +135,14 @@ const UpdateMerchant = ({
     setIsDeletePanelOpen(true);
   };
 
-  console.log(deletedId)
   useEffect(() => {
-    if (deletedId?.length) { // Ensure deletedId is an array with values
+    if (deletedId?.length) {
       const updatedMerchant = record?.merchants?.filter(
         (merchant) => !deletedId.includes(merchant?.id)
       );
 
       record.merchants = updatedMerchant;
 
-      // Reset the states
       setSelectedDeletedMerchant([]);
       setSelectedDeletedMerchantIDs([]);
       setSelectedDeletedMerchantCodes([]);
@@ -161,18 +175,9 @@ const UpdateMerchant = ({
         ]}
       >
         <div className="flex flex-col gap-2">
-          {record?.merchants?.map((merchant) => (
+          {merchantRecord?.merchants?.map((merchant) => (
             <div key={merchant?.id} className="flex justify-between">
-              <div
-                style={{
-                  textDecoration: selectedDeletedMerchantCodes.includes(merchant?.code)
-                    ? "line-through"
-                    : "none",
-                  color: selectedDeletedMerchantCodes.includes(merchant?.code) ? "red" : "inherit",
-                }}
-              >
-                {merchant?.code}
-              </div>
+              <div>{merchant?.code}</div>
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
