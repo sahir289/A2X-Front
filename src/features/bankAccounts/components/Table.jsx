@@ -30,7 +30,6 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi, postApi, putApi } from "../../../redux/api";
@@ -45,57 +44,6 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const { RangePicker } = DatePicker;
-const rangePresets = [
-  {
-    label: "Today",
-    value: [
-      dayjs().tz("Asia/Kolkata").startOf("day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "Yesterday",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(1, "day").startOf("day"),
-      dayjs().tz("Asia/Kolkata").subtract(1, "day").endOf("day"),
-    ],
-  },
-  {
-    label: "Last 7 days",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(7, "day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "Last 15 days",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(15, "day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "Last 30 days",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(30, "day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "This Month",
-    value: [
-      dayjs().tz("Asia/Kolkata").startOf("month"),
-      dayjs().tz("Asia/Kolkata").endOf("month"),
-    ],
-  },
-  {
-    label: "Last Month",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(1, "month").startOf("month"),
-      dayjs().tz("Asia/Kolkata").subtract(1, "month").endOf("month"),
-    ],
-  },
-];
 
 const TableComponent = ({
   data,
@@ -104,7 +52,6 @@ const TableComponent = ({
   isFetchBanksLoading,
   handleStatusChange,
 }) => {
-  const dispatch = useDispatch();
   const [isAddBankAccountModelOpen, setIsAddBankAccountModelOpen] =
     useState(false);
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
