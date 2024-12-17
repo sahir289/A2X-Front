@@ -17,12 +17,18 @@ const UpdateMerchant = ({
   const [deletedId, setDeletedId] = useState(null);
   const [newMerchant, setNewMerchant] = useState(null);
   const [selectedMerchant, setSelectedMerchant] = useState([]);
+  const [selectedDeletedMerchantIDs, setSelectedDeletedMerchantIDs] = useState([]);
+  const [selectedDeletedMerchantCodes, setSelectedDeletedMerchantCodes] = useState([]);
+  const [selectedDeletedMerchant, setSelectedDeletedMerchant] = useState([]);
   const [loading,setLoading]=useState(false)
   const [form] = Form.useForm();
 
   const handleModalCancel = () => {
     setIsAddMerchantModalOpen(false);
     setSelectedMerchant([]);
+    setSelectedDeletedMerchant([]);
+    setSelectedDeletedMerchantIDs([]);
+    setSelectedDeletedMerchantCodes([]);
     form.resetFields();
   };
 
@@ -39,7 +45,6 @@ const UpdateMerchant = ({
 
     form.resetFields();
   };
-
 
   const deleteSelectedMerchant = (merchant) => {
     setSelectedMerchant((prev) =>
@@ -98,22 +103,35 @@ const UpdateMerchant = ({
     setNewMerchant(getMerchantBank.data.data);
   };
 
-  const deleteMerchant = (merchant) => {
+  const setMerchantToDelete = (merchant) => {
+    setSelectedDeletedMerchant((prevSelected) => [...prevSelected, merchant])
+    setSelectedDeletedMerchantIDs((prevSelected) => [...prevSelected, merchant.id])
+    setSelectedDeletedMerchantCodes((prevSelected) => [...prevSelected, merchant.code])
+  };
+
+  const deleteMerchant = (merchantIds, merchantCodes) => {
     const deleteData = {
       bankAccountId: record?.id,
-      merchantId: merchant?.id,
-      merchantCode: merchant?.code,
+      merchantId: merchantIds,
+      merchantCode: merchantCodes,
     };
     setDeleteRecord(deleteData);
     setIsDeletePanelOpen(true);
   };
 
+  console.log(deletedId)
   useEffect(() => {
-    if (deletedId) {
+    if (deletedId?.length) { // Ensure deletedId is an array with values
       const updatedMerchant = record?.merchants?.filter(
-        (merchant) => merchant?.id !== deletedId
+        (merchant) => !deletedId.includes(merchant?.id)
       );
+
       record.merchants = updatedMerchant;
+
+      // Reset the states
+      setSelectedDeletedMerchant([]);
+      setSelectedDeletedMerchantIDs([]);
+      setSelectedDeletedMerchantCodes([]);
     }
   }, [deletedId]);
 
@@ -145,13 +163,22 @@ const UpdateMerchant = ({
         <div className="flex flex-col gap-2">
           {record?.merchants?.map((merchant) => (
             <div key={merchant?.id} className="flex justify-between">
-              <div>{merchant?.code}</div>
+              <div
+                style={{
+                  textDecoration: selectedDeletedMerchantCodes.includes(merchant?.code)
+                    ? "line-through"
+                    : "none",
+                  color: selectedDeletedMerchantCodes.includes(merchant?.code) ? "red" : "inherit",
+                }}
+              >
+                {merchant?.code}
+              </div>
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
                 title="Delete"
                 onClick={() => {
-                  deleteMerchant(merchant);
+                  setMerchantToDelete(merchant);
                 }}
               />
             </div>
@@ -210,7 +237,7 @@ const UpdateMerchant = ({
         {selectedMerchant?.length > 0 && (
           <>
             <div className="flex justify-between">
-              <div>Selected Merchants</div>
+              <div>Selected Merchants To Add</div>
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
@@ -236,14 +263,66 @@ const UpdateMerchant = ({
             />
           </div>
         ))}
+        {selectedDeletedMerchant?.length > 0 && (
+          <Button type="primary" danger htmlType="submit" icon={<DeleteOutlined />} className="flex justify-self-end" onClick={() => { deleteMerchant(selectedDeletedMerchantIDs, selectedDeletedMerchantCodes); }}>
+            Batch Delete
+          </Button>
+        )}
+        {selectedDeletedMerchant?.length > 0 && (
+          <>
+            <div className="flex justify-between">
+              <div>Selected Merchants To Delete</div>
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                title="Delete"
+                onClick={() => {
+                  setSelectedDeletedMerchant([]);
+                  setSelectedDeletedMerchantIDs([]);
+                  setSelectedDeletedMerchantCodes([]);
+                }}
+              />
+            </div>
+            <hr />
+          </>
+        )}
+        {selectedDeletedMerchant?.map((merchant) => (
+          <div key={merchant?.id} className="flex justify-between">
+            <div>{merchant?.code}</div>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+              title="Delete"
+              onClick={() => {
+                setSelectedDeletedMerchant((prevMerchants) =>
+                  prevMerchants.filter((item) => item !== merchant)
+                );
+                setSelectedDeletedMerchantIDs((prevMerchants) =>
+                  prevMerchants.filter((item) => item.id !== merchant.id)
+                );
+                setSelectedDeletedMerchantCodes((prevMerchants) =>
+                  prevMerchants.filter((item) => item.code !== merchant.code)
+                );
+              }}
+            />
+          </div>
+        ))}
       </Modal>
       <DeleteModal
         record={deleteRecord}
         isDeletePanelOpen={isDeletePanelOpen}
         setIsDeletePanelOpen={setIsDeletePanelOpen}
         modalTitle="Delete Merchant"
-        deleteMessage="Are you sure you want to delete this merchant account "
-        displayItem={deleteRecord?.merchantCode}
+        deleteMessage={
+          Array.isArray(deleteRecord?.merchantCode)
+            ? "Are you sure you want to delete this merchants "
+            : "Are you sure you want to delete this merchant "
+        }
+        displayItem={
+          Array.isArray(deleteRecord?.merchantCode)
+            ? deleteRecord?.merchantCode.join(', ')
+            : deleteRecord?.merchantCode
+        }
         handleTableChange={handleTableChange}
         deletedId={deletedId}
         setDeletedId={setDeletedId}
