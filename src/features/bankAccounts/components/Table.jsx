@@ -397,7 +397,7 @@ const TableComponent = ({
         <div>
         </div>
       </div>
-      <div className="flex" style={{justifySelf: "end", marginRight: "68px"}}>
+      <div className="flex" style={{ justifySelf: "end", marginRight: "68px" }}>
         {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
           onClick={() => {
             setIncludeSubMerchant((prevState) => !prevState);
@@ -416,6 +416,161 @@ const TableComponent = ({
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
       >
+        {(userData?.role === "ADMIN" ||
+          userData?.role === "TRANSACTIONS" ||
+          userData?.role === "OPERATIONS") && (
+            <Column
+              title={
+                <>
+                  Merchant
+                  <br />
+                  <Input
+                    disabled
+                    style={{
+                      backgroundColor: "#fafafa",
+                      border: "none",
+                      cursor: "auto",
+                    }}
+                  />
+                </>
+              }
+              dataIndex="merchants"
+              key="merchants"
+              className="bg-white"
+              width={"6%"}
+              render={(_, record) => {
+                return (
+                  <div className="whitespace-nowrap flex gap-2">
+                    <Button
+                      type="text"
+                      icon={<EditOutlined style={{ fontSize: '24px' }} />}
+                      disabled={record?.bank_used_for === "payIn" ? false : true}
+                      title="Edit"
+                      onClick={() => showModal(record)}
+                    />
+
+                    <Tooltip
+                      color="white"
+                      placement="bottomRight"
+                      title={
+                        <div className="flex flex-col gap-1 text-black p-2">
+                          <div className="font-bold">Merchant List</div>
+                          {(record?.merchants?.length > 0 &&
+                            record?.merchants?.map((merchant) => (
+                              <p key={merchant?.id}>{merchant?.code}</p>
+                            ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+                        </div>
+                      }
+                    >
+                      <Button type="text" icon={<EyeOutlined style={{ fontSize: '24px' }} />} />
+                    </Tooltip>
+                  </div>
+                );
+              }}
+            />
+          )}
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Status</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="is_enabled"
+          key="is_enabled"
+          className="bg-white"
+          width={"2%"}
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_enabled",
+                    value: e,
+                  });
+                }}
+              />
+            );
+          }}
+        />
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Show Bank</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="is_bank"
+          key="is_bank"
+          className="bg-white"
+          width={"5%"}
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_bank",
+                    value: e,
+                  });
+                }}
+              />
+            );
+          }}
+        />
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Allow QR?</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="is_qr"
+          key="is_qr"
+          className="bg-white"
+          width={"3%"}
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_qr",
+                    value: e,
+                  });
+                }}
+              />
+            );
+          }}
+        />
         <Column
           title={
             <>
@@ -508,34 +663,6 @@ const TableComponent = ({
         <Column
           title={
             <>
-              Limits
-              <br />
-              <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
-              />
-            </>
-          }
-          dataIndex="limits"
-          key="limits"
-          className="bg-white"
-          width={"4%"}
-          render={(text, record) => {
-            return (
-              <>
-                {formatCurrency(record?.min_payin)} -{" "}
-                {formatCurrency(record?.max_payin)}
-              </>
-            );
-          }}
-        />
-        <Column
-          title={
-            <>
               <span className="whitespace-nowrap">UPI ID</span>
               <br />
               <Input
@@ -564,52 +691,6 @@ const TableComponent = ({
               {text}
             </div>
           )}
-        />
-        {/* Column to display useage of bank and it's bank */}
-        <Column
-          title={
-            <>
-              <span className="whitespace-nowrap">Bank Used For</span>
-              <br />
-              <Select
-                className="flex"
-                value={filterValues?.bank_used_for}
-                onChange={(value) =>
-                  handleFilterValuesChange(value, "bank_used_for")
-                }
-                allowClear
-              >
-                <Select.Option value="">Select</Select.Option>
-                <Select.Option value="payIn">PayIn</Select.Option>
-                <Select.Option value="payOut">PayOut</Select.Option>
-              </Select>
-            </>
-          }
-          dataIndex="bank_used_for"
-          key="bank_used_for"
-          className="bg-white"
-          width={"4%"}
-        />
-        {/* Add column for vendor filter */}
-        <Column
-          title={
-            <>
-              <span className="whitespace-nowrap">Vendors</span>
-              <br />
-              <Select
-                value={filterValues?.vendor_code}
-                options={vendorOptions}
-                style={{ width: "90%" }}
-                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
-                allowClear
-              />
-            </>
-          }
-          dataIndex="vendor_code"
-          key="vendor_code"
-          hidden={filterValues.role !== "ADMIN"}
-          className="bg-white"
-          width={"10%"}
         />
         <Column
           title={
@@ -662,44 +743,56 @@ const TableComponent = ({
             );
           }}
         />
+        {/* Add column for vendor filter */}
         <Column
           title={
             <>
-              <span className="whitespace-nowrap">Allow QR?</span>
+              <span className="whitespace-nowrap">Vendors</span>
               <br />
-              <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
+              <Select
+                value={filterValues?.vendor_code}
+                options={vendorOptions}
+                style={{ width: "90%" }}
+                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
+                allowClear
               />
             </>
           }
-          dataIndex="is_qr"
-          key="is_qr"
+          dataIndex="vendor_code"
+          key="vendor_code"
+          hidden={filterValues.role !== "ADMIN"}
           className="bg-white"
-          width={"3%"}
-          render={(value, record) => {
-            return (
-              <Switch
-                defaultValue={value}
-                onChange={(e) => {
-                  handleStatusChange({
-                    id: record.id,
-                    fieldName: "is_qr",
-                    value: e,
-                  });
-                }}
-              />
-            );
-          }}
+          width={"10%"}
+        />
+        {/* Column to display useage of bank and it's bank */}
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Bank Used For</span>
+              <br />
+              <Select
+                className="flex"
+                value={filterValues?.bank_used_for}
+                onChange={(value) =>
+                  handleFilterValuesChange(value, "bank_used_for")
+                }
+                allowClear
+              >
+                <Select.Option value="">Select</Select.Option>
+                <Select.Option value="payIn">PayIn</Select.Option>
+                <Select.Option value="payOut">PayOut</Select.Option>
+              </Select>
+            </>
+          }
+          dataIndex="bank_used_for"
+          key="bank_used_for"
+          className="bg-white"
+          width={"4%"}
         />
         <Column
           title={
             <>
-              <span className="whitespace-nowrap">Show Bank</span>
+              Limits
               <br />
               <Input
                 disabled
@@ -711,56 +804,16 @@ const TableComponent = ({
               />
             </>
           }
-          dataIndex="is_bank"
-          key="is_bank"
+          dataIndex="limits"
+          key="limits"
           className="bg-white"
-          width={"5%"}
-          render={(value, record) => {
+          width={"4%"}
+          render={(text, record) => {
             return (
-              <Switch
-                defaultValue={value}
-                onChange={(e) => {
-                  handleStatusChange({
-                    id: record.id,
-                    fieldName: "is_bank",
-                    value: e,
-                  });
-                }}
-              />
-            );
-          }}
-        />
-        <Column
-          title={
-            <>
-              <span className="whitespace-nowrap">Status</span>
-              <br />
-              <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
-              />
-            </>
-          }
-          dataIndex="is_enabled"
-          key="is_enabled"
-          className="bg-white"
-          width={"2%"}
-          render={(value, record) => {
-            return (
-              <Switch
-                defaultValue={value}
-                onChange={(e) => {
-                  handleStatusChange({
-                    id: record.id,
-                    fieldName: "is_enabled",
-                    value: e,
-                  });
-                }}
-              />
+              <>
+                {formatCurrency(record?.min_payin)} -{" "}
+                {formatCurrency(record?.max_payin)}
+              </>
             );
           }}
         />
@@ -791,7 +844,7 @@ const TableComponent = ({
             <Column
               title={
                 <>
-                  Merchants
+                  Action
                   <br />
                   <Input
                     disabled
@@ -810,40 +863,16 @@ const TableComponent = ({
               render={(_, record) => {
                 return (
                   <div className="whitespace-nowrap flex gap-2">
-                    <Tooltip
-                      color="white"
-                      placement="bottomRight"
-                      title={
-                        <div className="flex flex-col gap-1 text-black p-2">
-                          <div className="font-bold">Merchant List</div>
-                          {(record?.merchants?.length > 0 &&
-                            record?.merchants?.map((merchant) => (
-                              <p key={merchant?.id}>{merchant?.code}</p>
-                            ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                        </div>
-                      }
-                    >
-                      <Button type="text" icon={<EyeOutlined />} />
-                    </Tooltip>
-
                     <Button
                       type="text"
-                      icon={<EditOutlined />}
-                      disabled={record?.bank_used_for === "payIn" ? false : true}
-                      title="Edit"
-                      onClick={() => showModal(record)}
-                    />
-
-                    <Button
-                      type="text"
-                      icon={<DeleteOutlined />}
+                      icon={<DeleteOutlined style={{ fontSize: '24px' }} />}
                       title="Delete"
                       onClick={() => deleteBank(record)}
                     />
 
                     <Button
                       type="text"
-                      icon={<DownloadOutlined />}
+                      icon={<DownloadOutlined style={{ fontSize: '24px' }} />}
                       title="Download Report"
                       onClick={() => {
                         setDownloadReport(true);

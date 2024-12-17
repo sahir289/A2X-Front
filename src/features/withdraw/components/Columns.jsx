@@ -96,256 +96,9 @@ export const Columns = (
           );
         }}
       />
-      {
-        (userData?.role === "VENDOR" ||
-          userData?.role === "VENDOR_OPERATIONS") ? " " :
-          <Column
-            title="Merchant Order Id"
-            dataIndex="merchant_order_id"
-            width="380px"
-            ellipsis
-            render={(v, r, i) => {
-              if (i) {
-                return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
-              }
-              return (
-                <ColumnSearch
-                  name="merchant_order_id"
-                  onChange={onChange}
-                  filters={filters}
-                />
-              );
-            }}
-          />}
-      {
-        (userData?.role === "VENDOR" ||
-          userData?.role === "VENDOR_OPERATIONS") ? " " :
-          <Column
-            title="Merchant"
-            dataIndex="Merchant"
-            width="130px"
-            ellipsis
-            render={(v, r, i) => {
-              if (i) {
-                return <>{v?.code}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v?.code)} /> </>;
-              }
-              return (
-                <ColumnSelect
-                  name="code"
-                  options={merchantOptions}
-                  onChange={onChange}
-                  filters={filters}
-                  disabled={[
-                    "MERCHANT",
-                    "MERCHANT_OPERATIONS",
-                  ].includes(userData?.role)}
-                />
-              );
-            }}
-          />}
-      {
-        (userData?.role === "VENDOR" ||
-          userData?.role === "VENDOR_OPERATIONS") ? " " :
-          <Column
-            title="User"
-            dataIndex="user_id"
-            width="130px"
-            ellipsis
-            render={(v, r, i) => {
-              if (i) {
-                return v;
-              }
-              return (
-                <ColumnSearch
-                  name="user_id"
-                  onChange={onChange}
-                  filters={filters}
-                />
-              );
-            }}
-          />
-      }
-      {(userData?.role === "ADMIN" ||
-        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
-        <Column
-          title="Vendor"
-          dataIndex="vendor_code"
-          width="140px"
-          ellipsis
-          render={(v, r, i) => {
-            if (i) {
-              return v;
-            }
-            return (
-              <ColumnSelect
-                name="vendor_code"
-                options={vendorOptions}
-                onChange={onChange}
-                filters={filters}
-              />
-            );
-          }}
-        />
-        : " "}
-      <Column
-        title="Status"
-        dataIndex="status"
-        width="140px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return renderStatusTag(v);
-          }
-          return (
-            <ColumnSelect
-              name="status"
-              disabled={type === "Completed" || type === "In Progress" ? true : false}
-              defaultValue={type === "Completed" ? WithDrawCompletedOptions[0].value : type === "In Progress" ? WithDrawInProgressOptions[0].value : WithDrawAllOptions[0].label}
-              options={type === "Completed" ? WithDrawCompletedOptions : type === "In Progress" ? WithDrawInProgressOptions : WithDrawAllOptions}
-              onChange={onChange}
-              filters={filters}
-            />
-          );
-        }}
-      />
-      <Column
-        title="Amount"
-        dataIndex="amount"
-        width="130px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return formatCurrency(v);
-          }
-          return (
-            <ColumnSearch name="amount" onChange={onChange} filters={filters} />
-          );
-        }}
-      />
-      {type == "Completed" && (
-        <Column
-          title="Commission"
-          dataIndex="payout_commision"
-          width="100px"
-          ellipsis
-          render={(v, r, i) => {
-            if (i) {
-              return formatCurrency(v);
-            }
-            return (
-              <ColumnSearch
-                name="commission"
-                onChange={onChange}
-                filters={filters}
-              />
-            );
-          }}
-        />
-      )}
-      <Column
-        title="Bank Details"
-        dataIndex="acc_no"
-        width="180px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return (
-              <div>
-                <p>{r?.bank_name}</p>
-                <p>{r?.acc_holder_name}</p>
-                <p>{r?.acc_no}</p>
-                <p>{r?.ifsc_code}</p>
-              </div>
-            );
-          }
-          return (
-            <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />
-          );
-        }}
-      />
-      {/* Colunm to display the selected payout bank and it's filter */}
-      {(userData?.role === "ADMIN" ||
-        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
-        title="From Bank"
-        dataIndex="from_bank"
-        width="130px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return v;
-          }
-          return (
-            <ColumnSelect
-              name="from_bank"
-              options={payOutBankOptions}
-              onChange={onChange}
-              filters={filters}
-            />
-          );
-        }}
-      /> : " "}
-      {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
-        title="Method"
-        dataIndex="method"
-        width="180px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return v || "-";
-          }
-          return (
-            <ColumnSearch
-              name="method"
-              onChange={onChange}
-              filters={filters}
-            />
-          );
-        }}
-      /> : " "}
-      {(type == "All" || type == "Completed") && (
-        <Column
-          title="UTR Id"
-          dataIndex="utr_id"
-          width="180px"
-          ellipsis
-          render={(v, r, i) => {
-            if (i) {
-              return v || "-";
-            }
-            return (
-              <ColumnSearch
-                name="utr_id"
-                onChange={onChange}
-                filters={filters}
-              />
-            );
-          }}
-        />
-      )}
-      <Column
-        title="Payout UUID"
-        dataIndex="id"
-        width="380px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
-          }
-          return (
-            <ColumnSearch name="id" onChange={onChange} filters={filters} />
-          );
-        }}
-      />
-      <Column
-        title="Last Updated"
-        dataIndex="updatedAt"
-        width="240px"
-        ellipsis
-        render={(v) => (v ? formatDate(v) : "")}
-      />
       {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
         <Column
-          title="Option"
+          title="Action"
           width="155px"
           render={(v, r, i) => {
             if (!i) {
@@ -399,6 +152,250 @@ export const Columns = (
             );
           }}
         />}
+      {
+        (userData?.role === "VENDOR" ||
+          userData?.role === "VENDOR_OPERATIONS") ? " " :
+          <Column
+            title="Merchant Order Id"
+            dataIndex="merchant_order_id"
+            width="380px"
+            ellipsis
+            render={(v, r, i) => {
+              if (i) {
+                return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
+              }
+              return (
+                <ColumnSearch
+                  name="merchant_order_id"
+                  onChange={onChange}
+                  filters={filters}
+                />
+              );
+            }}
+          />}
+      {
+        (userData?.role === "VENDOR" ||
+          userData?.role === "VENDOR_OPERATIONS") ? " " :
+          <Column
+            title="Merchant"
+            dataIndex="Merchant"
+            width="130px"
+            ellipsis
+            render={(v, r, i) => {
+              if (i) {
+                return <>{v?.code}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v?.code)} /> </>;
+              }
+              return (
+                <ColumnSelect
+                  name="code"
+                  options={merchantOptions}
+                  onChange={onChange}
+                  filters={filters}
+                  disabled={[
+                    "MERCHANT",
+                    "MERCHANT_OPERATIONS",
+                  ].includes(userData?.role)}
+                />
+              );
+            }}
+          />}
+      <Column
+        title="Bank Details"
+        dataIndex="acc_no"
+        width="180px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return (
+              <div>
+                <p>{r?.bank_name}</p>
+                <p>{r?.acc_holder_name}</p>
+                <p>{r?.acc_no}</p>
+                <p>{r?.ifsc_code}</p>
+              </div>
+            );
+          }
+          return (
+            <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />
+          );
+        }}
+      />
+      <Column
+        title="Amount"
+        dataIndex="amount"
+        width="130px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return formatCurrency(v);
+          }
+          return (
+            <ColumnSearch name="amount" onChange={onChange} filters={filters} />
+          );
+        }}
+      />
+      {type == "Completed" && (
+        <Column
+          title="Commission"
+          dataIndex="payout_commision"
+          width="100px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return formatCurrency(v);
+            }
+            return (
+              <ColumnSearch
+                name="commission"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />
+      )}
+      <Column
+        title="Status"
+        dataIndex="status"
+        width="140px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return renderStatusTag(v);
+          }
+          return (
+            <ColumnSelect
+              name="status"
+              disabled={type === "Completed" || type === "In Progress" ? true : false}
+              defaultValue={type === "Completed" ? WithDrawCompletedOptions[0].value : type === "In Progress" ? WithDrawInProgressOptions[0].value : WithDrawAllOptions[0].label}
+              options={type === "Completed" ? WithDrawCompletedOptions : type === "In Progress" ? WithDrawInProgressOptions : WithDrawAllOptions}
+              onChange={onChange}
+              filters={filters}
+            />
+          );
+        }}
+      />
+      {(type == "All" || type == "Completed") && (
+        <Column
+          title="UTR Id"
+          dataIndex="utr_id"
+          width="180px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v || "-";
+            }
+            return (
+              <ColumnSearch
+                name="utr_id"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />
+      )}
+      {(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") ? " " :
+        <Column
+          title="User"
+          dataIndex="user_id"
+          width="130px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v;
+            }
+            return (
+              <ColumnSearch
+                name="user_id"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />}
+        {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
+          title="Method"
+          dataIndex="method"
+          width="180px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v || "-";
+            }
+            return (
+              <ColumnSearch
+                name="method"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        /> : " "}
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
+        <Column
+          title="Vendor"
+          dataIndex="vendor_code"
+          width="140px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v;
+            }
+            return (
+              <ColumnSelect
+                name="vendor_code"
+                options={vendorOptions}
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />
+        : " "}
+      {/* Colunm to display the selected payout bank and it's filter */}
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
+        title="From Bank"
+        dataIndex="from_bank"
+        width="130px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return v;
+          }
+          return (
+            <ColumnSelect
+              name="from_bank"
+              options={payOutBankOptions}
+              onChange={onChange}
+              filters={filters}
+            />
+          );
+        }}
+      /> : " "}
+      <Column
+        title="Payout UUID"
+        dataIndex="id"
+        width="380px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
+          }
+          return (
+            <ColumnSearch name="id" onChange={onChange} filters={filters} />
+          );
+        }}
+      />
+      <Column
+        title="Last Updated"
+        dataIndex="updatedAt"
+        width="240px"
+        ellipsis
+        render={(v) => (v ? formatDate(v) : "")}
+      />
     </>
   );
 };
