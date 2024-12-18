@@ -1,11 +1,13 @@
 import { notification } from 'antd';
 import { json2csv } from 'json-2-csv';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { getApi } from '../../redux/api';
 import { formatDate1 } from '../../utils/utils';
 import PayDesign from './index';
+import { PermissionContext } from '../AuthLayout/AuthLayout';
 
 const ReportComponent = () => {
+  const userData = useContext(PermissionContext)
   const [loading, setLoading] = useState(false);
   const [api, notificationContext] = notification.useNotification();
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
@@ -30,11 +32,21 @@ const ReportComponent = () => {
     let query = data.merchantCode
       .map((code) => "merchantCode=" + encodeURIComponent(code))
       .join("&");
-    const completeData = {
-      startDate: adjustedStartDate,
-      endDate: adjustedEndDate,
-      includeSubMerchant
-    }
+      let completeData;
+      if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === 'MERCHANT_ADMIN') {
+        completeData = {
+          startDate: adjustedStartDate,
+          endDate: adjustedEndDate,
+          includeSubMerchant
+        }
+      }
+      else {
+        completeData = {
+          startDate: adjustedStartDate,
+          endDate: adjustedEndDate,
+          includeSubMerchant: true,
+        }
+      }
     setLoading(true);
     const res = await getApi(`/weekly-report?${query}`, completeData);
     setLoading(false);
