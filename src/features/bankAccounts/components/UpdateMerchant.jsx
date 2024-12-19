@@ -59,34 +59,35 @@ const UpdateMerchant = ({
 
   const onUpdateMerchant = async () => {
     setLoading(true)
-    const formData = selectedMerchant.map((merchant) => ({
+    const formData = {
       bankAccountId: record?.id,
-      merchantId: merchant?.id,
-    }));
+      merchantId: selectedMerchant.map((merchant) => merchant?.id),
+      includeSubMerchant
+    };
 
-    if (formData.length === 0) {
+    if (!formData) {
       setLoading(false)
       return;
     }
 
-    for (const element of formData) {
-      if (!element?.merchantId) {
-        return;
-      }
+    // for (const element of formData) {
+    //   if (!element?.merchantId) {
+    //     return;
+    //   }
 
-      const data = {
-        bankAccountId: element?.bankAccountId,
-        merchantId: element?.merchantId,
-        includeSubMerchant
-      }
+    //   const data = {
+    //     bankAccountId: element?.bankAccountId,
+    //     merchantId: element?.merchantId,
+    //     includeSubMerchant
+    //   }
 
-      await postApi("/add-bank-merchant", data).then(async(res) => {
+      await postApi("/add-bank-merchant", formData).then(async(res) => {
         if (res?.error) {
           return;
         }
         await getBankMerchant(res?.data?.data?.merchantId);
         setSelectedMerchant((prev) =>
-          prev.filter((prevMerchant) => prevMerchant?.id !== element?.merchantId)
+          prev.filter((prevMerchant) => !formData?.merchantId.includes(prevMerchant))
         );
       }).catch((err) => {
         console.log("🚀 ~ addBankMerchant ~ err:", err)
@@ -94,7 +95,7 @@ const UpdateMerchant = ({
         setLoading(false)
         handleModalCancel()
       });
-    }
+    // }
 
     handleTableChange({ current: 1, pageSize: 20 });
   };
