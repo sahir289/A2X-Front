@@ -357,7 +357,9 @@ const TableComponent = ({
 
       const response = await putApi(resetTransaction, payload);
 
-      if (response.data.statusCode === 200) {
+      if (response?.error) {
+        NotificationManager.error(response.error.message);
+      } else if (response?.data?.statusCode === 200) {
         NotificationManager.success("Transaction reset successfully");
         setIsResetModalVisible(false);
         fetchUsersData();
