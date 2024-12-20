@@ -745,7 +745,7 @@ const TableComponent = ({
                 value={filterValues?.userSubmittedUtr}
                 maxLength={12}
                 onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "userSubmittedUtr")
+                  handleFilterValuesChange(e.target.value.trim(), "userSubmittedUtr")
                 }
                 allowClear
               />
@@ -766,7 +766,7 @@ const TableComponent = ({
                 value={filterValues?.utr}
                 maxLength={12}
                 onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "utr")
+                  handleFilterValuesChange(e.target.value.trim(), "utr")
                 }
                 allowClear
               />
