@@ -243,7 +243,7 @@ const TableComponent = ({
                 <Input
                   value={filterValues?.utr}
                   onChange={(e) =>
-                    handleFilterValuesChange(e.target.value, "utr")
+                    handleFilterValuesChange(e.target.value.trim(), "utr")
                   }
                   allowClear
                 />
