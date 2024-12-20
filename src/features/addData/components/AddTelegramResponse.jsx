@@ -23,7 +23,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
     setIsLoading(true)
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${values.amount_code ?? "nil"} ${(values.utr || "").trim()} ${values.bank}`,
+        text: `${values.status} ${values.amount} ${values.amount_code ?? "nil"} ${(values.utr).trim()} ${values.bank}`,
       },
     };
 
@@ -141,7 +141,17 @@ const AddTelegramResponse = ({ handleTableChange }) => {
             },
           ]}
         >
-          <Input />
+          <Input
+            onKeyDown={(e) => {
+              if (e.key === " ") {
+                e.preventDefault(); // Prevent space key
+              }
+            }}
+            onChange={(e) => {
+              // Remove spaces if pasted or typed
+              e.target.value = e.target.value.replace(/\s+/g, "");
+            }}
+          />
         </Form.Item>
 
         <div className="flex flex-row justify-end items-end gap-1">
