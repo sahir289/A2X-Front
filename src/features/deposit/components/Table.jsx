@@ -930,7 +930,7 @@ const TableComponent = ({
               >
                 Reset
               </Button>
-            ) : record.status === "SUCCESS" ? <BellTwoTone onClick={() => setNotified(record.id)} /> : null
+            ) : record.status === "SUCCESS" ? <BellTwoTone style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} /> : null
           }
         />
       </Table>
