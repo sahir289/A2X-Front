@@ -11,7 +11,7 @@ function All() {
   const [pageSize, setPageSize] = useState(20);
   const [totalRecords, setTotalRecords] = useState(0);
   const userData = useContext(PermissionContext)
-  
+
   const [filterValues, setFilterValues] = useState({
     loggedInUserRole: userData.role,
     sno: '',
@@ -22,7 +22,7 @@ function All() {
     merchantCode: `${userData?.code || ""}`,
     vendorCode: `${userData?.vendorCode || ""}`,
     userId: '',
-    userSubmittedUtr: '',
+    // userSubmittedUtr: '',
     utr: '',
     payInId: '',
     dur: '',
