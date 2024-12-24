@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputNumber, notification, Select, DatePicker } from "antd";
+import { Button, Form, Input, InputNumber, notification, Select, DatePicker, Checkbox } from "antd";
 import React, { useEffect, useState, useContext } from "react";
 import { getApi, postApi } from "../../../redux/api";
 import {
@@ -8,7 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
-const AddLien = ({ handleTableChange }) => {
+const AddLien = ({ handleTableChange, includeSubMerchant }) => {
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -43,20 +43,40 @@ const AddLien = ({ handleTableChange }) => {
     form.resetFields();
   };
 
-  const handleGetMerchants = async () => {
-    const res = await getApi("/getall-merchant");
-    if (res.error?.error?.response?.status === 401) {
-      NotificationManager.error(res?.error?.message, 401);
-      localStorage.clear();
-      navigate("/");
-    }
-
-    setMerchants(res.data?.data?.merchants || []);
-  };
-
   useEffect(() => {
+    const handleGetMerchants = async () => {
+      let merchant;
+      if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
+        if (!includeSubMerchant) {
+          merchant = await getApi("/getall-merchant-grouping", {
+            page: 1,
+            pageSize: 1000,
+          });
+        }
+        else {
+          merchant = await getApi("/getall-merchant", {
+            page: 1,
+            pageSize: 1000,
+          });
+        }
+      }
+      else {
+        merchant = await getApi("/getall-merchant", {
+          page: 1,
+          pageSize: 1000,
+        });
+      }
+      if (merchant.error?.error?.response?.status === 401) {
+        NotificationManager.error(merchant?.error?.message, 401);
+        localStorage.clear();
+        navigate("/");
+      }
+
+      setMerchants(merchant.data?.data?.merchants || []);
+    };
+
     handleGetMerchants();
-  }, []);
+  }, [includeSubMerchant]);
 
   const merchantOptions = merchants
     ?.filter(
@@ -74,97 +94,108 @@ const AddLien = ({ handleTableChange }) => {
   return (
     <>
       {contextHolder}
-      <Form
-        form={form}
-        layout="vertical"
-        name="add_data"
-        className="grid grid-rows-1 md:grid-cols-6 gap-2"
-        onFinish={onFinish}
-        autoComplete="off"
-      >
-
-        <Form.Item
-          label="Merchant"
-          name="code"
-
-          rules={[
-            {
-              required: true,
-              message: "Please select the Merchant!",
-            },
-          ]}
+      <div>
+        <Form
+          form={form}
+          layout="vertical"
+          name="add_data"
+          className="grid grid-rows-1 md:grid-cols-6 gap-2"
+          onFinish={onFinish}
+          autoComplete="off"
         >
-          <Select placeholder="Please select"
-            showSearch={true}
-            options={merchantOptions}
-          />
-        </Form.Item>
 
-        <Form.Item
-          label="Merchant Order ID"
-          name="merchant_order_id"
-          rules={[
-            {
-              required: true,
-              message: "Please input your Merchant Order ID!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            label="Merchant"
+            name="code"
 
-        <Form.Item
-          label="User ID"
-          name="user_id"
-          rules={[
-            {
-              required: true,
-              message: "Please input your User ID!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Amount"
-          name="amount"
-          rules={[
-            {
-              required: true,
-              message: "Please input your amount!",
-            },
-          ]}
-        >
-          <InputNumber className="w-full" />
-        </Form.Item>
-
-        <Form.Item
-          label="Reference Date"
-          name="when"
-          rules={[
-            {
-              required: true,
-              message: "Please select date!",
-            },
-          ]}
-        >
-          <DatePicker className="h-8" />
-        </Form.Item>
-
-        <div className="flex flex-row items-end gap-1">
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={isLoading}>
-              Add ChargeBack
-            </Button>
+            rules={[
+              {
+                required: true,
+                message: "Please select the Merchant!",
+              },
+            ]}
+          >
+            <Select placeholder="Please select"
+              showSearch={true}
+              options={merchantOptions}
+            />
           </Form.Item>
-          <Form.Item>
-            <Button key="back" onClick={resetForm}>
-              Reset
-            </Button>
+
+          <Form.Item
+            label="Merchant Order ID"
+            name="merchant_order_id"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Merchant Order ID!",
+              },
+            ]}
+          >
+            <Input />
           </Form.Item>
-        </div>
-      </Form>
+
+          <Form.Item
+            label="User ID"
+            name="user_id"
+            rules={[
+              {
+                required: true,
+                message: "Please input your User ID!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Amount"
+            name="amount"
+            rules={[
+              {
+                required: true,
+                message: "Please input your amount!",
+              },
+            ]}
+          >
+            <InputNumber className="w-full" />
+          </Form.Item>
+
+          <Form.Item
+            label="Reference Date"
+            name="when"
+            rules={[
+              {
+                required: true,
+                message: "Please select date!",
+              },
+            ]}
+          >
+            <DatePicker className="h-8" />
+          </Form.Item>
+
+          <div className="flex flex-row items-end gap-1">
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={isLoading}>
+                Add ChargeBack
+              </Button>
+            </Form.Item>
+            <Form.Item>
+              <Button key="back" onClick={resetForm}>
+                Reset
+              </Button>
+            </Form.Item>
+          </div>
+        </Form>
+      </div>
+      {/* <div className="flex ml-5" style={{ alignItems: "center", justifySelf: "end" }}>
+        {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+          onClick={() => {
+            setIncludeSubMerchant((prevState) => !prevState);
+          }}
+        >
+          <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
+        </Checkbox>}
+      </div> */}
     </>
   );
 };

@@ -1,5 +1,5 @@
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, notification, Pagination, Select } from 'antd';
+import { Button, Form, Input, Modal, notification, Pagination, Select, Checkbox } from 'antd';
 import { useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { getApi, postApi, putApi } from "../../redux/api";
@@ -22,6 +22,7 @@ export default function Settlement() {
   const [isLoading, setIsLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [editSettlement, setEditSettlement] = useState(null);
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [settlements, setSettlements] = useState({
     data: [],
     total: 0,
@@ -36,9 +37,9 @@ export default function Settlement() {
     take: 20,
   })
   const { data, total } = settlements;
-  const merchants = useSelector(state => state?.merchant?.data);
+  // const merchants = useSelector(state => state?.merchant?.data);
   const navigate = useNavigate()
-
+  const [merchantOptions, setMerchantOptions] = useState([]);
 
   useEffect(() => {
     handleGetSettlements({
@@ -46,6 +47,62 @@ export default function Settlement() {
       ...filters,
     }, false);
   }, [pagination, filters])
+
+  useEffect(() => {
+    let isMounted = true; // To avoid state updates on unmounted components
+    const fetchMerchants = async () => {
+      try {
+        let merchant;
+        if (
+          userData.role === "ADMIN" ||
+          userData.role === "TRANSACTIONS" ||
+          userData.role === "OPERATIONS"
+        ) {
+          if (!includeSubMerchant) {
+            merchant = await getApi("/getall-merchant-grouping", {
+              page: 1,
+              pageSize: 1000,
+            });
+          } else {
+            merchant = await getApi("/getall-merchant", {
+              page: 1,
+              pageSize: 1000,
+            });
+          }
+        } else {
+          merchant = await getApi("/getall-merchant", {
+            page: 1,
+            pageSize: 1000,
+          });
+        }
+
+        if (isMounted) {
+          const options = merchant?.data?.data?.merchants
+            ?.filter(
+              (merchant) =>
+                !merchant.is_deleted &&
+                (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+            )
+            .map((merchant) => ({
+              label: merchant.code,
+              value: merchant.code,
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
+          setMerchantOptions(options); // Update state
+        }
+      } catch (error) {
+        console.error("Error fetching merchants:", error);
+      }
+    };
+
+    fetchMerchants();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [includeSubMerchant]);
 
   const handleGetSettlements = (queryObj = {}, debounced = false) => {
     if (!debounced) {
@@ -84,7 +141,6 @@ export default function Settlement() {
     })
   }
 
-
   const handleToggleModal = () => {
     setOpen(!open);
     form.resetFields();
@@ -107,7 +163,6 @@ export default function Settlement() {
       </p>
     )
   }
-
 
   // Function to validate IFSC code using an API
   const validateIfscCode = async (ifsc) => {
@@ -197,19 +252,6 @@ export default function Settlement() {
     handleGetSettlements();
   }
 
-  const merchantOptions = merchants
-    ?.filter(
-      (merchant) =>
-        !merchant.is_deleted &&
-        (!userData?.code?.length || userData?.code?.includes(merchant?.code))
-    )
-    .map((merchant) => ({
-      label: merchant.code,
-      value: merchant.code,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
-
-
   const labelCol = { span: 6 };
   //reset search fields
   const handleResetSearchFields = () => {
@@ -238,6 +280,15 @@ export default function Settlement() {
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
           </div>
+        </div>
+        <div className="flex" style={{justifySelf: "end", marginRight: "40px"}}>
+          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+            onClick={() => {
+              setIncludeSubMerchant((prevState) => !prevState);
+            }}
+          >
+            <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
+          </Checkbox>}
         </div>
         <div className='overflow-x-auto'>
           <TableComponent

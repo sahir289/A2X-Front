@@ -1,4 +1,4 @@
-import { Button, Input, Select, Table, Tag } from "antd";
+import { Button, Input, Select, Table, Checkbox } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useEffect, useState, useContext } from "react";
 import { Reload } from "../../../utils/constants";
@@ -21,6 +21,7 @@ const TableComponent = ({
   const [merchants, setMerchants] = useState([]);
   const navigate = useNavigate();
   const userData = useContext(PermissionContext);
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -54,20 +55,40 @@ const TableComponent = ({
     })
   }
 
-  const handleGetMerchants = async () => {
-    const res = await getApi("/getall-merchant");
-    if (res.error?.error?.response?.status === 401) {
-      NotificationManager.error(res?.error?.message, 401);
-      localStorage.clear();
-      navigate("/");
-    }
-
-    setMerchants(res.data?.data?.merchants || []);
-  };
-
   useEffect(() => {
+    const handleGetMerchants = async () => {
+      let merchant;
+      if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
+        if (!includeSubMerchant) {
+          merchant = await getApi("/getall-merchant-grouping", {
+            page: 1,
+            pageSize: 1000,
+          });
+        }
+        else {
+          merchant = await getApi("/getall-merchant", {
+            page: 1,
+            pageSize: 1000,
+          });
+        }
+      }
+      else {
+        merchant = await getApi("/getall-merchant", {
+          page: 1,
+          pageSize: 1000,
+        });
+      }
+      if (merchant.error?.error?.response?.status === 401) {
+        NotificationManager.error(merchant?.error?.message, 401);
+        localStorage.clear();
+        navigate("/");
+      }
+
+      setMerchants(merchant.data?.data?.merchants || []);
+    };
+
     handleGetMerchants();
-  }, []);
+  }, [includeSubMerchant]);
 
   const merchantOptions = merchants
     ?.filter(
@@ -97,8 +118,17 @@ const TableComponent = ({
     <>
       {!["MERCHANT","OPERATIONS","MERCHANT_OPERATIONS","MERCHANT_ADMIN"].includes(userData?.role) && <div className="font-serif p-3 bg-zinc-50 rounded-lg mb-2">
         <div className="flex">
-          <AddLien handleTableChange={handleTableChange} />
+          <AddLien handleTableChange={handleTableChange} includeSubMerchant={includeSubMerchant} />
         </div>
+      <div className="flex ml-5" style={{ alignItems: "center", justifySelf: "end" }}>
+        {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+          onClick={() => {
+            setIncludeSubMerchant((prevState) => !prevState);
+          }}
+        >
+          <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
+        </Checkbox>}
+      </div>
       </div>}
       <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
         <div className="flex">
