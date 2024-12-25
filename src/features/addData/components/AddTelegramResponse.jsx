@@ -105,6 +105,20 @@ const AddTelegramResponse = ({ handleTableChange }) => {
               required: true,
               message: "Please input your amount!",
             },
+            {
+              validator: (_, value) => {
+                if (value === undefined) {
+                  return Promise.reject(new Error("Amount is required!"));
+                }
+                if (value < 1) {
+                  return Promise.reject(new Error("Amount must be at least 1!"));
+                }
+                if (value > 500000) {
+                  return Promise.reject(new Error("Amount cannot exceed 500,000!"));
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <InputNumber className="w-full" />
