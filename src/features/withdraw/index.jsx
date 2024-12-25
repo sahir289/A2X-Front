@@ -7,6 +7,7 @@ import {
   Pagination,
   Select,
   notification,
+  Checkbox,
 } from "antd";
 import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -46,6 +47,7 @@ const Withdraw = ({ type }) => {
   const [addVendor, setAddVendor] = useState(false);
   const [editWithdraw, setEditWithdraw] = useState(null);
   const [selectedUTRMethod, setSelectedUTRMethod] = useState("manual");
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [withdraws, setWithdraws] = useState({
     data: [],
@@ -59,17 +61,63 @@ const Withdraw = ({ type }) => {
   const [ekoBalance, setEkoBalance] = useState(0);
 
   const merchantData = useSelector((state) => state.merchant.data);
-  const merchantOptions = merchantData
-    ?.filter(
-      (merchant) =>
-        (!merchant.is_deleted && !userData?.code?.length) ||
-        userData?.code.includes(merchant.code)
-    )
-    .map((merchant) => ({
-      label: merchant.code,
-      value: merchant.code,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+  const [merchantOptions, setMerchantOptions] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true; // To avoid state updates on unmounted components
+    const fetchMerchants = async () => {
+      try {
+        let merchant;
+        if (
+          userData.role === "ADMIN" ||
+          userData.role === "TRANSACTIONS" ||
+          userData.role === "OPERATIONS"
+        ) {
+          if (!includeSubMerchant) {
+            merchant = await getApi("/getall-merchant-grouping", {
+              page: 1,
+              pageSize: 1000,
+            });
+          } else {
+            merchant = await getApi("/getall-merchant", {
+              page: 1,
+              pageSize: 1000,
+            });
+          }
+        } else {
+          merchant = await getApi("/getall-merchant", {
+            page: 1,
+            pageSize: 1000,
+          });
+        }
+
+        if (isMounted) {
+          const options = merchant?.data?.data?.merchants
+            ?.filter(
+              (merchant) =>
+                !merchant.is_deleted &&
+                (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+            )
+            .map((merchant) => ({
+              label: merchant.code,
+              value: merchant.code,
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
+          setMerchantOptions(options); // Update state
+        }
+      } catch (error) {
+        console.error("Error fetching merchants:", error);
+      }
+    };
+
+    fetchMerchants();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [includeSubMerchant]);
 
   const [vendorData, setVendorData] = useState([]);
   const vendorOptions = vendorData
@@ -193,7 +241,7 @@ const Withdraw = ({ type }) => {
     }
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
-    const res = await getApi(`/getall-payout${query}`);
+    const res = await getApi(`/getall-payout${query}&includeSubMerchant=${includeSubMerchant}`);
     setIsLoading(false);
     if (res?.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
@@ -437,6 +485,15 @@ const Withdraw = ({ type }) => {
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
           </div>
+        </div>
+        <div className="flex" style={{justifySelf: "end", marginRight: "40px"}}>
+          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+            onClick={() => {
+              setIncludeSubMerchant((prevState) => !prevState);
+            }}
+          >
+            <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
+          </Checkbox>}
         </div>
         <div className="overflow-x-auto">
           <Table

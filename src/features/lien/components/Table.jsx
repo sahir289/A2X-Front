@@ -17,11 +17,13 @@ const TableComponent = ({
   filterValues,
   setFilterValues,
   isFetchBanksLoading,
+  includeSubMerchant,
+  setIncludeSubMerchant
 }) => {
   const [merchants, setMerchants] = useState([]);
   const navigate = useNavigate();
   const userData = useContext(PermissionContext);
-  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
+  // const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -145,7 +147,7 @@ const TableComponent = ({
           </div>
         </div>
         <Table
-          dataSource={data.lienRes}
+          dataSource={data?.lienRes}
           rowKey={(item) => item.id}
           scroll={{
             x: "70vw",

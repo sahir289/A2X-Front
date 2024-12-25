@@ -6,6 +6,7 @@ import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 function All() {
   const [tableData, setTableData] = useState([]);
   const userData = useContext(PermissionContext)
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [filterValues, setFilterValues] = useState({
     sno: "",
     merchantCode: `${userData?.code || ""}`,
@@ -14,6 +15,7 @@ function All() {
     amount: "",
     page: 1,
     pageSize: 20,
+    includeSubMerchant,
   });
   const [isFetchBanksLoading, setIsFetchBanksLoading] = useState(false);
 
@@ -39,6 +41,8 @@ function All() {
         filterValues={filterValues}
         setFilterValues={setFilterValues}
         isFetchBanksLoading={isFetchBanksLoading}
+        includeSubMerchant={includeSubMerchant}
+        setIncludeSubMerchant={setIncludeSubMerchant}
       />
     </div>
   );

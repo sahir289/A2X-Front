@@ -127,7 +127,7 @@ export default function Settlement() {
   const getSettlementList = async (queryObj) => {
     const query = getQueryFromObject(queryObj);
     setIsLoading(true);
-    const res = await getApi(`/getall-settlement${query}`);
+    const res = await getApi(`/getall-settlement${query}&includeSubMerchant=${includeSubMerchant}`);
     setIsLoading(false);
     if (res?.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
