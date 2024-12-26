@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { getApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
 import WebSockets from "../../../components/WebSockets/WebSockets";
@@ -35,7 +35,7 @@ function All() {
     setTableData(botMessage?.data?.data);
   };
 
-  const handleSocketSearch = ()=>{
+  const handleSocketSearch = useCallback(()=>{
     const search = {...filterValues};
     delete search.status;
     delete search.page;
@@ -45,7 +45,7 @@ function All() {
       return;
     }
     fetchUsersData();
-  }
+  }, [filterValues]);
 
   return (
     <div className="">
