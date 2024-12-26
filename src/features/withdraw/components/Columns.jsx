@@ -1,8 +1,8 @@
-import { ExclamationCircleOutlined, CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Input, Select, Tag } from "antd";
+import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Button, Input, Select, Tag } from "antd";
 import Column from "antd/es/table/Column";
-import { formatCurrency, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
+import { formatCurrency, formatDate, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
 
 
 const renderStatusTag = (status) => {
@@ -96,6 +96,62 @@ export const Columns = (
           );
         }}
       />
+      {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
+        <Column
+          title="Action"
+          width="155px"
+          render={(v, r, i) => {
+            if (!i) {
+              return null;
+            }
+            if (r.status == "INITIATED") {
+              return (
+                // UI change of Approve and Reject Buttons
+                <>
+                  <CheckSquareTwoTone
+                    style={{
+                      fontSize: '40px',
+                      marginRight: '7px',
+                    }}
+                    twoToneColor="#52c41a"
+                    onClick={() =>
+                      updateWithdraw({
+                        record: r,
+                        key: "approve",
+                      })
+                    }
+                  />
+                  <CloseSquareTwoTone
+                    style={{
+                      fontSize: '40px',
+                      marginLeft: '7px',
+                    }}
+                    twoToneColor="#ff0000"
+                    onClick={() =>
+                      updateWithdraw({
+                        record: r,
+                        key: "reject",
+                      })
+                    }
+                  />
+                </>
+              );
+            }
+            return (
+              <Button
+                disabled={r.status === "REJECTED"}
+                onClick={() =>
+                  updateWithdraw({
+                    record: r,
+                    reset: true,
+                  })
+                }
+              >
+                Reset
+              </Button>
+            );
+          }}
+        />}
       {
         (userData?.role === "VENDOR" ||
           userData?.role === "VENDOR_OPERATIONS") ? " " :
@@ -137,75 +193,30 @@ export const Columns = (
                   filters={filters}
                   disabled={[
                     "MERCHANT",
-                    "OPERATIONS",
                     "MERCHANT_OPERATIONS",
                   ].includes(userData?.role)}
                 />
               );
             }}
           />}
-      {
-        (userData?.role === "VENDOR" ||
-          userData?.role === "VENDOR_OPERATIONS") ? " " :
-          <Column
-            title="User"
-            dataIndex="user_id"
-            width="130px"
-            ellipsis
-            render={(v, r, i) => {
-              if (i) {
-                return v;
-              }
-              return (
-                <ColumnSearch
-                  name="user_id"
-                  onChange={onChange}
-                  filters={filters}
-                />
-              );
-            }}
-          />
-      }
-      { (userData?.role === "ADMIN" ||
-          userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
       <Column
-        title="Vendor"
-        dataIndex="vendor_code"
-        width="140px"
+        title="Bank Details"
+        dataIndex="acc_no"
+        width="180px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return v;
+            return (
+              <div>
+                <p>{r?.bank_name}</p>
+                <p>{r?.acc_holder_name}</p>
+                <p>{r?.acc_no}</p>
+                <p>{r?.ifsc_code}</p>
+              </div>
+            );
           }
           return (
-            <ColumnSelect
-              name="vendor_code"
-              options={vendorOptions}
-              onChange={onChange}
-              filters={filters}
-            />
-          );
-        }}
-      />
-    : " "}
-      <Column
-        title="Status"
-        dataIndex="status"
-        width="140px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return renderStatusTag(v);
-          }
-          return (
-            <ColumnSelect
-              name="status"
-              disabled={type === "Completed" || type === "In Progress" ? true : false}
-              defaultValue={type === "Completed" ? WithDrawCompletedOptions[0].value : type === "In Progress" ? WithDrawInProgressOptions[0].value : WithDrawAllOptions[0].label}
-              options={type === "Completed" ? WithDrawCompletedOptions : type === "In Progress" ? WithDrawInProgressOptions : WithDrawAllOptions}
-              onChange={onChange}
-              filters={filters}
-            />
+            <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />
           );
         }}
       />
@@ -244,40 +255,20 @@ export const Columns = (
         />
       )}
       <Column
-        title="Bank Details"
-        dataIndex="acc_no"
-        width="180px"
+        title="Status"
+        dataIndex="status"
+        width="140px"
         ellipsis
         render={(v, r, i) => {
           if (i) {
-            return (
-              <div>
-                <p>{r?.bank_name}</p>
-                <p>{r?.acc_holder_name}</p>
-                <p>{r?.acc_no}</p>
-                <p>{r?.ifsc_code}</p>
-              </div>
-            );
-          }
-          return (
-            <ColumnSearch name="acc_no" onChange={onChange} filters={filters} />
-          );
-        }}
-      />
-      {/* Colunm to display the selected payout bank and it's filter */}
-      <Column
-        title="From Bank"
-        dataIndex="from_bank"
-        width="130px"
-        ellipsis
-        render={(v, r, i) => {
-          if (i) {
-            return v;
+            return renderStatusTag(v);
           }
           return (
             <ColumnSelect
-              name="from_bank"
-              options={payOutBankOptions}
+              name="status"
+              disabled={type === "Completed" || type === "In Progress" ? true : false}
+              defaultValue={type === "Completed" ? WithDrawCompletedOptions[0].value : type === "In Progress" ? WithDrawInProgressOptions[0].value : WithDrawAllOptions[0].label}
+              options={type === "Completed" ? WithDrawCompletedOptions : type === "In Progress" ? WithDrawInProgressOptions : WithDrawAllOptions}
               onChange={onChange}
               filters={filters}
             />
@@ -304,6 +295,86 @@ export const Columns = (
           }}
         />
       )}
+      {(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") ? " " :
+        <Column
+          title="User"
+          dataIndex="user_id"
+          width="130px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v;
+            }
+            return (
+              <ColumnSearch
+                name="user_id"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />}
+        {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
+          title="Method"
+          dataIndex="method"
+          width="180px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v || "-";
+            }
+            return (
+              <ColumnSearch
+                name="method"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        /> : " "}
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
+        <Column
+          title="Vendor"
+          dataIndex="vendor_code"
+          width="140px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v;
+            }
+            return (
+              <ColumnSelect
+                name="vendor_code"
+                options={vendorOptions}
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />
+        : " "}
+      {/* Colunm to display the selected payout bank and it's filter */}
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
+        title="From Bank"
+        dataIndex="from_bank"
+        width="130px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return v;
+          }
+          return (
+            <ColumnSelect
+              name="from_bank"
+              options={payOutBankOptions}
+              onChange={onChange}
+              filters={filters}
+            />
+          );
+        }}
+      /> : " "}
       <Column
         title="Payout UUID"
         dataIndex="id"
@@ -321,65 +392,10 @@ export const Columns = (
       <Column
         title="Last Updated"
         dataIndex="updatedAt"
-        width="160px"
+        width="240px"
         ellipsis
-        render={(v) => (v ? new Date(v).toDateString() : "")}
+        render={(v) => (v ? formatDate(v) : "")}
       />
-      {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS" || userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS") &&
-        <Column
-          title="Option"
-          width="155px"
-          render={(v, r, i) => {
-            if (!i) {
-              return null;
-            }
-            if (r.status == "INITIATED") {
-              return (
-                // UI change of Approve and Reject Buttons
-                <>
-                  <CheckSquareTwoTone
-                    style={{
-                      fontSize: '40px',
-                      marginRight: '7px',
-                    }}
-                    twoToneColor="#52c41a"
-                    onClick={() =>
-                      updateWithdraw({
-                        record: r,
-                        key: "approve",
-                      })
-                    }
-                  />
-                  <CloseSquareTwoTone
-                    style={{
-                      fontSize: '40px',
-                      marginLeft: '7px',
-                    }}
-                    twoToneColor="#ff0000"
-                    onClick={() =>
-                      updateWithdraw({
-                        record: r,
-                        key: "reject",
-                      })
-                    }
-                  />
-                </>
-              );
-            }
-            return (
-              <Button
-                onClick={() =>
-                  updateWithdraw({
-                    record: r,
-                    reset: true,
-                  })
-                }
-              >
-                Reset
-              </Button>
-            );
-          }}
-        />}
     </>
   );
 };

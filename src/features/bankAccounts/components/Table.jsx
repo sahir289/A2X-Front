@@ -17,6 +17,7 @@ import {
   Switch,
   Table,
   Tooltip,
+  Checkbox
 } from "antd";
 import Column from "antd/es/table/Column";
 import axios from "axios";
@@ -29,12 +30,11 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi, postApi, putApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
-import { formatCurrency, formatDate } from "../../../utils/utils";
+import { formatCurrency, formatDate, formatDate1, formatDateToISTString } from "../../../utils/utils";
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
@@ -44,57 +44,6 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const { RangePicker } = DatePicker;
-const rangePresets = [
-  {
-    label: "Today",
-    value: [
-      dayjs().tz("Asia/Kolkata").startOf("day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "Yesterday",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(1, "day").startOf("day"),
-      dayjs().tz("Asia/Kolkata").subtract(1, "day").endOf("day"),
-    ],
-  },
-  {
-    label: "Last 7 days",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(7, "day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "Last 15 days",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(15, "day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "Last 30 days",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(30, "day"),
-      dayjs().tz("Asia/Kolkata").endOf("day"),
-    ],
-  },
-  {
-    label: "This Month",
-    value: [
-      dayjs().tz("Asia/Kolkata").startOf("month"),
-      dayjs().tz("Asia/Kolkata").endOf("month"),
-    ],
-  },
-  {
-    label: "Last Month",
-    value: [
-      dayjs().tz("Asia/Kolkata").subtract(1, "month").startOf("month"),
-      dayjs().tz("Asia/Kolkata").subtract(1, "month").endOf("month"),
-    ],
-  },
-];
 
 const TableComponent = ({
   data,
@@ -103,7 +52,6 @@ const TableComponent = ({
   isFetchBanksLoading,
   handleStatusChange,
 }) => {
-  const dispatch = useDispatch();
   const [isAddBankAccountModelOpen, setIsAddBankAccountModelOpen] =
     useState(false);
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
@@ -112,10 +60,13 @@ const TableComponent = ({
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [allMerchants, setAllMerchants] = useState([]);
   const [allVendors, setAllVendors] = useState([]);
-  const vendorOptions = allVendors.map((vendor) => ({
-    label: vendor.vendor_code,
-    value: vendor.vendor_code,
-  }));
+  const vendorOptions = allVendors
+    .map((vendor) => ({
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
   const [updateRecord, setUpdateRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
   // Password verification while deleting bank account
@@ -123,6 +74,7 @@ const TableComponent = ({
   const [downloadReport, setDownloadReport] = useState(false);
   const [bankName, setBankName] = useState();
   const [addLoading, setAddLoading] = useState(false);
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [form] = Form.useForm();
   const labelCol = { span: 10 };
   const RequiredRule = [
@@ -131,10 +83,26 @@ const TableComponent = ({
       message: "${label} is Required!",
     },
   ];
+
+  const nowUTC = new Date();
+  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+  const nowIST = new Date(nowUTC.getTime() + istOffset);
+
+  const year = nowIST.getUTCFullYear();
+  const month = nowIST.getUTCMonth();
+  const date = nowIST.getUTCDate();
+
+  const startIST = new Date(Date.UTC(year, month, date, 0, 0, 0, 0)); // 12:00 AM IST
+  const endIST = new Date(Date.UTC(year, month, date, 23, 59, 59, 999)); // 11:59 PM IST
+
+  const adjustedISTStartDate = new Date(startIST.getTime() - istOffset);
+  const adjustedISTEndDate = new Date(endIST.getTime() - istOffset);
+
   const [dateRange, setDateRange] = useState({
-    startDate: dayjs().tz("Asia/Kolkata").startOf("day"),
-    endDate: dayjs().tz("Asia/Kolkata").endOf("day"),
+    startDate: adjustedISTStartDate,
+    endDate: adjustedISTEndDate,
   });
+
   const navigate = useNavigate();
   const userData = useContext(PermissionContext);
   const handleFilterValuesChange = (value, fieldName) => {
@@ -165,10 +133,27 @@ const TableComponent = ({
   const showModal = async (record) => {
     setIsAddMerchantModalOpen(true);
     setUpdateRecord(record);
-    const merchant = await getApi("/getall-merchant", {
-      page: 1,
-      pageSize: 10000,
-    });
+    let merchant;
+    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
+      if (!includeSubMerchant) {
+        merchant = await getApi("/getall-merchant-grouping", {
+          page: 1,
+          pageSize: 1000,
+        });
+      }
+      else {
+        merchant = await getApi("/getall-merchant", {
+          page: 1,
+          pageSize: 1000,
+        });
+      }
+    }
+    else {
+      merchant = await getApi("/getall-merchant", {
+        page: 1,
+        pageSize: 1000,
+      });
+    }
     if (merchant.error?.error?.response?.status === 401) {
       NotificationManager.error(merchant?.error?.message, 401);
       localStorage.clear();
@@ -191,21 +176,50 @@ const TableComponent = ({
   };
 
   const downloadBankReport = async () => {
+    const startDate = dateRange.startDate;
+    const endDate = dateRange.endDate;
+
+    const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+
+    const adjustedStartDate = new Date(startDate.getTime() - istOffset);
+    const adjustedEndDate = new Date(endDate.getTime() - istOffset);
+
     const data = {
       bankName: bankName,
-      startDate: dateRange.startDate.toISOString(),
-      endDate: dateRange.endDate.toISOString(),
+      startDate: formatDateToISTString(adjustedStartDate),
+      endDate: formatDateToISTString(adjustedEndDate),
     };
     const res = await getApi("/get-bank-message", data);
+
+    const uniqueUTRs = new Set();
+    let totalAmount = 0;
+
+    res?.data?.data?.forEach((data) => {
+      if (!uniqueUTRs.has(data.utr)) {
+        uniqueUTRs.add(data.utr);
+        totalAmount += Number(data.amount);
+      }
+    });
+
+    res?.data?.data.push({
+      sno: "",
+      updatedAt: "",
+      status: "",
+      bankName: "",
+      amount_code: "",
+      amount: `Total Amount = ${totalAmount.toFixed(2)}`,
+      utr: "",
+      is_used: "",
+    });
     const formatSetting = res?.data?.data?.map((record) => ({
       SNO: record.sno || "",
-      ID: record.id || "",
+      "Date": record.updatedAt ? formatDate1(record.updatedAt) : "" || "",
       Status: record.status || "",
       Bank: record.bankName || "",
       "Amount Code": record.amount_code || "",
       Amount: record.amount || "",
       UTR: record.utr || "",
-      "IS Used": record.is_used || "",
+      "Used/Unused": record.is_used === true ? "Used" : record.is_used === false ? "Unused" : "" || "",
     }));
     try {
       const csv = await json2csv(formatSetting);
@@ -220,6 +234,7 @@ const TableComponent = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setDownloadReport(false);
     } catch (error) {
       console.error("Error converting data to CSV:", error);
     }
@@ -228,14 +243,18 @@ const TableComponent = ({
   const onRangeChange = (dates, dateStrings) => {
     if (dates) {
       const startDate = dayjs(dates[0])
-        .tz("Asia/Kolkata")
+        .utc()
         .startOf("day")
         .toDate();
-      const endDate = dayjs(dates[1]).tz("Asia/Kolkata").endOf("day").toDate();
+      const endDate = dayjs(dates[1])
+        .utc()
+        .endOf("day")
+        .toDate();
       const newRange = {
         startDate: startDate,
         endDate: endDate,
       };
+      setDateRange(newRange);
     }
   };
 
@@ -311,8 +330,8 @@ const TableComponent = ({
       role: `${userData?.role}`,
       vendor_code: `${userData?.vendorCode || ""}`,
       code: `${userData?.code || ""}`,
-      startDate: dayjs().add(0, "day").startOf("day"),
-      endDate: dayjs().add(0, "day").endOf("day"),
+      startDate: adjustedISTStartDate,
+      endDate: adjustedISTEndDate,
       page: 1,
       pageSize: 20,
     });
@@ -375,6 +394,17 @@ const TableComponent = ({
             onClick={() => handleTableChange({ current: 1, pageSize: 20 })}
           />
         </div>
+        <div>
+        </div>
+      </div>
+      <div className="flex" style={{ justifySelf: "end", marginRight: "68px" }}>
+        {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+          onClick={() => {
+            setIncludeSubMerchant((prevState) => !prevState);
+          }}
+        >
+          <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
+        </Checkbox>}
       </div>
       <Table
         dataSource={tableData}
@@ -386,6 +416,161 @@ const TableComponent = ({
         loading={isFetchBanksLoading}
         pagination={paginationConfig}
       >
+        {(userData?.role === "ADMIN" ||
+          userData?.role === "TRANSACTIONS" ||
+          userData?.role === "OPERATIONS") && (
+            <Column
+              title={
+                <>
+                  Merchant
+                  <br />
+                  <Input
+                    disabled
+                    style={{
+                      backgroundColor: "#fafafa",
+                      border: "none",
+                      cursor: "auto",
+                    }}
+                  />
+                </>
+              }
+              dataIndex="merchants"
+              key="merchants"
+              className="bg-white"
+              width={"6%"}
+              render={(_, record) => {
+                return (
+                  <div className="whitespace-nowrap flex gap-2">
+                    <Button
+                      type="text"
+                      icon={<EditOutlined style={{ fontSize: '24px' }} />}
+                      disabled={record?.bank_used_for === "payIn" ? false : true}
+                      title="Edit"
+                      onClick={() => showModal(record)}
+                    />
+
+                    <Tooltip
+                      color="white"
+                      placement="bottomRight"
+                      title={
+                        <div className="flex flex-col gap-1 text-black p-2">
+                          <div className="font-bold">Merchant List</div>
+                          {(record?.merchants?.length > 0 &&
+                            record?.merchants?.map((merchant) => (
+                              <p key={merchant?.id}>{merchant?.code}</p>
+                            ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+                        </div>
+                      }
+                    >
+                      <Button type="text" icon={<EyeOutlined style={{ fontSize: '24px' }} />} />
+                    </Tooltip>
+                  </div>
+                );
+              }}
+            />
+          )}
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Status</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="is_enabled"
+          key="is_enabled"
+          className="bg-white"
+          width={"2%"}
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_enabled",
+                    value: e,
+                  });
+                }}
+              />
+            );
+          }}
+        />
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Show Bank</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="is_bank"
+          key="is_bank"
+          className="bg-white"
+          width={"5%"}
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_bank",
+                    value: e,
+                  });
+                }}
+              />
+            );
+          }}
+        />
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Allow QR?</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="is_qr"
+          key="is_qr"
+          className="bg-white"
+          width={"3%"}
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "is_qr",
+                    value: e,
+                  });
+                }}
+              />
+            );
+          }}
+        />
         <Column
           title={
             <>
@@ -478,34 +663,6 @@ const TableComponent = ({
         <Column
           title={
             <>
-              Limits
-              <br />
-              <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
-              />
-            </>
-          }
-          dataIndex="limits"
-          key="limits"
-          className="bg-white"
-          width={"4%"}
-          render={(text, record) => {
-            return (
-              <>
-                {formatCurrency(record?.min_payin)} -{" "}
-                {formatCurrency(record?.max_payin)}
-              </>
-            );
-          }}
-        />
-        <Column
-          title={
-            <>
               <span className="whitespace-nowrap">UPI ID</span>
               <br />
               <Input
@@ -520,53 +677,20 @@ const TableComponent = ({
           dataIndex="upi_id"
           key="upi_id"
           className="bg-white"
-          width={"4%"}
-        />
-        {/* Column to display useage of bank and it's bank */}
-        <Column
-          title={
-            <>
-              <span className="whitespace-nowrap">Bank Used For</span>
-              <br />
-              <Select
-                className="flex"
-                value={filterValues?.bank_used_for}
-                onChange={(value) =>
-                  handleFilterValuesChange(value, "bank_used_for")
-                }
-                allowClear
-              >
-                <Select.Option value="">Select</Select.Option>
-                <Select.Option value="payIn">PayIn</Select.Option>
-                <Select.Option value="payOut">PayOut</Select.Option>
-              </Select>
-            </>
-          }
-          dataIndex="bank_used_for"
-          key="bank_used_for"
-          className="bg-white"
-          width={"4%"}
-        />
-        {/* Add column for vendor filter */}
-        <Column
-          title={
-            <>
-              <span className="whitespace-nowrap">Vendors</span>
-              <br />
-              <Select
-                value={filterValues?.vendor_code}
-                options={vendorOptions}
-                style={{ width: "90%" }}
-                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
-                allowClear
-              />
-            </>
-          }
-          dataIndex="vendor_code"
-          key="vendor_code"
-          hidden={filterValues.role !== "ADMIN"}
-          className="bg-white"
           width={"10%"}
+          render={(text) => (
+            <div
+              style={{
+                maxWidth: "200px", // Adjust the maximum width as needed
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={text} // Tooltip for full text
+            >
+              {text}
+            </div>
+          )}
         />
         <Column
           title={
@@ -608,53 +732,67 @@ const TableComponent = ({
 
             return (
               <>
-                {payInBalance
+                {record.bank_used_for === "payIn"
                   ? formatCurrency(payInBalance)
-                  : formatCurrency(0)}
+                  : record.bank_used_for === "payout"
+                    ? formatCurrency(record.balance)
+                    : formatCurrency(0)}
                 <br />
                 {payInBalanceCount ? `( ${payInBalanceCount} )` : ""}
               </>
             );
           }}
         />
+        {/* Add column for vendor filter */}
         <Column
           title={
             <>
-              <span className="whitespace-nowrap">Allow QR?</span>
+              <span className="whitespace-nowrap">Vendors</span>
               <br />
-              <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
+              <Select
+                value={filterValues?.vendor_code}
+                options={vendorOptions}
+                style={{ width: "90%" }}
+                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
+                allowClear
               />
             </>
           }
-          dataIndex="is_qr"
-          key="is_qr"
+          dataIndex="vendor_code"
+          key="vendor_code"
+          hidden={filterValues.role !== "ADMIN"}
           className="bg-white"
-          width={"3%"}
-          render={(value, record) => {
-            return (
-              <Switch
-                defaultValue={value}
-                onChange={(e) => {
-                  handleStatusChange({
-                    id: record.id,
-                    fieldName: "is_qr",
-                    value: e,
-                  });
-                }}
-              />
-            );
-          }}
+          width={"10%"}
+        />
+        {/* Column to display useage of bank and it's bank */}
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Bank Used For</span>
+              <br />
+              <Select
+                className="flex"
+                value={filterValues?.bank_used_for}
+                onChange={(value) =>
+                  handleFilterValuesChange(value, "bank_used_for")
+                }
+                allowClear
+              >
+                <Select.Option value="">Select</Select.Option>
+                <Select.Option value="payIn">PayIn</Select.Option>
+                <Select.Option value="payOut">PayOut</Select.Option>
+              </Select>
+            </>
+          }
+          dataIndex="bank_used_for"
+          key="bank_used_for"
+          className="bg-white"
+          width={"4%"}
         />
         <Column
           title={
             <>
-              <span className="whitespace-nowrap">Show Bank</span>
+              Limits
               <br />
               <Input
                 disabled
@@ -666,56 +804,16 @@ const TableComponent = ({
               />
             </>
           }
-          dataIndex="is_bank"
-          key="is_bank"
+          dataIndex="limits"
+          key="limits"
           className="bg-white"
-          width={"5%"}
-          render={(value, record) => {
+          width={"4%"}
+          render={(text, record) => {
             return (
-              <Switch
-                defaultValue={value}
-                onChange={(e) => {
-                  handleStatusChange({
-                    id: record.id,
-                    fieldName: "is_bank",
-                    value: e,
-                  });
-                }}
-              />
-            );
-          }}
-        />
-        <Column
-          title={
-            <>
-              <span className="whitespace-nowrap">Status</span>
-              <br />
-              <Input
-                disabled
-                style={{
-                  backgroundColor: "#fafafa",
-                  border: "none",
-                  cursor: "auto",
-                }}
-              />
-            </>
-          }
-          dataIndex="is_enabled"
-          key="is_enabled"
-          className="bg-white"
-          width={"2%"}
-          render={(value, record) => {
-            return (
-              <Switch
-                defaultValue={value}
-                onChange={(e) => {
-                  handleStatusChange({
-                    id: record.id,
-                    fieldName: "is_enabled",
-                    value: e,
-                  });
-                }}
-              />
+              <>
+                {formatCurrency(record?.min_payin)} -{" "}
+                {formatCurrency(record?.max_payin)}
+              </>
             );
           }}
         />
@@ -746,7 +844,7 @@ const TableComponent = ({
             <Column
               title={
                 <>
-                  Merchants
+                  Action
                   <br />
                   <Input
                     disabled
@@ -765,40 +863,16 @@ const TableComponent = ({
               render={(_, record) => {
                 return (
                   <div className="whitespace-nowrap flex gap-2">
-                    <Tooltip
-                      color="white"
-                      placement="bottomRight"
-                      title={
-                        <div className="flex flex-col gap-1 text-black p-2">
-                          <div className="font-bold">Merchant List</div>
-                          {(record?.merchants?.length > 0 &&
-                            record?.merchants?.map((merchant) => (
-                              <p key={merchant?.id}>{merchant?.code}</p>
-                            ))) || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                        </div>
-                      }
-                    >
-                      <Button type="text" icon={<EyeOutlined />} />
-                    </Tooltip>
-
                     <Button
                       type="text"
-                      icon={<EditOutlined />}
-                      disabled={record?.bank_used_for === "payIn" ? false : true}
-                      title="Edit"
-                      onClick={() => showModal(record)}
-                    />
-
-                    <Button
-                      type="text"
-                      icon={<DeleteOutlined />}
+                      icon={<DeleteOutlined style={{ fontSize: '24px' }} />}
                       title="Delete"
                       onClick={() => deleteBank(record)}
                     />
 
                     <Button
                       type="text"
-                      icon={<DownloadOutlined />}
+                      icon={<DownloadOutlined style={{ fontSize: '24px' }} />}
                       title="Download Report"
                       onClick={() => {
                         setDownloadReport(true);
@@ -818,6 +892,7 @@ const TableComponent = ({
         isAddMerchantModalOpen={isAddMerchantModalOpen}
         setIsAddMerchantModalOpen={setIsAddMerchantModalOpen}
         handleTableChange={handleTableChange}
+        includeSubMerchant={includeSubMerchant}
       />
 
       <DeleteModal
@@ -828,6 +903,7 @@ const TableComponent = ({
         deleteMessage="Are you sure you want to delete this bank account "
         displayItem={`${deleteRecord?.ac_name}?`}
         handleTableChange={handleTableChange}
+        includeSubMerchant={includeSubMerchant}
       />
       <NotificationContainer />
 
@@ -865,6 +941,7 @@ const TableComponent = ({
           </div>
         </Form>
       </Modal>
+
       <Modal
         title="Edit Bank Details"
         open={isEditModalVisible}
@@ -961,8 +1038,11 @@ const TableComponent = ({
       >
         <RangePicker
           className="w-72 h-12"
-          defaultValue={[dateRange.startDate, dateRange.endDate]}
-          presets={rangePresets}
+          defaultValue={[
+            dayjs(dateRange.startDate).utc(),
+            dayjs(dateRange.endDate).utc(),
+          ]}
+          // presets={rangePresets}
           onChange={onRangeChange}
           disabledDate={(current) =>
             current && current > new Date().setHours(23, 59, 59, 999)

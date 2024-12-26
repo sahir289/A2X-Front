@@ -1,4 +1,4 @@
-import { Select } from "antd";
+import { Select, Checkbox } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import {
   NotificationContainer,
@@ -13,25 +13,39 @@ import { invalidText } from "../../../utils/utils";
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
   setSelectedMerchantCode,
+  setIncludeSubMerchantFlag
 }) => {
   const userData = useContext(PermissionContext)
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const context = useContext(PermissionContext);
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
-    setSelectedMerchantCode(value);
+    const selectedMerchantSortedList = [...value].sort((a, b) => a.localeCompare(b));
+    setSelectedMerchantCode(selectedMerchantSortedList);
     setDropdownOpen(false);
   };
 
   useEffect(() => {
     fetchMerchantData();
-  }, []);
+  }, [includeSubMerchant]);
 
   const fetchMerchantData = async () => {
-    const merchantCodes = await getApi("/getall-merchant");
+    let merchantCodes;
+    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === 'MERCHANT_ADMIN') {
+      if (!includeSubMerchant) {
+        merchantCodes = await getApi("/getall-merchant-grouping");
+      }
+      else {
+        merchantCodes = await getApi("/getall-merchant");
+      }
+    }
+    else {
+      merchantCodes = await getApi("/getall-merchant");
+    }
 
     if (merchantCodes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantCodes?.error?.message, 401);
@@ -53,8 +67,10 @@ const MerchantCodeSelectBox = ({
         "selectedMerchantCode",
         JSON.stringify(merchants)
       );
-      setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(merchants);
+      const sortedList = [...formattedMerchantCodes].sort((a, b) => a.label.localeCompare(b.label));
+      setMerchantCodeOptions(sortedList);
+      const selectedMerchantSortedList = [...merchants].sort((a, b) => a.localeCompare(b));
+      setSelectedMerchantCode(selectedMerchantSortedList);
     } else {
       const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.filter((merchant) => !merchant.is_deleted).map(
         (merchant) => ({
@@ -67,43 +83,56 @@ const MerchantCodeSelectBox = ({
         "selectedMerchantCode",
         JSON.stringify(merchants)
       );
-      setMerchantCodeOptions(formattedMerchantCodes);
-      setSelectedMerchantCode(merchants);
+      const sortedList = [...formattedMerchantCodes].sort((a, b) => a.label.localeCompare(b.label));
+      setMerchantCodeOptions(sortedList);
+      const selectedMerchantSortedList = [...merchants].sort((a, b) => a.localeCompare(b));
+      setSelectedMerchantCode(selectedMerchantSortedList);
     }
   };
 
   return (
-    <div className="grid lg:grid-cols-2 mt-4 md:grid-cols-1 grid-cols-1">
-      <div className="w-full flex">
-        <div className="w-44">
-          <span className="text-red-800">*</span> Merchant code:
+    <>
+      <div className="grid lg:grid-cols-2 mt-4 md:grid-cols-1 grid-cols-1">
+        <div className="w-full flex">
+          <div className="w-44">
+            <span className="text-red-800">*</span> Merchant code:
+          </div>
+          <div className="w-full">
+            <Select
+              mode={userData?.role === "MERCHANT_ADMIN" ? "multiple" : "tags"}
+              showSearch={userData?.role === "MERCHANT_ADMIN" ? false : true}
+              size={"large"}
+              placeholder="Please select"
+              onChange={handleChange}
+              // onDropdownVisibleChange={(open) => setDropdownOpen(open)}
+              // open={dropdownOpen}
+              style={{
+                width: "98%",
+              }}
+              disabled={
+                userData?.role === "MERCHANT" ||
+                userData?.role === "MERCHANT_OPERATIONS"
+              }
+              // Selecting and Locking the merchant name while logged in user is merchant
+              options={merchantCodeOptions}
+              value={selectedMerchantCode}
+              allowClear
+            />
+          </div>
         </div>
-        <div className="w-full">
-          <Select
-            mode={userData?.role === "MERCHANT_ADMIN" ? "multiple" : "tags"}
-            showSearch={userData?.role === "MERCHANT_ADMIN" ? false : true}
-            size={"large"}
-            placeholder="Please select"
-            onChange={handleChange}
-            onDropdownVisibleChange={(open) => setDropdownOpen(open)} 
-            open={dropdownOpen}
-            style={{
-              width: "98%",
+        <NotificationContainer />
+        <div className="flex" style={{alignSelf: "end"}}>
+          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === 'MERCHANT_ADMIN') && <Checkbox
+            onClick={() => {
+              setIncludeSubMerchant((prevState) => !prevState);
+              setIncludeSubMerchantFlag((prevState) => !prevState);
             }}
-            disabled={
-              userData?.role === "MERCHANT" ||
-              userData?.role === "OPERATIONS" ||
-              userData?.role === "MERCHANT_OPERATIONS"
-            } 
-            // Selecting and Locking the merchant name while logged in user is merchant
-            options={merchantCodeOptions}
-            value={selectedMerchantCode}
-            allowClear
-          />
+          >
+            <span style={{ color: "cornflowerblue"}}>Include Sub Merchant</span>
+          </Checkbox>}
         </div>
       </div>
-      <NotificationContainer />
-    </div>
+    </>
   );
 };
 

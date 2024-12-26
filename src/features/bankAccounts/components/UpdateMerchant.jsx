@@ -10,31 +10,44 @@ const UpdateMerchant = ({
   isAddMerchantModalOpen,
   setIsAddMerchantModalOpen,
   handleTableChange,
+  includeSubMerchant
 }) => {
+  const [merchantRecord, setRecord] = useState([]);
   const [deleteRecord, setDeleteRecord] = useState({});
   const [isDeletePanelOpen, setIsDeletePanelOpen] = useState(false);
   const [deletedId, setDeletedId] = useState(null);
   const [newMerchant, setNewMerchant] = useState(null);
   const [selectedMerchant, setSelectedMerchant] = useState([]);
+  const [selectedDeletedMerchantIDs, setSelectedDeletedMerchantIDs] = useState([]);
+  const [selectedDeletedMerchantCodes, setSelectedDeletedMerchantCodes] = useState([]);
+  const [selectedDeletedMerchant, setSelectedDeletedMerchant] = useState([]);
   const [loading,setLoading]=useState(false)
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    setRecord({ ...record });
+  }, [record]);
 
   const handleModalCancel = () => {
     setIsAddMerchantModalOpen(false);
     setSelectedMerchant([]);
+    setSelectedDeletedMerchant([]);
+    setSelectedDeletedMerchantIDs([]);
+    setSelectedDeletedMerchantCodes([]);
     form.resetFields();
   };
 
   const handleSelectMerchant = async (values) => {
+    const merchantIds = values?.merchantId || [];
+
     setSelectedMerchant((prev) => [
       ...prev,
-      {
-        id: values?.merchantId,
-        code: allMerchants.find(
-          (merchant) => merchant?.id === values?.merchantId
-        )?.code,
-      },
+      ...merchantIds.map((id) => ({
+        id,
+        code: allMerchants.find((merchant) => merchant?.id === id)?.code,
+      })),
     ]);
+
     form.resetFields();
   };
 
@@ -46,40 +59,43 @@ const UpdateMerchant = ({
 
   const onUpdateMerchant = async () => {
     setLoading(true)
-    const formData = selectedMerchant.map((merchant) => ({
+    const formData = {
       bankAccountId: record?.id,
-      merchantId: merchant?.id,
-    }));
+      merchantId: selectedMerchant.map((merchant) => merchant?.id),
+      includeSubMerchant
+    };
 
-    if (formData.length === 0) {
+    if (!formData) {
       setLoading(false)
       return;
     }
 
-    for (const element of formData) {
-      if (!element?.merchantId) {
-        return;
-      }
+    // for (const element of formData) {
+    //   if (!element?.merchantId) {
+    //     return;
+    //   }
 
-      const addBankMerchant = await postApi("/add-bank-merchant", element).then(async(res) => {
+    //   const data = {
+    //     bankAccountId: element?.bankAccountId,
+    //     merchantId: element?.merchantId,
+    //     includeSubMerchant
+    //   }
+
+      await postApi("/add-bank-merchant", formData).then(async(res) => {
         if (res?.error) {
           return;
         }
         await getBankMerchant(res?.data?.data?.merchantId);
         setSelectedMerchant((prev) =>
-          prev.filter((prevMerchant) => prevMerchant?.id !== element?.merchantId)
+          prev.filter((prevMerchant) => !formData?.merchantId.includes(prevMerchant))
         );
       }).catch((err) => {
         console.log("🚀 ~ addBankMerchant ~ err:", err)
-
       }).finally(async() => {
         setLoading(false)
         handleModalCancel()
       });
-
-
-
-    }
+    // }
 
     handleTableChange({ current: 1, pageSize: 20 });
   };
@@ -93,22 +109,44 @@ const UpdateMerchant = ({
     setNewMerchant(getMerchantBank.data.data);
   };
 
-  const deleteMerchant = (merchant) => {
+  const setMerchantToDelete = (merchant) => {
+    setSelectedDeletedMerchant((prevSelected) => [...prevSelected, merchant])
+    setSelectedDeletedMerchantIDs((prevSelected) => [...prevSelected, merchant.id])
+    setSelectedDeletedMerchantCodes((prevSelected) => [...prevSelected, merchant.code])
+  };
+
+  useEffect(() => {
+    if (selectedDeletedMerchantIDs?.length) {
+      setRecord((prevRecord) => {
+        const updatedMerchants = prevRecord.merchants.filter(
+          (merchant) => !selectedDeletedMerchantIDs.includes(merchant?.id)
+        );
+        return { ...prevRecord, merchants: updatedMerchants };
+      });
+    }
+  }, [selectedDeletedMerchantIDs]);
+
+  const deleteMerchant = (merchantIds, merchantCodes) => {
     const deleteData = {
       bankAccountId: record?.id,
-      merchantId: merchant?.id,
-      merchantCode: merchant?.code,
+      merchantId: merchantIds,
+      merchantCode: merchantCodes,
     };
     setDeleteRecord(deleteData);
     setIsDeletePanelOpen(true);
   };
 
   useEffect(() => {
-    if (deletedId) {
+    if (deletedId?.length) {
       const updatedMerchant = record?.merchants?.filter(
-        (merchant) => merchant?.id !== deletedId
+        (merchant) => !deletedId.includes(merchant?.id)
       );
+
       record.merchants = updatedMerchant;
+
+      setSelectedDeletedMerchant([]);
+      setSelectedDeletedMerchantIDs([]);
+      setSelectedDeletedMerchantCodes([]);
     }
   }, [deletedId]);
 
@@ -138,7 +176,7 @@ const UpdateMerchant = ({
         ]}
       >
         <div className="flex flex-col gap-2">
-          {record?.merchants?.map((merchant) => (
+          {merchantRecord?.merchants?.map((merchant) => (
             <div key={merchant?.id} className="flex justify-between">
               <div>{merchant?.code}</div>
               <Button
@@ -146,7 +184,7 @@ const UpdateMerchant = ({
                 icon={<DeleteOutlined />}
                 title="Delete"
                 onClick={() => {
-                  deleteMerchant(merchant);
+                  setMerchantToDelete(merchant);
                 }}
               />
             </div>
@@ -171,6 +209,7 @@ const UpdateMerchant = ({
           >
             <Select
               showSearch
+              mode="multiple"
               placeholder="Search to Select"
               optionFilterProp="label"
               filterSort={(optionA, optionB) =>
@@ -204,7 +243,7 @@ const UpdateMerchant = ({
         {selectedMerchant?.length > 0 && (
           <>
             <div className="flex justify-between">
-              <div>Selected Merchants</div>
+              <div>Selected Merchants To Add</div>
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
@@ -230,14 +269,66 @@ const UpdateMerchant = ({
             />
           </div>
         ))}
+        {selectedDeletedMerchant?.length > 0 && (
+          <Button type="primary" danger htmlType="submit" icon={<DeleteOutlined />} className="flex justify-self-end" onClick={() => { deleteMerchant(selectedDeletedMerchantIDs, selectedDeletedMerchantCodes); }}>
+            Batch Delete
+          </Button>
+        )}
+        {selectedDeletedMerchant?.length > 0 && (
+          <>
+            <div className="flex justify-between">
+              <div>Selected Merchants To Delete</div>
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                title="Delete"
+                onClick={() => {
+                  setSelectedDeletedMerchant([]);
+                  setSelectedDeletedMerchantIDs([]);
+                  setSelectedDeletedMerchantCodes([]);
+                }}
+              />
+            </div>
+            <hr />
+          </>
+        )}
+        {selectedDeletedMerchant?.map((merchant) => (
+          <div key={merchant?.id} className="flex justify-between">
+            <div>{merchant?.code}</div>
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+              title="Delete"
+              onClick={() => {
+                setSelectedDeletedMerchant((prevMerchants) =>
+                  prevMerchants.filter((item) => item !== merchant)
+                );
+                setSelectedDeletedMerchantIDs((prevMerchants) =>
+                  prevMerchants.filter((item) => item.id !== merchant.id)
+                );
+                setSelectedDeletedMerchantCodes((prevMerchants) =>
+                  prevMerchants.filter((item) => item.code !== merchant.code)
+                );
+              }}
+            />
+          </div>
+        ))}
       </Modal>
       <DeleteModal
         record={deleteRecord}
         isDeletePanelOpen={isDeletePanelOpen}
         setIsDeletePanelOpen={setIsDeletePanelOpen}
         modalTitle="Delete Merchant"
-        deleteMessage="Are you sure you want to delete this merchant account "
-        displayItem={deleteRecord?.merchantCode}
+        deleteMessage={
+          Array.isArray(deleteRecord?.merchantCode)
+            ? "Are you sure you want to delete this merchants "
+            : "Are you sure you want to delete this merchant "
+        }
+        displayItem={
+          Array.isArray(deleteRecord?.merchantCode)
+            ? deleteRecord?.merchantCode.join(', ')
+            : deleteRecord?.merchantCode
+        }
         handleTableChange={handleTableChange}
         deletedId={deletedId}
         setDeletedId={setDeletedId}

@@ -135,22 +135,6 @@ export default function Settlement() {
       }
     }
 
-    const payOutAmount = parseFloat(data.amount);
-    const merchant = merchants.find(element => element.code === data.code);
-
-    // Validate if the amount is within the ranges
-    const minPayout = parseFloat(merchant.min_payout);
-    const maxPayout = parseFloat(merchant.max_payout);
-    // Check if the amount is within the valid range
-    if (payOutAmount < minPayout || payOutAmount > maxPayout) {
-      notification.error({
-        message: `Amount must be between ${minPayout} and ${maxPayout}!`,
-      });
-
-      setAddLoading(false);
-      return;
-    }
-
     const res = await postApi("/create-settlement", data)
     if (res?.error) {
       api.error({ description: res.error.message });
@@ -214,11 +198,17 @@ export default function Settlement() {
   }
 
   const merchantOptions = merchants
-    ?.filter(merchant => !merchant.is_deleted && !userData?.code?.length || userData?.code?.includes(merchant?.code))
-    .map(merchant => ({
+    ?.filter(
+      (merchant) =>
+        !merchant.is_deleted &&
+        (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+    )
+    .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
-    }));
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
 
   const labelCol = { span: 6 };
   //reset search fields
@@ -344,7 +334,7 @@ export default function Settlement() {
             label="Amount"
             rules={RequiredRule}
           >
-            <Input type="number" min={1} addonAfter="₹" />
+            <Input type="number" addonAfter="₹" />
           </Form.Item>
           <Form.Item
             name="method"

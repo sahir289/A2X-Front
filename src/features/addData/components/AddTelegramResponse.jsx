@@ -34,11 +34,10 @@ const AddTelegramResponse = ({ handleTableChange }) => {
           description: `Error: ${res?.error?.error?.response?.data?.error?.code == "P2002" ? "Duplicate amount code" : res?.error?.message}`,
         });
       }
-      handleTableChange({ current: 1, pageSize: 20 });
     }).catch((err) => {
     }).finally(() => {
       setIsLoading(false)
-
+      // handleTableChange({ current: 1, pageSize: 20 });
       form.resetFields(["amount", "amount_code", "utr"]);
     })
   };
@@ -140,14 +139,6 @@ const AddTelegramResponse = ({ handleTableChange }) => {
             {
               required: true,
               message: "Please input your UTR!",
-            },
-            {
-              pattern: /^\d{12}$/,
-              message: "Please input 12 digit UTR!",
-            },
-            {
-              pattern: /^(?:\d*)$/,
-              message: "Please input only numbers!",
             },
           ]}
         >

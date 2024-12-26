@@ -35,13 +35,17 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
     const removedLoggedInMerchant = merchantApiRes?.data?.data?.merchants
     ?.filter(merchant => merchant?.is_merchant_Admin === false)
-    
+
     const dropdownOptions = removedLoggedInMerchant
-      ?.filter(merchant => !userData?.code.length || userData?.code.includes(merchant.code))
-      .map(merchant => ({
+      ?.filter(
+        (merchant) =>
+          !userData?.code.length || userData?.code.includes(merchant.code)
+      )
+      .map((merchant) => ({
         label: merchant.code,
         value: merchant.code,
-      }));
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
 
     setMerchantCodeOptions(dropdownOptions);
   };
@@ -53,12 +57,16 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
       localStorage.clear();
       navigate('/')
     }
-    const dropdownOptions = vendorApiRes?.data?.data?.
-      filter(vendor => userData?.vendorCode ? userData.vendorCode === vendor.vendor_code : vendor.vendor_code)
-      .map(vendor => ({
+    const dropdownOptions = vendorApiRes?.data?.data
+      ?.filter((vendor) =>
+        userData?.vendorCode ? userData.vendorCode === vendor.vendor_code : vendor.vendor_code
+      )
+      .map((vendor) => ({
         label: vendor.vendor_code,
         value: vendor.vendor_code,
-      }));
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
     setVendorCodeOptions(dropdownOptions);
   };
 
@@ -192,7 +200,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
               />
             </Form.Item>
           )}
-          {(selectedRole === "OPERATIONS") && (
+          {/* {(selectedRole === "OPERATIONS") && (
             <Form.Item
               label="Merchant Code"
               name="code"
@@ -210,7 +218,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
                 showSearch={true}
               />
             </Form.Item>
-          )}
+          )} */}
           {(selectedRole === "MERCHANT_OPERATIONS") && (
             <Form.Item
               label="Merchant Code"

@@ -45,7 +45,7 @@ const Withdraw = ({ type }) => {
   const [addWithdraw, setAddWithdraw] = useState(false);
   const [addVendor, setAddVendor] = useState(false);
   const [editWithdraw, setEditWithdraw] = useState(null);
-  const [selectedUTRMethod, setSelectedUTRMethod] = useState();
+  const [selectedUTRMethod, setSelectedUTRMethod] = useState("manual");
   const [selectedData, setSelectedData] = useState([]);
   const [withdraws, setWithdraws] = useState({
     data: [],
@@ -56,6 +56,7 @@ const Withdraw = ({ type }) => {
     take: 20,
   });
   const [selectedMerchant, setSelectedMerchant] = useState("");
+  const [ekoBalance, setEkoBalance] = useState(0);
 
   const merchantData = useSelector((state) => state.merchant.data);
   const merchantOptions = merchantData
@@ -67,21 +68,36 @@ const Withdraw = ({ type }) => {
     .map((merchant) => ({
       label: merchant.code,
       value: merchant.code,
-    }));
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
   const [vendorData, setVendorData] = useState([]);
-  const vendorOptions = vendorData?.map((vendor) => ({
-    label: vendor.vendor_code,
-    value: vendor.vendor_code,
-  }));
+  const vendorOptions = vendorData
+    ?.map((vendor) => ({
+      label: vendor.vendor_code,
+      value: vendor.vendor_code,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
   // State to store the payout banks
   const [payOutBankData, setPayOutBankData] = useState([]);
   const payOutBankOptions = payOutBankData?.map((payOutBank) => ({
-    label: payOutBank.name,
-    value: payOutBank.name,
+    label: payOutBank.ac_name,
+    value: payOutBank.ac_name,
   }));
   const [filterValues, setFilterValues] = useState({
     vendor_code: `${userData?.vendorCode}`,
   });
+
+  const methodOptions =
+    userData?.role === "ADMIN" ||
+    userData?.role === "TRANSACTIONS" ||
+    userData?.role === "OPERATIONS"
+      ? [
+          { value: "manual", label: "Manual", key: "manual" },
+          { value: "eko", label: "Eko", key: "eko" },
+          { value: "blazepe", label: "BlazePe", key: "blazepe" },
+        ]
+      : [{ value: "manual", label: "Manual", key: "manual" }];
 
   useEffect(() => {
     handleGetWithdraws();
@@ -126,7 +142,9 @@ const Withdraw = ({ type }) => {
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       const isAdminOrTransactions =
-        userData.role === "ADMIN" || userData.role === "TRANSACTIONS";
+        userData.role === "ADMIN" ||
+        userData.role === "TRANSACTIONS" ||
+        userData.role === "OPERATIONS";
       const isMerchantAdmin = userData.role === "MERCHANT_ADMIN";
 
       const updatedQuery = {
@@ -196,7 +214,7 @@ const Withdraw = ({ type }) => {
     if (data.reset) {
       return handleResetWithdraws(data.record.id);
     }
-    setSelectedUTRMethod("manual");
+    // setSelectedUTRMethod("manual");
     setEditWithdraw({
       ...data.record,
       key: data.key,
@@ -215,7 +233,8 @@ const Withdraw = ({ type }) => {
       return;
     }
     setEditWithdraw(null);
-    handleGetWithdraws();
+    setSelectedUTRMethod("manual");
+    handleGetWithdraws({ ...pagination, ...filters }, true);
   };
 
   const handleResetWithdraws = async (id) => {
@@ -346,9 +365,25 @@ const Withdraw = ({ type }) => {
     setSelectedUTRMethod(selectedMethod);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (selectedUTRMethod === "eko") {
+        try {
+          const res = await getApi("/eko-wallet-balance-enquiry");
+          setEkoBalance(Number(res?.data?.data?.data?.balance));
+        } catch (error) {
+          console.error("Error fetching API:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [selectedUTRMethod]);
+
   //reset search fields
   const handleResetSearchFields = () => {
     setFilters({});
+    setSelectedUTRMethod("manual");
   };
   const handleDownloadExcel = () => {};
 
@@ -394,7 +429,10 @@ const Withdraw = ({ type }) => {
             <Button
               type="text"
               className="rounded-full h-[40px] w-[40px] p-[0px] flex items-center justify-center"
-              onClick={() => handleGetWithdraws({ ...pagination, ...filters })}
+              onClick={() => {
+                handleGetWithdraws({ ...pagination, ...filters }, true);
+                setSelectedUTRMethod("manual");
+              }}
             >
               <RedoOutlined size={24} className="rotate-[-90deg]" />
             </Button>
@@ -453,41 +491,70 @@ const Withdraw = ({ type }) => {
       <Modal
         title="Withdraw"
         open={!!editWithdraw}
-        onCancel={() => setEditWithdraw(null)}
+        onCancel={() => {
+          setEditWithdraw(null);
+          setSelectedUTRMethod("manual");
+        }}
         footer={false}
         destroyOnClose
       >
-        <Form layout="vertical" onFinish={updateWithdraw}>
+        <Form
+          layout="vertical"
+          onFinish={updateWithdraw}
+          initialValues={{
+            method: selectedUTRMethod, // Set initial value for the "method" field
+          }}
+        >
           {editWithdraw?.key == "approve" && (
             <>
-              <Form.Item name="method" label="Method">
+              <Form.Item
+                name="method"
+                label="Method"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select Withdrawal Method",
+                  },
+                ]}
+              >
                 <Select
-                  options={[
-                    { value: "manual", key: "manual" },
-                    { value: "accure", key: "accure" },
-                  ]}
+                  options={methodOptions}
                   onChange={handleSelectUTRMethod}
-                  defaultValue={selectedUTRMethod}
                 />
               </Form.Item>
-              {/* Select to choose payout bank */}
-              <Form.Item name="from_bank" label="Select Bank">
-                <Select options={payOutBankOptions} />
-              </Form.Item>
               {selectedUTRMethod === "manual" && (
-                <Form.Item
-                  name="utr_id"
-                  label="UTR Number"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter UTR no",
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
+                <>
+                  {/* Select to choose payout bank */}
+                  <Form.Item name="from_bank" label="Select Bank">
+                    <Select options={payOutBankOptions} />
+                  </Form.Item>
+                  <Form.Item
+                    name="utr_id"
+                    label="UTR Number"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter UTR no",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </>
               )}
+              {selectedUTRMethod === "eko" && (
+                <>
+                  <Form.Item label="Available Balance">
+                    <Input disabled={true} value={ekoBalance} />
+                    {editWithdraw.amount > ekoBalance && (
+                      <span className="text-red-600">
+                        Insufficient Balance!
+                      </span>
+                    )}
+                  </Form.Item>
+                </>
+              )}
+              {selectedUTRMethod === "blazepe"}
             </>
           )}
           {editWithdraw?.key == "reject" && (
@@ -501,7 +568,16 @@ const Withdraw = ({ type }) => {
               </Form.Item>
             </>
           )}
-          <Button type="primary" loading={isLoading} htmlType="submit">
+          <Button
+            type="primary"
+            loading={isLoading}
+            htmlType="submit"
+            disabled={
+              editWithdraw?.key == "approve" &&
+              selectedUTRMethod === "eko" &&
+              editWithdraw.amount > ekoBalance
+            }
+          >
             {editWithdraw?.key == "approve" ? "Approve" : "Reject"}
           </Button>
         </Form>

@@ -143,6 +143,7 @@ const TableComponent = ({
     { value: "DUPLICATE", label: "DUPLICATE" },
     { value: "DISPUTE", label: "DISPUTE" },
     { value: "PENDING", label: "PENDING" },
+    { value: "FAILED", label: "FAILED" },
     { value: "IMG_PENDING", label: "IMG_PENDING" },
     { value: "BANK_MISMATCH", label: "BANK_MISMATCH" }
   ];
@@ -193,13 +194,15 @@ const TableComponent = ({
 
   const merchantOptions = merchants
     ?.filter(
-      (merchant) =>
-        !merchant.is_deleted && !userData?.code?.length || userData?.code?.includes(merchant?.code)
+        (merchant) =>
+            !merchant.is_deleted &&
+            (!userData?.code?.length || userData?.code?.includes(merchant?.code))
     )
     .map((merchant) => ({
-      label: merchant.code,
-      value: merchant.code,
-    }));
+        label: merchant.code,
+        value: merchant.code,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
 
   const labelCol = { span: 10 };
   const RequiredRule = [
@@ -323,6 +326,20 @@ const TableComponent = ({
       let resetTransaction;
       let payload = {};
 
+      if (recordStatus === "DISPUTE" && !resetRecord.Merchant.dispute_enabled) {
+        if (data.merchant_order_id){
+          if (data.merchant_order_id === resetRecord.merchant_order_id){
+            NotificationManager.error("Please Enter New Mercahnt Order ID");
+            setAddLoading(false);
+            return;
+          }
+        } else {
+          NotificationManager.error("Please Enter Mercahnt Order ID");
+          setAddLoading(false);
+          return;
+        }
+      }
+
       if (recordStatus === "DUPLICATE") {
         payload = {
           ...data,
@@ -340,7 +357,9 @@ const TableComponent = ({
 
       const response = await putApi(resetTransaction, payload);
 
-      if (response.data.statusCode === 200) {
+      if (response?.error) {
+        NotificationManager.error(response.error.message);
+      } else if (response?.data?.statusCode === 200) {
         NotificationManager.success("Transaction reset successfully");
         setIsResetModalVisible(false);
         fetchUsersData();
@@ -468,7 +487,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
         />
-        <Column
+        { filterValues?.loggedInUserRole === "ADMIN" && <Column
           title={
             <>
               <span>Code</span>
@@ -488,6 +507,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
         />
+        }
         <Column
           title={
             <>
@@ -584,11 +604,13 @@ const TableComponent = ({
                             ? "yellow"
                             : value === "DROPPED"
                               ? "red"
-                              : value === "DISPUTE"
-                                ? "#FF6600"
-                                : value === "TEST_SUCCESS"
-                                  ? "green-inverse"
-                                  : "gold-inverse"
+                              : value === "FAILED"
+                                ? "red"
+                                : value === "DISPUTE"
+                                  ? "#FF6600"
+                                  : value === "TEST_SUCCESS"
+                                    ? "green-inverse"
+                                    : "gold-inverse"
                   }
                   key={value}
                   icon={
@@ -656,7 +678,6 @@ const TableComponent = ({
                 className="flex"
                 disabled={[
                   "MERCHANT",
-                  "OPERATIONS",
                   "MERCHANT_OPERATIONS",
                   "MERCHANT_ADMIN"
                 ].includes(userData?.role)}
@@ -886,17 +907,18 @@ const TableComponent = ({
           hidden={
             filterValues?.loggedInUserRole === "ADMIN"
               ? false
-              : filterValues?.loggedInUserRole === "OPERATIONS"
-                ? false
                 : filterValues?.loggedInUserRole === "TRANSACTIONS"
                   ? false
-                  : true
+                  : filterValues?.loggedInUserRole === "OPERATIONS"
+                    ? false
+                      : true
           }
           className="bg-white"
           width={"24px"}
           render={(text, record) =>
             record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH" ? (
               <Button
+                disabled={record.status === "DUPLICATE"}
                 onClick={() => {
                   showResetModal(record);
                   setRecordStatus(record.status);

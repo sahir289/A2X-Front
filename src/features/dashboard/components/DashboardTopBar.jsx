@@ -119,22 +119,13 @@ function DashboardTopBar({ updateDashboardPeriod, dateValue, selectedMerchantCod
             dayjs(dateValue.startDate).utc(),
             dayjs(dateValue.endDate).utc(),
           ]}
-          presets={rangePresets}
+          // presets={rangePresets}
           onChange={onRangeChange}
           disabledDate={(current) => {
             const today = dayjs().endOf("day"); // End of today
-            if (selectedMerchantCode.length === 1) {
-              const merchant = merchantOptions.find(option => option.code === selectedMerchantCode[0])
-              const minDate = dayjs(merchant.createdAt).utc(); // Replace with your minimum date
-              return (
-                current && (current.isBefore(minDate, "day") && current.isAfter(today))
-              );
-            }
-            else {
-              return (
-                current && (current.isAfter(today))
-              );
-            }
+            return (
+              current && (current.isAfter(today))
+            );
           }}
         />
       </div>

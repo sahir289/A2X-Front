@@ -4,7 +4,7 @@ import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
 import { useDispatch } from "react-redux";
 import BarChart from "./components/BarChart";
 import DashboardTopBar from "./components/DashboardTopBar";
-// import {showNotification} from ''
+import { Reload } from "../../utils/constants";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -17,6 +17,7 @@ import {
   formatDateToISTString,
 } from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
+import { Button } from "antd";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -26,6 +27,7 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
+  const [addLoading, setAddLoading] = useState(false);
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -60,6 +62,11 @@ function Dashboard() {
       icon: <UserGroupIcon className="w-8 h-8" />,
     },
     {
+      title: "Lien",
+      value: 0,
+      icon: <UserGroupIcon className="w-8 h-8" />,
+    },
+    {
       title: "Net Balance",
       // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
       value: 0,
@@ -70,6 +77,7 @@ function Dashboard() {
   const [withdrawData, setWithdrawData] = useState([]);
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
+  const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
 
   const nowUTC = new Date();
   const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
@@ -102,10 +110,15 @@ function Dashboard() {
   const dispatch = useDispatch();
   const debounceRef = useRef();
 
+  const hasFetchedData = useRef(false); // Track if fetch has been done already
+
   useEffect(() => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(fetchPayInDataMerchant, 400);
-  }, [selectedMerchantCode, dateRange]);
+    // Check if fetch has already been done
+    if (!hasFetchedData.current && selectedMerchantCode.length > 0) {
+      fetchPayInDataMerchant();
+      hasFetchedData.current = true; // Set it to true after the initial fetch
+    }
+  }, [selectedMerchantCode, dateRange, includeSubMerchant])
 
   const updateDashboardPeriod = (newRange, intervalValue) => {
     const startDate = newRange.startDate;
@@ -132,24 +145,37 @@ function Dashboard() {
     );
   };
 
-
   const fetchPayInDataMerchant = async () => {
     try {
+      setAddLoading(true);
       let query = selectedMerchantCode
         .map((code) => "merchantCode=" + encodeURIComponent(code))
         .join("&");
 
+      let apidata = {
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        includeSubMerchant
+      }
       const payInOutData = await getApi(
         `/get-payInDataMerchant?${query}`,
-        dateRange
+        apidata,
       );
-      const netBalance = await getApi(`/get-merchants-net-balance?${query}`);
+      let data = {
+        includeSubMerchant
+      }
+      const netBalance = await getApi(
+        `/get-merchants-net-balance?${query}`,
+        data,
+      );
 
       if (netBalance.error) {
+        setAddLoading(false);
         return;
       }
 
       if (payInOutData.error) {
+        setAddLoading(false);
         return;
       }
 
@@ -157,8 +183,11 @@ function Dashboard() {
 
       const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
       const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
+      const reversePayOutData =
+        payInOutData?.data?.data?.payInOutData?.reversedPayOutData;
       const settlementData =
         payInOutData?.data?.data?.payInOutData?.settlementData;
+      const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
 
       setDepositData(payInData);
       setWithdrawData(payOutData);
@@ -168,8 +197,11 @@ function Dashboard() {
       let payInCount = 0;
       let payOutAmount = 0;
       let payOutCommission = 0;
+      let reversePayOutAmount = 0;
+      let reversePayOutCommission = 0;
       let payOutCount = 0;
       let settlementAmount = 0;
+      let lienAmount = 0;
 
       payInData?.forEach((data) => {
         payInAmount += Number(data.confirmed);
@@ -183,8 +215,17 @@ function Dashboard() {
         payOutCount += 1;
       });
 
+      reversePayOutData?.forEach((data) => {
+        reversePayOutAmount += Number(data.amount);
+        reversePayOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+      });
+
       settlementData?.forEach((data) => {
         settlementAmount += Number(data.amount);
+      });
+
+      lienData?.forEach((data) => {
+        lienAmount += Number(data.amount);
       });
 
       setPayInOutData([
@@ -206,13 +247,19 @@ function Dashboard() {
           count: payOutCount,
         },
         {
+          title: "Reversed Withdraw",
+          value: reversePayOutAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: payOutCount,
+        },
+        {
           title: "Withdraw %",
           value: payOutCommission,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
           title: "Commission",
-          value: payInCommission + payOutCommission,
+          value: payInCommission + payOutCommission - reversePayOutCommission,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -221,12 +268,20 @@ function Dashboard() {
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
+          title: "Lien",
+          value: lienAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
           title: "Net Balance",
           // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
           value:
             payInAmount -
-            (payOutAmount + (payInCommission + payOutCommission)) -
-            settlementAmount,
+            payOutAmount -
+            (payInCommission + payOutCommission - reversePayOutCommission) -
+            settlementAmount -
+            lienAmount +
+            reversePayOutAmount,
           icon: <UserGroupIcon className="w-8 h-8" />,
         },
         {
@@ -237,15 +292,25 @@ function Dashboard() {
       ]);
     } catch (error) {
       console.log(error);
+    } finally {
+      setAddLoading(false);
     }
   };
 
   return (
     <>
+      {/* <div className="flex justify-end">
+        <Button
+          className={addLoading ? "mr-5 hover:bg-slate-300 bg-green-500" : "mr-5 hover:bg-slate-300"}
+          icon={<Reload />}
+          onClick={fetchPayInDataMerchant}
+        />
+      </div> */}
       {/*------------------------ Merchant Code --------------------------------- */}
       <MerchantCodeSelectBox
         selectedMerchantCode={selectedMerchantCode}
         setSelectedMerchantCode={setSelectedMerchantCode}
+        setIncludeSubMerchantFlag={setIncludeSubMerchant}
       />
 
       {/** ---------------------- Different stats content 1 ------------------------- */}
@@ -256,6 +321,8 @@ function Dashboard() {
               data.title !== "Commission" &&
               data.title !== "Net Balance" &&
               data.title !== "Settlement" &&
+              data.title !== "Lien" &&
+              data.title !== "Reversed Withdraw" &&
               data.title !== "Total Net Balance" && (
                 <DashboardStats key={index} {...data} colorIndex={index} />
               )
@@ -269,6 +336,13 @@ function Dashboard() {
             selectedMerchantCode={selectedMerchantCode}
             dateValue={dateRange}
           />
+          <Button type='primary'
+            loading={addLoading}
+            htmlType='submit'
+            onClick={fetchPayInDataMerchant}
+          >
+            Search
+          </Button>
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
@@ -290,6 +364,14 @@ function Dashboard() {
                         </p>
                       </div>
                     )}
+                    {data.title === "Reversed Withdraw" && (
+                      <div className="flex justify-between">
+                        <p>Reversed Withdraw</p>
+                        <p className="font-bold">
+                          {formatCurrency(data.value)}
+                        </p>
+                      </div>
+                    )}
                     {data.title === "Commission" && (
                       <div className="flex justify-between">
                         <p>Commission</p>
@@ -306,21 +388,38 @@ function Dashboard() {
                         </p>
                       </div>
                     )}
-                    {data.title === "Net Balance" && (
+                    {data.title === "Lien" && (
                       <div className="flex justify-between">
-                        <p>Net Balance</p>
+                        <p>ChargeBack</p>
                         <p className="font-bold">
                           {formatCurrency(data.value)}
                         </p>
                       </div>
                     )}
+                    {data.title === "Net Balance" && (
+                      <>
+                        <br />
+                        <div className="flex justify-between text-xl">
+                          <p className="font-bold">Current Balance</p>
+                          <p className="font-bold">
+                            {formatCurrency(data.value)}
+                          </p>
+                        </div>
+                      </>
+                    )}
                     {data.title === "Total Net Balance" && (
-                      <div className="flex justify-between">
-                        <p>Lifetime Balance</p>
-                        <p className="font-bold">
-                          {formatCurrency(data.value)}
-                        </p>
-                      </div>
+                      <>
+                        <br />
+                        <div
+                          className="flex justify-between text-4xl"
+                          style={{ color: "cornflowerblue" }}
+                        >
+                          <p className="font-bold">Net Balance</p>
+                          <p className="font-bold">
+                            {formatCurrency(data.value)}
+                          </p>
+                        </div>
+                      </>
                     )}
                   </div>
                 );

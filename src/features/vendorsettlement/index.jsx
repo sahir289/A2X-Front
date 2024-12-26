@@ -213,11 +213,16 @@ export default function Settlement() {
   const getAllVendors = async () => {
     const vendors = await getApi('/getall-vendor')
     const merchantOptions = vendors?.data?.data
-      ?.filter(merchant => !userData?.vendorCode || merchant?.vendor_code === userData?.vendorCode)
-      .map(merchant => ({
+      ?.filter(
+        (merchant) =>
+          !userData?.vendorCode || merchant?.vendor_code === userData?.vendorCode
+      )
+      .map((merchant) => ({
         label: merchant.vendor_code,
         value: merchant.vendor_code,
-      }));
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+
     setVendorOptions(merchantOptions)
   }
 
@@ -339,14 +344,7 @@ export default function Settlement() {
             label="Amount"
             rules={RequiredRule}
           >
-            <Input type="number" min={1} addonAfter="₹" onKeyDown={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                const isControlKey = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'].includes(e.key);
-                if (!isControlKey) {
-                  e.preventDefault();
-                }
-              }
-            }} />
+            <Input type="number" addonAfter="₹" />
           </Form.Item>
           <Form.Item
             name="method"

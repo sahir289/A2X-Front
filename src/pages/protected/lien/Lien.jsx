@@ -1,21 +1,19 @@
 import React, { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import All from "../../../features/bankAccounts/All";
+import All from "../../../features/lien/all";
 import { setPageTitle } from "../../../redux/slice/headerSlice";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
-const BankAccount = () => {
+const Lien = () => {
   const dispatch = useDispatch();
-  const AllowedRoles = ["ADMIN","VENDOR","TRANSACTIONS","VENDOR_OPERATIONS","OPERATIONS"]
+  const AllowedRoles = ["ADMIN","OPERATIONS","TRANSACTIONS","MERCHANT","MERCHANT_OPERATIONS","MERCHANT_ADMIN"]
   const context = useContext(PermissionContext)
 
   useEffect(() => {
-    dispatch(setPageTitle({ title: "All Data" }));
+    dispatch(setPageTitle({ title: "ChargeBack" }));
   }, []);
 
-  return <>
-    {AllowedRoles.includes(context.role) &&< All />}
-  </>;
+  return <>{AllowedRoles?.includes(context.role) && < All />}</>
 };
 
-export default BankAccount;
+export default Lien;

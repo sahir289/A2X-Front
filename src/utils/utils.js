@@ -29,9 +29,31 @@ export function formatDate(utcDate) {
   return `${day}/${month}/${year} at ${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
 }
 
+export function formatDate1(utcDate) {
+  const date = new Date(utcDate);
+
+  // Extract the UTC components directly
+  const utcYear = date.getUTCFullYear();
+  const utcMonth = date.getUTCMonth();
+  const utcDay = date.getUTCDate();
+  const utcHours = date.getUTCHours();
+  const utcMinutes = date.getUTCMinutes();
+  const utcSeconds = date.getUTCSeconds();
+
+  // Apply IST offset (5 hours and 30 minutes ahead of UTC)
+  const istDate = new Date(Date.UTC(utcYear, utcMonth, utcDay, utcHours, utcMinutes + 30, utcSeconds));
+  istDate.setHours(istDate.getHours() + 5);
+
+  // Format the IST date as "DD/MM/YYYY at HH:MM:SS AM/PM"
+  const day = String(istDate.getUTCDate()).padStart(2, '0');
+  const month = String(istDate.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = istDate.getUTCFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
 export function calculateISTDateRange() {
   const nowUTC = new Date();
-  console.log("UTC time ", nowUTC.toISOString());
   // Calculate current IST time by adding 5 hours and 30 minutes to UTC
   const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
   const nowIST = new Date(nowUTC.getTime() + istOffset);

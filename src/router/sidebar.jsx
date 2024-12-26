@@ -1,5 +1,6 @@
 import {
   ArrowRightCircleIcon,
+  ArrowLeftCircleIcon,
   ArrowTrendingUpIcon,
   BanknotesIcon,
   BuildingLibraryIcon,
@@ -113,6 +114,11 @@ const routes = [
     ],
   },
   {
+    path: "/app/lien",
+    icon: <ArrowLeftCircleIcon className={iconClasses} />,
+    name: "ChargeBack",
+  },
+  {
     path: "/app/merchant",
     icon: <CreditCardIcon className={iconClasses} />,
     name: "Merchant",
@@ -153,6 +159,11 @@ const routes = [
         path: "/app/payout",
         icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
         name: "Payouts", // name that appear in Sidebar
+      },
+      {
+        path: "/app/report",
+        icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
+        name: "Accounts", // name that appear in Sidebar
       },
     ],
   },
