@@ -347,7 +347,7 @@ const TableComponent = ({
           confirmed: confirmAmount,
         };
       } else {
-        payload = { ...data };
+        payload = { ...data, amount: confirmAmount};
       }
 
       if (recordStatus === "BANK_MISMATCH") {
@@ -1064,33 +1064,9 @@ const TableComponent = ({
 
           {recordStatus === "DISPUTE" && (
             <>
-              <Form.Item
-                name="amount"
-                label="Amount"
-                rules={[
-                  {
-                    pattern: /^\d+(\.\d{0,2})?$/,
-                    message: "Please enter a valid amount",
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (value !== confirmAmount) {
-                        return Promise.reject(
-                          new Error("Amount must match Confirm Amount")
-                        );
-                      }
-                      return Promise.resolve();
-                    },
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Amount"
-                  value={amount}
-                  onChange={(e) => {
-                    setAmount(e.target.value);
-                  }}
-                />
+
+              <Form.Item label="Amount">
+                <Input value={confirmAmount} disabled />
               </Form.Item>
 
               <Form.Item label="Confirm Amount">
@@ -1127,7 +1103,7 @@ const TableComponent = ({
           )}
 
           <Form.Item className="flex justify-end">
-            {recordStatus !== "BANK_MISMATCH" && <Button loading={hardResetLoading} className="mr-2" type="primary" danger onClick={handleHardReset}  >
+            {recordStatus !== "BANK_MISMATCH" && <Button loading={hardResetLoading} className="mr-2" type="primary" danger disabled={true} onClick={handleHardReset}  >
               Hard Reset
             </Button>}
             <Button type="primary" loading={addLoading} htmlType="submit">
