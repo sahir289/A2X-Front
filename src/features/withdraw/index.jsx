@@ -239,9 +239,10 @@ const Withdraw = ({ type }) => {
       queryObject.vendorCode = queryObj.vendor_code;
       delete queryObject.vendor_code;
     }
+    queryObject.includeSubMerchant = includeSubMerchant;
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
-    const res = await getApi(`/getall-payout${query}&includeSubMerchant=${includeSubMerchant}`);
+    const res = await getApi(`/getall-payout${query}`);
     setIsLoading(false);
     if (res?.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
