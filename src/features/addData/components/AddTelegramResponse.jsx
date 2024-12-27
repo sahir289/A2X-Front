@@ -23,8 +23,7 @@ const AddTelegramResponse = ({ handleTableChange }) => {
     setIsLoading(true)
     const formData = {
       message: {
-        text: `${values.status} ${values.amount} ${values.amount_code ?? "nil"
-          } ${values.utr} ${values.bank}`,
+        text: `${values.status} ${values.amount} ${values.amount_code ?? "nil"} ${(values.utr).trim()} ${values.bank}`,
       },
     };
 
@@ -106,6 +105,20 @@ const AddTelegramResponse = ({ handleTableChange }) => {
               required: true,
               message: "Please input your amount!",
             },
+            {
+              validator: (_, value) => {
+                if (value === undefined) {
+                  return Promise.reject(new Error("Amount is required!"));
+                }
+                if (value < 1) {
+                  return Promise.reject(new Error("Amount must be at least 1!"));
+                }
+                if (value > 500000) {
+                  return Promise.reject(new Error("Amount cannot exceed 500,000!"));
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
           <InputNumber className="w-full" />
@@ -142,7 +155,17 @@ const AddTelegramResponse = ({ handleTableChange }) => {
             },
           ]}
         >
-          <Input />
+          <Input
+            onKeyDown={(e) => {
+              if (e.key === " ") {
+                e.preventDefault(); // Prevent space key
+              }
+            }}
+            onChange={(e) => {
+              // Remove spaces if pasted or typed
+              e.target.value = e.target.value.replace(/\s+/g, "");
+            }}
+          />
         </Form.Item>
 
         <div className="flex flex-row justify-end items-end gap-1">

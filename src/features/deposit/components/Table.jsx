@@ -22,6 +22,7 @@ import {
 } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
+import ColumnGroup from "antd/es/table/ColumnGroup";
 
 const TableComponent = ({
   data,
@@ -284,7 +285,7 @@ const TableComponent = ({
       merchantCode: `${userData?.code || ""}`,
       vendorCode: `${userData?.vendorCode || ""}`,
       userId: '',
-      userSubmittedUtr: '',
+      // userSubmittedUtr: '',
       utr: '',
       payInId: '',
       dur: '',
@@ -346,7 +347,7 @@ const TableComponent = ({
           confirmed: confirmAmount,
         };
       } else {
-        payload = { ...data };
+        payload = { ...data, amount: confirmAmount};
       }
 
       if (recordStatus === "BANK_MISMATCH") {
@@ -736,48 +737,37 @@ const TableComponent = ({
           className="bg-white"
           width={"100px"}
         />
-        <Column
+        <ColumnGroup
           title={
-            <>
-              <span>User Submitted utr</span>
-              <br />
-              <Input
-                value={filterValues?.userSubmittedUtr}
-                maxLength={12}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "userSubmittedUtr")
-                }
-                allowClear
-              />
-            </>
-          }
-          dataIndex="user_submitted_utr"
-          key="user_submitted_utr"
-          className="bg-white"
-          width={"124px"}
-          render={(text) => text || "--"}
-        />
-        <Column
-          title={
-            <>
+            <div style={{ textAlign: "center" }}>
               <span>UTR</span>
-              <br />
-              <Input
-                value={filterValues?.utr}
-                maxLength={12}
-                onChange={(e) =>
-                  handleFilterValuesChange(e.target.value, "utr")
-                }
-                allowClear
-              />
-            </>
+                <br />
+                <Input
+                  value={filterValues?.utr}
+                  onChange={(e) =>
+                    handleFilterValuesChange(e.target.value.trim(), "utr")
+                  }
+                  allowClear
+                />
+            </div>
           }
-          dataIndex="utr"
-          key="utr"
-          className="bg-white"
-          width={"14px"}
-          render={(text) => text || "--"}
-        />
+          key="utr-group"
+        >
+          <Column
+            dataIndex="user_submitted_utr"
+            key="user_submitted_utr"
+            className="bg-white"
+            width={"124px"}
+            render={(text) => text || "--"}
+          />
+          <Column
+            dataIndex="utr"
+            key="utr"
+            className="bg-white"
+            width={"124px"}
+            render={(text) => text || "--"}
+          />
+        </ColumnGroup>
         <Column
           title={
             <>
@@ -930,7 +920,7 @@ const TableComponent = ({
               >
                 Reset
               </Button>
-            ) : record.status === "SUCCESS" ? <BellTwoTone onClick={() => setNotified(record.id)} /> : null
+            ) : record.status === "SUCCESS" ? <BellTwoTone style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} /> : null
           }
         />
       </Table>
@@ -1074,33 +1064,9 @@ const TableComponent = ({
 
           {recordStatus === "DISPUTE" && (
             <>
-              <Form.Item
-                name="amount"
-                label="Amount"
-                rules={[
-                  {
-                    pattern: /^\d+(\.\d{0,2})?$/,
-                    message: "Please enter a valid amount",
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (value !== confirmAmount) {
-                        return Promise.reject(
-                          new Error("Amount must match Confirm Amount")
-                        );
-                      }
-                      return Promise.resolve();
-                    },
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Amount"
-                  value={amount}
-                  onChange={(e) => {
-                    setAmount(e.target.value);
-                  }}
-                />
+
+              <Form.Item label="Amount">
+                <Input value={confirmAmount} disabled />
               </Form.Item>
 
               <Form.Item label="Confirm Amount">
@@ -1137,7 +1103,7 @@ const TableComponent = ({
           )}
 
           <Form.Item className="flex justify-end">
-            {recordStatus !== "BANK_MISMATCH" && <Button loading={hardResetLoading} className="mr-2" type="primary" danger onClick={handleHardReset}  >
+            {recordStatus !== "BANK_MISMATCH" && <Button loading={hardResetLoading} className="mr-2" type="primary" danger disabled={true} onClick={handleHardReset}  >
               Hard Reset
             </Button>}
             <Button type="primary" loading={addLoading} htmlType="submit">
