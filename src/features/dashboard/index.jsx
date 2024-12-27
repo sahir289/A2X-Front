@@ -1,10 +1,8 @@
 import DashboardStats from "./components/DashboardStats";
-
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
 import { useDispatch } from "react-redux";
 import BarChart from "./components/BarChart";
 import DashboardTopBar from "./components/DashboardTopBar";
-import { Reload } from "../../utils/constants";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";

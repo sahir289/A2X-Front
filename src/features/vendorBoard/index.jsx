@@ -12,6 +12,7 @@ import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { Button } from "antd";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,6 +24,7 @@ function VendorBoard() {
   const context = useContext(PermissionContext);
 
   const [selectedVendorCode, setSelectedVendorCode] = useState([]);
+  const [addLoading, setAddLoading] = useState(false);
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -103,10 +105,15 @@ function VendorBoard() {
   const dispatch = useDispatch();
   const debounceRef = useRef();
 
+  const hasFetchedData = useRef(false); // Track if fetch has been done already
+
   useEffect(() => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(fetchPayInDataVendor, 400);
-  }, [selectedVendorCode, dateRange]);
+    // Check if fetch has already been done
+    if (!hasFetchedData.current && selectedVendorCode.length > 0) {
+      fetchPayInDataVendor();
+      hasFetchedData.current = true; // Set it to true after the initial fetch
+    }
+  }, [selectedVendorCode, dateRange])
 
   const updateVendorBoardPeriod = (newRange, intervalValue) => {
     const startDate = newRange.startDate;
@@ -312,6 +319,13 @@ function VendorBoard() {
             updateVendorBoardPeriod={updateVendorBoardPeriod}
             dateValue={dateRange}
           />
+          <Button type='primary'
+            loading={addLoading}
+            htmlType='submit'
+            onClick={fetchPayInDataVendor}
+          >
+            Search
+          </Button>
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
