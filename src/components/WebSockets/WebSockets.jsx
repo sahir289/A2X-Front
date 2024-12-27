@@ -25,7 +25,7 @@ const WebSockets = ({fetchUsersData}) => {
       socket.off('broadcast-message');
       socket.off('disconnect');
     };
-  }, []);
+  }, [fetchUsersData]);
 
   return null;
 };

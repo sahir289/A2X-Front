@@ -1,8 +1,8 @@
-import { useEffect, useState, useContext } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import WebSockets from "../../../components/WebSockets/WebSockets";
 import { getApi } from "../../../redux/api";
 import TableComponent from "../components/Table";
-import WebSockets from "../../../components/WebSockets/WebSockets";
-import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 
 function All() {
   const [tableData, setTableData] = useState([]);
@@ -14,7 +14,7 @@ function All() {
     amount: "",
     amount_code: "",
     utr: "",
-    bankName:"",
+    bankName: "",
     page: 1,
     pageSize: 20,
   });
@@ -35,9 +35,21 @@ function All() {
     setTableData(botMessage?.data?.data);
   };
 
+  const handleSocketSearch = useCallback(() => {
+    const search = { ...filterValues };
+    delete search.status;
+    delete search.page;
+    delete search.pageSize;
+    delete search.loggedInUserRole;
+    if (Object.values(search).join('').trim()) {
+      return;
+    }
+    fetchUsersData();
+  }, [filterValues]);
+
   return (
     <div className="">
-      <WebSockets fetchUsersData={fetchUsersData} /> {/*  to get the message from backend when the api is hit. */}
+      <WebSockets fetchUsersData={handleSocketSearch} /> {/*  to get the message from backend when the api is hit. */}
       <TableComponent
         data={tableData}
         filterValues={filterValues}
