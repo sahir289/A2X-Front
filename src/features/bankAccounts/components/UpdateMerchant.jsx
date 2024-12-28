@@ -170,7 +170,7 @@ const UpdateMerchant = ({
           <Button key="back" onClick={handleModalCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={onUpdateMerchant} loading={loading}>
+          <Button key="submit" type="primary" onClick={onUpdateMerchant} loading={loading} disabled={!selectedMerchant?.length} >
             Update
           </Button>,
         ]}
@@ -235,7 +235,7 @@ const UpdateMerchant = ({
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+            <Button type="primary" htmlType="submit" icon={<PlusOutlined />} >
               Add Item
             </Button>
           </Form.Item>
