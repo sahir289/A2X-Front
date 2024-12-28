@@ -37,10 +37,7 @@ const DeleteModal = ({
     handleTableChange({ current: 1, pageSize: 20 });
 
     if (
-      // (deleteBankMerchant.data.data.count &&
-      // deleteBankMerchant.data.data.count === 1) ||
-      // (deleteBankMerchant.data.data[0].count &&
-      // deleteBankMerchant.data.data[0].count === 1) &&
+      (deleteBankMerchant?.data?.data?.count || deleteBankMerchant?.data?.data[0]?.count) &&
       Array.isArray(record?.merchantId)
     ) {
       setDeletedId(record?.merchantId);
