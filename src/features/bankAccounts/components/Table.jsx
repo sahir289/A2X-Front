@@ -771,6 +771,7 @@ const TableComponent = ({
                       type="text"
                       icon={<DeleteOutlined />}
                       title="Delete"
+                      hidden={userData?.role === "ADMIN" ? false : true}
                       onClick={() => deleteBank(record)}
                     />
 
