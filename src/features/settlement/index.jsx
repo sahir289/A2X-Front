@@ -197,6 +197,7 @@ export default function Settlement() {
     }
     setAddLoading(false);
     handleToggleModal();
+    getSettlementList();
     handleResetSearchFields();
   }
 
