@@ -32,6 +32,7 @@ const WithdrawInProgress = lazy(() =>
 const Payin = lazy(() => import("../pages/protected/reports/Payin"));
 const Payout = lazy(() => import("../pages/protected/reports/Payout"));
 const Report = lazy(() => import("../pages/protected/reports/Report"));
+const VendorReport = lazy(() => import("../pages/protected/reports/VendorReport"));
 
 const routes = [
   {
@@ -126,6 +127,10 @@ const routes = [
   {
     path: "/report",
     component: Report,
+  },
+  {
+    path: "/vendorreport",
+    component: VendorReport,
   },
 ];
 

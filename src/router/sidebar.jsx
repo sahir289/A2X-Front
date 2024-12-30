@@ -165,6 +165,11 @@ const routes = [
         icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
         name: "Accounts", // name that appear in Sidebar
       },
+      {
+        path: "/app/vendorreport",
+        icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
+        name: "Vendor Accounts", // name that appear in Sidebar
+      },
     ],
   },
 ];
