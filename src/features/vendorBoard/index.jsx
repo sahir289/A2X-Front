@@ -142,6 +142,7 @@ function VendorBoard() {
 
   const fetchPayInDataVendor = async () => {
     try {
+      setAddLoading(true);
       const currentVendorCode = [`${context?.vendorCode}`];
       let query = "";
       if (
@@ -175,6 +176,7 @@ function VendorBoard() {
       const netBalance = await getApi(`/get-vendors-net-balance?${query}`);
 
       if (payInOutData.error) {
+        setAddLoading(false);
         return;
       }
 
@@ -285,6 +287,8 @@ function VendorBoard() {
       ]);
     } catch (error) {
       console.log(error);
+    } finally {
+      setAddLoading(false);
     }
   };
 

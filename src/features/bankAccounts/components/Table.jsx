@@ -113,6 +113,10 @@ const TableComponent = ({
     return formatDate(record?.updatedAt) || "N/A"; // Safely access nested property
   };
 
+  const createdAt = (record) => {
+    return formatDate(record?.createdAt) || "N/A"; // Safely access nested property
+  };
+
   const paginationConfig = {
     current: data?.pagination?.page ?? 1,
     pageSize: data?.pagination?.pageSize ?? 20,
@@ -771,6 +775,7 @@ const TableComponent = ({
                       type="text"
                       icon={<DeleteOutlined />}
                       title="Delete"
+                      hidden={userData?.role === "ADMIN" ? false : true}
                       onClick={() => deleteBank(record)}
                     />
 
@@ -833,6 +838,27 @@ const TableComponent = ({
             hidden={filterValues.role !== "ADMIN"}
             className="bg-white"
             width={"6%"}
+          />
+          <Column
+            title={
+              <>
+                <span className="whitespace-nowrap">Created at (IST)</span>
+                <br />
+                <Input
+                  disabled
+                  style={{
+                    backgroundColor: "#fafafa",
+                    border: "none",
+                    cursor: "auto",
+                  }}
+                />
+              </>
+            }
+            dataIndex="createdAt"
+            key="createdAt"
+            className="bg-white"
+            width={"6%"}
+            render={(text, record) => createdAt(record)}
           />
           <Column
             title={

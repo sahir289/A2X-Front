@@ -26,7 +26,7 @@ const UpdateMerchant = ({
 
   useEffect(() => {
     setRecord({ ...record });
-  }, [record]);
+  }, [record,selectedMerchant]);
 
   const handleModalCancel = () => {
     setIsAddMerchantModalOpen(false);
@@ -170,7 +170,7 @@ const UpdateMerchant = ({
           <Button key="back" onClick={handleModalCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={onUpdateMerchant} loading={loading}>
+          <Button key="submit" type="primary" onClick={onUpdateMerchant} loading={loading} disabled={!selectedMerchant?.length} >
             Update
           </Button>,
         ]}
@@ -235,7 +235,7 @@ const UpdateMerchant = ({
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+            <Button type="primary" htmlType="submit" icon={<PlusOutlined />} >
               Add Item
             </Button>
           </Form.Item>
@@ -300,15 +300,48 @@ const UpdateMerchant = ({
               icon={<DeleteOutlined />}
               title="Delete"
               onClick={() => {
-                setSelectedDeletedMerchant((prevMerchants) =>
-                  prevMerchants.filter((item) => item !== merchant)
-                );
-                setSelectedDeletedMerchantIDs((prevMerchants) =>
-                  prevMerchants.filter((item) => item.id !== merchant.id)
-                );
-                setSelectedDeletedMerchantCodes((prevMerchants) =>
-                  prevMerchants.filter((item) => item.code !== merchant.code)
-                );
+                setSelectedDeletedMerchant((prevMerchants) => {
+                  // Create a copy of the array
+                  const newMerchants = [...prevMerchants];
+
+                  // Find the index of the merchant to remove
+                  const index = newMerchants.indexOf(merchant);
+
+                  // If the merchant exists, remove it
+                  if (index !== -1) {
+                    newMerchants.splice(index, 1); // Remove the item at the found index
+                  }
+
+                  return newMerchants; // Return the updated array
+                });
+                setSelectedDeletedMerchantIDs((prevMerchants) => {
+                  // Create a copy of the array
+                  const newMerchants = [...prevMerchants];
+
+                  // Find the index of the merchant to remove
+                  const index = newMerchants.indexOf(merchant.id);
+
+                  // If the merchant exists, remove it
+                  if (index !== -1) {
+                    newMerchants.splice(index, 1); // Remove the item at the found index
+                  }
+
+                  return newMerchants; // Return the updated array
+                });
+                setSelectedDeletedMerchantCodes((prevMerchants) => {
+                  // Create a copy of the array
+                  const newMerchants = [...prevMerchants];
+
+                  // Find the index of the merchant to remove
+                  const index = newMerchants.indexOf(merchant.code);
+
+                  // If the merchant exists, remove it
+                  if (index !== -1) {
+                    newMerchants.splice(index, 1); // Remove the item at the found index
+                  }
+
+                  return newMerchants; // Return the updated array
+                });
               }}
             />
           </div>
