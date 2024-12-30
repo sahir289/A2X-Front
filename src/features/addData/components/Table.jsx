@@ -3,7 +3,7 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import Column from "antd/es/table/Column";
 import React, { useState, useContext } from "react";
 import { Reload } from "../../../utils/constants";
-import { formatCurrency } from "../../../utils/utils";
+import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddTelegramResponse from "./AddTelegramResponse";
 import CheckUTR from "./CheckUTR";
 import ResetEntry from "./ResetEntry";
@@ -68,6 +68,10 @@ const TableComponent = ({
   const passwordVerificationModal = async (record) => {
     setVerification(true); //Password verification while edit and delete merchant
     setEntryResetData(record);
+  };
+
+  const createdAt = (record) => {
+    return formatDate(record?.createdAt) || "N/A"; // Safely access nested property
   };
 
   const handleToggleModal = () => {
@@ -297,6 +301,27 @@ const TableComponent = ({
             render={(text) => {
               return <Tag color={text ? "green" : "red"}>{`${text=== true ? "Used" : "Un-Used"}`}</Tag>;
             }}
+          />
+          <Column
+            title={
+              <>
+                <span className="whitespace-nowrap">Created at (IST)</span>
+                <br />
+                <Input
+                  disabled
+                  style={{
+                    backgroundColor: "#fafafa",
+                    border: "none",
+                    cursor: "auto",
+                  }}
+                />
+              </>
+            }
+            dataIndex="createdAt"
+            key="createdAt"
+            className="bg-white"
+            width={"1%"}
+            render={(text, record) => createdAt(record)}
           />
           <Column
           title="Action"
