@@ -143,7 +143,7 @@ export default function Settlement() {
     const query = getQueryFromObject(queryObj);
     setIsLoading(true);
     const res = await getApi(
-      `/getall-settlement${query}&includeSubMerchant=${includeSubMerchant}`
+      `/getall-settlement${query}?includeSubMerchant=${includeSubMerchant}`
     );
     setIsLoading(false);
     if (res?.error?.error?.response?.status === 401) {
