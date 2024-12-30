@@ -197,7 +197,7 @@ export default function Settlement() {
     }
     setAddLoading(false);
     handleToggleModal();
-    getSettlementList();
+    handleResetSearchFields();
   }
 
   const onFilterChange = async (name, value) => {
