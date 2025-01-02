@@ -31,7 +31,7 @@ const DeleteModal = ({
       return;
     }
 
-    handleTableChange({ current: 1, pageSize: 20 });
+    handleTableChange({ current: 1, pageSize: 100 });
 
     if (
       deleteMerchant.data.data.count &&

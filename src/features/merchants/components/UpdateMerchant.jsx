@@ -116,7 +116,7 @@ const UpdateMerchant = ({
     }).finally(() => {
       setLoading(false)
       setIsAddMerchantModalOpen(false);
-      handleTableChange({ current: 1, pageSize: 20 });
+      handleTableChange({ current: 1, pageSize: 100 });
       form.resetFields();
     });
   };
