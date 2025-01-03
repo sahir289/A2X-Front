@@ -216,7 +216,7 @@ const TableComponent = ({
                 <Input
                   value={filterValues?.merchant_order_id}
                   onChange={(e) =>
-                    handleFilterValuesChange(e.target.value, "merchant_order_id}")
+                    handleFilterValuesChange(e.target.value, "merchant_order_id")
                   }
                   allowClear
                 />
@@ -235,7 +235,7 @@ const TableComponent = ({
                 <Input
                   value={filterValues?.userId}
                   onChange={(e) =>
-                    handleFilterValuesChange(e.target.value, "userId")
+                    handleFilterValuesChange(e.target.value, "user_id")
                   }
                   allowClear
                 />
