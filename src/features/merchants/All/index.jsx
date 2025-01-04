@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
@@ -9,9 +9,13 @@ function All() {
   const [tableData, setTableData] = useState([]);
   const context = useContext(PermissionContext);
 
-
-  let getMerchantCodes =JSON.parse(localStorage.getItem("merchantCodes"));
-
+  let getMerchantCodes
+  if (context?.role === "MERCHANT_ADMIN") {
+    getMerchantCodes =JSON.parse(localStorage.getItem("selectedMerchantCode"));
+  }
+  else {
+    getMerchantCodes = JSON.parse(localStorage.getItem("merchantCodes"));
+  }
 
   // Set initial filter values based on the context
   const [filterValues, setFilterValues] = useState({
@@ -27,14 +31,14 @@ function All() {
     fetchUsersData();
   }, [filterValues]);
 
-  useEffect(() => {
-    setFilterValues({
-      page: 1,
-      pageSize: 100,
-      code: context?.role === "MERCHANT_ADMIN" ? getMerchantCodes : null
-    })
+  // useEffect(() => {
+  //   setFilterValues({
+  //     page: 1,
+  //     pageSize: 100,
+  //     code: context?.role === "MERCHANT_ADMIN" ? getMerchantCodes : null
+  //   })
 
-  }, [context?.code, JSON.stringify(getMerchantCodes)]);
+  // }, [context?.code, JSON.stringify(getMerchantCodes)]);
 
   // Fetch user data based on filter values
   const fetchUsersData = async () => {
@@ -42,7 +46,6 @@ function All() {
 
     // Construct the query manually if code is an array
     let url = "/getall-merchant-data";
-    let params = { ...filterValues };
     // Check if code is an array and append it manually
     if (Array.isArray(filterValues.code)) {
       const codeQueryString = filterValues.code
@@ -50,6 +53,13 @@ function All() {
         .join('&');
       url = `${url}?${codeQueryString}`;
     }
+    else if (filterValues.code) {
+      url = `${url}?code=${encodeURIComponent(filterValues.code)}`;
+    }
+    else {
+      url = `${url}?code=${encodeURIComponent(getMerchantCodes)}`;
+    }
+    let params = { page: filterValues.page, pageSize: filterValues.pageSize };
     const backAccount = await getApi(url, params);
 
     setIsFetchBanksLoading(false);
