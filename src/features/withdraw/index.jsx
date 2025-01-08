@@ -366,7 +366,7 @@ const Withdraw = ({ type }) => {
       return;
     }
 
-    const merchantList = ['DHM','APPLE','CB','RK','MafiaMundeer']
+    const merchantList = ['DHM','APPLE','CB','RK','MafiaMundeer','BERU','luna','Bita','treX']
     if (merchantList.includes(merchant.code)) {
       const res = await getApi(
         `/get-merchants-net-balance?merchantCode=${merchant.code}`,
