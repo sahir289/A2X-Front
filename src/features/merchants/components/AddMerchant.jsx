@@ -388,10 +388,17 @@ const AddMerchant = ({
             />
           </Form.Item>
 
-
           <Form.Item
             label="Test Mode"
             name="is_test_mode"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+
+          <Form.Item
+            label="Allow Intent"
+            name="allow_intent"
             valuePropName="checked"
           >
             <Switch />

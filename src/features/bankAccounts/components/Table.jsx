@@ -437,7 +437,7 @@ const TableComponent = ({
           dataIndex="ac_name"
           key="ac_name"
           className="bg-white"
-          width={"3%"}
+          width={"2%"}
         />
         <Column
           title={
@@ -457,7 +457,7 @@ const TableComponent = ({
           dataIndex="bank_details"
           key="bank_details"
           className="bg-white"
-          width={"3%"}
+          width={"2%"}
           render={(_, record) => (
             <div
               style={{
@@ -526,11 +526,11 @@ const TableComponent = ({
           dataIndex="upi_id"
           key="upi_id"
           className="bg-white"
-          width={"10%"}
+          width={"6%"}
           render={(text) => (
             <div
               style={{
-                maxWidth: "200px", // Adjust the maximum width as needed
+                maxWidth: "180px", // Adjust the maximum width as needed
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
@@ -559,7 +559,7 @@ const TableComponent = ({
           dataIndex="limits"
           key="limits"
           className="bg-white"
-          width={"4%"}
+          width={"3%"}
           render={(text, record) => {
             return (
               <>
@@ -587,7 +587,7 @@ const TableComponent = ({
           dataIndex="balance"
           key="balance"
           className="bg-white"
-          width={"3%"}
+          width={"2%"}
           render={(_, record) => {
             let payInBalance = 0;
             let payInBalanceCount = 0;
@@ -623,6 +623,40 @@ const TableComponent = ({
         <Column
           title={
             <>
+              <span className="whitespace-nowrap">Allow Intent?</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="allow_intent"
+          key="allow_intent"
+          className="bg-white"
+          width={"2%"}
+          render={(value, record) => {
+            return (
+              <Switch
+                defaultValue={value}
+                onChange={(e) => {
+                  handleStatusChange({
+                    id: record.id,
+                    fieldName: "allow_intent",
+                    value: e,
+                  });
+                }}
+              />
+            );
+          }}
+        />
+        <Column
+          title={
+            <>
               <span className="whitespace-nowrap">Allow QR?</span>
               <br />
               <Input
@@ -638,7 +672,7 @@ const TableComponent = ({
           dataIndex="is_qr"
           key="is_qr"
           className="bg-white"
-          width={"3%"}
+          width={"2%"}
           render={(value, record) => {
             return (
               <Switch
@@ -672,7 +706,7 @@ const TableComponent = ({
           dataIndex="is_bank"
           key="is_bank"
           className="bg-white"
-          width={"5%"}
+          width={"2%"}
           render={(value, record) => {
             return (
               <Switch
