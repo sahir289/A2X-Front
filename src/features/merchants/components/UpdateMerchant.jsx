@@ -74,6 +74,10 @@ const UpdateMerchant = ({
         name: ['is_test_mode'],
         value: record?.is_test_mode,
       },
+      {
+        name: ['allow_intent'],
+        value: record?.allow_intent,
+      },
     ])
     setMinPayin(record?.min_payin);
     setMinPayout(record?.min_payout);
@@ -101,6 +105,7 @@ const UpdateMerchant = ({
       min_payout: `${values.min_payout}`,
       max_payout: `${values.max_payout}`,
       is_test_mode: !!values.is_test_mode,
+      allow_intent: !!values.allow_intent,
       balance: Number(record?.balance),
     };
 
@@ -319,6 +324,15 @@ const UpdateMerchant = ({
           <Form.Item
             label="Test Mode"
             name="is_test_mode"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+
+          <Form.Item
+            label="Allow Intent"
+            name="allow_intent"
+            valuePropName="checked"
           >
             <Switch />
           </Form.Item>

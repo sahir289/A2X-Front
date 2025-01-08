@@ -366,6 +366,23 @@ const Withdraw = ({ type }) => {
       return;
     }
 
+    const merchantList = ['DHM','APPLE','CB','RK','MafiaMundeer']
+    if (merchantList.includes(merchant.code)) {
+      const res = await getApi(
+        `/get-merchants-net-balance?merchantCode=${merchant.code}`,
+      );
+      const balance = res?.data?.data?.totalNetBalance;
+
+      if (balance <= 0) {
+        notification.error({
+          message: `Insufficient Balance!`,
+        });
+
+        setAddLoading(false);
+        return;
+      }
+    }
+
     const res = await postApiForWithdrawCreation(
       "/create-payout",
       { ...data, vendor_code: userData?.vendorCode },
@@ -375,6 +392,12 @@ const Withdraw = ({ type }) => {
         if (res?.error) {
           api.error({ description: res.error.message });
           return;
+        }
+        else if (merchantList.includes(merchant.code)) {
+          const data = {method: 'eko'};
+          const id = res?.data?.data?.payoutId;
+          updateWithdraw(data, id);
+          handleGetWithdraws({ ...pagination, ...filters }, true);
         }
       })
       .catch((err) => {})

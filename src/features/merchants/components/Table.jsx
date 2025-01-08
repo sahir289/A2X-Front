@@ -315,6 +315,16 @@ const TableComponent = ({
                     }}
                   />
                   <Column
+                    title="Allow Intent?"
+                    dataIndex="allow_intent"
+                    key="allow_intent"
+                    className="bg-white"
+                    width={"2%"}
+                    render={(_, record) => {
+                      return <Switch checked={record?.allow_intent} />;
+                    }}
+                  />
+                  <Column
                     title="Created at (IST)"
                     dataIndex="Merchant"
                     key="Merchant"
@@ -498,6 +508,16 @@ const TableComponent = ({
           width={"2%"}
           render={(_, record) => {
             return <Switch checked={record?.is_test_mode} />;
+          }}
+        />
+        <Column
+          title="Allow Intent?"
+          dataIndex="allow_intent"
+          key="allow_intent"
+          className="bg-white"
+          width={"2%"}
+          render={(_, record) => {
+            return <Switch checked={record?.allow_intent} />;
           }}
         />
         <Column
