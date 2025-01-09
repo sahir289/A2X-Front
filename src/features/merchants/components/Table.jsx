@@ -238,6 +238,7 @@ const TableComponent = ({
                     dataIndex="public_api_key"
                     key="public_api_key"
                     className="bg-white"
+                    hidden={userData.role !== "ADMIN"}
                     width={"12%"}
                     // added copy button
                     render={(text) => (
@@ -255,7 +256,7 @@ const TableComponent = ({
                     }}
                   />
                   <Column
-                    title="Payin"
+                    title="Payin Range"
                     dataIndex="payin"
                     key="payin"
                     className="bg-white"
@@ -280,7 +281,7 @@ const TableComponent = ({
                     }}
                   />
                   <Column
-                    title="Max Payout"
+                    title="Payout Range"
                     dataIndex="max_payout"
                     key="max_payout"
                     className="bg-white"
@@ -309,6 +310,7 @@ const TableComponent = ({
                     dataIndex="is_test_mode"
                     key="is_test_mode"
                     className="bg-white"
+                    hidden={userData.role !== "ADMIN"}
                     width={"2%"}
                     render={(_, record) => {
                       return <Switch checked={record?.is_test_mode} />;
@@ -319,6 +321,7 @@ const TableComponent = ({
                     dataIndex="allow_intent"
                     key="allow_intent"
                     className="bg-white"
+                    hidden={userData.role !== "ADMIN"}
                     width={"2%"}
                     render={(_, record) => {
                       return <Switch checked={record?.allow_intent} />;
@@ -341,6 +344,7 @@ const TableComponent = ({
                     dataIndex="merchants"
                     key="merchants"
                     className="bg-white"
+                    hidden={userData.role !== "ADMIN"}
                     width={"6%"}
                     render={(_, record) => {
                       return (
@@ -424,6 +428,7 @@ const TableComponent = ({
           key="api_key"
           className="bg-white"
           width={"12%"}
+          hidden={userData.role !== "ADMIN"}
           // added copy button
           render={(text) => (
             <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
@@ -435,6 +440,7 @@ const TableComponent = ({
           key="public_api_key"
           className="bg-white"
           width={"12%"}
+          hidden={userData.role !== "ADMIN"}
           // added copy button
           render={(text) => (
             <>{text}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(text)} /> </>
@@ -451,7 +457,7 @@ const TableComponent = ({
           }}
         />
         <Column
-          title="Payin"
+          title="Payin Range"
           dataIndex="payin"
           key="payin"
           className="bg-white"
@@ -476,7 +482,7 @@ const TableComponent = ({
           }}
         />
         <Column
-          title="Max Payout"
+          title="Payout Range"
           dataIndex="max_payout"
           key="max_payout"
           className="bg-white"
@@ -505,6 +511,7 @@ const TableComponent = ({
           dataIndex="is_test_mode"
           key="is_test_mode"
           className="bg-white"
+          hidden={userData.role !== "ADMIN"}
           width={"2%"}
           render={(_, record) => {
             return <Switch checked={record?.is_test_mode} />;
@@ -515,6 +522,7 @@ const TableComponent = ({
           dataIndex="allow_intent"
           key="allow_intent"
           className="bg-white"
+          hidden={userData.role !== "ADMIN"}
           width={"2%"}
           render={(_, record) => {
             return <Switch checked={record?.allow_intent} />;
@@ -537,6 +545,7 @@ const TableComponent = ({
           dataIndex="merchants"
           key="merchants"
           className="bg-white"
+          hidden={userData.role !== "ADMIN"}
           width={"6%"}
           render={(_, record) => {
             return (
