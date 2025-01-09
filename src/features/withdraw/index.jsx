@@ -372,10 +372,20 @@ const Withdraw = ({ type }) => {
         `/get-merchants-net-balance?merchantCode=${merchant.code}`,
       );
       const balance = res?.data?.data?.totalNetBalance;
+      const ekoRes = await getApi("/eko-wallet-balance-enquiry");
+      const ekoBalance1 = ekoRes?.data?.data?.balance;
 
       if (balance <= 0) {
         notification.error({
           message: `Insufficient Balance!`,
+        });
+
+        setAddLoading(false);
+        return;
+      }
+      else if (payOutAmount > ekoBalance1) {
+        notification.error({
+          message: `Insufficient Balance in EKO Wallet!`,
         });
 
         setAddLoading(false);
