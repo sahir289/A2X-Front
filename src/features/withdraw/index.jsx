@@ -297,6 +297,7 @@ const Withdraw = ({ type }) => {
       updateWithdraw(
         {
           status: "REJECTED",
+          rejected_reason: "Invalid Bank Details"
         },
         id
       );
