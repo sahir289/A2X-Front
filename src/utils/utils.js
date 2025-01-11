@@ -148,7 +148,7 @@ export const WithDrawAllOptions = [
   { value: 'SUCCESS', label: 'SUCCESS' },
   { value: 'DROPPED', label: 'DROPPED' },
   { value: 'REJECTED', label: 'REJECTED' },
-  { value: 'REVERSED', label: 'REVERSED' },
+  // { value: 'REVERSED', label: 'REVERSED' },
 ]
 export const WithDrawCompletedOptions = [
   { value: 'SUCCESS', label: 'SUCCESS' },
