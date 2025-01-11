@@ -1,5 +1,5 @@
 import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import { Button, Input, Select, Tag } from "antd";
+import { Button, Input, Select, Tag, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import { NotificationManager } from 'react-notifications';
 import { formatCurrency, formatDate, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
@@ -17,11 +17,13 @@ const renderStatusTag = (status) => {
     // Add other statuses and colors as needed
     default:
       color = "default"; // Fallback color
-  }
+      
+    }
+  
   return (
     <Tag
       color={color}
-      icon={status === "INITIATED" && <ExclamationCircleOutlined />}
+      icon={status==="INITIATED" &&  <ExclamationCircleOutlined/>}
     >
       {status}
     </Tag>
@@ -68,11 +70,29 @@ export const Columns = (
   onChange,
   updateWithdraw,
   type,
-  userData
+  userData,
 ) => {
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
+  };
+
+  const handleRejected = (r) => {
+    // setRejectedIndex(r); 
+    console.log(r,"r")
+    if(r.approved_at ){
+      if(r.method==="manual"){
+        return `Rejected due to ${r.rejected_reason}`
+      }
+      else{
+
+        return "Rejected from the portal"
+      }
+    }
+    else{
+
+      return "Rejected due to Invalid Credentials"
+    }
   };
   return (
     <>
@@ -120,6 +140,7 @@ export const Columns = (
                         key: "approve",
                       })
                     }
+
                   />
                   <CloseSquareTwoTone
                     style={{
@@ -134,6 +155,8 @@ export const Columns = (
                       })
                     }
                   />
+                
+              
                 </>
               );
             }
@@ -260,8 +283,32 @@ export const Columns = (
         width="140px"
         ellipsis
         render={(v, r, i) => {
+          // if (i) {
+          //   return renderStatusTag(v);    
+          // } 
           if (i) {
-            return renderStatusTag(v);
+            return (
+              <>
+                {renderStatusTag(v)}
+
+                {v === "REJECTED" && (
+                  
+                   <Tooltip
+                   color="white"
+                  //  style={{marginRight:"4px"}}
+                   placement="bottomRight"
+                   title={
+                    <div className="flex flex-col gap-1 text-black p-2">
+
+                     { handleRejected(r)}
+                    </div>
+                   }
+                 >
+                   <ExclamationCircleOutlined style={{fontSize:"12px"}}/>
+                 </Tooltip>
+                )}
+              </>
+            );
           }
           return (
             <ColumnSelect
