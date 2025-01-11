@@ -296,7 +296,7 @@ const Withdraw = ({ type }) => {
     if (isReset) {
       updateWithdraw(
         {
-          status: "INITIATED",
+          status: "REJECTED",
         },
         id
       );
