@@ -23,6 +23,7 @@ import {
   RequiredRule,
   getQueryFromObject,
   reasonOptions,
+  withdrawlMethods,
 } from "../../utils/utils";
 import Table from "./components/Table";
 
@@ -140,11 +141,7 @@ const Withdraw = ({ type }) => {
     userData?.role === "ADMIN" ||
     userData?.role === "TRANSACTIONS" ||
     userData?.role === "OPERATIONS"
-      ? [
-          { value: "manual", label: "Manual", key: "manual" },
-          { value: "eko", label: "Eko", key: "eko" },
-          //  { value: "blazepe", label: "BlazePe", key: "blazepe" },
-        ]
+      ? withdrawlMethods
       : [{ value: "manual", label: "Manual", key: "manual" }];
 
   useEffect(() => {
@@ -301,6 +298,7 @@ const Withdraw = ({ type }) => {
           rejected_reason: "Invalid Bank Details",
           rejected_at: new Date()
         },
+
         id
       );
     }

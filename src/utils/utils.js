@@ -139,6 +139,12 @@ export const payoutInOutStatusOptions = [
   { value: 'SUCCESS', label: 'SUCCESS' },
   { value: 'DROPPED', label: 'DROPPED' },
   { value: 'REJECTED', label: 'REJECTED' },
+  { value : 'REVEERSED WITHDRAWL', label: 'REVERSE WITHDRAWL'}
+]
+export const withdrawlMethods = [
+  { value: "manual", label: "Manual", key: "manual" },
+  { value: "eko", label: "Eko", key: "eko" },
+   // { value: "blazepe", label: "BlazePe", key: "blazepe" },
 ]
 
 //With draw all status options list.

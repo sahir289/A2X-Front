@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { PermissionContext } from '../AuthLayout/AuthLayout';
 import { getApi } from '../../redux/api';
 import dayjs from "dayjs";
+import { withdrawlMethods } from '../../utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -11,6 +12,8 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
   const userData = useContext(PermissionContext);
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [merchantOptions, setMerchantOptions] = useState([]);
+  const [methodOptions, setMethodOptions] = useState([]);
+
   const [vendorOptions, setVendorOptions] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
 
@@ -42,6 +45,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
               label: merchant.code,
               value: merchant.code,
             }));
+
 
           setMerchantOptions(
             [...formattedMerchantCodes].sort((a, b) =>
@@ -122,7 +126,9 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             mode="multiple"
             allowClear
           />
+
         </Form.Item>)}
+
         {title === "Vendor Report" &&(<Form.Item
           name="vendorCode"
           label="Vendor Codes"
@@ -134,6 +140,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             mode="multiple"
             allowClear
           />
+
         </Form.Item>)}
         {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && title !== "Vendor Report" ) && (
           <Checkbox
@@ -154,6 +161,19 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             <Select placeholder="Please select" options={statusOptions} />
           </Form.Item>
         )}
+        { title === "Payouts" && (<Form.Item
+          name="Methods"
+          label="Methods"
+          rules={[{ required: true, message: 'Please select method!' }]}
+        >
+          <Select
+            placeholder="Please select"
+            options={withdrawlMethods}
+            mode="single"
+            allowClear
+          />
+
+        </Form.Item>)}
         <div className="my-2 px-3 py-2 rounded shadow-md">
           <Form.Item
             name="range"
