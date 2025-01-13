@@ -135,12 +135,14 @@ export const statusOptions = [
 
 //Pay out status options list.
 export const payoutInOutStatusOptions = [
+  { value: '', label: 'All' },
   { value: 'INITIATED', label: 'INITIATED' },
   { value: 'SUCCESS', label: 'SUCCESS' },
   { value: 'DROPPED', label: 'DROPPED' },
   { value: 'REJECTED', label: 'REJECTED' },
-  { value : 'REVEERSED WITHDRAWL', label: 'REVERSE WITHDRAWL'}
-]
+  { value : 'REVERSED', label: 'REVERSED'}
+];
+
 export const withdrawlMethods = [
   { value: "manual", label: "Manual", key: "manual" },
   { value: "eko", label: "Eko", key: "eko" },

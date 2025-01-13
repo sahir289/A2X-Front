@@ -77,6 +77,17 @@ const PayoutComponent = () => {
       console.error("Error converting data to CSV:", error);
     }
   };
+
+  const options = payoutInOutStatusOptions.map((el) => {
+    if (el.label == "All") {
+      return {
+        label: "All",
+        value: "All",
+      };
+    }
+    return el;
+  });
+
   return (
     <>
       {notificationContext}
@@ -85,7 +96,7 @@ const PayoutComponent = () => {
         setIncludeSubMerchantFlag={setIncludeSubMerchant}
         title="Payouts"
         loading={loading}
-        statusOptions={payoutInOutStatusOptions}
+        statusOptions={options}
       />
     </>
   );

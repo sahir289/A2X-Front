@@ -162,7 +162,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           </Form.Item>
         )}
         { title === "Payouts" && (<Form.Item
-          name="Methods"
+          name="method"
           label="Methods"
         >
           <Select
