@@ -582,13 +582,15 @@ const Withdraw = ({ type }) => {
 
       <Modal
         title="Withdraw"
-        open={!!editWithdraw}
+        open={editWithdraw}
         onCancel={() => {
           setEditWithdraw(null);
           setSelectedUTRMethod("manual");
         }}
         footer={false}
         destroyOnClose
+        getContainer={false}
+
       >
         <Form
           layout="vertical"
