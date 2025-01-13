@@ -35,6 +35,7 @@ const Withdraw = ({ type }) => {
   const userData = useContext(PermissionContext);
   const navigate = useNavigate();
 
+
   const [modal, contextHolder] = Modal.useModal();
   const [api, notificationContext] = notification.useNotification();
   const [filters, setFilters] = useState({
@@ -59,7 +60,6 @@ const Withdraw = ({ type }) => {
   });
   const [selectedMerchant, setSelectedMerchant] = useState("");
   const [ekoBalance, setEkoBalance] = useState(0);
-
   const merchantData = useSelector((state) => state.merchant.data);
   const [merchantOptions, setMerchantOptions] = useState([]);
 
@@ -143,7 +143,7 @@ const Withdraw = ({ type }) => {
       ? [
           { value: "manual", label: "Manual", key: "manual" },
           { value: "eko", label: "Eko", key: "eko" },
-          { value: "blazepe", label: "BlazePe", key: "blazepe" },
+          //  { value: "blazepe", label: "BlazePe", key: "blazepe" },
         ]
       : [{ value: "manual", label: "Manual", key: "manual" }];
 
@@ -254,6 +254,7 @@ const Withdraw = ({ type }) => {
       data: data?.data || [],
       total: data?.totalRecords || 0,
     });
+
   };
 
   const handleUpdateWithdraw = async (data) => {
@@ -533,6 +534,7 @@ const Withdraw = ({ type }) => {
         </div>
         <div className="overflow-x-auto">
           <Table
+
             loading={isLoading}
             data={withdraws.data}
             filters={filters}
@@ -647,7 +649,7 @@ const Withdraw = ({ type }) => {
                   </Form.Item>
                 </>
               )}
-              {selectedUTRMethod === "blazepe"}
+              {/* {selectedUTRMethod === "blazepe"} */}
             </>
           )}
           {editWithdraw?.key == "reject" && (

@@ -1,6 +1,7 @@
 import { Table as AntTable, Checkbox } from "antd";
 import React, { useEffect, useState } from "react";
 import { Columns } from "./Columns";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 const Table = ({
   loading,
   data,
@@ -61,10 +62,11 @@ const Table = ({
           if (i) {
             if (!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED")) {
               return (
+               
                 <Checkbox
                   checked={selectedRowKeys.includes(r.id)}
                   onChange={(e) => handleCheckboxChange(r, e.target.checked)}
-                />
+                  />
               );
             }
           }
@@ -79,7 +81,7 @@ const Table = ({
         onFilterChange,
         updateWithdraw,
         type,
-        userData
+        userData,
       )}
     </AntTable>
   );
