@@ -1,10 +1,10 @@
 import { DownloadOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Form, Select, Spin, Checkbox } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
-import { PermissionContext } from '../AuthLayout/AuthLayout';
-import { getApi } from '../../redux/api';
+import { Button, Checkbox, DatePicker, Form, Select } from 'antd';
 import dayjs from "dayjs";
+import React, { useContext, useEffect, useState } from 'react';
+import { getApi } from '../../redux/api';
 import { withdrawlMethods } from '../../utils/utils';
+import { PermissionContext } from '../AuthLayout/AuthLayout';
 
 const { RangePicker } = DatePicker;
 
@@ -164,7 +164,6 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
         { title === "Payouts" && (<Form.Item
           name="Methods"
           label="Methods"
-          rules={[{ required: true, message: 'Please select method!' }]}
         >
           <Select
             placeholder="Please select"
