@@ -254,8 +254,6 @@ const Withdraw = ({ type }) => {
       data: data?.data || [],
       total: data?.totalRecords || 0,
     });
-    console.log("approved_at data:", data?.data.map((val) => val.approved_at));
-
 
   };
 
@@ -535,7 +533,7 @@ const Withdraw = ({ type }) => {
         </div>
         <div className="overflow-x-auto">
           <Table
-       
+
             loading={isLoading}
             data={withdraws.data}
             filters={filters}
