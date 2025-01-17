@@ -545,6 +545,13 @@ const TableComponent = ({
             }
             dataIndex="payin_commission"
             key="payin_commission"
+            hidden={
+              filterValues?.loggedInUserRole === "VENDOR" ||
+              filterValues?.loggedInUserRole === "VENDOR_OPERATIONS" ||
+              filterValues?.loggedInUserRole === "MERCHANT_ADMIN" ||
+              filterValues?.loggedInUserRole === "MERCHANT_OPERATIONS" ||
+              filterValues?.loggedInUserRole === "MERCHANT"
+            }
             className="bg-white"
             width={"24px"}
             render={(value) => formatCurrency(value)}

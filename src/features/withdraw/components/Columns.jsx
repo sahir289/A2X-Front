@@ -17,13 +17,13 @@ const renderStatusTag = (status) => {
     // Add other statuses and colors as needed
     default:
       color = "default"; // Fallback color
-      
-    }
-  
+
+  }
+
   return (
     <Tag
       color={color}
-      icon={status==="INITIATED" &&  <ExclamationCircleOutlined/>}
+      icon={status === "INITIATED" && <ExclamationCircleOutlined />}
     >
       {status}
     </Tag>
@@ -78,19 +78,15 @@ export const Columns = (
   };
 
   const handleRejected = (r) => {
-    // setRejectedIndex(r); 
-    console.log(r,"r")
-    if(r.approved_at ){
-      if(r.method==="manual"){
+    if (r.approved_at) {
+      if (r.method === "manual") {
         return `Rejected due to ${r.rejected_reason}`
       }
-      else{
-
+      else {
         return "Rejected from the portal"
       }
     }
-    else{
-
+    else {
       return "Rejected due to Invalid Credentials"
     }
   };
@@ -155,8 +151,8 @@ export const Columns = (
                       })
                     }
                   />
-                
-              
+
+
                 </>
               );
             }
@@ -175,53 +171,51 @@ export const Columns = (
             );
           }}
         />}
-      {
-        (userData?.role === "VENDOR" ||
-          userData?.role === "VENDOR_OPERATIONS") ? " " :
-          <Column
-            title="Merchant Order Id"
-            dataIndex="merchant_order_id"
-            width="380px"
-            ellipsis
-            render={(v, r, i) => {
-              if (i) {
-                return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
-              }
-              return (
-                <ColumnSearch
-                  name="merchant_order_id"
-                  onChange={onChange}
-                  filters={filters}
-                />
-              );
-            }}
-          />}
-      {
-        (userData?.role === "VENDOR" ||
-          userData?.role === "VENDOR_OPERATIONS") ? " " :
-          <Column
-            title="Merchant"
-            dataIndex="Merchant"
-            width="130px"
-            ellipsis
-            render={(v, r, i) => {
-              if (i) {
-                return <>{v?.code}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v?.code)} /> </>;
-              }
-              return (
-                <ColumnSelect
-                  name="code"
-                  options={merchantOptions}
-                  onChange={onChange}
-                  filters={filters}
-                  disabled={[
-                    "MERCHANT",
-                    "MERCHANT_OPERATIONS",
-                  ].includes(userData?.role)}
-                />
-              );
-            }}
-          />}
+      {(userData?.role === "VENDOR" ||
+        userData?.role === "VENDOR_OPERATIONS") ? " " :
+        <Column
+          title="Merchant Order Id"
+          dataIndex="merchant_order_id"
+          width="380px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return <>{v}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v)} /> </>;
+            }
+            return (
+              <ColumnSearch
+                name="merchant_order_id"
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />}
+      {(userData?.role === "VENDOR" ||
+        userData?.role === "VENDOR_OPERATIONS") ? " " :
+        <Column
+          title="Merchant"
+          dataIndex="Merchant"
+          width="130px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return <>{v?.code}&nbsp;&nbsp;<CopyOutlined className='cursor-pointer text-blue-400 hover:text-blue-600' onClick={() => handleCopy(v?.code)} /> </>;
+            }
+            return (
+              <ColumnSelect
+                name="code"
+                options={merchantOptions}
+                onChange={onChange}
+                filters={filters}
+                disabled={[
+                  "MERCHANT",
+                  "MERCHANT_OPERATIONS",
+                ].includes(userData?.role)}
+              />
+            );
+          }}
+        />}
       <Column
         title="Bank Details"
         dataIndex="acc_no"
@@ -261,6 +255,13 @@ export const Columns = (
         <Column
           title="Commission"
           dataIndex="payout_commision"
+          hidden={
+            userData?.role === "VENDOR" ||
+            userData?.role === "VENDOR_OPERATIONS" ||
+            userData?.role === "MERCHANT_ADMIN" ||
+            userData?.role === "MERCHANT_OPERATIONS" ||
+            userData?.role === "MERCHANT"
+          }
           width="100px"
           ellipsis
           render={(v, r, i) => {
@@ -283,29 +284,26 @@ export const Columns = (
         width="140px"
         ellipsis
         render={(v, r, i) => {
-          // if (i) {
-          //   return renderStatusTag(v);    
-          // } 
           if (i) {
             return (
               <>
                 {renderStatusTag(v)}
 
                 {v === "REJECTED" && (
-                  
-                   <Tooltip
-                   color="white"
-                  //  style={{marginRight:"4px"}}
-                   placement="bottomRight"
-                   title={
-                    <div className="flex flex-col gap-1 text-black p-2">
 
-                     { handleRejected(r)}
-                    </div>
-                   }
-                 >
-                   <ExclamationCircleOutlined style={{fontSize:"12px"}}/>
-                 </Tooltip>
+                  <Tooltip
+                    color="white"
+                    //  style={{marginRight:"4px"}}
+                    placement="bottomRight"
+                    title={
+                      <div className="flex flex-col gap-1 text-black p-2">
+
+                        {handleRejected(r)}
+                      </div>
+                    }
+                  >
+                    <ExclamationCircleOutlined style={{ fontSize: "12px" }} />
+                  </Tooltip>
                 )}
               </>
             );
@@ -361,24 +359,24 @@ export const Columns = (
             );
           }}
         />}
-        {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
-          title="Method"
-          dataIndex="method"
-          width="180px"
-          ellipsis
-          render={(v, r, i) => {
-            if (i) {
-              return v || "-";
-            }
-            return (
-              <ColumnSearch
-                name="method"
-                onChange={onChange}
-                filters={filters}
-              />
-            );
-          }}
-        /> : " "}
+      {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
+        title="Method"
+        dataIndex="method"
+        width="180px"
+        ellipsis
+        render={(v, r, i) => {
+          if (i) {
+            return v || "-";
+          }
+          return (
+            <ColumnSearch
+              name="method"
+              onChange={onChange}
+              filters={filters}
+            />
+          );
+        }}
+      /> : " "}
       {(userData?.role === "ADMIN" ||
         userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
         <Column

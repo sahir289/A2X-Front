@@ -637,6 +637,13 @@ const TableComponent = ({
           }
           dataIndex="allow_intent"
           key="allow_intent"
+          hidden={
+            userData?.role === "VENDOR" ||
+            userData?.role === "VENDOR_OPERATIONS" ||
+            userData?.role === "MERCHANT_ADMIN" ||
+            userData?.role === "MERCHANT_OPERATIONS" ||
+            userData?.role === "MERCHANT"
+          }
           className="bg-white"
           width={"2%"}
           render={(value, record) => {
@@ -671,6 +678,13 @@ const TableComponent = ({
           }
           dataIndex="is_qr"
           key="is_qr"
+          hidden={
+            userData?.role === "VENDOR" ||
+            userData?.role === "VENDOR_OPERATIONS" ||
+            userData?.role === "MERCHANT_ADMIN" ||
+            userData?.role === "MERCHANT_OPERATIONS" ||
+            userData?.role === "MERCHANT"
+          }
           className="bg-white"
           width={"2%"}
           render={(value, record) => {
@@ -705,6 +719,10 @@ const TableComponent = ({
           }
           dataIndex="is_bank"
           key="is_bank"
+          hidden={
+            userData?.role === "VENDOR" ||
+            userData?.role === "VENDOR_OPERATIONS"
+          }
           className="bg-white"
           width={"2%"}
           render={(value, record) => {
