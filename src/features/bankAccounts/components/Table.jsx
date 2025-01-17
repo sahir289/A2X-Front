@@ -758,11 +758,13 @@ const TableComponent = ({
         />
         {(userData?.role === "ADMIN" ||
           userData?.role === "TRANSACTIONS" ||
-          userData?.role === "OPERATIONS") && (
+          userData?.role === "OPERATIONS" ||
+          userData?.role === "VENDOR" ||
+          userData?.role === "VENDOR_OPERATIONS") && (
             <Column
               title={
                 <>
-                  Merchants
+                  Action
                   <br />
                   <Input
                     disabled
@@ -794,12 +796,13 @@ const TableComponent = ({
                         </div>
                       }
                     >
-                      <Button type="text" icon={<EyeOutlined />} />
+                      <Button type="text" hidden={(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS")} icon={<EyeOutlined />} />
                     </Tooltip>
 
                     <Button
                       type="text"
                       icon={<EditOutlined />}
+                      hidden={(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS")}
                       disabled={record?.bank_used_for === "payIn" ? false : true}
                       title="Edit"
                       onClick={() => showModal(record)}
