@@ -281,6 +281,10 @@ const AddBankAccount = ({
             <Form.Item
               label="QR?"
               name="is_qr"
+              hidden={
+                userData?.role === "VENDOR" ||
+                userData?.role === "VENDOR_OPERATIONS"
+              }
               valuePropName="checked"
               rules={[
                 {
@@ -295,6 +299,10 @@ const AddBankAccount = ({
             <Form.Item
               label="Bank?"
               name="is_bank"
+              hidden={
+                userData?.role === "VENDOR" ||
+                userData?.role === "VENDOR_OPERATIONS"
+              }
               valuePropName="checked"
               rules={[
                 {
