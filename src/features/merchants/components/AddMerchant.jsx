@@ -391,6 +391,11 @@ const AddMerchant = ({
           <Form.Item
             label="Test Mode"
             name="is_test_mode"
+            hidden={
+              context.role === "MERCHANT" ||
+              context.role === "MERCHANT_ADMIN" ||
+              context.role === "MERCHANT_OPERATIONS"
+            }
             valuePropName="checked"
           >
             <Switch />
@@ -399,6 +404,11 @@ const AddMerchant = ({
           <Form.Item
             label="Allow Intent"
             name="allow_intent"
+            hidden={
+              context.role === "MERCHANT" ||
+              context.role === "MERCHANT_ADMIN" ||
+              context.role === "MERCHANT_OPERATIONS"
+            }
             valuePropName="checked"
           >
             <Switch />

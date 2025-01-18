@@ -161,7 +161,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             <Select placeholder="Please select" options={statusOptions} />
           </Form.Item>
         )}
-        { title === "Payouts" && (<Form.Item
+        { (title === "Payouts" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS') ) && (<Form.Item
           name="method"
           label="Methods"
         >

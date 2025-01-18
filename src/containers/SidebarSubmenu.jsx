@@ -32,7 +32,7 @@ function SidebarSubmenu({ submenu, name, icon }) {
           {submenu
             .filter(m => {
               // Hide item if role is OPERATIONS and name is Accounts
-              if (context?.role === 'OPERATIONS' && m.name === 'Accounts') {
+              if (context?.role === 'OPERATIONS' && (m.name === 'Accounts' || m.name === 'Vendor Accounts')) {
                 return false;
               }
               return true;
