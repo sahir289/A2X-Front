@@ -257,10 +257,7 @@ export const Columns = (
           dataIndex="payout_commision"
           hidden={
             userData?.role === "VENDOR" ||
-            userData?.role === "VENDOR_OPERATIONS" ||
-            userData?.role === "MERCHANT_ADMIN" ||
-            userData?.role === "MERCHANT_OPERATIONS" ||
-            userData?.role === "MERCHANT"
+            userData?.role === "VENDOR_OPERATIONS"
           }
           width="100px"
           ellipsis
