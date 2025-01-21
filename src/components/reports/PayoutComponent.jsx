@@ -47,7 +47,8 @@ const PayoutComponent = () => {
     }
     const formatSetting = res.data.data.map((el) => ({
       ID: el.sno || "",
-      Status: el.status || "",
+      Status: data.status === "All" ? el.status : data.status,
+      Description: (el.status === "REJECTED" && data.status === "SUCCESS") ? `Transaction  was REVERSED at ${formatDate(el.rejected_at)}` : (el.status === "REJECTED" && (data.status === "REJECTED" || data.status === "REVERSED")) ? el.rejected_reason : "",
       "User Amount": el.amount || "",
       Commission: el.payout_commision || "",
       UTR: el.utr_id || "",
@@ -58,7 +59,7 @@ const PayoutComponent = () => {
       "Account Holder Name": el.acc_holder_name || "",
       IFSC: el.ifsc_code || "",
       "Initiated At": formatDate(el.createdAt) || "",
-      "Confirmed At": formatDate(el.updatedAt) || "",
+      "Confirmed At": el.status === "SUCCESS" ? formatDate(el.approved_at) : el.status === "REJECTED" ? formatDate(el.rejected_at) : formatDate(el.updatedAt) || "",
     }));
     try {
       const csv = await json2csv(formatSetting);
