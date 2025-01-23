@@ -27,21 +27,18 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
 
           let endpoint = "";
 
+          const merchantCodeParam = userData.code?.[0] ? `?merchantCode=${userData.code[0]}` : "";
+
           if (!includeSubMerchant) {
-            if (groupingRoles.includes(userData.role)) {
-              endpoint = "/getall-merchant-grouping";
-            } else if (userData.role === "MERCHANT_ADMIN") {
-              endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
-            }
+            endpoint = groupingRoles.includes(userData.role)
+              ? "/getall-merchant-grouping"
+              : `/getall-merchant${userData.role === "MERCHANT_ADMIN" ? `-grouping${merchantCodeParam}` : merchantCodeParam}`;
+          } else {
+            endpoint = merchantRoles.includes(userData.role)
+              ? `/getall-merchant${merchantCodeParam}`
+              : "/getall-merchant";
           }
-          else {
-            if (merchantRoles.includes(userData.role)) {
-              endpoint = `/getall-merchant?merchantCode=${userData.code[0]}`;
-            }
-            else {
-              endpoint = "/getall-merchant";
-            }
-          }
+
           merchantCodes = await getApi(endpoint);
 
           const formattedMerchantCodes = merchantCodes?.data?.data?.merchants

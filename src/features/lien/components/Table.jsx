@@ -66,20 +66,16 @@ const TableComponent = ({
 
       let endpoint = "";
 
+      const merchantCodeParam = userData.code?.[0] ? `?merchantCode=${userData.code[0]}` : "";
+
       if (!includeSubMerchant) {
-        if (groupingRoles.includes(userData.role)) {
-          endpoint = "/getall-merchant-grouping";
-        } else if (userData.role === "MERCHANT_ADMIN") {
-          endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
-        }
-      }
-      else {
-        if (merchantRoles.includes(userData.role)) {
-          endpoint = `/getall-merchant?merchantCode=${userData.code[0]}`;
-        }
-        else {
-          endpoint = "/getall-merchant";
-        }
+        endpoint = groupingRoles.includes(userData.role)
+          ? "/getall-merchant-grouping"
+          : `/getall-merchant${userData.role === "MERCHANT_ADMIN" ? `-grouping${merchantCodeParam}` : merchantCodeParam}`;
+      } else {
+        endpoint = merchantRoles.includes(userData.role)
+          ? `/getall-merchant${merchantCodeParam}`
+          : "/getall-merchant";
       }
 
       merchant = await getApi(endpoint, options);
