@@ -69,28 +69,21 @@ const Withdraw = ({ type }) => {
     const fetchMerchants = async () => {
       try {
         let merchant;
-        if (
-          userData.role === "ADMIN" ||
-          userData.role === "TRANSACTIONS" ||
-          userData.role === "OPERATIONS"
-        ) {
+        const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "MERCHANT_ADMIN"];
+
+        let endpoint = "/getall-merchant";
+        const options = { page: 1, pageSize: 1000 };
+
+        if (userData.role === "ADMIN") {
           if (!includeSubMerchant) {
-            merchant = await getApi("/getall-merchant-grouping", {
-              page: 1,
-              pageSize: 1000,
-            });
-          } else {
-            merchant = await getApi("/getall-merchant", {
-              page: 1,
-              pageSize: 1000,
-            });
+            endpoint = "/getall-merchant-grouping";
           }
-        } else {
-          merchant = await getApi("/getall-merchant", {
-            page: 1,
-            pageSize: 1000,
-          });
+        } else if (groupingRoles.includes(userData.role)) {
+          if (!includeSubMerchant) {
+            endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
+          }
         }
+        merchant = await getApi(endpoint, options);
 
         if (isMounted) {
           const options = merchant?.data?.data?.merchants

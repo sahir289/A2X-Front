@@ -138,26 +138,19 @@ const TableComponent = ({
     setIsAddMerchantModalOpen(true);
     setUpdateRecord(record);
     let merchant;
-    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
+    const groupingRoles = ["TRANSACTIONS", "OPERATIONS"];
+    const options = { page: 1, pageSize: 1000 };
+    let endpoint = "/getall-merchant";
+
+    if (userData.role === "ADMIN") {
+      endpoint = "/getall-merchant-grouping";
+    } else if (groupingRoles.includes(userData.role)) {
       if (!includeSubMerchant) {
-        merchant = await getApi("/getall-merchant-grouping", {
-          page: 1,
-          pageSize: 1000,
-        });
-      }
-      else {
-        merchant = await getApi("/getall-merchant", {
-          page: 1,
-          pageSize: 1000,
-        });
+        endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
       }
     }
-    else {
-      merchant = await getApi("/getall-merchant", {
-        page: 1,
-        pageSize: 1000,
-      });
-    }
+    merchant = await getApi(endpoint, options);
+
     if (merchant.error?.error?.response?.status === 401) {
       NotificationManager.error(merchant?.error?.message, 401);
       localStorage.clear();
