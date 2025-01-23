@@ -138,17 +138,18 @@ const TableComponent = ({
     setIsAddMerchantModalOpen(true);
     setUpdateRecord(record);
     let merchant;
-    const groupingRoles = ["TRANSACTIONS", "OPERATIONS"];
-    const options = { page: 1, pageSize: 1000 };
-    let endpoint = "/getall-merchant";
+    const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+      const options = { page: 1, pageSize: 1000 };
 
-    if (userData.role === "ADMIN") {
-      endpoint = "/getall-merchant-grouping";
-    } else if (groupingRoles.includes(userData.role)) {
-      if (!includeSubMerchant) {
-        endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
+      let endpoint = "/getall-merchant";
+
+      if (groupingRoles.includes(userData.role)) {
+        endpoint = "/getall-merchant-grouping";
+      } else if (userData.role === "MERCHANT_ADMIN") {
+        if (!includeSubMerchant) {
+          endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
+        }
       }
-    }
     merchant = await getApi(endpoint, options);
 
     if (merchant.error?.error?.response?.status === 401) {

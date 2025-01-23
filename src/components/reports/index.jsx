@@ -22,13 +22,15 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
       let merchantCodes = [];
       try {
         if (title !== "Vendor Report") {
-          const groupingRoles = ['TRANSACTIONS', 'OPERATIONS', 'MERCHANT_ADMIN'];
+          const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+
           let endpoint = "/getall-merchant";
-          if ( userData.role === 'ADMIN' ) {
+
+          if (groupingRoles.includes(userData.role)) {
             endpoint = "/getall-merchant-grouping";
-          } else if (groupingRoles.includes(userData.role)) {
+          } else if (userData.role === "MERCHANT_ADMIN") {
             if (!includeSubMerchant) {
-              endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
+              endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
             }
           }
           merchantCodes = await getApi(endpoint);
@@ -113,7 +115,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     <div className="bg-white p-4">
       <p className="font-bold text-lg">{title}</p>
       <Form className="mt-6 w-[270px]" layout="vertical" onFinish={handleFinish}>
-        {title !== "Vendor Report" &&(<Form.Item
+        {title !== "Vendor Report" && (<Form.Item
           name="merchantCode"
           label="Merchant Codes"
           rules={[{ required: true, message: 'Please select merchant code!' }]}
@@ -127,7 +129,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
 
         </Form.Item>)}
 
-        {title === "Vendor Report" &&(<Form.Item
+        {title === "Vendor Report" && (<Form.Item
           name="vendorCode"
           label="Vendor Codes"
           rules={[{ required: true, message: 'Please select vendor code!' }]}
@@ -140,7 +142,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           />
 
         </Form.Item>)}
-        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && title !== "Vendor Report" ) && (
+        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && title !== "Vendor Report") && (
           <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
@@ -159,7 +161,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             <Select placeholder="Please select" options={statusOptions} />
           </Form.Item>
         )}
-        { (title === "Payouts" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS') ) && (<Form.Item
+        {(title === "Payouts" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
           name="method"
           label="Methods"
         >

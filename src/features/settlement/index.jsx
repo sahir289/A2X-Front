@@ -68,18 +68,16 @@ export default function Settlement() {
     const fetchMerchants = async () => {
       try {
         let merchant;
-        const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "MERCHANT_ADMIN"];
-
-        let endpoint = "/getall-merchant";
+        const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
         const options = { page: 1, pageSize: 1000 };
 
-        if (userData.role === "ADMIN") {
+        let endpoint = "/getall-merchant";
+
+        if (groupingRoles.includes(userData.role)) {
+          endpoint = "/getall-merchant-grouping";
+        } else if (userData.role === "MERCHANT_ADMIN") {
           if (!includeSubMerchant) {
-            endpoint = "/getall-merchant-grouping";
-          }
-        } else if (groupingRoles.includes(userData.role)) {
-          if (!includeSubMerchant) {
-            endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
+            endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
           }
         }
         merchant = await getApi(endpoint, options);
@@ -312,16 +310,16 @@ export default function Settlement() {
           {(userData.role === "ADMIN" ||
             userData.role === "TRANSACTIONS" ||
             userData.role === "OPERATIONS") && (
-            <Checkbox
-              onClick={() => {
-                setIncludeSubMerchant((prevState) => !prevState);
-              }}
-            >
-              <span style={{ color: "cornflowerblue" }}>
-                Include Sub Merchant
-              </span>
-            </Checkbox>
-          )}
+              <Checkbox
+                onClick={() => {
+                  setIncludeSubMerchant((prevState) => !prevState);
+                }}
+              >
+                <span style={{ color: "cornflowerblue" }}>
+                  Include Sub Merchant
+                </span>
+              </Checkbox>
+            )}
         </div>
         <div className="overflow-x-auto">
           <TableComponent
@@ -375,7 +373,7 @@ export default function Settlement() {
             </Form.Item>
           )}
           {editSettlement?.key == "approve" &&
-          editSettlement?.method !== "BANK" ? (
+            editSettlement?.method !== "BANK" ? (
             <div>
               <h5> Are you sure to approve? </h5>
             </div>

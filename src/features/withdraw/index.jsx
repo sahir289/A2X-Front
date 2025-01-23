@@ -69,18 +69,16 @@ const Withdraw = ({ type }) => {
     const fetchMerchants = async () => {
       try {
         let merchant;
-        const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "MERCHANT_ADMIN"];
-
-        let endpoint = "/getall-merchant";
+        const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
         const options = { page: 1, pageSize: 1000 };
 
-        if (userData.role === "ADMIN") {
+        let endpoint = "/getall-merchant";
+
+        if (groupingRoles.includes(userData.role)) {
+          endpoint = "/getall-merchant-grouping";
+        } else if (userData.role === "MERCHANT_ADMIN") {
           if (!includeSubMerchant) {
-            endpoint = "/getall-merchant-grouping";
-          }
-        } else if (groupingRoles.includes(userData.role)) {
-          if (!includeSubMerchant) {
-            endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
+            endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
           }
         }
         merchant = await getApi(endpoint, options);
@@ -132,8 +130,8 @@ const Withdraw = ({ type }) => {
 
   const methodOptions =
     userData?.role === "ADMIN" ||
-    userData?.role === "TRANSACTIONS" ||
-    userData?.role === "OPERATIONS"
+      userData?.role === "TRANSACTIONS" ||
+      userData?.role === "OPERATIONS"
       ? withdrawlMethods
       : [{ value: "manual", label: "Manual", key: "manual" }];
 
@@ -190,13 +188,13 @@ const Withdraw = ({ type }) => {
         code: isAdminOrTransactions
           ? queryObj.code || null
           : isMerchantAdmin
-          ? queryObj.code || userData?.code
-          : userData?.code || queryObj.code || null,
+            ? queryObj.code || userData?.code
+            : userData?.code || queryObj.code || null,
         ...(isAdminOrTransactions
           ? {}
           : {
-              vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
-            }),
+            vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
+          }),
       };
       getPayoutList(updatedQuery);
     }, 1500);
@@ -222,8 +220,8 @@ const Withdraw = ({ type }) => {
         type == "In Progress"
           ? "INITIATED"
           : type == "Completed"
-          ? "SUCCESS"
-          : "";
+            ? "SUCCESS"
+            : "";
     }
     if (queryObj?.vendor_code) {
       queryObject.vendorCode = queryObj.vendor_code;
@@ -360,7 +358,7 @@ const Withdraw = ({ type }) => {
       return;
     }
 
-    const merchantList = ['DHM','APPLE','CB','RK','MafiaMundeer','BERU','luna','Bita','treX']
+    const merchantList = ['DHM', 'APPLE', 'CB', 'RK', 'MafiaMundeer', 'BERU', 'luna', 'Bita', 'treX']
     // if (merchantList.includes(merchant.code)) {
     //   const res = await getApi(
     //     `/get-merchants-net-balance?merchantCode=${merchant.code}`,
@@ -398,13 +396,13 @@ const Withdraw = ({ type }) => {
           return;
         }
         else if (merchantList.includes(merchant.code)) {
-          const data = {method: 'eko'};
+          const data = { method: 'eko' };
           const id = res?.data?.data?.payoutId;
           updateWithdraw(data, id);
           handleGetWithdraws({ ...pagination, ...filters }, true);
         }
       })
-      .catch((err) => {})
+      .catch((err) => { })
       .finally(() => {
         setAddLoading(false);
         handleToggleModal();
@@ -461,7 +459,7 @@ const Withdraw = ({ type }) => {
     setFilters({});
     setSelectedUTRMethod("manual");
   };
-  const handleDownloadExcel = () => {};
+  const handleDownloadExcel = () => { };
 
   const hasSelected = selectedData.length > 0;
 
@@ -478,14 +476,14 @@ const Withdraw = ({ type }) => {
                 userData?.role === "VENDOR" ||
                 userData?.role === "VENDOR_OPERATIONS"
               ) && (
-                <Button
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  onClick={handleToggleModal}
-                >
-                  New Payout
-                </Button>
-              )}
+                  <Button
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    onClick={handleToggleModal}
+                  >
+                    New Payout
+                  </Button>
+                )}
               <div className="flex gap-2">
                 <Button
                   className="mt-2 w-full"
@@ -514,7 +512,7 @@ const Withdraw = ({ type }) => {
             </Button>
           </div>
         </div>
-        <div className="flex" style={{justifySelf: "end", marginRight: "40px"}}>
+        <div className="flex" style={{ justifySelf: "end", marginRight: "40px" }}>
           {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);

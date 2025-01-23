@@ -46,16 +46,16 @@ const AddLien = ({ handleTableChange, includeSubMerchant }) => {
   useEffect(() => {
     const handleGetMerchants = async () => {
       let merchant;
-      const groupingRoles = ["TRANSACTIONS", "OPERATIONS"];
+      const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
       const options = { page: 1, pageSize: 1000 };
 
       let endpoint = "/getall-merchant";
 
-      if (userData.role === "ADMIN") {
+      if (groupingRoles.includes(userData.role)) {
         endpoint = "/getall-merchant-grouping";
-      } else if (groupingRoles.includes(userData.role)) {
+      } else if (userData.role === "MERCHANT_ADMIN") {
         if (!includeSubMerchant) {
-          endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
+          endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
         }
       }
       merchant = await getApi(endpoint, options);

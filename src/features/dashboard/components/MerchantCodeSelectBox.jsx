@@ -22,6 +22,7 @@ const MerchantCodeSelectBox = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (value) => {
+    console.log(value);
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
     const selectedMerchantSortedList = [...value].sort((a, b) =>
       a.localeCompare(b)
@@ -36,13 +37,13 @@ const MerchantCodeSelectBox = ({
 
   const fetchMerchantData = async () => {
     let merchantCodes;
-    const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "MERCHANT_ADMIN"];
+    const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
     let endpoint = "/getall-merchant";
-    if (userData.role === "ADMIN") {
+    if (groupingRoles.includes(userData.role)) {
       endpoint = "/getall-merchant-grouping";
-    } else if (groupingRoles.includes(userData.role)) {
+    } else if (userData.role === "MERCHANT_ADMIN") {
       if (!includeSubMerchant) {
-        endpoint = `/getall-merchant-grouping?merchantCode=${userData.code}`;
+        endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
       }
     }
     merchantCodes = await getApi(endpoint);
