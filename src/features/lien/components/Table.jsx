@@ -61,15 +61,24 @@ const TableComponent = ({
     const handleGetMerchants = async () => {
       let merchant;
       const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+      const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
       const options = { page: 1, pageSize: 1000 };
 
-      let endpoint = "/getall-merchant";
+      let endpoint = "";
 
-      if (groupingRoles.includes(userData.role)) {
-        endpoint = "/getall-merchant-grouping";
-      } else if (userData.role === "MERCHANT_ADMIN") {
-        if (!includeSubMerchant) {
+      if (!includeSubMerchant) {
+        if (groupingRoles.includes(userData.role)) {
+          endpoint = "/getall-merchant-grouping";
+        } else if (userData.role === "MERCHANT_ADMIN") {
           endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
+        }
+      }
+      else {
+        if (merchantRoles.includes(userData.role)) {
+          endpoint = `/getall-merchant?merchantCode=${userData.code[0]}`;
+        }
+        else {
+          endpoint = "/getall-merchant";
         }
       }
 
@@ -113,19 +122,19 @@ const TableComponent = ({
 
   return (
     <>
-      {!["MERCHANT","OPERATIONS","MERCHANT_OPERATIONS","MERCHANT_ADMIN"].includes(userData?.role) && <div className="font-serif p-3 bg-zinc-50 rounded-lg mb-2">
+      {!["MERCHANT", "OPERATIONS", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"].includes(userData?.role) && <div className="font-serif p-3 bg-zinc-50 rounded-lg mb-2">
         <div className="flex">
           <AddLien handleTableChange={handleTableChange} includeSubMerchant={includeSubMerchant} />
         </div>
-      <div className="flex ml-5" style={{ alignItems: "center", justifySelf: "end" }}>
-        {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
-          onClick={() => {
-            setIncludeSubMerchant((prevState) => !prevState);
-          }}
-        >
-          <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
-        </Checkbox>}
-      </div>
+        <div className="flex ml-5" style={{ alignItems: "center", justifySelf: "end" }}>
+          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+            onClick={() => {
+              setIncludeSubMerchant((prevState) => !prevState);
+            }}
+          >
+            <span style={{ color: "cornflowerblue" }}>Include Sub Merchant</span>
+          </Checkbox>}
+        </div>
       </div>}
       <div className="font-serif pt-3 bg-zinc-50 rounded-lg">
         <div className="flex">

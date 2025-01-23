@@ -23,14 +23,23 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
       try {
         if (title !== "Vendor Report") {
           const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+          const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
 
-          let endpoint = "/getall-merchant";
+          let endpoint = "";
 
-          if (groupingRoles.includes(userData.role)) {
-            endpoint = "/getall-merchant-grouping";
-          } else if (userData.role === "MERCHANT_ADMIN") {
-            if (!includeSubMerchant) {
+          if (!includeSubMerchant) {
+            if (groupingRoles.includes(userData.role)) {
+              endpoint = "/getall-merchant-grouping";
+            } else if (userData.role === "MERCHANT_ADMIN") {
               endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
+            }
+          }
+          else {
+            if (merchantRoles.includes(userData.role)) {
+              endpoint = `/getall-merchant?merchantCode=${userData.code[0]}`;
+            }
+            else {
+              endpoint = "/getall-merchant";
             }
           }
           merchantCodes = await getApi(endpoint);

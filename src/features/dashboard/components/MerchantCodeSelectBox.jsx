@@ -38,12 +38,23 @@ const MerchantCodeSelectBox = ({
   const fetchMerchantData = async () => {
     let merchantCodes;
     const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
-    let endpoint = "/getall-merchant";
-    if (groupingRoles.includes(userData.role)) {
-      endpoint = "/getall-merchant-grouping";
-    } else if (userData.role === "MERCHANT_ADMIN") {
-      if (!includeSubMerchant) {
+    const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+
+    let endpoint = "";
+
+    if (!includeSubMerchant) {
+      if (groupingRoles.includes(userData.role)) {
+        endpoint = "/getall-merchant-grouping";
+      } else if (userData.role === "MERCHANT_ADMIN") {
         endpoint = `/getall-merchant-grouping?merchantCode=${userData.code[0]}`;
+      }
+    }
+    else {
+      if (merchantRoles.includes(userData.role)) {
+        endpoint = `/getall-merchant?merchantCode=${userData.code[0]}`;
+      }
+      else {
+        endpoint = "/getall-merchant";
       }
     }
     merchantCodes = await getApi(endpoint);
@@ -129,17 +140,17 @@ const MerchantCodeSelectBox = ({
             userData.role === "TRANSACTIONS" ||
             userData.role === "OPERATIONS" ||
             userData.role === "MERCHANT_ADMIN") && (
-            <Checkbox
-              onClick={() => {
-                setIncludeSubMerchant((prevState) => !prevState);
-                setIncludeSubMerchantFlag((prevState) => !prevState);
-              }}
-            >
-              <span style={{ color: "cornflowerblue" }}>
-                Include Sub Merchant
-              </span>
-            </Checkbox>
-          )}
+              <Checkbox
+                onClick={() => {
+                  setIncludeSubMerchant((prevState) => !prevState);
+                  setIncludeSubMerchantFlag((prevState) => !prevState);
+                }}
+              >
+                <span style={{ color: "cornflowerblue" }}>
+                  Include Sub Merchant
+                </span>
+              </Checkbox>
+            )}
         </div>
       </div>
     </>

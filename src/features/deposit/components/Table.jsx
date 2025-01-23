@@ -179,7 +179,8 @@ const TableComponent = ({
   };
 
   const handleGetMerchants = async () => {
-    const res = await getApi("/getall-merchant");
+    const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+    const res = await getApi(merchantRoles.includes(userData.role) ? `/getall-merchant?merchantCode=${userData.code[0]}` : "/getall-merchant");
     if (res.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
       localStorage.clear();

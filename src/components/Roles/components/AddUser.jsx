@@ -24,7 +24,8 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const roleOptions = roleOptionsMap[context?.role] || roleOptionsMap.DEFAULT;
 
   const fetchMerchantData = async () => {
-    const merchantApiRes = await getApi("/getall-merchant");
+    const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+    const merchantApiRes = await getApi(merchantRoles.includes(userData.role) ? `/getall-merchant?merchantCode=${userData.code[0]}` : "/getall-merchant");
     if (merchantApiRes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantApiRes?.error?.message, 401);
       localStorage.clear();
