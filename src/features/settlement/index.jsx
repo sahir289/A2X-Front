@@ -136,7 +136,7 @@ export default function Settlement() {
     }, 1500);
   };
 
-  const getSettlementList = async (queryObj) => {
+  const getSettlementList = async (queryObj = {}) => {
     queryObj.includeSubMerchant = includeSubMerchant;
     const query = getQueryFromObject(queryObj);
     setIsLoading(true);
