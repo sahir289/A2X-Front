@@ -34,10 +34,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
     //Remove logged in in merchant from the user merchant selection
 
-    const removedLoggedInMerchant = merchantApiRes?.data?.data?.merchants
-    ?.filter(merchant => merchant?.is_merchant_Admin === false)
-
-    const dropdownOptions = removedLoggedInMerchant
+    const dropdownOptions = merchantApiRes?.data?.data?.merchants[0]?.subMerchants
       ?.filter(
         (merchant) =>
           !userData?.code.length || userData?.code.includes(merchant.code)
