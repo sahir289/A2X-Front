@@ -1,4 +1,4 @@
-import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
+import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import {
   Button,
   Form,
@@ -18,7 +18,7 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
-import { getApi, postApiForWithdrawCreation, putApi } from "../../redux/api";
+import { getApi, postApi, postApiForWithdrawCreation, putApi } from "../../redux/api";
 import {
   RequiredRule,
   getQueryFromObject,
@@ -51,6 +51,7 @@ const Withdraw = ({ type }) => {
   const [selectedUTRMethod, setSelectedUTRMethod] = useState("manual");
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
+  const [verification, setVerification] = useState(false);
   const [withdraws, setWithdraws] = useState({
     data: [],
     total: 0,
@@ -63,6 +64,11 @@ const Withdraw = ({ type }) => {
   const [ekoBalance, setEkoBalance] = useState(0);
   const merchantData = useSelector((state) => state.merchant.data);
   const [merchantOptions, setMerchantOptions] = useState([]);
+  const [form] = Form.useForm();
+  const [verificationForm] = Form.useForm();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const labelCol = { span: 10 };
 
   useEffect(() => {
     let isMounted = true; // To avoid state updates on unmounted components
@@ -176,6 +182,11 @@ const Withdraw = ({ type }) => {
   const handleToggleModal = () => {
     setAddWithdraw(!addWithdraw);
   };
+
+  const handleToggleVerificationModal = () => {
+    setVerification(!verification);
+    verificationForm.resetFields();
+  }
 
   const handleToggleAddVendorModal = () => {
     setAddVendor(!addVendor);
@@ -485,6 +496,42 @@ const Withdraw = ({ type }) => {
 
   const hasSelected = selectedData.length > 0;
 
+  const handleEditSubmit = async () => {
+    setAddLoading(true);
+    try {
+      const updatedValues = await form.validateFields();
+      const updatedData = {
+        utr_id: updatedValues.utr_id,
+        status: selectedRecord.status
+      };
+      const res = await putApi(`/update-payout/${selectedRecord.id}`, updatedData);
+      setAddLoading(false);
+      if (res?.data?.statusCode === 200) {
+        NotificationManager.success(res?.data?.message);
+      }
+      setIsEditModalVisible(false);
+      handleGetWithdraws({ ...pagination, ...filters }, true);
+    } catch (error) {
+      console.log("Edit failed:", error);
+    }
+  }
+
+  const verifyPassword = async (data) => {
+    setAddLoading(true);
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    };
+    const res = await postApi("/verify-password", verifyPasswordData);
+    setAddLoading(false);
+    if (res?.data?.statusCode === 200) {
+      setIsEditModalVisible(true);
+      handleToggleVerificationModal();
+    } else {
+      NotificationManager.error(res?.error?.message);
+    }
+  };
+
   return (
     <section>
       {contextHolder}
@@ -545,7 +592,6 @@ const Withdraw = ({ type }) => {
         </div>
         <div className="overflow-x-auto">
           <Table
-
             loading={isLoading}
             data={withdraws.data}
             filters={filters}
@@ -558,6 +604,9 @@ const Withdraw = ({ type }) => {
             userData={userData}
             setSelectedData={handleData}
             selectedData={selectedData}
+            setVerification={setVerification}
+            setSelectedRecord={setSelectedRecord}
+            form={form}
           />
         </div>
         <div className="flex justify-end mt-[10px]">
@@ -797,6 +846,58 @@ const Withdraw = ({ type }) => {
           </div>
         </Form>
       </Modal>
+
+      <Modal
+        title="Edit UTR"
+        open={isEditModalVisible}
+        onOk={handleEditSubmit}
+        onCancel={() => setIsEditModalVisible(false)}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="UTR"
+            name="utr_id"
+            rules={[{ required: true, message: "Please enter UTR" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Password Verification"
+        onCancel={handleToggleVerificationModal}
+        open={verification}
+        footer={false}
+      >
+        <Form
+          form={verificationForm}
+          className="pt-[10px]"
+          labelAlign="left"
+          labelCol={labelCol}
+          onFinish={verifyPassword}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+
+          <div className="flex justify-end">
+            <Button type="primary" loading={addLoading} htmlType="submit">
+              Verify
+            </Button>
+          </div>
+        </Form>
+      </Modal>
+
       <NotificationContainer />
     </section>
   );

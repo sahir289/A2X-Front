@@ -1,4 +1,4 @@
-import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Input, Select, Tag, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import { NotificationManager } from 'react-notifications';
@@ -71,10 +71,19 @@ export const Columns = (
   updateWithdraw,
   type,
   userData,
+  setVerification,
+  setSelectedRecord,
+  form
 ) => {
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
+  };
+
+  const openEditModal = (record) => {
+    form.setFieldsValue({ utr_id: record.utr_id });
+    setSelectedRecord(record);
+    setVerification(true);
   };
 
   const handleRejected = (r) => {
@@ -330,7 +339,16 @@ export const Columns = (
           ellipsis
           render={(v, r, i) => {
             if (i) {
-              return v || "-";
+              return (
+                <>
+                  {v || "-"}
+                  {(v && userData?.role === "ADMIN") && <Button
+                    type="link"
+                    icon={<EditOutlined />}
+                    onClick={() => openEditModal(r)}
+                  />}
+                </>
+              );
             }
             return (
               <ColumnSearch

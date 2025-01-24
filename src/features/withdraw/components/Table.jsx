@@ -14,7 +14,10 @@ const Table = ({
   type,
   userData,
   setSelectedData,
-  selectedData
+  selectedData,
+  setVerification,
+  setSelectedRecord,
+  form
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
@@ -62,7 +65,7 @@ const Table = ({
           if (i) {
             if (!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED")) {
               return (
-               
+
                 <Checkbox
                   checked={selectedRowKeys.includes(r.id)}
                   onChange={(e) => handleCheckboxChange(r, e.target.checked)}
@@ -82,6 +85,9 @@ const Table = ({
         updateWithdraw,
         type,
         userData,
+        setVerification,
+        setSelectedRecord,
+        form
       )}
     </AntTable>
   );
