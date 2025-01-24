@@ -219,6 +219,11 @@ export const Columns = (
       <Column
         title="Bank Details"
         dataIndex="acc_no"
+        hidden={
+          userData?.role === "MERCHANT_ADMIN" ||
+          userData?.role === "MERCHANT_OPERATIONS" ||
+          userData?.role === "MERCHANT"
+        }
         width="180px"
         ellipsis
         render={(v, r, i) => {

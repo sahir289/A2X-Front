@@ -109,7 +109,10 @@ const Withdraw = ({ type }) => {
       }
     };
 
-    fetchMerchants();
+    const allowedRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      fetchMerchants();
+    }
 
     // Cleanup function
     return () => {
@@ -143,8 +146,14 @@ const Withdraw = ({ type }) => {
 
   useEffect(() => {
     handleGetWithdraws();
-    fetchUsersData();
-    fetchPayoutBankData(); // get payout bank data
+    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      fetchUsersData();
+    }
+    const allowedRole1 = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRole1.includes(userData.role)) {
+      fetchPayoutBankData(); // get payout bank data
+    }
   }, []);
 
   useEffect(() => {
@@ -207,7 +216,14 @@ const Withdraw = ({ type }) => {
   };
 
   const fetchUsersData = async () => {
-    const res = await getApi("/getall-vendor");
+    let res = "";
+
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      res = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+    }
+    else {
+      res = await getApi("/getall-vendor")
+    }
     setVendorData(res?.data?.data);
   };
 

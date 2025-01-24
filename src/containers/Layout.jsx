@@ -93,15 +93,14 @@ function Layout() {
   }, [newNotificationMessage]);
 
   useEffect(() => {
-    if (userData.role) {
+    const allowedRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
       handelGetMerchants();
     }
   }, [userData]);
 
   const handelGetMerchants = async () => {
     const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
-    // userData.role = "MERCHANT_ADMIN"
-    // console.log(userData.role)
     const res = await getApi(merchantRoles.includes(userData.role) ? `/getall-merchant?merchantCode=${userData.code[0]}` : "/getall-merchant");
     if (res.error?.error?.response?.status === 401) {
       // Clear previous notifications and show error notification

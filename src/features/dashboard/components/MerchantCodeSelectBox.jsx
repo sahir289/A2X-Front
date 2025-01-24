@@ -22,7 +22,6 @@ const MerchantCodeSelectBox = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (value) => {
-    console.log(value);
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
     const selectedMerchantSortedList = [...value].sort((a, b) =>
       a.localeCompare(b)

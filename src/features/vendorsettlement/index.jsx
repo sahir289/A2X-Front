@@ -211,7 +211,14 @@ export default function Settlement() {
 
 
   const getAllVendors = async () => {
-    const vendors = await getApi('/getall-vendor')
+    let vendors = "";
+
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      vendors = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+    }
+    else {
+      vendors = await getApi("/getall-vendor")
+    }
     const merchantOptions = vendors?.data?.data
       ?.filter(
         (merchant) =>

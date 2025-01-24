@@ -346,7 +346,14 @@ const TableComponent = ({
   }, []);
 
   const getAllVendor = async () => {
-    let data = await getApi("/getall-vendor");
+    let data = "";
+
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      data = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+    }
+    else {
+      data = await getApi("/getall-vendor")
+    }
     setAllVendors(data.data.data);
   };
 

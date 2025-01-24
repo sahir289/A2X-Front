@@ -62,15 +62,23 @@ const TableComponent = ({
   const [recordStatus, setRecordStatus] = useState();
   const [showImageColumn, setShowImageColumn] = useState(true);
   const fetchAllPayInBank = async () => {
-    const data = await getApi("/getAll-Payin-bank").then((res) => {
+    let url = "";
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      url = `/getAll-Payin-bank?vendor_code=${userData.vendorCode}`;
+    } else {
+      url = "/getAll-Payin-bank";
+    }
+    await getApi(url).then((res) => {
       setBankOptions(res?.data?.data)
     }).catch((err) => {
     })
-
   }
 
   useEffect(() => {
-    fetchAllPayInBank()
+    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      fetchAllPayInBank()
+    }
   }, [])
 
   const bankOptionsData = bankOptions.map(bank => ({
@@ -191,7 +199,10 @@ const TableComponent = ({
   };
 
   useEffect(() => {
-    handleGetMerchants();
+    const allowedRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      handleGetMerchants();
+    }
   }, []);
 
   const merchantOptions = merchants
@@ -837,6 +848,11 @@ const TableComponent = ({
           }
           dataIndex="bank_name" // Adjust according to actual data structure
           key="bank_name"
+          hidden={
+            filterValues?.loggedInUserRole === "MERCHANT_ADMIN" ||
+            filterValues?.loggedInUserRole === "MERCHANT_OPERATIONS" ||
+            filterValues?.loggedInUserRole === "MERCHANT"
+          }
           className="bg-white"
           width={"24px"}
         // render={(text, record) => getBankCode(record)}

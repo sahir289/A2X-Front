@@ -52,7 +52,14 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   };
 
   const fetchVendorData = async () => {
-    const vendorApiRes = await getApi("/getall-vendor");
+    let vendorApiRes = "";
+
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      vendorApiRes = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+    }
+    else {
+      vendorApiRes = await getApi("/getall-vendor")
+    }
     if (vendorApiRes.error?.error?.response?.status === 401) {
       NotificationManager.error(vendorApiRes?.error?.message, 401);
       localStorage.clear();
@@ -72,8 +79,14 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   };
 
   useEffect(() => {
-    fetchMerchantData();
-    fetchVendorData();
+    const allowedRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      fetchMerchantData();
+    }
+    const allowedRoles1 = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles1.includes(userData.role)) {
+      fetchVendorData();
+    }
   }, []);
 
   const handleModalOk = () => {
