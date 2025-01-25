@@ -11,6 +11,7 @@ import { roleOptionsMap } from "../../../utils/utils";
 const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
   const [api, contextHolder] = notification.useNotification();
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
+  const [merchantCodeOptions1, setMerchantCodeOptions1] = useState([]);
   const [loading, setLoading] = useState(false)
   const [vendorCodeOptions, setVendorCodeOptions] = useState([]);
   const [form] = Form.useForm();
@@ -34,18 +35,41 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
 
     //Remove logged in in merchant from the user merchant selection
 
-    const dropdownOptions = merchantApiRes?.data?.data?.merchants[0]?.subMerchants
-      ?.filter(
-        (merchant) =>
-          !userData?.code.length || userData?.code.includes(merchant.code)
-      )
-      .map((merchant) => ({
+    const removedLoggedInMerchant = merchantApiRes?.data?.data?.merchants
+      ?.filter(merchant => merchant?.is_merchant_Admin === false)
+
+    const getDropdownOptions = (merchants, addMerchant = null) => {
+      // Map merchants to dropdown options
+      const options = merchants?.map((merchant) => ({
         label: merchant.code,
         value: merchant.code,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+      })) || [];
 
+      // Optionally add a merchant
+      if (addMerchant) {
+        options.push({ label: addMerchant.code, value: addMerchant.code });
+      }
+
+      // Sort alphabetically by label
+      return options.sort((a, b) => a.label.localeCompare(b.label));
+    };
+
+    const isMerchantAdmin = userData.role === "MERCHANT_ADMIN";
+    const merchants = isMerchantAdmin
+      ? merchantApiRes?.data?.data?.merchants[0]?.subMerchants
+      : removedLoggedInMerchant;
+
+    // If role is MERCHANT_ADMIN, add the parent merchant code to the dropdown
+    const addMerchant = isMerchantAdmin
+      ? merchantApiRes?.data?.data?.merchants[0]
+      : null;
+
+    const dropdownOptions = getDropdownOptions(merchants);
+    const dropdownOptions1 = getDropdownOptions(merchants, addMerchant);
+
+    // Set the dropdown options
     setMerchantCodeOptions(dropdownOptions);
+    setMerchantCodeOptions1(dropdownOptions1);
   };
 
   const fetchVendorData = async () => {
@@ -80,7 +104,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
     if (userData.role && allowedRoles.includes(userData.role)) {
       fetchMerchantData();
     }
-    const allowedRoles1 = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    const allowedRoles1 = ["VENDOR", "VENDOR_OPERATIONS", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
     if (userData.role && allowedRoles1.includes(userData.role)) {
       fetchVendorData();
     }
@@ -243,7 +267,7 @@ const AddUser = ({ isAddModelOpen, setIsAddModelOpen, handleTableChange }) => {
             >
               <Select
                 placeholder="Please select"
-                options={merchantCodeOptions}
+                options={merchantCodeOptions1}
                 showSearch={true}
               />
             </Form.Item>
