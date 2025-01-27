@@ -75,6 +75,7 @@ export const Columns = (
   setSelectedRecord,
   form
 ) => {
+
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
@@ -98,7 +99,8 @@ export const Columns = (
     else {
       return "Rejected due to Invalid Credentials"
     }
-  };
+  }
+
   return (
     <>
       <Column
@@ -205,7 +207,7 @@ export const Columns = (
         <Column
           title="Merchant"
           dataIndex="Merchant"
-          width="130px"
+          width="150px"
           ellipsis
           render={(v, r, i) => {
             if (i) {
@@ -340,14 +342,18 @@ export const Columns = (
           render={(v, r, i) => {
             if (i) {
               return (
-                <>
+                <div style={{ whiteSpace: "normal", wordWrap: "break-word", wordBreak: "break-word" }}>
                   {v || "-"}
-                  {(v && userData?.role === "ADMIN") && <Button
-                    type="link"
-                    icon={<EditOutlined />}
-                    onClick={() => openEditModal(r)}
-                  />}
-                </>
+                  {(v && userData?.role === "ADMIN") && (
+                    <>
+                      <Button
+                        type="link"
+                        icon={<EditOutlined />}
+                        onClick={() => openEditModal(r)}
+                      />
+                    </>
+                  )}
+                </div>
               );
             }
             return (
