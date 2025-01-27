@@ -35,7 +35,6 @@ const TableComponent = ({
   const handleStatusChange = (e, data) => {
     setId(data.id);
     setStatus(e);
-    // handleUserStatusChange({ id: data.id, status: e });
   };
 
   const handleFilterValuesChange = (value, fieldName) => {
@@ -184,7 +183,7 @@ const TableComponent = ({
           render={(value, data) => {
             return (
               <Switch
-                defaultValue={value}
+                checked={value}
                 onChange={(e) => {
                   setVerification(true); // Password verification while enabling or disabling users
                   handleStatusChange(e, data);
@@ -226,7 +225,7 @@ const TableComponent = ({
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
-             />
+            />
           </Form.Item>
 
           <div className='flex justify-end'>
