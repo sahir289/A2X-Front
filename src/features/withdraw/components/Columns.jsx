@@ -97,16 +97,16 @@ export const Columns = (
   }
 
   const handleRejected = (r) => {
-    if (r.approved_at) {
-      if (r.method === "manual") {
+    if (r.method !== "manual") {
+      return "Rejected from the portal"
+    }
+    else {
+      if (r.approved_at && r.rejected_at) {
         return `Rejected due to ${r.rejected_reason}`
       }
       else {
-        return "Rejected from the portal"
+        return "Rejected due to Invalid Credentials"
       }
-    }
-    else {
-      return "Rejected due to Invalid Credentials"
     }
   }
 
