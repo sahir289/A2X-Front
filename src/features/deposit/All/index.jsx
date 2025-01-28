@@ -24,6 +24,7 @@ function All() {
     userId: '',
     // userSubmittedUtr: '',
     utr: '',
+    method:'',
     payInId: '',
     dur: '',
     bank: '',

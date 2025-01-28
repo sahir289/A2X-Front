@@ -195,13 +195,13 @@ const TableComponent = ({
 
   const merchantOptions = merchants
     ?.filter(
-        (merchant) =>
-            !merchant.is_deleted &&
-            (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+      (merchant) =>
+        !merchant.is_deleted &&
+        (!userData?.code?.length || userData?.code?.includes(merchant?.code))
     )
     .map((merchant) => ({
-        label: merchant.code,
-        value: merchant.code,
+      label: merchant.code,
+      value: merchant.code,
     }))
     .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
 
@@ -230,6 +230,7 @@ const TableComponent = ({
         handleCopy(unlimitedUrl);
         setAddLoading(false);
         setIsOneTimeLinkTrue(false);
+
       }
       else {
         NotificationManager.error("No payin bank found for this merchant");
@@ -287,6 +288,7 @@ const TableComponent = ({
       userId: '',
       // userSubmittedUtr: '',
       utr: '',
+      // method: '',
       payInId: '',
       dur: '',
       bank: '',
@@ -328,8 +330,8 @@ const TableComponent = ({
       let payload = {};
 
       if (recordStatus === "DISPUTE" && !resetRecord.Merchant.dispute_enabled) {
-        if (data.merchant_order_id){
-          if (data.merchant_order_id === resetRecord.merchant_order_id){
+        if (data.merchant_order_id) {
+          if (data.merchant_order_id === resetRecord.merchant_order_id) {
             NotificationManager.error("Please Enter New Mercahnt Order ID");
             setAddLoading(false);
             return;
@@ -347,7 +349,7 @@ const TableComponent = ({
           confirmed: confirmAmount,
         };
       } else {
-        payload = { ...data, amount: confirmAmount};
+        payload = { ...data, amount: confirmAmount };
       }
 
       if (recordStatus === "BANK_MISMATCH") {
@@ -401,7 +403,11 @@ const TableComponent = ({
       setHardResetLoading(false);
     }
   }
-
+  {
+    data.map((val) => (
+      console.log(val.method, "a")
+    ))
+  }
   return (
     <>
       <div className="font-serif pt-3 flex bg-zinc-50 rounded-lg">
@@ -488,7 +494,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
         />
-        { filterValues?.loggedInUserRole === "ADMIN" && <Column
+        {filterValues?.loggedInUserRole === "ADMIN" && <Column
           title={
             <>
               <span>Code</span>
@@ -745,14 +751,14 @@ const TableComponent = ({
           title={
             <div style={{ textAlign: "center" }}>
               <span>UTR</span>
-                <br />
-                <Input
-                  value={filterValues?.utr}
-                  onChange={(e) =>
-                    handleFilterValuesChange(e.target.value.trim(), "utr")
-                  }
-                  allowClear
-                />
+              <br />
+              <Input
+                value={filterValues?.utr}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value.trim(), "utr")
+                }
+                allowClear
+              />
             </div>
           }
           key="utr-group"
@@ -772,6 +778,20 @@ const TableComponent = ({
             render={(text) => text || "--"}
           />
         </ColumnGroup>
+        {filterValues?.loggedInUserRole === "ADMIN" && 
+        <Column
+          title="Method"
+          dataIndex="method"
+          key="method"
+          width={"10%"}
+          render={(text, r) => {
+            console.log(r.method, "a"); 
+            return <span>{r.method}</span>;
+          }}
+        />}
+
+
+
         <Column
           title={
             <>
@@ -901,11 +921,11 @@ const TableComponent = ({
           hidden={
             filterValues?.loggedInUserRole === "ADMIN"
               ? false
-                : filterValues?.loggedInUserRole === "TRANSACTIONS"
+              : filterValues?.loggedInUserRole === "TRANSACTIONS"
+                ? false
+                : filterValues?.loggedInUserRole === "OPERATIONS"
                   ? false
-                  : filterValues?.loggedInUserRole === "OPERATIONS"
-                    ? false
-                      : true
+                  : true
           }
           className="bg-white"
           width={"24px"}
