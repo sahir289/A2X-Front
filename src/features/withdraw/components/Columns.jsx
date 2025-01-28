@@ -171,7 +171,7 @@ export const Columns = (
                       })
                     }
                   />
-                <BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(r.id)} />
+                {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && (<BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(r.id)} />)}
                 </>
               );
             }
