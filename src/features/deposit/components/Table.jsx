@@ -390,10 +390,9 @@ const TableComponent = ({
   };
 
   const setNotified = async (data) => {
-    const response = await postApi(`/update-payment-notified-status/${data}`)
+    const response = await postApi(`/update-payment-notified-status/${data}`, { type: 'payin' })
     if (response.data.statusCode === 200) {
       NotificationManager.success("Merchant Notified successfully");
-
       fetchUsersData();
     }
   }
@@ -984,9 +983,10 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
           render={(text, record) =>
-            record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH" ? (
-              <Button
+            <div className="flex">
+              {(record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH") && (<Button
                 disabled={record.status === "DUPLICATE"}
+                className="mr-2"
                 onClick={() => {
                   showResetModal(record);
                   setRecordStatus(record.status);
@@ -997,8 +997,9 @@ const TableComponent = ({
                 style={{ marginLeft: "8px" }}
               >
                 Reset
-              </Button>
-            ) : record.status === "SUCCESS" ? <BellTwoTone style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} /> : null
+              </Button>)}
+              <BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} />
+            </div>
           }
         />
       </Table>

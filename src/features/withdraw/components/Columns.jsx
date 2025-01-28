@@ -1,8 +1,9 @@
-import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { BellTwoTone, CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Input, Select, Tag, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import { NotificationManager } from 'react-notifications';
 import { formatCurrency, formatDate, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
+import { postApi } from "../../../redux/api";
 
 
 const renderStatusTag = (status) => {
@@ -87,6 +88,14 @@ export const Columns = (
     setVerification(true);
   };
 
+
+  const setNotified = async (data) => {
+    const response = await postApi(`/update-payment-notified-status/${data}`, { type: 'payout' })
+    if (response.data.statusCode === 200) {
+      NotificationManager.success("Merchant Notified successfully");
+    }
+  }
+
   const handleRejected = (r) => {
     if (r.approved_at) {
       if (r.method === "manual") {
@@ -162,8 +171,7 @@ export const Columns = (
                       })
                     }
                   />
-
-
+                <BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(r.id)} />
                 </>
               );
             }
