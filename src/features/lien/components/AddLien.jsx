@@ -46,26 +46,26 @@ const AddLien = ({ handleTableChange, includeSubMerchant }) => {
   useEffect(() => {
     const handleGetMerchants = async () => {
       let merchant;
-      if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
-        if (!includeSubMerchant) {
-          merchant = await getApi("/getall-merchant-grouping", {
-            page: 1,
-            pageSize: 1000,
-          });
-        }
-        else {
-          merchant = await getApi("/getall-merchant", {
-            page: 1,
-            pageSize: 1000,
-          });
-        }
+      const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+      const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+      const options = { page: 1, pageSize: 1000 };
+
+      let endpoint = "";
+
+      const merchantCodeParam = userData.code?.[0] ? `?merchantCode=${userData.code[0]}` : "";
+
+      if (!includeSubMerchant) {
+        endpoint = groupingRoles.includes(userData.role)
+          ? "/getall-merchant-grouping"
+          : `/getall-merchant${userData.role === "MERCHANT_ADMIN" ? `-grouping${merchantCodeParam}` : merchantCodeParam}`;
+      } else {
+        endpoint = merchantRoles.includes(userData.role)
+          ? `/getall-merchant${merchantCodeParam}`
+          : "/getall-merchant";
       }
-      else {
-        merchant = await getApi("/getall-merchant", {
-          page: 1,
-          pageSize: 1000,
-        });
-      }
+
+      merchant = await getApi(endpoint, options);
+
       if (merchant.error?.error?.response?.status === 401) {
         NotificationManager.error(merchant?.error?.message, 401);
         localStorage.clear();

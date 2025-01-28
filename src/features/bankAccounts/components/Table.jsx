@@ -138,26 +138,26 @@ const TableComponent = ({
     setIsAddMerchantModalOpen(true);
     setUpdateRecord(record);
     let merchant;
-    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") {
-      if (!includeSubMerchant) {
-        merchant = await getApi("/getall-merchant-grouping", {
-          page: 1,
-          pageSize: 1000,
-        });
-      }
-      else {
-        merchant = await getApi("/getall-merchant", {
-          page: 1,
-          pageSize: 1000,
-        });
-      }
+    const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+    const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+    const options = { page: 1, pageSize: 1000 };
+
+    let endpoint = "";
+
+    const merchantCodeParam = userData.code?.[0] ? `?merchantCode=${userData.code[0]}` : "";
+
+    if (!includeSubMerchant) {
+      endpoint = groupingRoles.includes(userData.role)
+        ? "/getall-merchant-grouping"
+        : `/getall-merchant${userData.role === "MERCHANT_ADMIN" ? `-grouping${merchantCodeParam}` : merchantCodeParam}`;
+    } else {
+      endpoint = merchantRoles.includes(userData.role)
+        ? `/getall-merchant${merchantCodeParam}`
+        : "/getall-merchant";
     }
-    else {
-      merchant = await getApi("/getall-merchant", {
-        page: 1,
-        pageSize: 1000,
-      });
-    }
+
+    merchant = await getApi(endpoint, options);
+
     if (merchant.error?.error?.response?.status === 401) {
       NotificationManager.error(merchant?.error?.message, 401);
       localStorage.clear();
@@ -346,7 +346,14 @@ const TableComponent = ({
   }, []);
 
   const getAllVendor = async () => {
-    let data = await getApi("/getall-vendor");
+    let data = "";
+
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      data = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+    }
+    else {
+      data = await getApi("/getall-vendor")
+    }
     setAllVendors(data.data.data);
   };
 
@@ -881,6 +888,7 @@ const TableComponent = ({
               <br />
               <Select
                 value={filterValues?.vendor_code}
+<<<<<<< HEAD
                 // options={vendorOptions}
                 style={{ width: "110%" }}
                 onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
@@ -893,6 +901,13 @@ const TableComponent = ({
                   </Select.Option>
                 ))}
               </Select>
+=======
+                options={vendorOptions}
+                style={{ width: "90%" }}
+                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
+                allowClear
+              />
+>>>>>>> 96bb755e538d10888e04d354f78d85596b158b7e
             </>
           }
           dataIndex="vendor_code"

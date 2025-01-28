@@ -68,28 +68,25 @@ export default function Settlement() {
     const fetchMerchants = async () => {
       try {
         let merchant;
-        if (
-          userData.role === "ADMIN" ||
-          userData.role === "TRANSACTIONS" ||
-          userData.role === "OPERATIONS"
-        ) {
-          if (!includeSubMerchant) {
-            merchant = await getApi("/getall-merchant-grouping", {
-              page: 1,
-              pageSize: 1000,
-            });
-          } else {
-            merchant = await getApi("/getall-merchant", {
-              page: 1,
-              pageSize: 1000,
-            });
-          }
+        const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+        const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+        const options = { page: 1, pageSize: 1000 };
+
+        let endpoint = "";
+
+        const merchantCodeParam = userData.code?.[0] ? `?merchantCode=${userData.code[0]}` : "";
+
+        if (!includeSubMerchant) {
+          endpoint = groupingRoles.includes(userData.role)
+            ? "/getall-merchant-grouping"
+            : `/getall-merchant${userData.role === "MERCHANT_ADMIN" ? `-grouping${merchantCodeParam}` : merchantCodeParam}`;
         } else {
-          merchant = await getApi("/getall-merchant", {
-            page: 1,
-            pageSize: 1000,
-          });
+          endpoint = merchantRoles.includes(userData.role)
+            ? `/getall-merchant${merchantCodeParam}`
+            : "/getall-merchant";
         }
+
+        merchant = await getApi(endpoint, options);
 
         if (isMounted) {
           const options = merchant?.data?.data?.merchants
@@ -139,7 +136,7 @@ export default function Settlement() {
     }, 1500);
   };
 
-  const getSettlementList = async (queryObj) => {
+  const getSettlementList = async (queryObj = {}) => {
     queryObj.includeSubMerchant = includeSubMerchant;
     const query = getQueryFromObject(queryObj);
     setIsLoading(true);
@@ -319,16 +316,16 @@ export default function Settlement() {
           {(userData.role === "ADMIN" ||
             userData.role === "TRANSACTIONS" ||
             userData.role === "OPERATIONS") && (
-            <Checkbox
-              onClick={() => {
-                setIncludeSubMerchant((prevState) => !prevState);
-              }}
-            >
-              <span style={{ color: "cornflowerblue" }}>
-                Include Sub Merchant
-              </span>
-            </Checkbox>
-          )}
+              <Checkbox
+                onClick={() => {
+                  setIncludeSubMerchant((prevState) => !prevState);
+                }}
+              >
+                <span style={{ color: "cornflowerblue" }}>
+                  Include Sub Merchant
+                </span>
+              </Checkbox>
+            )}
         </div>
         <div className="overflow-x-auto">
           <TableComponent
@@ -382,7 +379,7 @@ export default function Settlement() {
             </Form.Item>
           )}
           {editSettlement?.key == "approve" &&
-          editSettlement?.method !== "BANK" ? (
+            editSettlement?.method !== "BANK" ? (
             <div>
               <h5> Are you sure to approve? </h5>
             </div>

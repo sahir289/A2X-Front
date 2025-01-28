@@ -1,4 +1,4 @@
-import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Input, Select, Tag, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import { NotificationManager } from 'react-notifications';
@@ -71,10 +71,20 @@ export const Columns = (
   updateWithdraw,
   type,
   userData,
+  setVerification,
+  setSelectedRecord,
+  form
 ) => {
+
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
     NotificationManager.success("Copied to clipboard")
+  };
+
+  const openEditModal = (record) => {
+    form.setFieldsValue({ utr_id: record.utr_id });
+    setSelectedRecord(record);
+    setVerification(true);
   };
 
   const handleRejected = (r) => {
@@ -89,7 +99,8 @@ export const Columns = (
     else {
       return "Rejected due to Invalid Credentials"
     }
-  };
+  }
+
   return (
     <>
       <Column
@@ -196,7 +207,7 @@ export const Columns = (
         <Column
           title="Merchant"
           dataIndex="Merchant"
-          width="130px"
+          width="150px"
           ellipsis
           render={(v, r, i) => {
             if (i) {
@@ -219,6 +230,11 @@ export const Columns = (
       <Column
         title="Bank Details"
         dataIndex="acc_no"
+        hidden={
+          userData?.role === "MERCHANT_ADMIN" ||
+          userData?.role === "MERCHANT_OPERATIONS" ||
+          userData?.role === "MERCHANT"
+        }
         width="180px"
         ellipsis
         render={(v, r, i) => {
@@ -325,7 +341,20 @@ export const Columns = (
           ellipsis
           render={(v, r, i) => {
             if (i) {
-              return v || "-";
+              return (
+                <div style={{ whiteSpace: "normal", wordWrap: "break-word", wordBreak: "break-word" }}>
+                  {v || "-"}
+                  {(v && userData?.role === "ADMIN") && (
+                    <>
+                      <Button
+                        type="link"
+                        icon={<EditOutlined />}
+                        onClick={() => openEditModal(r)}
+                      />
+                    </>
+                  )}
+                </div>
+              );
             }
             return (
               <ColumnSearch

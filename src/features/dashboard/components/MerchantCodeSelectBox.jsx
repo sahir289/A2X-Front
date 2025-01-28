@@ -1,4 +1,4 @@
-import { Select, Checkbox } from "antd";
+import { Checkbox, Select } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import {
   NotificationContainer,
@@ -9,13 +9,12 @@ import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../../redux/api";
 import { invalidText } from "../../../utils/utils";
 
-
 const MerchantCodeSelectBox = ({
   selectedMerchantCode,
   setSelectedMerchantCode,
-  setIncludeSubMerchantFlag
+  setIncludeSubMerchantFlag,
 }) => {
-  const userData = useContext(PermissionContext)
+  const userData = useContext(PermissionContext);
   const [merchantCodeOptions, setMerchantCodeOptions] = useState([]);
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const context = useContext(PermissionContext);
@@ -24,7 +23,9 @@ const MerchantCodeSelectBox = ({
 
   const handleChange = (value) => {
     localStorage.setItem("selectedMerchantCode", JSON.stringify(value));
-    const selectedMerchantSortedList = [...value].sort((a, b) => a.localeCompare(b));
+    const selectedMerchantSortedList = [...value].sort((a, b) =>
+      a.localeCompare(b)
+    );
     setSelectedMerchantCode(selectedMerchantSortedList);
     setDropdownOpen(false);
   };
@@ -35,17 +36,24 @@ const MerchantCodeSelectBox = ({
 
   const fetchMerchantData = async () => {
     let merchantCodes;
-    if (userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === 'MERCHANT_ADMIN') {
-      if (!includeSubMerchant) {
-        merchantCodes = await getApi("/getall-merchant-grouping");
-      }
-      else {
-        merchantCodes = await getApi("/getall-merchant");
-      }
+    const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+    const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+
+    let endpoint = "";
+
+    const merchantCodeParam = userData.code?.[0] ? `?merchantCode=${userData.code[0]}` : "";
+
+    if (!includeSubMerchant) {
+      endpoint = groupingRoles.includes(userData.role)
+        ? "/getall-merchant-grouping"
+        : `/getall-merchant${userData.role === "MERCHANT_ADMIN" ? `-grouping${merchantCodeParam}` : merchantCodeParam}`;
+    } else {
+      endpoint = merchantRoles.includes(userData.role)
+        ? `/getall-merchant${merchantCodeParam}`
+        : "/getall-merchant";
     }
-    else {
-      merchantCodes = await getApi("/getall-merchant");
-    }
+
+    merchantCodes = await getApi(endpoint);
 
     if (merchantCodes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantCodes?.error?.message, 401);
@@ -63,29 +71,31 @@ const MerchantCodeSelectBox = ({
           value: merchant.code,
         }));
       const merchants = formattedMerchantCodes?.map((item) => item.value);
-      localStorage.setItem(
-        "selectedMerchantCode",
-        JSON.stringify(merchants)
+      localStorage.setItem("selectedMerchantCode", JSON.stringify(merchants));
+      const sortedList = [...formattedMerchantCodes].sort((a, b) =>
+        a.label.localeCompare(b.label)
       );
-      const sortedList = [...formattedMerchantCodes].sort((a, b) => a.label.localeCompare(b.label));
       setMerchantCodeOptions(sortedList);
-      const selectedMerchantSortedList = [...merchants].sort((a, b) => a.localeCompare(b));
+      const selectedMerchantSortedList = [...merchants].sort((a, b) =>
+        a.localeCompare(b)
+      );
       setSelectedMerchantCode(selectedMerchantSortedList);
     } else {
-      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants?.filter((merchant) => !merchant.is_deleted).map(
-        (merchant) => ({
+      const formattedMerchantCodes = merchantCodes?.data?.data?.merchants
+        ?.filter((merchant) => !merchant.is_deleted)
+        .map((merchant) => ({
           label: merchant.code,
           value: merchant.code,
-        })
-      );
+        }));
       const merchants = formattedMerchantCodes?.map((item) => item.value);
-      localStorage.setItem(
-        "selectedMerchantCode",
-        JSON.stringify(merchants)
+      localStorage.setItem("selectedMerchantCode", JSON.stringify(merchants));
+      const sortedList = [...formattedMerchantCodes].sort((a, b) =>
+        a.label.localeCompare(b.label)
       );
-      const sortedList = [...formattedMerchantCodes].sort((a, b) => a.label.localeCompare(b.label));
       setMerchantCodeOptions(sortedList);
-      const selectedMerchantSortedList = [...merchants].sort((a, b) => a.localeCompare(b));
+      const selectedMerchantSortedList = [...merchants].sort((a, b) =>
+        a.localeCompare(b)
+      );
       setSelectedMerchantCode(selectedMerchantSortedList);
     }
   };
@@ -121,15 +131,22 @@ const MerchantCodeSelectBox = ({
           </div>
         </div>
         <NotificationContainer />
-        <div className="flex" style={{alignSelf: "end"}}>
-          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === 'MERCHANT_ADMIN') && <Checkbox
-            onClick={() => {
-              setIncludeSubMerchant((prevState) => !prevState);
-              setIncludeSubMerchantFlag((prevState) => !prevState);
-            }}
-          >
-            <span style={{ color: "cornflowerblue"}}>Include Sub Merchant</span>
-          </Checkbox>}
+        <div className="flex" style={{ alignSelf: "end" }}>
+          {(userData.role === "ADMIN" ||
+            userData.role === "TRANSACTIONS" ||
+            userData.role === "OPERATIONS" ||
+            userData.role === "MERCHANT_ADMIN") && (
+              <Checkbox
+                onClick={() => {
+                  setIncludeSubMerchant((prevState) => !prevState);
+                  setIncludeSubMerchantFlag((prevState) => !prevState);
+                }}
+              >
+                <span style={{ color: "cornflowerblue" }}>
+                  Include Sub Merchant
+                </span>
+              </Checkbox>
+            )}
         </div>
       </div>
     </>

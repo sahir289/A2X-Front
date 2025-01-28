@@ -1,4 +1,4 @@
-import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
+import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import {
   Button,
   Form,
@@ -18,7 +18,7 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
-import { getApi, postApiForWithdrawCreation, putApi } from "../../redux/api";
+import { getApi, postApi, postApiForWithdrawCreation, putApi } from "../../redux/api";
 import {
   RequiredRule,
   getQueryFromObject,
@@ -51,6 +51,7 @@ const Withdraw = ({ type }) => {
   const [selectedUTRMethod, setSelectedUTRMethod] = useState("manual");
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
+  const [verification, setVerification] = useState(false);
   const [withdraws, setWithdraws] = useState({
     data: [],
     total: 0,
@@ -63,34 +64,36 @@ const Withdraw = ({ type }) => {
   const [ekoBalance, setEkoBalance] = useState(0);
   const merchantData = useSelector((state) => state.merchant.data);
   const [merchantOptions, setMerchantOptions] = useState([]);
+  const [form] = Form.useForm();
+  const [verificationForm] = Form.useForm();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const labelCol = { span: 10 };
 
   useEffect(() => {
     let isMounted = true; // To avoid state updates on unmounted components
     const fetchMerchants = async () => {
       try {
         let merchant;
-        if (
-          userData.role === "ADMIN" ||
-          userData.role === "TRANSACTIONS" ||
-          userData.role === "OPERATIONS"
-        ) {
-          if (!includeSubMerchant) {
-            merchant = await getApi("/getall-merchant-grouping", {
-              page: 1,
-              pageSize: 1000,
-            });
-          } else {
-            merchant = await getApi("/getall-merchant", {
-              page: 1,
-              pageSize: 1000,
-            });
-          }
+        const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
+        const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+        const options = { page: 1, pageSize: 1000 };
+
+        let endpoint = "";
+
+        const merchantCodeParam = userData.code?.[0] ? `?merchantCode=${userData.code[0]}` : "";
+
+        if (!includeSubMerchant) {
+          endpoint = groupingRoles.includes(userData.role)
+            ? "/getall-merchant-grouping"
+            : `/getall-merchant${userData.role === "MERCHANT_ADMIN" ? `-grouping${merchantCodeParam}` : merchantCodeParam}`;
         } else {
-          merchant = await getApi("/getall-merchant", {
-            page: 1,
-            pageSize: 1000,
-          });
+          endpoint = merchantRoles.includes(userData.role)
+            ? `/getall-merchant${merchantCodeParam}`
+            : "/getall-merchant";
         }
+
+        merchant = await getApi(endpoint, options);
 
         if (isMounted) {
           const options = merchant?.data?.data?.merchants
@@ -112,7 +115,10 @@ const Withdraw = ({ type }) => {
       }
     };
 
-    fetchMerchants();
+    const allowedRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      fetchMerchants();
+    }
 
     // Cleanup function
     return () => {
@@ -139,15 +145,21 @@ const Withdraw = ({ type }) => {
 
   const methodOptions =
     userData?.role === "ADMIN" ||
-    userData?.role === "TRANSACTIONS" ||
-    userData?.role === "OPERATIONS"
+      userData?.role === "TRANSACTIONS" ||
+      userData?.role === "OPERATIONS"
       ? withdrawlMethods
       : [{ value: "manual", label: "Manual", key: "manual" }];
 
   useEffect(() => {
     handleGetWithdraws();
-    fetchUsersData();
-    fetchPayoutBankData(); // get payout bank data
+    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      fetchUsersData();
+    }
+    const allowedRole1 = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRole1.includes(userData.role)) {
+      fetchPayoutBankData(); // get payout bank data
+    }
   }, []);
 
   useEffect(() => {
@@ -170,6 +182,11 @@ const Withdraw = ({ type }) => {
   const handleToggleModal = () => {
     setAddWithdraw(!addWithdraw);
   };
+
+  const handleToggleVerificationModal = () => {
+    setVerification(!verification);
+    verificationForm.resetFields();
+  }
 
   const handleToggleAddVendorModal = () => {
     setAddVendor(!addVendor);
@@ -197,20 +214,27 @@ const Withdraw = ({ type }) => {
         code: isAdminOrTransactions
           ? queryObj.code || null
           : isMerchantAdmin
-          ? queryObj.code || userData?.code
-          : userData?.code || queryObj.code || null,
+            ? queryObj.code || userData?.code
+            : userData?.code || queryObj.code || null,
         ...(isAdminOrTransactions
           ? {}
           : {
-              vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
-            }),
+            vendorCode: userData?.vendorCode || queryObj.vendorCode || null,
+          }),
       };
       getPayoutList(updatedQuery);
     }, 1500);
   };
 
   const fetchUsersData = async () => {
-    const res = await getApi("/getall-vendor");
+    let res = "";
+
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      res = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+    }
+    else {
+      res = await getApi("/getall-vendor")
+    }
     setVendorData(res?.data?.data);
   };
 
@@ -229,8 +253,8 @@ const Withdraw = ({ type }) => {
         type == "In Progress"
           ? "INITIATED"
           : type == "Completed"
-          ? "SUCCESS"
-          : "";
+            ? "SUCCESS"
+            : "";
     }
     if (queryObj?.vendor_code) {
       queryObject.vendorCode = queryObj.vendor_code;
@@ -367,7 +391,7 @@ const Withdraw = ({ type }) => {
       return;
     }
 
-    const merchantList = ['DHM','APPLE','CB','RK','MafiaMundeer','BERU','luna','Bita','treX']
+    const merchantList = ['DHM', 'APPLE', 'CB', 'RK', 'MafiaMundeer', 'BERU', 'luna', 'Bita', 'treX']
     // if (merchantList.includes(merchant.code)) {
     //   const res = await getApi(
     //     `/get-merchants-net-balance?merchantCode=${merchant.code}`,
@@ -405,13 +429,13 @@ const Withdraw = ({ type }) => {
           return;
         }
         else if (merchantList.includes(merchant.code)) {
-          const data = {method: 'eko'};
+          const data = { method: 'eko' };
           const id = res?.data?.data?.payoutId;
           updateWithdraw(data, id);
           handleGetWithdraws({ ...pagination, ...filters }, true);
         }
       })
-      .catch((err) => {})
+      .catch((err) => { })
       .finally(() => {
         setAddLoading(false);
         handleToggleModal();
@@ -468,9 +492,45 @@ const Withdraw = ({ type }) => {
     setFilters({});
     setSelectedUTRMethod("manual");
   };
-  const handleDownloadExcel = () => {};
+  const handleDownloadExcel = () => { };
 
   const hasSelected = selectedData.length > 0;
+
+  const handleEditSubmit = async () => {
+    setAddLoading(true);
+    try {
+      const updatedValues = await form.validateFields();
+      const updatedData = {
+        utr_id: updatedValues.utr_id,
+        status: selectedRecord.status
+      };
+      const res = await putApi(`/update-payout/${selectedRecord.id}`, updatedData);
+      setAddLoading(false);
+      if (res?.data?.statusCode === 200) {
+        NotificationManager.success(res?.data?.message);
+      }
+      setIsEditModalVisible(false);
+      handleGetWithdraws({ ...pagination, ...filters }, true);
+    } catch (error) {
+      console.log("Edit failed:", error);
+    }
+  }
+
+  const verifyPassword = async (data) => {
+    setAddLoading(true);
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    };
+    const res = await postApi("/verify-password", verifyPasswordData);
+    setAddLoading(false);
+    if (res?.data?.statusCode === 200) {
+      setIsEditModalVisible(true);
+      handleToggleVerificationModal();
+    } else {
+      NotificationManager.error(res?.error?.message);
+    }
+  };
 
   return (
     <section>
@@ -485,14 +545,14 @@ const Withdraw = ({ type }) => {
                 userData?.role === "VENDOR" ||
                 userData?.role === "VENDOR_OPERATIONS"
               ) && (
-                <Button
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  onClick={handleToggleModal}
-                >
-                  New Payout
-                </Button>
-              )}
+                  <Button
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    onClick={handleToggleModal}
+                  >
+                    New Payout
+                  </Button>
+                )}
               <div className="flex gap-2">
                 <Button
                   className="mt-2 w-full"
@@ -521,7 +581,7 @@ const Withdraw = ({ type }) => {
             </Button>
           </div>
         </div>
-        <div className="flex" style={{justifySelf: "end", marginRight: "40px"}}>
+        <div className="flex" style={{ justifySelf: "end", marginRight: "40px" }}>
           {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
@@ -532,7 +592,6 @@ const Withdraw = ({ type }) => {
         </div>
         <div className="overflow-x-auto">
           <Table
-
             loading={isLoading}
             data={withdraws.data}
             filters={filters}
@@ -545,6 +604,9 @@ const Withdraw = ({ type }) => {
             userData={userData}
             setSelectedData={handleData}
             selectedData={selectedData}
+            setVerification={setVerification}
+            setSelectedRecord={setSelectedRecord}
+            form={form}
           />
         </div>
         <div className="flex justify-end mt-[10px]">
@@ -784,6 +846,58 @@ const Withdraw = ({ type }) => {
           </div>
         </Form>
       </Modal>
+
+      <Modal
+        title="Edit UTR"
+        open={isEditModalVisible}
+        onOk={handleEditSubmit}
+        onCancel={() => setIsEditModalVisible(false)}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="UTR"
+            name="utr_id"
+            rules={[{ required: true, message: "Please enter UTR" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Password Verification"
+        onCancel={handleToggleVerificationModal}
+        open={verification}
+        footer={false}
+      >
+        <Form
+          form={verificationForm}
+          className="pt-[10px]"
+          labelAlign="left"
+          labelCol={labelCol}
+          onFinish={verifyPassword}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+
+          <div className="flex justify-end">
+            <Button type="primary" loading={addLoading} htmlType="submit">
+              Verify
+            </Button>
+          </div>
+        </Form>
+      </Modal>
+
       <NotificationContainer />
     </section>
   );

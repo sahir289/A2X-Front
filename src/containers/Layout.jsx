@@ -63,15 +63,17 @@
 import { useDispatch, useSelector } from 'react-redux';
 import LeftSidebar from './LeftSidebar';
 import PageContent from './PageContent.jsx';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import { getApi } from '../redux/api.jsx';
 import { removeNotificationMessage } from '../redux/slice/headerSlice.jsx';
 import { initMerchants } from '../redux/slice/merchantSlice.jsx';
 import { useNavigate } from 'react-router-dom';
+import { PermissionContext } from '../components/AuthLayout/AuthLayout.jsx';
 
 function Layout() {
+  const userData = useContext(PermissionContext);
   const dispatch = useDispatch();
   const { newNotificationMessage, newNotificationStatus } = useSelector(state => state.header);
   const navigate = useNavigate();
@@ -91,11 +93,15 @@ function Layout() {
   }, [newNotificationMessage]);
 
   useEffect(() => {
-    handelGetMerchants();
-  }, []);
+    const allowedRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      handelGetMerchants();
+    }
+  }, [userData]);
 
   const handelGetMerchants = async () => {
-    const res = await getApi("/getall-merchant");
+    const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+    const res = await getApi(merchantRoles.includes(userData.role) ? `/getall-merchant?merchantCode=${userData.code[0]}` : "/getall-merchant");
     if (res.error?.error?.response?.status === 401) {
       // Clear previous notifications and show error notification
       NotificationManager.listNotify = [];

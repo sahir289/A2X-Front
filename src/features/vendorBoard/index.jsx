@@ -108,6 +108,17 @@ function VendorBoard() {
   const hasFetchedData = useRef(false); // Track if fetch has been done already
 
   useEffect(() => {
+    const fetchData = async () => {
+      if (context?.role === "VENDOR" || context?.role === "VENDOR_OPERATIONS") {
+        const user = await getApi("/getall-users", { userName: context.userName });
+        setSelectedVendorCode([user?.data?.data?.users.filter(user => user.userName === context.userName)[0].vendor_code]);
+      }
+    };
+
+    fetchData();
+  }, [context?.role]);
+
+  useEffect(() => {
     // Check if fetch has already been done
     if (!hasFetchedData.current && selectedVendorCode.length > 0) {
       fetchPayInDataVendor();
@@ -295,7 +306,7 @@ function VendorBoard() {
   return (
     <>
       {/* {!(context?.role=="VENDOR" || context?.role=="VENDOR_OPERATIONS" ) */}
-      {!(context?.role == "VENDOR" || context?.role == "VENDOR_OPERATIONS") && (
+      {!(context?.role === "VENDOR" || context?.role === "VENDOR_OPERATIONS") && (
         <VendorCodeSelectBox
           selectedVendorCode={selectedVendorCode}
           setSelectedVendorCode={setSelectedVendorCode}

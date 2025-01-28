@@ -5,8 +5,9 @@ import {
   SyncOutlined
 } from "@ant-design/icons";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
-import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from "antd";
+import { Button, Form, Input, Modal, Select, Switch, Table, Tag, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
+import ColumnGroup from "antd/es/table/ColumnGroup";
 import React, { useContext, useEffect, useState } from "react";
 import {
   NotificationContainer,
@@ -22,7 +23,6 @@ import {
 } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
-import ColumnGroup from "antd/es/table/ColumnGroup";
 
 const TableComponent = ({
   data,
@@ -62,15 +62,23 @@ const TableComponent = ({
   const [recordStatus, setRecordStatus] = useState();
   const [showImageColumn, setShowImageColumn] = useState(true);
   const fetchAllPayInBank = async () => {
-    const data = await getApi("/getAll-Payin-bank").then((res) => {
+    let url = "";
+    if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+      url = `/getAll-Payin-bank?vendor_code=${userData.vendorCode}`;
+    } else {
+      url = "/getAll-Payin-bank";
+    }
+    await getApi(url).then((res) => {
       setBankOptions(res?.data?.data)
     }).catch((err) => {
     })
-
   }
 
   useEffect(() => {
-    fetchAllPayInBank()
+    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      fetchAllPayInBank()
+    }
   }, [])
 
   const bankOptionsData = bankOptions.map(bank => ({
@@ -179,7 +187,8 @@ const TableComponent = ({
   };
 
   const handleGetMerchants = async () => {
-    const res = await getApi("/getall-merchant");
+    const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
+    const res = await getApi(merchantRoles.includes(userData.role) ? `/getall-merchant?merchantCode=${userData.code[0]}` : "/getall-merchant");
     if (res.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
       localStorage.clear();
@@ -190,7 +199,10 @@ const TableComponent = ({
   };
 
   useEffect(() => {
-    handleGetMerchants();
+    const allowedRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    if (userData.role && allowedRoles.includes(userData.role)) {
+      handleGetMerchants();
+    }
   }, []);
 
   const merchantOptions = merchants
@@ -329,7 +341,11 @@ const TableComponent = ({
       let resetTransaction;
       let payload = {};
 
+<<<<<<< HEAD
       if (recordStatus === "DISPUTE" && !resetRecord.Merchant.dispute_enabled) {
+=======
+      if (recordStatus === "DISPUTE" && resetRecord.Merchant.dispute_enabled === false) {
+>>>>>>> 96bb755e538d10888e04d354f78d85596b158b7e
         if (data.merchant_order_id) {
           if (data.merchant_order_id === resetRecord.merchant_order_id) {
             NotificationManager.error("Please Enter New Mercahnt Order ID");
@@ -403,11 +419,29 @@ const TableComponent = ({
       setHardResetLoading(false);
     }
   }
+<<<<<<< HEAD
   {
     data.map((val) => (
       console.log(val.method, "a")
     ))
   }
+=======
+
+  const handleStatusToolTip = (record) => {
+    const isFromPortal = record.user_submitted_utr || record.utr;
+    const methodMessage = `from intent- ${record.method}`;
+
+    switch (record.status) {
+      case "PENDING":
+        return isFromPortal ? "Pending from the Portal" : `Pending ${methodMessage}`;
+      case "FAILED":
+        return isFromPortal ? "Failed after dispute" : `Failed ${methodMessage}`;
+      default:
+        return;
+    }
+  };
+
+>>>>>>> 96bb755e538d10888e04d354f78d85596b158b7e
   return (
     <>
       <div className="font-serif pt-3 flex bg-zinc-50 rounded-lg">
@@ -627,7 +661,7 @@ const TableComponent = ({
                   icon={
                     value === "ASSIGNED" ? (
                       <SyncOutlined spin />
-                    ) : value === "SUCCESS" ? (
+                    ) : (value === "SUCCESS" || value === "PENDING" || value === "FAILED") ? (
                       ""
                     ) : (
                       <ExclamationCircleOutlined />
@@ -638,6 +672,19 @@ const TableComponent = ({
                 </Tag>
                 {(record.is_notified === false && value === "SUCCESS") && <BellTwoTone onClick={() => setNotified(record.id)} />}
                 {(record.is_notified && value === "SUCCESS") && <BellTwoTone twoToneColor="#52c41a" />}
+                {(value === "PENDING" || value === "FAILED") && <Tooltip
+                    color="white"
+                    //  style={{marginRight:"4px"}}
+                    placement="bottomRight"
+                    title={
+                      <div className="flex flex-col gap-1 text-black p-2">
+
+                        {handleStatusToolTip(record)}
+                      </div>
+                    }
+                  >
+                    <ExclamationCircleOutlined style={{ fontSize: "12px" }} />
+                  </Tooltip>}
               </span>
             </>
           )}
@@ -856,6 +903,11 @@ const TableComponent = ({
           }
           dataIndex="bank_name" // Adjust according to actual data structure
           key="bank_name"
+          hidden={
+            filterValues?.loggedInUserRole === "MERCHANT_ADMIN" ||
+            filterValues?.loggedInUserRole === "MERCHANT_OPERATIONS" ||
+            filterValues?.loggedInUserRole === "MERCHANT"
+          }
           className="bg-white"
           width={"24px"}
         // render={(text, record) => getBankCode(record)}
