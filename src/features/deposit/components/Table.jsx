@@ -341,11 +341,7 @@ const TableComponent = ({
       let resetTransaction;
       let payload = {};
 
-<<<<<<< HEAD
-      if (recordStatus === "DISPUTE" && !resetRecord.Merchant.dispute_enabled) {
-=======
       if (recordStatus === "DISPUTE" && resetRecord.Merchant.dispute_enabled === false) {
->>>>>>> 96bb755e538d10888e04d354f78d85596b158b7e
         if (data.merchant_order_id) {
           if (data.merchant_order_id === resetRecord.merchant_order_id) {
             NotificationManager.error("Please Enter New Mercahnt Order ID");
@@ -419,13 +415,6 @@ const TableComponent = ({
       setHardResetLoading(false);
     }
   }
-<<<<<<< HEAD
-  {
-    data.map((val) => (
-      console.log(val.method, "a")
-    ))
-  }
-=======
 
   const handleStatusToolTip = (record) => {
     const isFromPortal = record.user_submitted_utr || record.utr;
@@ -441,7 +430,6 @@ const TableComponent = ({
     }
   };
 
->>>>>>> 96bb755e538d10888e04d354f78d85596b158b7e
   return (
     <>
       <div className="font-serif pt-3 flex bg-zinc-50 rounded-lg">
@@ -673,18 +661,18 @@ const TableComponent = ({
                 {(record.is_notified === false && value === "SUCCESS") && <BellTwoTone onClick={() => setNotified(record.id)} />}
                 {(record.is_notified && value === "SUCCESS") && <BellTwoTone twoToneColor="#52c41a" />}
                 {(value === "PENDING" || value === "FAILED") && <Tooltip
-                    color="white"
-                    //  style={{marginRight:"4px"}}
-                    placement="bottomRight"
-                    title={
-                      <div className="flex flex-col gap-1 text-black p-2">
+                  color="white"
+                  //  style={{marginRight:"4px"}}
+                  placement="bottomRight"
+                  title={
+                    <div className="flex flex-col gap-1 text-black p-2">
 
-                        {handleStatusToolTip(record)}
-                      </div>
-                    }
-                  >
-                    <ExclamationCircleOutlined style={{ fontSize: "12px" }} />
-                  </Tooltip>}
+                      {handleStatusToolTip(record)}
+                    </div>
+                  }
+                >
+                  <ExclamationCircleOutlined style={{ fontSize: "12px" }} />
+                </Tooltip>}
               </span>
             </>
           )}
@@ -825,20 +813,34 @@ const TableComponent = ({
             render={(text) => text || "--"}
           />
         </ColumnGroup>
-        {filterValues?.loggedInUserRole === "ADMIN" && 
         <Column
-          title="Method"
+          title={
+            <>
+              <span>Method</span>
+              <br />
+              <Input
+                value={filterValues?.method}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "method")
+                }
+                allowClear
+              />
+            </>
+          }
+          hidden={
+            filterValues?.loggedInUserRole === "ADMIN"
+              ? false
+              : filterValues?.loggedInUserRole === "TRANSACTIONS"
+                ? false
+                : filterValues?.loggedInUserRole === "OPERATIONS"
+                  ? false
+                  : true
+          }
           dataIndex="method"
           key="method"
           width={"10%"}
-          render={(text, r) => {
-            console.log(r.method, "a"); 
-            return <span>{r.method}</span>;
-          }}
-        />}
-
-
-
+          render={(text) => text || "--"}
+        />
         <Column
           title={
             <>

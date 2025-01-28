@@ -888,9 +888,8 @@ const TableComponent = ({
               <br />
               <Select
                 value={filterValues?.vendor_code}
-<<<<<<< HEAD
                 // options={vendorOptions}
-                style={{ width: "110%" }}
+                style={{ width: "90%" }}
                 onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
                 allowClear
               >
@@ -901,13 +900,6 @@ const TableComponent = ({
                   </Select.Option>
                 ))}
               </Select>
-=======
-                options={vendorOptions}
-                style={{ width: "90%" }}
-                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
-                allowClear
-              />
->>>>>>> 96bb755e538d10888e04d354f78d85596b158b7e
             </>
           }
           dataIndex="vendor_code"
