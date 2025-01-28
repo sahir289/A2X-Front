@@ -994,7 +994,6 @@ const TableComponent = ({
                     ? setConfirmAmount(record.confirmed)
                     : setConfirmAmount(record.amount);
                 }}
-                style={{ marginLeft: "8px" }}
               >
                 Reset
               </Button>)}

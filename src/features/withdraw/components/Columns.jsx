@@ -20,7 +20,6 @@ const renderStatusTag = (status) => {
       color = "default"; // Fallback color
 
   }
-
   return (
     <Tag
       color={color}
@@ -468,6 +467,11 @@ export const Columns = (
           );
         }}
       />
+
+{console.log( userData?.role, "role")
+}
+
+    
       <Column
         title="Last Updated"
         dataIndex="updatedAt"
