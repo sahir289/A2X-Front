@@ -171,22 +171,24 @@ export const Columns = (
                       })
                     }
                   />
-                {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && (<BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(r.id)} />)}
                 </>
               );
             }
             return (
-              <Button
-                disabled={r.status === "REJECTED"}
-                onClick={() =>
-                  updateWithdraw({
-                    record: r,
-                    reset: true,
-                  })
-                }
-              >
-                Reset
-              </Button>
+              <>
+                <Button
+                  disabled={r.status === "REJECTED"}
+                  onClick={() =>
+                    updateWithdraw({
+                      record: r,
+                      reset: true,
+                    })
+                  }
+                >
+                  Reset
+                </Button>
+                {(userData?.role === "ADMIN" || userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") && (<BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(r.id)} />)}
+              </>
             );
           }}
         />}

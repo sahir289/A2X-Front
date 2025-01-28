@@ -998,7 +998,7 @@ const TableComponent = ({
               >
                 Reset
               </Button>)}
-              <BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} />
+              {(record.status !== "INITIATED") && (<BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} />)}
             </div>
           }
         />
