@@ -401,7 +401,7 @@ const TableComponent = ({
         <div>
         </div>
       </div>
-      <div className="flex" style={{justifySelf: "end", marginRight: "68px"}}>
+      <div className="flex" style={{ justifySelf: "end", marginRight: "68px" }}>
         {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
           onClick={() => {
             setIncludeSubMerchant((prevState) => !prevState);
@@ -848,94 +848,101 @@ const TableComponent = ({
               }}
             />
           )}
-          {/* Column to display useage of bank and it's bank */}
-          <Column
-            title={
-              <>
-                <span className="whitespace-nowrap">Bank Used For</span>
-                <br />
-                <Select
-                  className="flex"
-                  value={filterValues?.bank_used_for}
-                  onChange={(value) =>
-                    handleFilterValuesChange(value, "bank_used_for")
-                  }
-                  allowClear
-                >
-                  <Select.Option value="">Select</Select.Option>
-                  <Select.Option value="payIn">PayIn</Select.Option>
-                  <Select.Option value="payOut">PayOut</Select.Option>
-                </Select>
-              </>
-            }
-            dataIndex="bank_used_for"
-            key="bank_used_for"
-            className="bg-white"
-            width={"4%"}
-          />
-          {/* Add column for vendor filter */}
-          <Column
-            title={
-              <>
-                <span className="whitespace-nowrap">Vendors</span>
-                <br />
-                <Select
-                  value={filterValues?.vendor_code}
-                  options={vendorOptions}
-                  style={{ width: "90%" }}
-                  onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
-                  allowClear
-                />
-              </>
-            }
-            dataIndex="vendor_code"
-            key="vendor_code"
-            hidden={filterValues.role !== "ADMIN"}
-            className="bg-white"
-            width={"6%"}
-          />
-          <Column
-            title={
-              <>
-                <span className="whitespace-nowrap">Created at (IST)</span>
-                <br />
-                <Input
-                  disabled
-                  style={{
-                    backgroundColor: "#fafafa",
-                    border: "none",
-                    cursor: "auto",
-                  }}
-                />
-              </>
-            }
-            dataIndex="createdAt"
-            key="createdAt"
-            className="bg-white"
-            width={"6%"}
-            render={(text, record) => createdAt(record)}
-          />
-          <Column
-            title={
-              <>
-                <span className="whitespace-nowrap">Last Scheduled at (IST)</span>
-                <br />
-                <Input
-                  disabled
-                  style={{
-                    backgroundColor: "#fafafa",
-                    border: "none",
-                    cursor: "auto",
-                  }}
-                />
-              </>
-            }
-            dataIndex="updatedAt"
-            key="updatedAt"
-            className="bg-white"
-            width={"6%"}
-            render={(text, record) => lastLogIn(record)}
-          />
+        {/* Column to display useage of bank and it's bank */}
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Bank Used For</span>
+              <br />
+              <Select
+                className="flex"
+                value={filterValues?.bank_used_for}
+                onChange={(value) =>
+                  handleFilterValuesChange(value, "bank_used_for")
+                }
+                allowClear
+              >
+                <Select.Option value="">Select</Select.Option>
+                <Select.Option value="payIn">PayIn</Select.Option>
+                <Select.Option value="payOut">PayOut</Select.Option>
+              </Select>
+            </>
+          }
+          dataIndex="bank_used_for"
+          key="bank_used_for"
+          className="bg-white"
+          width={"4%"}
+        />
+        {/* Add column for vendor filter */}
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Vendors</span>
+              <br />
+              <Select
+                value={filterValues?.vendor_code}
+                // options={vendorOptions}
+                style={{ width: "110%" }}
+                onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
+                allowClear
+              >
+                <Select.Option value="">Select</Select.Option>
+                {vendorOptions.map((option) => (
+                  <Select.Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Select.Option>
+                ))}
+              </Select>
+            </>
+          }
+          dataIndex="vendor_code"
+          key="vendor_code"
+          hidden={filterValues.role !== "ADMIN"}
+          className="bg-white"
+          width={"6%"}
+        />
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Created at (IST)</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="createdAt"
+          key="createdAt"
+          className="bg-white"
+          width={"6%"}
+          render={(text, record) => createdAt(record)}
+        />
+        <Column
+          title={
+            <>
+              <span className="whitespace-nowrap">Last Scheduled at (IST)</span>
+              <br />
+              <Input
+                disabled
+                style={{
+                  backgroundColor: "#fafafa",
+                  border: "none",
+                  cursor: "auto",
+                }}
+              />
+            </>
+          }
+          dataIndex="updatedAt"
+          key="updatedAt"
+          className="bg-white"
+          width={"6%"}
+          render={(text, record) => lastLogIn(record)}
+        />
       </Table>
 
       <UpdateMerchant
