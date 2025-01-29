@@ -53,7 +53,23 @@ const MerchantCodeSelectBox = ({
         : "/getall-merchant";
     }
 
-    merchantCodes = await getApi(endpoint);
+    const merchantData = await getApi(endpoint);
+    if (userData.role === "MERCHANT_ADMIN" && includeSubMerchant) {
+      const mergedMerchants = merchantData.data.data.merchants.flatMap(merchant => {
+        return [merchant, ...(merchant.subMerchants || [])];
+      });
+
+      merchantCodes = {
+        data: {
+          data: {
+            merchants: mergedMerchants,
+          },
+        },
+      }
+    }
+    else {
+      merchantCodes = merchantData;
+    }
 
     if (merchantCodes.error?.error?.response?.status === 401) {
       NotificationManager.error(merchantCodes?.error?.message, 401);
