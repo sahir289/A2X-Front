@@ -5,11 +5,8 @@ import TitleCard from "../../../components/Cards/TitleCard";
 import { formatCurrency } from "../../../utils/utils";
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
-
 const PieChart = ({ pieValues ,title }) => {
-  // Debugging: Log the input data
   // console.log("pieValues:", pieValues);
-
 const labels = pieValues.map((item) => item.title);
 const data = pieValues.map((item) => item.value);
   // const data=[90,60,50,60,40,20,10];
@@ -17,7 +14,6 @@ const data = pieValues.map((item) => item.value);
   // Debugging: Log the processed labels and data
   // console.log("labels:", labels);
   // console.log("data:", data);
-
   // Define the chart data
   const generateColors = (num) => {
     const colors = [];
@@ -38,13 +34,12 @@ const data = pieValues.map((item) => item.value);
       "#DDA0DD", // Plum
       "#98FB98", // Pale Green
       "#D3D3D3", // Light Gray
-      "#F0E68C", // Khaki
+      "#F0E68C", 
     ];
 
   for (let i = 0; i < num; i++) {
       colors.push(baseColors[i % baseColors.length]);
     }
-
     return colors;
   };
 
@@ -52,16 +47,14 @@ const data = pieValues.map((item) => item.value);
     labels: labels,
     datasets: [
       {
-        label: "Amount (₹)",
+        label: "(₹)",
         data: data,
         backgroundColor: generateColors(data.length),
         borderWidth: 1,
       },
     ],
   };
-
   // console.log(chartData.datasets[0].data,"data in chart")
-
   // Chart options
   const options = {
     responsive: true,
@@ -72,11 +65,9 @@ const data = pieValues.map((item) => item.value);
       tooltip: {
         callbacks: {
           label: function (context) {
-           if(title=="Status"){
-            return ` Counts ${(context.raw)}`;}
-            else{
-              return `   ${formatCurrency(context.raw)}`
-            }
+            return title === "Transactions Overview"
+              ? `  ${formatCurrency(context.raw)}`
+              : ` Count: ${context.raw}`;
           },
         },
       },

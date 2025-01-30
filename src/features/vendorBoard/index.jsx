@@ -27,6 +27,7 @@ function VendorBoard() {
   const [addLoading, setAddLoading] = useState(false);
   const [pieData,setpieData]=useState([]);
   const [statusData,setStatusData] = useState([]);
+  const [statusDataPayout,setStatusDataPayout] = useState([]);
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -187,60 +188,179 @@ function VendorBoard() {
         `/get-payInDataVendor?${query}`,
         dateRange
       );
+      const payInOutDataAll = await getApi(
+        `/get-payInDataVendorALL?${query}`,
+        dateRange
+      );
     //  console.log(payInOutData?.data?.data?.payInOutData?.payOutData)
-      const countMethodsForSuccess = (data) => {
-        let nullCount = 0;
-        let Count = 0;
-        let RejectCount = 0;
-        data?.forEach((item) => {
-          if (item.status === "SUCCESS") {
-            if (item.method === null) {
-              nullCount++;
-            }
+    const countMethodsForSuccessPayin = (data) => {
+      let SuccessManual = 0;
+      let SuccessOnline = 0;
+      let RejectCount = 0;
+      let PendingCount = 0;
+      let FailedCount = 0;
+      let AssignedCount = 0;
+      let DroppedCount = 0;
+      let DisputeCount = 0;
+      let DuplicateCount = 0;
+     let Bank_Mismatch = 0;
 
-             else {
-            Count++;
-            }
-          }
-          else if(item.status === "REJECTED"){
-          RejectCount++;
-          }
-        });
+      data?.forEach((item) => {
 
-        return { nullCount,Count,RejectCount };
+          switch (item.status) {
+              case "SUCCESS":
+                  if (item.method === null) {
+                      SuccessManual++;
+                  } else {
+                    console.log(item.method)
+                      SuccessOnline++;
+                  }
+                  break;
+              case "PENDING":
+                  PendingCount++;
+                  break;
+              case "REJECTED":
+                  RejectCount++;
+                  break;
+              case "FAILED":
+                  FailedCount++;
+                  break;
+              case "ASSIGNED":
+                  AssignedCount++;
+                  break;
+              case "DROPPED":
+                  DroppedCount++;
+                  break;
+              case "DISPUTE":
+                  DisputeCount++;
+                  break;
+              case "DUPLICATE":
+                  DuplicateCount++;
+                  break;
+              case "BANK_MISMATCH":
+                Bank_Mismatch++;
+                break;
+              default:
+                  break;
+          }
+      });
+
+      return {
+          SuccessManual,
+          SuccessOnline,
+          RejectCount,
+          PendingCount,
+          FailedCount,
+          AssignedCount,
+          DroppedCount,
+          DisputeCount,
+          DuplicateCount,
+          Bank_Mismatch,
       };
+  };
+ const countMethodsForSuccessPayout = (data) => {
+      let SuccessManual = 0;
+      let SuccessOnline = 0;
+      let RejectCount = 0;
+     let IntialCount = 0;
+      data?.forEach((item) => {
 
-      // Example usage:
-      const payInResults = countMethodsForSuccess(payInOutData?.data?.data?.payInOutData?.payInData || []);
-      const payOutResults = countMethodsForSuccess(payInOutData?.data?.data?.payInOutData?.payOutData || []);
+          switch (item.status) {
+              case "SUCCESS":
+                  if (item.method === null) {
+                      SuccessManual++;
+                  } else {
+                      SuccessOnline++;
+                  }
+                  break;
+              case "REJECTED":
+                  RejectCount++;
+                  break;
+              case "INITIAL":
+                  IntialCount++;
+                  break;
+              default:
+                  break;
+          }
+      });
+
+      return {
+          SuccessManual,
+          SuccessOnline,
+          RejectCount,
+         IntialCount
+      };
+  };
+// Example usage:
+      const payInResults = countMethodsForSuccessPayin(payInOutDataAll?.data?.data?.payInOutData?.payInData || []);
+      const payOutResults = countMethodsForSuccessPayout(payInOutDataAll?.data?.data?.payInOutData?.payOutData || []);
+      setStatusDataPayout([
+        {
+          title: "Success By Manual",
+          value: payOutResults.SuccessManual,
+        },
+        {
+          title: "Success By Eko",
+          value: payOutResults.SuccessOnline,
+        },
+        {
+          title: "Rejected",
+          value: payOutResults.RejectCount,
+        },
+        {
+          title: "Status Initial",
+          value: payOutResults.IntialCount,
+        }
+      ]);
+
+
 
       setStatusData([
         {
-          title: "Deposit By Manual",
-          value: payInResults.nullCount,
+          title: "Success By Manual",
+          value: payInResults.SuccessManual,
         },
         {
-          title: "Deposit By RazorPay",
-          value: payInResults.Count,
+          title: "Success By RazorPay",
+          value: payInResults.SuccessOnline,
         },
         {
-          title: "Withdraw By Manual",
-          value: payOutResults.nullCount,
+          title: "Status Pending",
+          value: payInResults.PendingCount,
         },
         {
-          title: "Withdraw by Eko",
-          value: payOutResults.Count,
+          title: "Status Failed",
+          value: payInResults.FailedCount,
         },
         {
-          title: "Withdraw Rejected",
-          value: payOutResults.RejectCount,
+          title: "Status Reject",
+          value: payInResults.RejectCount,
+        },
+        {
+          title: "Status Assigned",
+          value: payInResults.AssignedCount,
+        },
+        {
+          title: "Bank Mis_Match",
+          value: payInResults.Bank_Mismatch,
+        },
+        {
+          title: "Duplicate",
+          value: payInResults.DuplicateCount,
+        },
+        {
+          title: "Dispute",
+          value: payInResults.DisputeCount,
+        },
+        {
+          title: "Dropped",
+          value: payInResults.DroppedCount,
         }
       ]);
+
       // Console logging the values
-      // console.log("PayIn - Null Method Count:", payInResults.nullCount);
-      // console.log("PayIn - Manual Method Count:", payInResults.Count);
-      // console.log("PayOut - Null Method Count:", payOutResults.nullCount);
-      // console.log("PayOut - Manual Method Count:", payOutResults.Count);
+      console.log("PayIn - Null Method Count:", payInResults.Bank_Mismatch);
+
 
       const netBalance = await getApi(`/get-vendors-net-balance?${query}`);
 
@@ -507,13 +627,13 @@ useEffect(() => {
         setInterval={setIntervalWithdraw}
         currentCateRange={dateRange}
       /> */}
-
+<PieChart pieValues={pieData} title="Transactions Overview" />
 <div className="flex flex-col md:flex-row justify-between space-y-6 md:space-y-0 md:space-x-6">
   <div className="w-full md:w-1/2">
-    <PieChart pieValues={pieData} title="Transactions Overview" />
+  <PieChart pieValues={statusDataPayout} title="Withdraw Status" />
   </div>
   <div className="w-full md:w-1/2">
-    <PieChart pieValues={statusData} title="Transactions Status" />
+    <PieChart pieValues={statusData} title="Deposit Status" />
   </div>
 </div>
     </>
