@@ -1,19 +1,19 @@
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
+import { Button } from "antd";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
 import { calculateISTDateRange, formatCurrency, formatDateToISTString } from "../../utils/utils";
-import BarChart from "./components/BarChart";
+// import BarChart from "./components/BarChart";
+import PieChart from "./components/PieChart";
 import VendorBoardStats from "./components/VendorBoardStats";
 import VendorBoardTopBar from "./components/VendorBoardTopBar";
 import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
-import { Button } from "antd";
-
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -25,6 +25,8 @@ function VendorBoard() {
 
   const [selectedVendorCode, setSelectedVendorCode] = useState([]);
   const [addLoading, setAddLoading] = useState(false);
+  const [pieData,setpieData]=useState([]);
+  const [statusData,setStatusData] = useState([]);
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -124,7 +126,8 @@ function VendorBoard() {
       fetchPayInDataVendor();
       hasFetchedData.current = true; // Set it to true after the initial fetch
     }
-  }, [selectedVendorCode, dateRange])
+  }, [selectedVendorCode, dateRange]);
+
 
   const updateVendorBoardPeriod = (newRange, intervalValue) => {
     const startDate = newRange.startDate;
@@ -184,6 +187,61 @@ function VendorBoard() {
         `/get-payInDataVendor?${query}`,
         dateRange
       );
+    //  console.log(payInOutData?.data?.data?.payInOutData?.payOutData)
+      const countMethodsForSuccess = (data) => {
+        let nullCount = 0;
+        let Count = 0;
+        let RejectCount = 0;
+        data?.forEach((item) => {
+          if (item.status === "SUCCESS") {
+            if (item.method === null) {
+              nullCount++;
+            }
+
+             else {
+            Count++;
+            }
+          }
+          else if(item.status === "REJECTED"){
+          RejectCount++;
+          }
+        });
+
+        return { nullCount,Count,RejectCount };
+      };
+
+      // Example usage:
+      const payInResults = countMethodsForSuccess(payInOutData?.data?.data?.payInOutData?.payInData || []);
+      const payOutResults = countMethodsForSuccess(payInOutData?.data?.data?.payInOutData?.payOutData || []);
+
+      setStatusData([
+        {
+          title: "Deposit By Manual",
+          value: payInResults.nullCount,
+        },
+        {
+          title: "Deposit By RazorPay",
+          value: payInResults.Count,
+        },
+        {
+          title: "Withdraw By Manual",
+          value: payOutResults.nullCount,
+        },
+        {
+          title: "Withdraw by Eko",
+          value: payOutResults.Count,
+        },
+        {
+          title: "Withdraw Rejected",
+          value: payOutResults.RejectCount,
+        }
+      ]);
+      // Console logging the values
+      // console.log("PayIn - Null Method Count:", payInResults.nullCount);
+      // console.log("PayIn - Manual Method Count:", payInResults.Count);
+      // console.log("PayOut - Null Method Count:", payOutResults.nullCount);
+      // console.log("PayOut - Manual Method Count:", payOutResults.Count);
+
       const netBalance = await getApi(`/get-vendors-net-balance?${query}`);
 
       if (payInOutData.error) {
@@ -199,9 +257,9 @@ function VendorBoard() {
       const settlementData = payInOutData?.data?.data?.payInOutData?.settlementData;
       const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
 
+
       setDepositData(payInData);
       setWithdrawData(payOutData);
-
       let payInAmount = 0;
       let payInCommission = 0;
       let payInCount = 0;
@@ -224,6 +282,7 @@ function VendorBoard() {
         payOutCommission += Number(0); // name changed to handle the spelling err.
         payOutCount += 1;
       });
+
 
       reversePayOutData?.forEach((data) => {
         reversePayOutAmount += Number(data.amount);
@@ -302,6 +361,15 @@ function VendorBoard() {
       setAddLoading(false);
     }
   };
+ // Function to set the pie data
+
+useEffect(() => {
+  setpieData(payInOutData.filter(item =>
+    ["Deposit","Withdraw","Reversed Withdraw","Settlement","Lien","Net Balance","Total Net Balance"].includes(item.title)
+  ));
+}, [payInOutData]);
+// console.log(pieData,"this is piedata values");
+
 
   return (
     <>
@@ -313,7 +381,7 @@ function VendorBoard() {
         />
       )}
 
-      <div className="grid lg:grid-cols-2 mt-4 md:grid-cols-1 grid-cols-1 gap-6">
+      <div className="grid lg:grid-cols-2 mt-4  md:grid-cols-1 grid-cols-1 gap-6">
         <div className="grid grid-row-1 md:grid-cols-2 gap-6">
           {payInOutData.map((data, index) => {
             return (
@@ -329,7 +397,7 @@ function VendorBoard() {
           })}
         </div>
 
-        <div className="grid grid-row-1">
+        <div className="grid grid-row-1 ">
           <VendorBoardTopBar
             updateVendorBoardPeriod={updateVendorBoardPeriod}
             dateValue={dateRange}
@@ -344,6 +412,7 @@ function VendorBoard() {
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
+
                 return (
                   <div key={index}>
                     {data.title === "Deposit" && (
@@ -424,7 +493,7 @@ function VendorBoard() {
         </div>
       </div>
 
-      <BarChart
+      {/* <BarChart
         title={`Deposit`}
         data={depositData}
         interval={intervalDeposit}
@@ -437,7 +506,16 @@ function VendorBoard() {
         interval={intervalWithdraw}
         setInterval={setIntervalWithdraw}
         currentCateRange={dateRange}
-      />
+      /> */}
+
+<div className="flex flex-col md:flex-row justify-between space-y-6 md:space-y-0 md:space-x-6">
+  <div className="w-full md:w-1/2">
+    <PieChart pieValues={pieData} title="Transactions Overview" />
+  </div>
+  <div className="w-full md:w-1/2">
+    <PieChart pieValues={statusData} title="Transactions Status" />
+  </div>
+</div>
     </>
   );
 }

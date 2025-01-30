@@ -80,8 +80,7 @@ const UpdateMerchant = ({
     //     merchantId: element?.merchantId,
     //     includeSubMerchant
     //   }
-
-      await postApi("/add-bank-merchant", formData).then(async(res) => {
+await postApi("/add-bank-merchant", formData).then(async(res) => {
         if (res?.error) {
           return;
         }
