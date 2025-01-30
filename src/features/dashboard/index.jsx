@@ -114,6 +114,8 @@ function Dashboard() {
     // Check if fetch has already been done
     if (!hasFetchedData.current && selectedMerchantCode.length > 0) {
       fetchPayInDataMerchant();
+      fetchPayInDataMerchantAllStatus();
+
       hasFetchedData.current = true; // Set it to true after the initial fetch
     }
   }, [selectedMerchantCode, dateRange, includeSubMerchant])
@@ -176,6 +178,7 @@ function Dashboard() {
         setAddLoading(false);
         return;
       }
+   
 
       const netBalanceAmount = netBalance?.data?.data?.totalNetBalance;
 
@@ -294,6 +297,59 @@ function Dashboard() {
       setAddLoading(false);
     }
   };
+
+
+
+  const fetchPayInDataMerchantAllStatus = async () => {
+    try {
+      setAddLoading(true);
+      let query = selectedMerchantCode
+        .map((code) => "merchantCode=" + encodeURIComponent(code))
+        .join("&");
+
+      let apidata = {
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        includeSubMerchant
+      }
+      const payInOutDataAllStatus = await getApi(
+        `/get-payInDataMerchant-allStatus?${query}`,
+        apidata,
+      );
+
+      
+      let data = {
+        includeSubMerchant
+      }
+      const netBalance = await getApi(
+        `/get-merchants-net-balance?${query}`,
+        data,
+      );
+
+      if (netBalance.error) {
+        setAddLoading(false);
+        return;
+      }
+
+      if (payInOutDataAllStatus.error) {
+        setAddLoading(false);
+        return;
+      }
+ 
+
+      
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setAddLoading(false);
+    }
+  };
+
+
+
+
+
+
 
   return (
     <>
