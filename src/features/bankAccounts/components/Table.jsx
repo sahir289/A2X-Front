@@ -71,6 +71,9 @@ const TableComponent = ({
   const [deleteRecord, setDeleteRecord] = useState(null);
   // Password verification while deleting bank account
   const [verification, setVerification] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const[update, setUpdate] =useState({});
+  const [verificationEdit, setVerificationEdit] = useState(false)
   const [downloadReport, setDownloadReport] = useState(false);
   const [bankName, setBankName] = useState();
   const [addLoading, setAddLoading] = useState(false);
@@ -97,7 +100,6 @@ const TableComponent = ({
 
   const adjustedISTStartDate = new Date(startIST.getTime() - istOffset);
   const adjustedISTEndDate = new Date(endIST.getTime() - istOffset);
-
   const [dateRange, setDateRange] = useState({
     startDate: adjustedISTStartDate,
     endDate: adjustedISTEndDate,
@@ -265,9 +267,13 @@ const TableComponent = ({
   // Password verification while deleting bank account
   const handleToggleModal = () => {
     setVerification(!verification);
-    form.resetFields();
-  };
 
+    // form.resetFields();
+  };
+  const handleEdit = () => {
+    setVerificationEdit(!verificationEdit);
+ 
+  }
   const handleReportToggleModal = () => {
     setDownloadReport(!downloadReport);
     form.resetFields();
@@ -291,6 +297,7 @@ const TableComponent = ({
       userName: userData.userName,
       password: data.password,
     };
+   
     const res = await postApi("/verify-password", verifyPasswordData);
     setAddLoading(false);
     if (res?.data?.statusCode === 200) {
@@ -301,8 +308,44 @@ const TableComponent = ({
     }
   };
 
-  const handleEditSubmit = async () => {
+
+  const handleVerification = async (data) => {
     setAddLoading(true);
+
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    };
+
+
+    const res = await postApi("/verify-password", verifyPasswordData);
+    console.log(res, "res")
+    setAddLoading(false)
+
+    if (res?.data?.statusCode === 200) {
+   
+      
+      const resp = await putApi("/update-bank-details", update);
+      if (resp?.data?.statusCode === 200) {
+       
+        NotificationManager.success(resp?.data?.message);
+      }
+      handleEdit();
+    }
+    else {
+      NotificationManager.error(res?.error?.message);
+   
+
+    }
+  
+  };
+
+
+  const handleEditSubmit = async () => {
+
+    setVerificationEdit(true);
+    setIsEditModalVisible(false);
+
     try {
       const updatedValues = await form.validateFields();
       const updatedData = {
@@ -314,15 +357,14 @@ const TableComponent = ({
         min_payin: updatedValues.min_payin,
         max_payin: updatedValues.max_payin,
       };
-      const res = await putApi("/update-bank-details", updatedData);
-      setAddLoading(false);
-      if (res?.data?.statusCode === 200) {
-        NotificationManager.success(res?.data?.message);
-      }
-      setIsEditModalVisible(false);
+      setUpdate(updatedData)
+
+      setLoading(true)
+
     } catch (error) {
       console.log("Edit failed:", error);
     }
+
   };
   //reset filter from search fields
   const handleResetSearchFields = () => {
@@ -961,22 +1003,13 @@ const TableComponent = ({
         includeSubMerchant={includeSubMerchant}
       />
 
-      <DeleteModal
-        record={deleteRecord}
-        isDeletePanelOpen={isDeletePanelOpen}
-        setIsDeletePanelOpen={setIsDeletePanelOpen}
-        modalTitle="Delete Bank"
-        deleteMessage="Are you sure you want to delete this bank account "
-        displayItem={`${deleteRecord?.ac_name}?`}
-        handleTableChange={handleTableChange}
-        includeSubMerchant={includeSubMerchant}
-      />
       <NotificationContainer />
 
       {/* Password verification Modal */}
       <Modal
         title="Password Verification"
         onCancel={handleToggleModal}
+
         open={verification}
         footer={false}
       >
@@ -1001,7 +1034,8 @@ const TableComponent = ({
           </Form.Item>
 
           <div className="flex justify-end">
-            <Button type="primary" loading={addLoading} htmlType="submit">
+            <Button type="primary" loading={addLoading} htmlType="submit"
+            >
               Verify
             </Button>
           </div>
@@ -1012,7 +1046,8 @@ const TableComponent = ({
         title="Edit Bank Details"
         open={isEditModalVisible}
         onOk={handleEditSubmit}
-        onCancel={() => setIsEditModalVisible(false)}
+        onCancel={() => {setIsEditModalVisible(false); setVerificationEdit(false) }}
+        okText="Update"
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -1096,6 +1131,50 @@ const TableComponent = ({
           </Form.Item>
         </Form>
       </Modal>
+
+
+{!isEditModalVisible &&
+      <Modal
+        title="Password Verification"
+        onCancel={()=>{setIsEditModalVisible(!isEditModalVisible);form.resetFields();}}
+        open={verificationEdit}
+        footer={false}
+      >
+        <Form
+          form={form}
+          className="pt-[10px]"
+          labelAlign="left"
+          labelCol={labelCol}
+          onFinish={handleVerification}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+
+          <div className="flex justify-end">
+            <Button type="primary" loading={addLoading} htmlType="submit"
+            >
+
+              Verify
+            </Button>
+          </div>
+        </Form>
+      </Modal>}
+
+
+
+
+
+
       <Modal
         title="Download Bank Report"
         onCancel={handleReportToggleModal}
