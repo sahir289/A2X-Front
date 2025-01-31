@@ -468,8 +468,6 @@ export const Columns = (
         }}
       />
 
-{console.log( userData?.role, "role")
-}
 
     
       <Column

@@ -16,6 +16,8 @@ import {
 } from "../../utils/utils";
 import MerchantCodeSelectBox from "./components/MerchantCodeSelectBox";
 import { Button } from "antd";
+import RechartsPieChartComponent from "./components/PieChart";
+import RechartsPieChartComponentWithdraw from "./components/RechartsPieChartComponentWithdraw";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -26,6 +28,16 @@ dayjs.tz.setDefault("Asia/Kolkata");
 function Dashboard() {
   const [selectedMerchantCode, setSelectedMerchantCode] = useState([]);
   const [addLoading, setAddLoading] = useState(false);
+  const [razorCount, setRazorCount] = useState()
+  const [ekoCount, setEkoCount] = useState()
+  const [PayIn, setPayIn] = useState([])
+  const [PayOut, setPayOut] = useState([])
+  const [PayOutReversed, setPayOutReversed] = useState([])
+
+  const [counts, setCounts] = useState(0)
+  const [countsWithdraw, setCountsWithdraw] = useState(0)
+
+
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -76,7 +88,12 @@ function Dashboard() {
   const [intervalDeposit, setIntervalDeposit] = useState("24h");
   const [intervalWithdraw, setIntervalWithdraw] = useState("24h");
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
-
+  const [nullCount, setNullCount] = useState()
+  const [status, setStatus] = useState("")
+  const [statusWith, setStatusWith] = useState("")
+  const [statusWithReversed, setStatusWithReversed] = useState("")
+  const [method, setMethod] = useState("")
+  const [methodWithdraw, setMethodWithdraw] = useState("")
   const nowUTC = new Date();
   const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
   const nowIST = new Date(nowUTC.getTime() + istOffset);
@@ -104,6 +121,62 @@ function Dashboard() {
       endDate: formatDateToISTString(endUTC),
     });
   }, []);
+
+
+  useEffect(() => {
+    if (!PayIn || !PayOut) return;
+
+    const statuses = PayIn.map(val => val.status);
+    const statusesWith = PayOut.map(val => val ? val.status : "");
+    const statusReversedWithdraw = PayOutReversed.map(val => ({ ...val, status: "REVERSED" }));
+    const reversedPayout = statusReversedWithdraw.map(val => val ? val.status : "");
+
+    setStatus(statuses);
+    setStatusWith([...statusesWith, ...reversedPayout]);
+    setStatusWithReversed(statusReversedWithdraw)
+
+    const countStatus = PayIn.reduce((acc, val) => {
+      acc[val.status] = (acc[val.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    const countRazorpay = PayIn.reduce((acc, val) => {
+      if (val.method === "RazorPay") {
+        acc["RazorPay"] = (acc["RazorPay"] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    const razorPayCount = countRazorpay["RazorPay"] || 0;
+    setRazorCount(razorPayCount);
+    setCounts(countStatus);
+
+    const countEkopay = PayOut.reduce((acc, val) => {
+      if (val.method === "eko") {
+        acc["eko"] = (acc["eko"] || 0) + 1;
+      }
+     
+      return acc;
+    }, {});
+
+    const countEko = countEkopay["eko"] || 0;
+    setEkoCount(countEko)
+
+    const withdrawCount = PayIn.reduce((acc, val) => {
+      acc[val.status] = (acc[val.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    setCountsWithdraw(withdrawCount)
+
+    const uniqueMethods = [...new Set(PayIn.map((val) => val.method))];
+    setMethod(uniqueMethods);
+
+    const withdrawMethods = [...new Set(PayOut.map((val) => val.method))];
+
+    setMethodWithdraw(withdrawMethods)
+
+  }, [PayIn, PayOut]); // Make sure to track changes in PayIn and PayOut
 
   const dispatch = useDispatch();
   const debounceRef = useRef();
@@ -161,6 +234,11 @@ function Dashboard() {
         `/get-payInDataMerchant?${query}`,
         apidata,
       );
+
+      setPayIn(payInOutData?.data?.data?.payInOutData?.payInData)
+      setPayOut(payInOutData?.data?.data?.payInOutData?.payOutData)
+      setPayOutReversed(payInOutData?.data?.data?.payInOutData?.reversedPayOutData)
+
       let data = {
         includeSubMerchant
       }
@@ -178,7 +256,7 @@ function Dashboard() {
         setAddLoading(false);
         return;
       }
-   
+
 
       const netBalanceAmount = netBalance?.data?.data?.totalNetBalance;
 
@@ -312,12 +390,14 @@ function Dashboard() {
         endDate: dateRange.endDate,
         includeSubMerchant
       }
-      const payInOutDataAllStatus = await getApi(
+      const payInOutData = await getApi(
         `/get-payInDataMerchant-allStatus?${query}`,
         apidata,
       );
 
-      
+      setPayIn(payInOutData?.data?.data?.payInOutData?.payInData)
+      setPayOut(payInOutData?.data?.data?.payInOutData?.payOutData)
+
       let data = {
         includeSubMerchant
       }
@@ -331,25 +411,129 @@ function Dashboard() {
         return;
       }
 
-      if (payInOutDataAllStatus.error) {
+      if (payInOutData.error) {
         setAddLoading(false);
         return;
       }
- 
 
-      
+
+      const netBalanceAmount = netBalance?.data?.data?.totalNetBalance;
+
+      const payInData = payInOutData?.data?.data?.payInOutData?.payInData;
+      const payOutData = payInOutData?.data?.data?.payInOutData?.payOutData;
+      const reversePayOutData =
+        payInOutData?.data?.data?.payInOutData?.reversedPayOutData;
+      const settlementData =
+        payInOutData?.data?.data?.payInOutData?.settlementData;
+      const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
+
+      setDepositData(payInData);
+      setWithdrawData(payOutData);
+
+      let payInAmount = 0;
+      let payInCommission = 0;
+      let payInCount = 0;
+      let payOutAmount = 0;
+      let payOutCommission = 0;
+      let reversePayOutAmount = 0;
+      let reversePayOutCommission = 0;
+      let payOutCount = 0;
+      let settlementAmount = 0;
+      let lienAmount = 0;
+
+      payInData?.forEach((data) => {
+        payInAmount += Number(data.confirmed);
+        payInCommission += Number(data.payin_commission);
+        payInCount += 1;
+      });
+
+      payOutData?.forEach((data) => {
+        payOutAmount += Number(data.amount);
+        payOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+        payOutCount += 1;
+      });
+
+      reversePayOutData?.forEach((data) => {
+        reversePayOutAmount += Number(data.amount);
+        reversePayOutCommission += Number(data.payout_commision); // name changed to handle the spelling err.
+      });
+
+      settlementData?.forEach((data) => {
+        settlementAmount += Number(data.amount);
+      });
+
+      lienData?.forEach((data) => {
+        lienAmount += Number(data.amount);
+      });
+
+      setPayInOutData([
+        {
+          title: "Deposit",
+          value: payInAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: payInCount,
+        },
+        {
+          title: "Deposit %",
+          value: payInCommission,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Withdraw",
+          value: payOutAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: payOutCount,
+        },
+        {
+          title: "Reversed Withdraw",
+          value: reversePayOutAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+          count: payOutCount,
+        },
+        {
+          title: "Withdraw %",
+          value: payOutCommission,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Commission",
+          value: payInCommission + payOutCommission - reversePayOutCommission,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Settlement",
+          value: settlementAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Lien",
+          value: lienAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Net Balance",
+          // FORMULA (NET BALANCE = DEPOSIT - (WITHDRAWAL + COMMISSION(BOTH PAYIN COMMISION + PAYOUT COMMISSION)) - SETTLEMENT)
+          value:
+            payInAmount -
+            payOutAmount -
+            (payInCommission + payOutCommission - reversePayOutCommission) -
+            settlementAmount -
+            lienAmount +
+            reversePayOutAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+        {
+          title: "Total Net Balance",
+          value: netBalanceAmount,
+          icon: <UserGroupIcon className="w-8 h-8" />,
+        },
+      ]);
     } catch (error) {
       console.log(error);
     } finally {
       setAddLoading(false);
     }
   };
-
-
-
-
-
-
 
   return (
     <>
@@ -393,7 +577,7 @@ function Dashboard() {
           <Button type='primary'
             loading={addLoading}
             htmlType='submit'
-            onClick={fetchPayInDataMerchant}
+            onClick={() => { fetchPayInDataMerchant(); fetchPayInDataMerchantAllStatus() }}
           >
             Search
           </Button>
@@ -483,20 +667,44 @@ function Dashboard() {
         </div>
       </div>
 
-      <BarChart
+      {/* <BarChart
         title={`Deposit`}
         data={depositData}
         interval={intervalDeposit}
         setInterval={setIntervalDeposit}
         currentCateRange={dateRange}
-      />
-      <BarChart
-        title={`Withdraw`}
-        data={withdrawData}
-        interval={intervalWithdraw}
-        setInterval={setIntervalWithdraw}
-        currentCateRange={dateRange}
-      />
+      /> */}
+      <div className="flex flex-row justify-between">
+
+
+        <RechartsPieChartComponent
+          status={status}
+          method={method}
+          title={`Deposit`}
+          counts={counts}
+          nullCount={nullCount}
+          razorCount={razorCount}
+          PayIn={PayIn}
+        />
+        {/* <BarChart
+          title={`Withdraw`}
+          data={withdrawData}
+          interval={intervalWithdraw}
+          setInterval={setIntervalWithdraw}
+          currentCateRange={dateRange}
+        /> */}
+
+        <RechartsPieChartComponentWithdraw
+          statusWith={statusWith}
+          methodWithdraw={methodWithdraw}
+          title={`Withdraw`}
+          PayOut={PayOut}
+          countsWithdraw={countsWithdraw}
+          ekoCount={ekoCount}
+          nullCount={nullCount}
+        />
+
+      </div>
     </>
   );
 }

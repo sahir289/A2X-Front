@@ -319,7 +319,7 @@ const TableComponent = ({
 
 
     const res = await postApi("/verify-password", verifyPasswordData);
-    console.log(res, "res")
+    
     setAddLoading(false)
 
     if (res?.data?.statusCode === 200) {
