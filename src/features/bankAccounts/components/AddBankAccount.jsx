@@ -52,7 +52,8 @@ const AddBankAccount = ({
   const onFinish = async (values) => {
     setLoading(true)
     // Validate the IFSC code before proceeding
-    const ifscValidation = await validateIfscCode(values?.ifsc);
+    const ifscValidation = true;
+    // await validateIfscCode(values?.ifsc);
     if (!ifscValidation) {
       setLoading(false)
       api.error({

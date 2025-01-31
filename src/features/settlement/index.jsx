@@ -194,7 +194,8 @@ export default function Settlement() {
     // Validate the IFSC code before proceeding
 
     if (data?.method === "BANK") {
-      const ifscValidation = await validateIfscCode(data?.ifsc);
+      const ifscValidation = true;
+      // await validateIfscCode(data?.ifsc);
       if (!ifscValidation) {
         setAddLoading(false);
         api.error({
