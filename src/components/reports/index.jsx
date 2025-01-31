@@ -3,7 +3,7 @@ import { Button, Checkbox, DatePicker, Form, Select } from 'antd';
 import dayjs from "dayjs";
 import React, { useContext, useEffect, useState } from 'react';
 import { getApi } from '../../redux/api';
-import { withdrawlMethods } from '../../utils/utils';
+import { payinMethods, withdrawlMethods } from '../../utils/utils';
 import { PermissionContext } from '../AuthLayout/AuthLayout';
 
 const { RangePicker } = DatePicker;
@@ -175,6 +175,18 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             placeholder="Please select"
             options={withdrawlMethods}
             mode="single"
+            allowClear
+          />
+
+        </Form.Item>)}
+        {(title === "Payins" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
+          name="method"
+          label="Methods"
+        >
+          <Select
+            placeholder="Please select"
+            options={payinMethods}
+            mode="multiple"
             allowClear
           />
 

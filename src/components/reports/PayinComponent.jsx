@@ -48,6 +48,7 @@ const PayinComponent = () => {
     }
     const formatSetting = res.data.data.map((el) => ({
       ID: el.sno || "",
+      Method : el.method || "Manual",  
       "Short Code": el.upi_short_code || "",
       Commission: el.payin_commission || "",
       "User Amount": el.amount || "",
@@ -56,7 +57,7 @@ const PayinComponent = () => {
       Status: el.status || "",
       Bank: el.bank_name || "",
       Merchant: el?.Merchant?.code || "",
-      User: el.user_id || "",
+       User: el.user_id || "",
       "Merchant Order Id": el.merchant_order_id || "",
       "Initiated At": formatDate(el.createdAt) || "",
       "Confirmed At": el.status === "SUCCESS" ? formatDate(el.approved_at) || "" : formatDate(el.updatedAt) || "",

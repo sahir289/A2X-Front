@@ -149,6 +149,15 @@ export const withdrawlMethods = [
    // { value: "blazepe", label: "BlazePe", key: "blazepe" },
 ]
 
+export const payinMethods =[
+  { value: "All", label: "All", key: ["RazorPay", null, "CashFree", "PayU" ] },
+  { value: null, label: "Manual", key: null },
+  { value: "RazorPay", label: "RazorPay", key: "RazorPay" },
+  { value: "CashFree", label: "CashFree", key: "CashFree" },
+  { value: "PayU", label: "PayU", key: "PayU" },
+]
+
+
 //With draw all status options list.
 export const WithDrawAllOptions = [
   { value: '', label: 'All' },
