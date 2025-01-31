@@ -13,7 +13,6 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [merchantOptions, setMerchantOptions] = useState([]);
   const [methodOptions, setMethodOptions] = useState([]);
-
   const [vendorOptions, setVendorOptions] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
 
@@ -172,11 +171,13 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           label="Methods"
         >
           <Select
-            placeholder="Please select"
-            options={withdrawlMethods}
-            mode="single"
-            allowClear
-          />
+  placeholder="Please select"
+  options={withdrawlMethods}
+  mode="multiple"
+  allowClear
+  style={{ width: "100%" }}
+/>
+
 
         </Form.Item>)}
         <div className="my-2 px-3 py-2 rounded shadow-md">

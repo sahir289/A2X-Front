@@ -1,19 +1,19 @@
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
-import { Button } from "antd";
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
 import { calculateISTDateRange, formatCurrency, formatDateToISTString } from "../../utils/utils";
-// import BarChart from "./components/BarChart";
 import PieChart from "./components/PieChart";
 import VendorBoardStats from "./components/VendorBoardStats";
 import VendorBoardTopBar from "./components/VendorBoardTopBar";
 import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { Button } from "antd";
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -22,12 +22,10 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 function VendorBoard() {
   const context = useContext(PermissionContext);
-
-  const [selectedVendorCode, setSelectedVendorCode] = useState([]);
-  const [addLoading, setAddLoading] = useState(false);
-  const [pieData,setpieData]=useState([]);
   const [statusData,setStatusData] = useState([]);
   const [statusDataPayout,setStatusDataPayout] = useState([]);
+  const [selectedVendorCode, setSelectedVendorCode] = useState([]);
+  const [addLoading, setAddLoading] = useState(false);
   const [payInOutData, setPayInOutData] = useState([
     {
       title: "Deposit",
@@ -127,8 +125,7 @@ function VendorBoard() {
       fetchPayInDataVendor();
       hasFetchedData.current = true; // Set it to true after the initial fetch
     }
-  }, [selectedVendorCode, dateRange]);
-
+  }, [selectedVendorCode, dateRange])
 
   const updateVendorBoardPeriod = (newRange, intervalValue) => {
     const startDate = newRange.startDate;
@@ -188,182 +185,179 @@ function VendorBoard() {
         `/get-payInDataVendor?${query}`,
         dateRange
       );
+      const netBalance = await getApi(`/get-vendors-net-balance?${query}`);
+
+      //for piechart 
       const payInOutDataAll = await getApi(
         `/get-payInDataVendorALL?${query}`,
         dateRange
       );
-    //  console.log(payInOutData?.data?.data?.payInOutData?.payOutData)
-    const countMethodsForSuccessPayin = (data) => {
-      let SuccessManual = 0;
-      let SuccessOnline = 0;
-      let RejectCount = 0;
-      let PendingCount = 0;
-      let FailedCount = 0;
-      let AssignedCount = 0;
-      let DroppedCount = 0;
-      let DisputeCount = 0;
-      let DuplicateCount = 0;
-     let Bank_Mismatch = 0;
-
+      //  console.log(payInOutData?.data?.data?.payInOutData?.payOutData)
+      const countMethodsForSuccessPayin = (data) => {
+      let Success = [0, 0];
+      let Rejected = [0, 0];
+      let Pending = [0, 0];
+      let Failed = [0, 0];
+      let Assigned = [0, 0];
+      let Dropped = [0, 0];
+      let Dispute = [0, 0];
+      let Duplicate = [0, 0];
+      let BankMismatch = [0, 0];
+       let Initial = [0,0];
       data?.forEach((item) => {
-
+          const isManual = item.method === null ? 0 : 1;
           switch (item.status) {
               case "SUCCESS":
-                  if (item.method === null) {
-                      SuccessManual++;
-                  } else {
-                    console.log(item.method)
-                      SuccessOnline++;
-                  }
+                  Success[isManual]++;
                   break;
               case "PENDING":
-                  PendingCount++;
+                  Pending[isManual]++;
                   break;
               case "REJECTED":
-                  RejectCount++;
+                  Rejected[isManual]++;
                   break;
               case "FAILED":
-                  FailedCount++;
+                  Failed[isManual]++;
                   break;
               case "ASSIGNED":
-                  AssignedCount++;
+                  Assigned[isManual]++;
                   break;
               case "DROPPED":
-                  DroppedCount++;
+                  Dropped[isManual]++;
                   break;
               case "DISPUTE":
-                  DisputeCount++;
+                  Dispute[isManual]++;
                   break;
               case "DUPLICATE":
-                  DuplicateCount++;
+                  Duplicate[isManual]++;
                   break;
               case "BANK_MISMATCH":
-                Bank_Mismatch++;
-                break;
-              default:
-                  break;
-          }
-      });
-
-      return {
-          SuccessManual,
-          SuccessOnline,
-          RejectCount,
-          PendingCount,
-          FailedCount,
-          AssignedCount,
-          DroppedCount,
-          DisputeCount,
-          DuplicateCount,
-          Bank_Mismatch,
-      };
-  };
- const countMethodsForSuccessPayout = (data) => {
-      let SuccessManual = 0;
-      let SuccessOnline = 0;
-      let RejectCount = 0;
-     let IntialCount = 0;
-      data?.forEach((item) => {
-
-          switch (item.status) {
-              case "SUCCESS":
-                  if (item.method === null) {
-                      SuccessManual++;
-                  } else {
-                      SuccessOnline++;
-                  }
-                  break;
-              case "REJECTED":
-                  RejectCount++;
+                  BankMismatch[isManual]++;
                   break;
               case "INITIAL":
-                  IntialCount++;
-                  break;
+                    Initial[isManual]++;
+                    break;
               default:
                   break;
           }
       });
+      const totalSuccess = Success[0] + Success[1];
+      const totalTransactions = totalSuccess + Rejected[0] + Rejected[1] +
+                                Pending[0] + Pending[1] + Failed[0] + Failed[1] + Assigned[0] + Assigned[1] +
+                                Dropped[0]+Dropped[1]+Dispute[0]+Dispute[1]+Duplicate[0]+Duplicate[1]+BankMismatch[0]+BankMismatch[1]
+                                ;
 
+      const successRatio = totalTransactions > 0 ? (totalSuccess / totalTransactions) * 100 : 0;
+      Success.push(successRatio.toFixed(2));
       return {
-          SuccessManual,
-          SuccessOnline,
-          RejectCount,
-         IntialCount
+          Success,
+          Initial,
+          successRatio,
+          Rejected,
+          Pending,
+          Failed,
+          Assigned,
+          Dropped,
+          Dispute,
+          Duplicate,
+          BankMismatch
       };
-  };
-// Example usage:
+      };
+
+      const countMethodsForSuccessPayout = (data) => {
+      let Success = [0, 0];
+      let Rejected = [0, 0];
+      let Initial = [0, 0];
+      let Reversed = [0, 0];
+
+      data?.forEach((item) => {
+        const isManual = item.method === null ? 0 : 1;
+        console.log(item.status);
+        switch (item.status) {
+            case "SUCCESS":
+                Success[isManual]++;
+                break;
+            case "REJECTED":
+                Rejected[isManual]++;
+                break;
+            case "INITIAL":
+                Initial[isManual]++;
+                break;
+            case "REVERSED":
+                Reversed[isManual]++;
+                break;
+            default:
+                break;
+        }
+      });
+      const totalSuccess = Success[0] + Success[1];
+      const totalTransactions = totalSuccess + Rejected[0] + Rejected[1] +
+                              Initial[0] + Initial[1] + Reversed[0] + Reversed[1];
+
+      const successRatio = totalTransactions > 0 ? (totalSuccess / totalTransactions) * 100 : 0;
+      Success.push(successRatio.toFixed(2));
+      return { Success, Rejected, Initial, Reversed, successRatio};
+      };
+
       const payInResults = countMethodsForSuccessPayin(payInOutDataAll?.data?.data?.payInOutData?.payInData || []);
       const payOutResults = countMethodsForSuccessPayout(payInOutDataAll?.data?.data?.payInOutData?.payOutData || []);
       setStatusDataPayout([
         {
-          title: "Success By Manual",
-          value: payOutResults.SuccessManual,
+          title: "SUCCESS",
+          value: payOutResults.Success,
         },
         {
-          title: "Success By Eko",
-          value: payOutResults.SuccessOnline,
+          title: "INITIAL",
+          value: payOutResults.Initial,
         },
         {
-          title: "Rejected",
-          value: payOutResults.RejectCount,
+          title: "REJECTED",
+          value: payOutResults.Rejected,
         },
         {
-          title: "Status Initial",
-          value: payOutResults.IntialCount,
+          title: "REVERSED",
+          value: payOutResults.Reversed,
         }
+
       ]);
-
-
-
       setStatusData([
         {
-          title: "Success By Manual",
-          value: payInResults.SuccessManual,
+          title: "SUCCESS",
+           value: payInResults.Success,
         },
         {
-          title: "Success By RazorPay",
-          value: payInResults.SuccessOnline,
+          title: "INITIAL",
+          value: payInResults.Initial,
+        }
+        ,{
+          title: "FAILED",
+          value: payInResults.Failed,
         },
         {
-          title: "Status Pending",
-          value: payInResults.PendingCount,
+          title: "DROPPED",
+          value: payInResults.Dropped,
         },
         {
-          title: "Status Failed",
-          value: payInResults.FailedCount,
+          title: "PENDING",
+          value: payInResults.Pending,
         },
         {
-          title: "Status Reject",
-          value: payInResults.RejectCount,
+          title: "ASSIGNED",
+          value: payInResults.Assigned,
         },
         {
-          title: "Status Assigned",
-          value: payInResults.AssignedCount,
+          title: "BANK-MIS_MATCH",
+          value: payInResults.BankMismatch,
         },
         {
-          title: "Bank Mis_Match",
-          value: payInResults.Bank_Mismatch,
+          title: "DUPLICATE",
+          value: payInResults.Duplicate,
         },
         {
-          title: "Duplicate",
-          value: payInResults.DuplicateCount,
-        },
-        {
-          title: "Dispute",
-          value: payInResults.DisputeCount,
-        },
-        {
-          title: "Dropped",
-          value: payInResults.DroppedCount,
+          title: "DISPUTE",
+          value: payInResults.Dispute,
         }
       ]);
-
-      // Console logging the values
-      console.log("PayIn - Null Method Count:", payInResults.Bank_Mismatch);
-
-
-      const netBalance = await getApi(`/get-vendors-net-balance?${query}`);
-
       if (payInOutData.error) {
         setAddLoading(false);
         return;
@@ -377,9 +371,9 @@ function VendorBoard() {
       const settlementData = payInOutData?.data?.data?.payInOutData?.settlementData;
       const lienData = payInOutData?.data?.data?.payInOutData?.lienData;
 
-
       setDepositData(payInData);
       setWithdrawData(payOutData);
+
       let payInAmount = 0;
       let payInCommission = 0;
       let payInCount = 0;
@@ -402,7 +396,6 @@ function VendorBoard() {
         payOutCommission += Number(0); // name changed to handle the spelling err.
         payOutCount += 1;
       });
-
 
       reversePayOutData?.forEach((data) => {
         reversePayOutAmount += Number(data.amount);
@@ -480,16 +473,8 @@ function VendorBoard() {
     } finally {
       setAddLoading(false);
     }
+
   };
- // Function to set the pie data
-
-useEffect(() => {
-  setpieData(payInOutData.filter(item =>
-    ["Deposit","Withdraw","Reversed Withdraw","Settlement","Lien","Net Balance","Total Net Balance"].includes(item.title)
-  ));
-}, [payInOutData]);
-// console.log(pieData,"this is piedata values");
-
 
   return (
     <>
@@ -501,7 +486,7 @@ useEffect(() => {
         />
       )}
 
-      <div className="grid lg:grid-cols-2 mt-4  md:grid-cols-1 grid-cols-1 gap-6">
+      <div className="grid lg:grid-cols-2 mt-4 md:grid-cols-1 grid-cols-1 gap-6">
         <div className="grid grid-row-1 md:grid-cols-2 gap-6">
           {payInOutData.map((data, index) => {
             return (
@@ -517,7 +502,7 @@ useEffect(() => {
           })}
         </div>
 
-        <div className="grid grid-row-1 ">
+        <div className="grid grid-row-1">
           <VendorBoardTopBar
             updateVendorBoardPeriod={updateVendorBoardPeriod}
             dateValue={dateRange}
@@ -532,7 +517,6 @@ useEffect(() => {
           <div className="stats shadow col-span-2">
             <div className="stat">
               {payInOutData.map((data, index) => {
-
                 return (
                   <div key={index}>
                     {data.title === "Deposit" && (
@@ -613,27 +597,12 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* <BarChart
-        title={`Deposit`}
-        data={depositData}
-        interval={intervalDeposit}
-        setInterval={setIntervalDeposit}
-        currentCateRange={dateRange}
-      />
-      <BarChart
-        title={`Withdraw`}
-        data={withdrawData}
-        interval={intervalWithdraw}
-        setInterval={setIntervalWithdraw}
-        currentCateRange={dateRange}
-      /> */}
-<PieChart pieValues={pieData} title="Transactions Overview" />
-<div className="flex flex-col md:flex-row justify-between space-y-6 md:space-y-0 md:space-x-6">
+      <div className="flex flex-col md:flex-row justify-between space-y-6 md:space-y-0 md:space-x-6">
   <div className="w-full md:w-1/2">
-  <PieChart pieValues={statusDataPayout} title="Withdraw Status" />
+  <PieChart pieValues={statusData} title="Deposit Status" />
   </div>
   <div className="w-full md:w-1/2">
-    <PieChart pieValues={statusData} title="Deposit Status" />
+    <PieChart pieValues={statusDataPayout} title="Withdraw Status" />
   </div>
 </div>
     </>

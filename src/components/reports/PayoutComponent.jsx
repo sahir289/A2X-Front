@@ -48,6 +48,7 @@ const PayoutComponent = () => {
     const formatSetting = res.data.data.map((el) => ({
       ID: el.sno || "",
       Status: data.status === "All" ? el.status : data.status,
+      Method: el.method || "manual",
       Description: (el.status === "REJECTED" && data.status === "SUCCESS") ? `Transaction  was REVERSED at ${formatDate(el.rejected_at)}` : (el.status === "REJECTED" && (data.status === "REJECTED" || data.status === "REVERSED")) ? el.rejected_reason : "",
       "User Amount": el.amount || "",
       Commission: el.payout_commision || "",
