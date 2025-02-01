@@ -161,6 +161,11 @@ const routes = [
         name: "Payouts", // name that appear in Sidebar
       },
       {
+        path: "/app/VendorPayout",
+        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
+        name: "Vendor Payouts", // name that appear in Sidebar
+      },
+      {
         path: "/app/report",
         icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
         name: "Accounts", // name that appear in Sidebar
@@ -170,6 +175,7 @@ const routes = [
         icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
         name: "Vendor Accounts", // name that appear in Sidebar
       },
+
     ],
   },
 ];

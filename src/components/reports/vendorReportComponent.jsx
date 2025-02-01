@@ -14,7 +14,6 @@ const VendorReportComponent = () => {
     const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
     const formattedDates = data.range.map((date) => new Date(date));
     delete data.range;
-
     const startDate = formattedDates[0];
     const endDate = formattedDates[1];
 

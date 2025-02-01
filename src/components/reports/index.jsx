@@ -12,7 +12,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
   const userData = useContext(PermissionContext);
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [merchantOptions, setMerchantOptions] = useState([]);
-  const [methodOptions, setMethodOptions] = useState([]);
+  // const [methodOptions, setMethodOptions] = useState([]);
   const [vendorOptions, setVendorOptions] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
 
@@ -20,7 +20,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     const fetchMerchantCodes = async () => {
       let merchantCodes = [];
       try {
-        if (title !== "Vendor Report") {
+        if (title !== "Vendor Report" && title !== "Vendor Payouts") {
           const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
           const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
 
@@ -59,19 +59,18 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           );
         }
         else {
+          console.log(title,"title")
           const vendorCodes = await getApi("/getall-vendor");
-
-          const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
-            ? vendorCodes?.data?.data?.map((vendor) => ({
+        const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
+          ? vendorCodes?.data?.data?.map((vendor) => ({
               label: vendor.vendor_code,
               value: vendor.vendor_code,
-            })) : [];
+            }))
+          : [];
 
-          setVendorOptions(
-            [...formattedVendorCodes].sort((a, b) =>
-              a.label.localeCompare(b.label)
-            )
-          );
+        setVendorOptions([...formattedVendorCodes].sort((a, b) =>
+          a.label.localeCompare(b.label)
+        ));
         }
       } catch (error) {
         if (title !== "Vendor Report") {
@@ -83,7 +82,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     };
 
     fetchMerchantCodes();
-  }, [includeSubMerchant, userData]);
+  }, [includeSubMerchant, userData,title]);
 
   const onCalendarChange = (dates) => {
     setSelectedDates(dates);
@@ -120,7 +119,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     <div className="bg-white p-4">
       <p className="font-bold text-lg">{title}</p>
       <Form className="mt-6 w-[270px]" layout="vertical" onFinish={handleFinish}>
-        {title !== "Vendor Report" && (<Form.Item
+        {(title !== "Vendor Report" && title !== "Vendor Payouts") && (<Form.Item
           name="merchantCode"
           label="Merchant Codes"
           rules={[{ required: true, message: 'Please select merchant code!' }]}
@@ -133,8 +132,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           />
 
         </Form.Item>)}
-
-        {title === "Vendor Report" && (<Form.Item
+        {(title === "Vendor Report" || title === "Vendor Payouts") && (<Form.Item
           name="vendorCode"
           label="Vendor Codes"
           rules={[{ required: true, message: 'Please select vendor code!' }]}
@@ -147,7 +145,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           />
 
         </Form.Item>)}
-        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && title !== "Vendor Report") && (
+        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && (title !== "Vendor Report" && title !== "Vendor Payouts")) && (
           <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
@@ -166,19 +164,17 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             <Select placeholder="Please select" options={statusOptions} />
           </Form.Item>
         )}
-        {(title === "Payouts" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
+
+        {((title === "Payouts") && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
           name="method"
           label="Methods"
         >
           <Select
   placeholder="Please select"
   options={withdrawlMethods}
-  mode="multiple"
+  mode="single"
   allowClear
-  style={{ width: "100%" }}
 />
-
-
         </Form.Item>)}
         <div className="my-2 px-3 py-2 rounded shadow-md">
           <Form.Item

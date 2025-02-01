@@ -36,6 +36,7 @@ const PayoutComponent = () => {
     };
     setLoading(true);
     const res = await postApi("/get-all-payouts", completeData);
+    console.log(res)
     setLoading(false);
     if (res.error) {
       api.error({ description: res.error.message });
@@ -48,7 +49,7 @@ const PayoutComponent = () => {
     const formatSetting = res.data.data.map((el) => ({
       ID: el.sno || "",
       Status: data.status === "All" ? el.status : data.status,
-      Method: el.method || "manual",
+      Method: el.method || "Manual",
       Description: (el.status === "REJECTED" && data.status === "SUCCESS") ? `Transaction  was REVERSED at ${formatDate(el.rejected_at)}` : (el.status === "REJECTED" && (data.status === "REJECTED" || data.status === "REVERSED")) ? el.rejected_reason : "",
       "User Amount": el.amount || "",
       Commission: el.payout_commision || "",
