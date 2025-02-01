@@ -154,7 +154,7 @@ const PayDesign = ({ vendorMethods, handleFinish, setIncludeSubMerchantFlag, tit
           </Form.Item>
         )}
 
-
+{/* 
         {vendorMethods &&
           (<Form.Item
             name="method"
@@ -168,7 +168,7 @@ const PayDesign = ({ vendorMethods, handleFinish, setIncludeSubMerchantFlag, tit
               mode="multiple"
               allowClear
             /></Form.Item>)
-        }
+        } */}
 
 
 
