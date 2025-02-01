@@ -38,7 +38,7 @@ const CheckUTR = ({ handleTableChange }) => {
         form={form}
         layout="vertical"
         name="add_data"
-        className="grid grid-rows-1 md:grid-cols-6 gap-2"
+        className="grid grid-rows-1 md:grid-cols-4 gap-2"
         onFinish={onFinish}
         autoComplete="off"
         initialValues={{
@@ -86,7 +86,7 @@ const CheckUTR = ({ handleTableChange }) => {
           <Input />
         </Form.Item>
 
-        <div className="flex flex-row justify-end items-end gap-1">
+        <div className="flex flex-row justify-start items-end gap-1">
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={isLoading}>
               Check UTR

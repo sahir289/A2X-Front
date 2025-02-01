@@ -5,8 +5,9 @@ import {
   SyncOutlined
 } from "@ant-design/icons";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
-import { Button, Form, Input, Modal, Select, Switch, Table, Tag } from "antd";
+import { Button, Form, Input, Modal, Select, Switch, Table, Tag, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
+import ColumnGroup from "antd/es/table/ColumnGroup";
 import React, { useContext, useEffect, useState } from "react";
 import {
   NotificationContainer,
@@ -22,7 +23,6 @@ import {
 } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
 import { formatCurrency, formatDate } from "../../../utils/utils";
-import ColumnGroup from "antd/es/table/ColumnGroup";
 
 const TableComponent = ({
   data,
@@ -75,7 +75,7 @@ const TableComponent = ({
   }
 
   useEffect(() => {
-    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
     if (userData.role && allowedRoles.includes(userData.role)) {
       fetchAllPayInBank()
     }
@@ -207,13 +207,13 @@ const TableComponent = ({
 
   const merchantOptions = merchants
     ?.filter(
-        (merchant) =>
-            !merchant.is_deleted &&
-            (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+      (merchant) =>
+        !merchant.is_deleted &&
+        (!userData?.code?.length || userData?.code?.includes(merchant?.code))
     )
     .map((merchant) => ({
-        label: merchant.code,
-        value: merchant.code,
+      label: merchant.code,
+      value: merchant.code,
     }))
     .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
 
@@ -242,6 +242,7 @@ const TableComponent = ({
         handleCopy(unlimitedUrl);
         setAddLoading(false);
         setIsOneTimeLinkTrue(false);
+
       }
       else {
         NotificationManager.error("No payin bank found for this merchant");
@@ -299,6 +300,7 @@ const TableComponent = ({
       userId: '',
       // userSubmittedUtr: '',
       utr: '',
+      // method: '',
       payInId: '',
       dur: '',
       bank: '',
@@ -339,9 +341,9 @@ const TableComponent = ({
       let resetTransaction;
       let payload = {};
 
-      if (recordStatus === "DISPUTE" && !resetRecord.Merchant.dispute_enabled) {
-        if (data.merchant_order_id){
-          if (data.merchant_order_id === resetRecord.merchant_order_id){
+      if (recordStatus === "DISPUTE" && resetRecord.Merchant.dispute_enabled === false) {
+        if (data.merchant_order_id) {
+          if (data.merchant_order_id === resetRecord.merchant_order_id) {
             NotificationManager.error("Please Enter New Mercahnt Order ID");
             setAddLoading(false);
             return;
@@ -359,7 +361,7 @@ const TableComponent = ({
           confirmed: confirmAmount,
         };
       } else {
-        payload = { ...data, amount: confirmAmount};
+        payload = { ...data, amount: confirmAmount };
       }
 
       if (recordStatus === "BANK_MISMATCH") {
@@ -388,10 +390,9 @@ const TableComponent = ({
   };
 
   const setNotified = async (data) => {
-    const response = await postApi(`/update-payment-notified-status/${data}`)
+    const response = await postApi(`/update-payment-notified-status/${data}`, { type: 'payin' })
     if (response.data.statusCode === 200) {
       NotificationManager.success("Merchant Notified successfully");
-
       fetchUsersData();
     }
   }
@@ -413,6 +414,20 @@ const TableComponent = ({
       setHardResetLoading(false);
     }
   }
+
+  const handleStatusToolTip = (record) => {
+    const isFromPortal = record.user_submitted_utr || record.utr;
+    const methodMessage = `from intent- ${record.method}`;
+
+    switch (record.status) {
+      case "PENDING":
+        return isFromPortal ? "Pending from the Portal" : `Pending ${methodMessage}`;
+      case "FAILED":
+        return isFromPortal ? "Failed after dispute" : `Failed ${methodMessage}`;
+      default:
+        return;
+    }
+  };
 
   return (
     <>
@@ -500,7 +515,7 @@ const TableComponent = ({
           className="bg-white"
           width={"24px"}
         />
-        { filterValues?.loggedInUserRole === "ADMIN" && <Column
+        {filterValues?.loggedInUserRole === "ADMIN" && <Column
           title={
             <>
               <span>Code</span>
@@ -633,7 +648,7 @@ const TableComponent = ({
                   icon={
                     value === "ASSIGNED" ? (
                       <SyncOutlined spin />
-                    ) : value === "SUCCESS" ? (
+                    ) : (value === "SUCCESS" || value === "PENDING" || value === "FAILED") ? (
                       ""
                     ) : (
                       <ExclamationCircleOutlined />
@@ -644,6 +659,19 @@ const TableComponent = ({
                 </Tag>
                 {(record.is_notified === false && value === "SUCCESS") && <BellTwoTone onClick={() => setNotified(record.id)} />}
                 {(record.is_notified && value === "SUCCESS") && <BellTwoTone twoToneColor="#52c41a" />}
+                {(value === "PENDING" || value === "FAILED") && <Tooltip
+                  color="white"
+                  //  style={{marginRight:"4px"}}
+                  placement="bottomRight"
+                  title={
+                    <div className="flex flex-col gap-1 text-black p-2">
+
+                      {handleStatusToolTip(record)}
+                    </div>
+                  }
+                >
+                  <ExclamationCircleOutlined style={{ fontSize: "12px" }} />
+                </Tooltip>}
               </span>
             </>
           )}
@@ -757,14 +785,14 @@ const TableComponent = ({
           title={
             <div style={{ textAlign: "center" }}>
               <span>UTR</span>
-                <br />
-                <Input
-                  value={filterValues?.utr}
-                  onChange={(e) =>
-                    handleFilterValuesChange(e.target.value.trim(), "utr")
-                  }
-                  allowClear
-                />
+              <br />
+              <Input
+                value={filterValues?.utr}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value.trim(), "utr")
+                }
+                allowClear
+              />
             </div>
           }
           key="utr-group"
@@ -784,6 +812,34 @@ const TableComponent = ({
             render={(text) => text || "--"}
           />
         </ColumnGroup>
+        <Column
+          title={
+            <>
+              <span>Method</span>
+              <br />
+              <Input
+                value={filterValues?.method}
+                onChange={(e) =>
+                  handleFilterValuesChange(e.target.value, "method")
+                }
+                allowClear
+              />
+            </>
+          }
+          hidden={
+            filterValues?.loggedInUserRole === "ADMIN"
+              ? false
+              : filterValues?.loggedInUserRole === "TRANSACTIONS"
+                ? false
+                : filterValues?.loggedInUserRole === "OPERATIONS"
+                  ? false
+                  : true
+          }
+          dataIndex="method"
+          key="method"
+          width={"10%"}
+          render={(text) => text || "--"}
+        />
         <Column
           title={
             <>
@@ -918,18 +974,19 @@ const TableComponent = ({
           hidden={
             filterValues?.loggedInUserRole === "ADMIN"
               ? false
-                : filterValues?.loggedInUserRole === "TRANSACTIONS"
+              : filterValues?.loggedInUserRole === "TRANSACTIONS"
+                ? false
+                : filterValues?.loggedInUserRole === "OPERATIONS"
                   ? false
-                  : filterValues?.loggedInUserRole === "OPERATIONS"
-                    ? false
-                      : true
+                  : true
           }
           className="bg-white"
           width={"24px"}
           render={(text, record) =>
-            record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH" ? (
-              <Button
+            <div className="flex">
+              {(record.status === "DISPUTE" || record.status === "DUPLICATE" || record.status === "BANK_MISMATCH") && (<Button
                 disabled={record.status === "DUPLICATE"}
+                className="mr-2"
                 onClick={() => {
                   showResetModal(record);
                   setRecordStatus(record.status);
@@ -940,8 +997,9 @@ const TableComponent = ({
                 style={{ marginLeft: "8px" }}
               >
                 Reset
-              </Button>
-            ) : record.status === "SUCCESS" ? <BellTwoTone style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} /> : null
+              </Button>)}
+              {(record.status !== "INITIATED") && (<BellTwoTone className="ml-2" style={{ fontSize: '20px' }} onClick={() => setNotified(record.id)} />)}
+            </div>
           }
         />
       </Table>

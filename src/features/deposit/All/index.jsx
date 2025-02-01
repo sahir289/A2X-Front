@@ -22,11 +22,11 @@ function All() {
     merchantCode: `${userData?.code || ""}`,
     vendorCode: `${userData?.vendorCode || ""}`,
     userId: '',
-    // userSubmittedUtr: '',
     utr: '',
     payInId: '',
     dur: '',
     bank: '',
+    method: '',
     status: '',
     pageSize: 20,   // initial size
     page: 1,  // initial size

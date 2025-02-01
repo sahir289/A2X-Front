@@ -64,11 +64,11 @@ const VendorReportComponent = () => {
         'Net Balance': el.totalBalance || '',
       });
 
-      // Add a blank row if the merchant_code changes and it's not the last element
-      if (array[index + 1] && el.merchant_code !== array[index + 1].merchant_code) {
+      // Add a blank row if the vendor_code changes and it's not the last element
+      if (array[index + 1] && el.vendor_code !== array[index + 1].vendor_code) {
         formatSetting.push({
           'Date': '',
-          'Merchant Code': '',
+          'Vendor Code': '',
           'PayIn Count': '',
           'Payin Amount': '',
           'PayIn Commission': '',

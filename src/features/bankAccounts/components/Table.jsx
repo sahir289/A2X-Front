@@ -600,7 +600,7 @@ const TableComponent = ({
             let payInBalanceCount = 0;
 
             record.payInData?.forEach((data) => {
-              payInBalance += Number(data?.confirmed);
+              payInBalance += Number(data?.amount);
               payInBalanceCount += 1;
             });
 
@@ -888,11 +888,18 @@ const TableComponent = ({
               <br />
               <Select
                 value={filterValues?.vendor_code}
-                options={vendorOptions}
+                // options={vendorOptions}
                 style={{ width: "90%" }}
                 onChange={(e) => handleFilterValuesChange(e, "vendor_code")}
                 allowClear
-              />
+              >
+                <Select.Option value="">Select</Select.Option>
+                {vendorOptions.map((option) => (
+                  <Select.Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Select.Option>
+                ))}
+              </Select>
             </>
           }
           dataIndex="vendor_code"
