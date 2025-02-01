@@ -366,7 +366,8 @@ const Withdraw = ({ type }) => {
   const handleSubmit = async (data) => {
     setAddLoading(true);
     // Validate the IFSC code before proceeding
-    const ifscValidation = await validateIfscCode(data?.ifsc_code);
+    const ifscValidation = true;
+    // await validateIfscCode(data?.ifsc_code);
     if (!ifscValidation) {
       setAddLoading(false);
       api.error({

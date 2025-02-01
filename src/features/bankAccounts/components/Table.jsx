@@ -1044,7 +1044,8 @@ const TableComponent = ({
                   if (!value) {
                     return Promise.reject("Please input your IFSC code!");
                   }
-                  const ifscValidation = await validateIfscCode(value);
+                  const ifscValidation = true;
+                  // await validateIfscCode(value);
                   if (!ifscValidation) {
                     return Promise.reject(
                       "Invalid IFSC Code. Please enter a valid one."
