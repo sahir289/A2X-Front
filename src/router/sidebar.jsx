@@ -170,6 +170,12 @@ const routes = [
         icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
         name: "Vendor Accounts", // name that appear in Sidebar
       },
+      {
+        path: "/app/vendorreport-payin",
+        icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
+        name: "Vendor Payins", // name that appear in Sidebar
+      },
+
     ],
   },
 ];

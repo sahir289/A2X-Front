@@ -48,7 +48,7 @@ const PayinComponent = () => {
     }
     const formatSetting = res.data.data.map((el) => ({
       ID: el.sno || "",
-      Method : el.method || "Manual",  
+      Method : el.method || "Manual",
       "Short Code": el.upi_short_code || "",
       Commission: el.payin_commission || "",
       "User Amount": el.amount || "",

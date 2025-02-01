@@ -8,7 +8,7 @@ import { PermissionContext } from '../AuthLayout/AuthLayout';
 
 const { RangePicker } = DatePicker;
 
-const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, statusOptions }) => {
+const PayDesign = ({ vendorMethods, handleFinish, setIncludeSubMerchantFlag, title, loading, statusOptions }) => {
   const userData = useContext(PermissionContext);
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [merchantOptions, setMerchantOptions] = useState([]);
@@ -21,7 +21,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     const fetchMerchantCodes = async () => {
       let merchantCodes = [];
       try {
-        if (title !== "Vendor Report") {
+        if (title !== "Vendor Report" && title !== "Vendor Payin Report") {
           const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
           const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
 
@@ -75,7 +75,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           );
         }
       } catch (error) {
-        if (title !== "Vendor Report") {
+        if (title !== "Vendor Report" && title !== "VVendor Payin Report") {
           console.error('Error fetching merchant codes:', error);
         } else {
           console.error('Error fetching vendor codes:', error);
@@ -121,9 +121,10 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     <div className="bg-white p-4">
       <p className="font-bold text-lg">{title}</p>
       <Form className="mt-6 w-[270px]" layout="vertical" onFinish={handleFinish}>
-        {title !== "Vendor Report" && (<Form.Item
+        {title !== "Vendor Report" && title !== "Vendor Payin Report" && (<Form.Item
           name="merchantCode"
           label="Merchant Codes"
+
           rules={[{ required: true, message: 'Please select merchant code!' }]}
         >
           <Select
@@ -135,20 +136,46 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
 
         </Form.Item>)}
 
-        {title === "Vendor Report" && (<Form.Item
-          name="vendorCode"
-          label="Vendor Codes"
-          rules={[{ required: true, message: 'Please select vendor code!' }]}
-        >
-          <Select
-            placeholder="Please select"
-            options={vendorOptions}
-            mode="multiple"
-            allowClear
-          />
 
-        </Form.Item>)}
-        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && title !== "Vendor Report") && (
+
+
+        {(title === "Vendor Report" || title === "Vendor Payin Report") && (
+          <Form.Item
+            name="vendorCode"
+            label="Vendor Codes"
+            rules={[{ required: true, message: 'Please select vendor code!' }]}
+          >
+            <Select
+              placeholder="Please select"
+              options={vendorOptions}
+              mode="multiple"
+              allowClear
+            />
+          </Form.Item>
+        )}
+
+
+        {vendorMethods &&
+          (<Form.Item
+            name="method"
+            label="Method"
+            className='mt-6'
+            rules={[{ required: true, message: 'Please select vendor code!' }]}
+          >
+            <Select
+              placeholder="Please select"
+              options={vendorMethods}
+              mode="multiple"
+              allowClear
+            /></Form.Item>)
+        }
+
+
+
+
+
+
+        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && title !== "Vendor Report") && title !== "Vendor Payin Report" && (
           <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);

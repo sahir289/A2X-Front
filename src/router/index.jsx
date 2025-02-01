@@ -1,6 +1,7 @@
 // All components mapping with path for internal routes
 
 import { lazy } from "react";
+import VendorPayInReports from "../components/reports/VendorPayInReports";
 
 const Dashboard = lazy(() => import("../pages/protected/Dashboard"));
 const VendorBoard = lazy(() => import("../pages/protected/VendorBoard"));
@@ -33,6 +34,7 @@ const Payin = lazy(() => import("../pages/protected/reports/Payin"));
 const Payout = lazy(() => import("../pages/protected/reports/Payout"));
 const Report = lazy(() => import("../pages/protected/reports/Report"));
 const VendorReport = lazy(() => import("../pages/protected/reports/VendorReport"));
+
 
 const routes = [
   {
@@ -131,6 +133,10 @@ const routes = [
   {
     path: "/vendorreport",
     component: VendorReport,
+  },
+  {
+    path: "/vendorreport-payin",
+    component: VendorPayInReports,
   },
 ];
 
