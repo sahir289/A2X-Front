@@ -600,7 +600,7 @@ const TableComponent = ({
             let payInBalanceCount = 0;
 
             record.payInData?.forEach((data) => {
-              payInBalance += Number(data?.confirmed);
+              payInBalance += Number(data?.amount);
               payInBalanceCount += 1;
             });
 
