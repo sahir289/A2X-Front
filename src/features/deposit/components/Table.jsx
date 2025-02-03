@@ -363,6 +363,10 @@ const TableComponent = ({
         }
       }
 
+      if (data.merchant_order_id === "") {
+        delete data.merchant_order_id;
+      }
+
       if (recordStatus === "DUPLICATE") {
         payload = {
           ...data,
@@ -377,6 +381,7 @@ const TableComponent = ({
       } else {
         resetTransaction = `/update-duplicatedisputetransaction/${resetRecord.id}`;
       }
+
 
       const response = await putApi(resetTransaction, payload);
 
