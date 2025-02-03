@@ -195,7 +195,15 @@ const TableComponent = ({
       navigate("/");
     }
 
-    setMerchants(res.data?.data?.merchants || []);
+    if (userData.role === "MERCHANT_ADMIN"){
+      const mergedMerchants = res.data.data.merchants.flatMap(merchant => {
+        return [merchant, ...(merchant.subMerchants || [])];
+      });
+      setMerchants(mergedMerchants || []);
+    }
+    else {
+      setMerchants(res.data?.data?.merchants || []);
+    }
   };
 
   useEffect(() => {

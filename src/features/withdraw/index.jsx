@@ -96,17 +96,36 @@ const Withdraw = ({ type }) => {
         merchant = await getApi(endpoint, options);
 
         if (isMounted) {
-          const options = merchant?.data?.data?.merchants
-            ?.filter(
-              (merchant) =>
-                !merchant.is_deleted &&
-                (!userData?.code?.length || userData?.code?.includes(merchant?.code))
-            )
-            .map((merchant) => ({
-              label: merchant.code,
-              value: merchant.code,
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+          let options;
+          if (userData.role === "MERCHANT_ADMIN" && includeSubMerchant) {
+            const mergedMerchants = merchant.data.data.merchants.flatMap(merchant => {
+              return [merchant, ...(merchant.subMerchants || [])];
+            });
+            options = mergedMerchants
+              ?.filter(
+                (merchant) =>
+                  !merchant.is_deleted &&
+                  (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+              )
+              .map((merchant) => ({
+                label: merchant.code,
+                value: merchant.code,
+              }))
+              .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+          }
+          else {
+            options = merchant?.data?.data?.merchants
+              ?.filter(
+                (merchant) =>
+                  !merchant.is_deleted &&
+                  (!userData?.code?.length || userData?.code?.includes(merchant?.code))
+              )
+              .map((merchant) => ({
+                label: merchant.code,
+                value: merchant.code,
+              }))
+              .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+          }
 
           setMerchantOptions(options); // Update state
         }
@@ -152,11 +171,11 @@ const Withdraw = ({ type }) => {
 
   useEffect(() => {
     handleGetWithdraws();
-    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    const allowedRoles = ["VENDOR", "VENDOR_OPERATIONS", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
     if (userData.role && allowedRoles.includes(userData.role)) {
       fetchUsersData();
     }
-    const allowedRole1 = ["VENDOR", "VENDOR_OPERATIONS","ADMIN", "TRANSACTIONS", "OPERATIONS"]
+    const allowedRole1 = ["VENDOR", "VENDOR_OPERATIONS", "ADMIN", "TRANSACTIONS", "OPERATIONS"]
     if (userData.role && allowedRole1.includes(userData.role)) {
       fetchPayoutBankData(); // get payout bank data
     }
@@ -583,7 +602,7 @@ const Withdraw = ({ type }) => {
           </div>
         </div>
         <div className="flex" style={{ justifySelf: "end", marginRight: "40px" }}>
-          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS") && <Checkbox
+          {(userData.role === "ADMIN" || userData.role === "TRANSACTIONS" || userData.role === "OPERATIONS" || userData.role === "MERCHANT_ADMIN") && <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
             }}
