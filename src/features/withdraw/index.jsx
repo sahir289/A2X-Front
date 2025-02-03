@@ -1,13 +1,13 @@
 import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import {
   Button,
+  Checkbox,
   Form,
   Input,
   Modal,
   Pagination,
   Select,
   notification,
-  Checkbox,
 } from "antd";
 import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -48,10 +48,13 @@ const Withdraw = ({ type }) => {
   const [addWithdraw, setAddWithdraw] = useState(false);
   const [addVendor, setAddVendor] = useState(false);
   const [editWithdraw, setEditWithdraw] = useState(null);
+  const [editWithdrawALL, setEditWithdrawALL] = useState(null);
+
   const [selectedUTRMethod, setSelectedUTRMethod] = useState("manual");
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [verification, setVerification] = useState(false);
+  const [selectdatapayout,setSelectdatapayout] = useState(false);
   const [withdraws, setWithdraws] = useState({
     data: [],
     total: 0,
@@ -279,7 +282,7 @@ const Withdraw = ({ type }) => {
   };
 
   const handleUpdateWithdraw = async (data) => {
-    if (!data?.record?.id) {
+    if (!data?.record?.id||data.ids) {
       return;
     }
     if (data.reset) {
@@ -290,6 +293,45 @@ const Withdraw = ({ type }) => {
       ...data.record,
       key: data.key,
     });
+
+  };
+
+  const updateWithdrawALL = async (data) => {
+    // console.log(data, "dta from modal");
+    // console.log(editWithdrawALL?.record, "ids from editWithdrawALL");
+    const withdrawIds = editWithdrawALL?.record;
+    if (!withdrawIds) {
+      // console.log("No withdrawIds found");
+      return;
+    }
+    const result = withdrawIds.map(item => ({
+      id: item,
+      method: "eko"
+    }));
+
+    // console.log(result, "Formatted result for API");
+
+    setIsLoading(true);
+
+    try {
+      const res = await putApi("/update-all-payout", result);
+      setIsLoading(false);
+
+      // console.log(res, "response from API");
+
+      if (res && !res.error) {
+        console.log("Successfully updated payout");
+        setSelectdatapayout(true);
+        setEditWithdrawALL(null);
+        setSelectedUTRMethod("manual");
+        handleGetWithdraws({ ...pagination, ...filters }, true);
+      } else {
+        console.error("Error from API", res.error);
+      }
+    } catch (error) {
+      console.error("API call failed", error);
+      setIsLoading(false);
+    }
   };
 
   const updateWithdraw = async (data, id) => {
@@ -493,9 +535,13 @@ const Withdraw = ({ type }) => {
     setSelectedUTRMethod("manual");
   };
   const handleDownloadExcel = () => { };
-
   const hasSelected = selectedData.length > 0;
-
+  ///total amount from selected rows
+  const AmountEko = selectedData.reduce((sum, item) => sum + parseFloat(item[1]), 0);
+  ///selected ids
+  const idsArray = selectedData.map(item => item[0]);
+//   console.log(idsArray,"id from eko");
+// console.log(AmountEko,"sum from eko");
   const handleEditSubmit = async () => {
     setAddLoading(true);
     try {
@@ -604,6 +650,7 @@ const Withdraw = ({ type }) => {
             userData={userData}
             setSelectedData={handleData}
             selectedData={selectedData}
+            selectdatapayout={selectdatapayout}
             setVerification={setVerification}
             setSelectedRecord={setSelectedRecord}
             form={form}
@@ -621,6 +668,7 @@ const Withdraw = ({ type }) => {
           />
         </div>
       </div>
+
       {hasSelected ? (
         <div className="fixed bottom-0 w-full z-99" style={style}>
           <div className="bg-white p-[8px] font-serif">
@@ -629,6 +677,22 @@ const Withdraw = ({ type }) => {
                 <a className="font-semibold">{selectedData.length} </a>
                 item has been selected
               </div>
+
+            <div>
+            <Button
+              className="mr-[10px]"
+              // icon={<PlusOutlined />}
+              type="primary"
+              onClick={() => {
+                setEditWithdrawALL({
+                  record: idsArray,
+                  key: "approve",
+                  amount: AmountEko,
+                });
+              }}
+            >
+              Approve
+            </Button>
 
               <Button
                 className="mr-[10px]"
@@ -639,9 +703,88 @@ const Withdraw = ({ type }) => {
                 Add Vendor
               </Button>
             </div>
+            </div>
           </div>
         </div>
       ) : null}
+     <Modal
+  title="Withdraw"
+  open={editWithdrawALL}
+  onCancel={() => {
+    setEditWithdrawALL(null);
+    setSelectedUTRMethod("eko");
+  }}
+  footer={false}
+  destroyOnClose
+  getContainer={false}
+>
+  <Form
+    layout="vertical"
+    onFinish={updateWithdrawALL}
+    initialValues={{
+      // Do not include method here
+    }}
+  >
+    {editWithdrawALL?.key === "approve" && (
+      <>
+        <Form.Item
+          name="method"
+          label="Method"
+          rules={[
+            {
+              required: true,
+              message: "Please select Withdrawal Method",
+            },
+          ]}
+        >
+          <Select
+            options={methodOptions.filter(option => option.value === "eko")} // Filter to only show "eko"
+            onChange={handleSelectUTRMethod}
+          />
+        </Form.Item>
+
+        {selectedUTRMethod === "eko" && (
+          <>
+            <Form.Item label="Available Balance">
+              <Input disabled={true} value={ekoBalance} />
+              {editWithdrawALL.amount > ekoBalance && (
+                <span className="text-red-600">
+                  Insufficient Balance!
+                </span>
+              )}
+            </Form.Item>
+          </>
+        )}
+      </>
+    )}
+
+    {editWithdrawALL?.key === "reject" && (
+      <>
+        <Form.Item
+          name="rejected_reason"
+          label="Reason"
+          rules={RequiredRule}
+        >
+          <Select options={reasonOptions} />
+        </Form.Item>
+      </>
+    )}
+
+    <Button
+      type="primary"
+      loading={isLoading}
+      htmlType="submit"
+      disabled={
+        editWithdrawALL?.key === "approve" &&
+        selectedUTRMethod === "eko" &&
+        editWithdrawALL.amount > ekoBalance
+      }
+    >
+      {editWithdrawALL?.key === "approve" ? "Approve" : "Reject"}
+    </Button>
+  </Form>
+</Modal>
+
 
       <Modal
         title="Withdraw"
