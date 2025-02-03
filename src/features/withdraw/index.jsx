@@ -314,7 +314,9 @@ const Withdraw = ({ type }) => {
     });
 
   };
+ useEffect(()=>{
 
+ },[selectedData])
   const updateWithdrawALL = async (data) => {
     // console.log(data, "dta from modal");
     // console.log(editWithdrawALL?.record, "ids from editWithdrawALL");
@@ -342,6 +344,7 @@ const Withdraw = ({ type }) => {
         console.log("Successfully updated payout");
         setSelectdatapayout(true);
         setEditWithdrawALL(null);
+        setSelectedData([]);
         setSelectedUTRMethod("manual");
         handleGetWithdraws({ ...pagination, ...filters }, true);
       } else {
@@ -689,7 +692,7 @@ const Withdraw = ({ type }) => {
         </div>
       </div>
 
-      {hasSelected ? (
+      {hasSelected && selectedData.length>0 ? (
         <div className="fixed bottom-0 w-full z-99" style={style}>
           <div className="bg-white p-[8px] font-serif">
             <div className="flex justify-between">
