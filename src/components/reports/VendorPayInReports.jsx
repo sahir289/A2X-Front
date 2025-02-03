@@ -25,9 +25,12 @@ const VendorPayInReports = () => {
 
     adjustedStartDate.setUTCHours(18, 30, 0, 0);
     adjustedEndDate.setUTCHours(18, 29, 59, 999);
+
+    const vendorCodes = Array.isArray(data.vendorCode) ? data.vendorCode.join(",") : data.vendorCode;
     let query = data.vendorCode
       .map((code) => "vendor_code=" + encodeURIComponent(code))
       .join("&");
+
 
     query += `&startDate=${encodeURIComponent(adjustedStartDate.toISOString())}&endDate=${encodeURIComponent(adjustedEndDate.toISOString())}`;
 
@@ -53,25 +56,18 @@ const VendorPayInReports = () => {
       const formatSetting = [];
       res?.data?.data.forEach((el, index) => {
         formatSetting.push({
-           'Date': formatDate1(el.createdAt) || '', // Use createdAt or any other relevant date field
-          'Vendor Code': el.vendor_code || '', // Using vendor_code as merchant code
-          'PayIn Count': el.payin_count || 0,
-          'Payin Amount': el.min_payin || 0, // Use min_payin or any relevant field for Payin Amount
-          'Current Balance': el.balance || '',
-          'Net Balance': el.balance || '', // Assuming net balance is same as balance for now
-          'Name': el.name || '',
-          'Account Number': el.ac_no || '',
-          'Account Name': el.ac_name || '',
-          'IFSC': el.ifsc || '',
-          'Bank Name': el.bank_name || '',
-          'Is QR': el.is_qr !== undefined ? el.is_qr : '', // Check if value exists
-          'Is Bank': el.is_bank !== undefined ? el.is_bank : '', // Check if value exists
-          'Min PayIn': el.min_payin || '',
-          'Max PayIn': el.max_payin || '',
-          'Is Enabled': el.is_enabled !== undefined ? el.is_enabled : '',
-          'Bank Used For': el.bank_used_for || '',
-          'Allow Intent': el.allow_intent !== undefined ? el.allow_intent : '',
-         
+          'Created Date': formatDate1(el.createdAt) || '', // Use createdAt or any other relevant date field
+          'Formated Date': formatDate1(el.updatedAt) || '',
+          'Id': el.id || '', // Using vendor_code as merchant code
+          'Amount': el.amount || 0,
+
+          'UTR': el.utr || 0,
+          'Status': el.is_used ? "Used" : 'Unused', // Use status or any relevant field for Payin Status
+
+          'Bank Name': el.bankName || '', // Assuming net balance is same as balance for now
+
+
+
         });
       });
 
