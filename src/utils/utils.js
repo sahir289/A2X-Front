@@ -152,6 +152,27 @@ export const withdrawlMethods = [
   // { value: "payu", label: "PayU", key: "payu" }
 ]
 
+export const PayoutMethods = [
+  { value: "All", label: "All", key: "All" },
+  { value: "manual", label: "Manual", key: "manual" },
+  { value: "eko", label: "Eko", key: "eko" },
+   // { value: "blazepe", label: "BlazePe", key: "blazepe" },
+]
+
+export const PayinMethods = [
+  { value: "All", label: "All", key: "All" },
+  { value: "Manual", label: "Manual", key: "Manual" },
+  { value: "RazorPay", label: "RazorPay", key: "RazorPay" },
+  { value: "CashFree", label: "CashFree", key: "CashFree" },
+  { value: "PayU", label: "PayU", key: "PayU" },
+]
+
+export const VendorPayinOptions = [
+  { value: "All", label: "All", key: "All" },
+  { value: "Used", label: "Used", key: "Used" },
+  { value: "UnUsed", label: "Un-Used", key: "UnUsed" },
+]
+
 //With draw all status options list.
 export const WithDrawAllOptions = [
   { value: '', label: 'All' },

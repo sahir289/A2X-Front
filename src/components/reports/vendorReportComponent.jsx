@@ -2,7 +2,7 @@ import { notification } from 'antd';
 import { json2csv } from 'json-2-csv';
 import React, { useState } from 'react';
 import { getApi } from '../../redux/api';
-import { formatDate1 } from '../../utils/utils';
+import { formatDate1, formatDateToISTString } from '../../utils/utils';
 import PayDesign from './index';
 
 const VendorReportComponent = () => {
@@ -29,8 +29,8 @@ const VendorReportComponent = () => {
       .map((code) => "vendorCode=" + encodeURIComponent(code))
       .join("&");
     const completeData = {
-      startDate: adjustedStartDate,
-      endDate: adjustedEndDate,
+      startDate: formatDateToISTString(adjustedStartDate),
+      endDate: formatDateToISTString(adjustedEndDate),
     }
     setLoading(true);
     const res = await getApi(`/weekly-vendor-report?${query}`, completeData);
@@ -93,7 +93,7 @@ const VendorReportComponent = () => {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      const fileName = `TrustPay-Accounts-File`.toLowerCase();
+      const fileName = `TrustPay-Vendor-Accounts-File`.toLowerCase();
       link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
