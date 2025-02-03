@@ -94,7 +94,7 @@ const VendorReportComponent = () => {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      const fileName = `TrustPay-Accounts-File`.toLowerCase();
+      const fileName = `TrustPay-Vendor-Accounts-File`.toLowerCase();
       link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();

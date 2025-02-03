@@ -3,7 +3,7 @@ import { Button, Checkbox, DatePicker, Form, Select } from 'antd';
 import dayjs from "dayjs";
 import React, { useContext, useEffect, useState } from 'react';
 import { getApi } from '../../redux/api';
-import { withdrawlMethods } from '../../utils/utils';
+import { withdrawlMethods, PayinMethods, WithDrawAllOptions } from '../../utils/utils';
 import { PermissionContext } from '../AuthLayout/AuthLayout';
 
 const { RangePicker } = DatePicker;
@@ -21,7 +21,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     const fetchMerchantCodes = async () => {
       let merchantCodes = [];
       try {
-        if (title !== "Vendor Report") {
+        if (title !== "Vendor Report" && title !== "Vendor Payins" && title !== "Vendor Payouts") {
           const groupingRoles = ["TRANSACTIONS", "OPERATIONS", "ADMIN"];
           const merchantRoles = ["MERCHANT", "MERCHANT_OPERATIONS", "MERCHANT_ADMIN"];
 
@@ -121,7 +121,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     <div className="bg-white p-4">
       <p className="font-bold text-lg">{title}</p>
       <Form className="mt-6 w-[270px]" layout="vertical" onFinish={handleFinish}>
-        {title !== "Vendor Report" && (<Form.Item
+        {(title !== "Vendor Report" && title !== "Vendor Payins" && title !== "Vendor Payouts") && (<Form.Item
           name="merchantCode"
           label="Merchant Codes"
           rules={[{ required: true, message: 'Please select merchant code!' }]}
@@ -135,7 +135,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
 
         </Form.Item>)}
 
-        {title === "Vendor Report" && (<Form.Item
+        {(title === "Vendor Report" || title === "Vendor Payins" || title === "Vendor Payouts") && (<Form.Item
           name="vendorCode"
           label="Vendor Codes"
           rules={[{ required: true, message: 'Please select vendor code!' }]}
@@ -148,7 +148,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           />
 
         </Form.Item>)}
-        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && title !== "Vendor Report") && (
+        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && (title !== "Vendor Report" && title !== "Vendor Payins" && title !== "Vendor Payouts")) && (
           <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
@@ -174,6 +174,18 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           <Select
             placeholder="Please select"
             options={withdrawlMethods}
+            mode="single"
+            allowClear
+          />
+
+        </Form.Item>)}
+        {(title === "Payins" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
+          name="method"
+          label="Methods"
+        >
+          <Select
+            placeholder="Please select"
+            options={PayinMethods}
             mode="single"
             allowClear
           />

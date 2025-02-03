@@ -156,9 +156,19 @@ const routes = [
         name: "Payins", // name that appear in Sidebar
       },
       {
+        path: "/app/vendorpayin",
+        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
+        name: "Vendor Payins", // name that appear in Sidebar
+      },
+      {
         path: "/app/payout",
         icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
         name: "Payouts", // name that appear in Sidebar
+      },
+      {
+        path: "/app/vendorpayout",
+        icon: <BanknotesIcon className={submenuIconClasses} />, // icon component
+        name: "Vendor Payouts", // name that appear in Sidebar
       },
       {
         path: "/app/report",
