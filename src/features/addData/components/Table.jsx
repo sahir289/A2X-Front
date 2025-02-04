@@ -55,7 +55,7 @@ const TableComponent = ({
     setFilterValues({
       loggedInUserRole: userData.role,
       sno: "",
-      status: "/success",
+      status: "",
       amount: "",
       amount_code: "",
       utr: "",
