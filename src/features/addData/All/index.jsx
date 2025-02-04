@@ -10,7 +10,7 @@ function All() {
   const [filterValues, setFilterValues] = useState({
     loggedInUserRole: userData.role,
     sno: "",
-    status: "/success",
+    status: "",
     amount: "",
     amount_code: "",
     utr: "",
