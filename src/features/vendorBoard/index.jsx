@@ -136,8 +136,8 @@ function VendorBoard() {
     const adjustedEndDate = new Date(endDate.getTime() - istOffset);
 
     setDateRange({
-      startDate: formatDateToISTString(adjustedStartDate),
-      endDate: formatDateToISTString(adjustedEndDate),
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
     });
 
     setIntervalDeposit(intervalValue);

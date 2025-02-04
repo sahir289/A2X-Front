@@ -30,8 +30,8 @@ const VendorReportComponent = () => {
       .map((code) => "vendorCode=" + encodeURIComponent(code))
       .join("&");
     const completeData = {
-      startDate: formatDateToISTString(adjustedStartDate),
-      endDate: formatDateToISTString(adjustedEndDate),
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
     }
     setLoading(true);
     const res = await getApi(`/weekly-vendor-report?${query}`, completeData);
