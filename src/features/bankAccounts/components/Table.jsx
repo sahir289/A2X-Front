@@ -228,27 +228,20 @@ const TableComponent = ({
       }));
     }
     else {
-      const data = {
-        bankName: bankName,
-        startDate: formatDateToISTString(adjustedStartDate),
-        endDate: formatDateToISTString(adjustedEndDate),
-      };
+      const res = tableData.filter((record) => record.ac_name === bankName)?.map((record) => record.payOutData)[0];
 
-      const res = await postApi("/get-bank-payouts", data);
-
-      res?.data?.data.sort((a, b) => a.sno - b.sno);
-      res?.data?.data?.forEach((data) => {
+      res?.forEach((data) => {
         totalAmount = data.status === "SUCCESS" ? totalAmount - Number(data.amount) : totalAmount + Number(0)
       });
 
-      res?.data?.data.push({
+      res?.push({
         sno: "",
         updatedAt: "",
         status: "",
         amount: `Total Amount = ${totalAmount.toFixed(2)}`,
         utr_id: "",
       });
-      formatSetting = res?.data?.data?.map((record) => ({
+      formatSetting = res?.map((record) => ({
         SNO: record.sno || "",
         "Date": record.status === 'SUCCESS' ? formatDate1(record.approved_at) || "" : record.status === 'REJECTED' ? formatDate1(record.rejected_at) || "" : "",
         Status: record.status === 'SUCCESS' ? "Debited" || "" : record.status === 'REJECTED' ? "Credited" || "" : "",
