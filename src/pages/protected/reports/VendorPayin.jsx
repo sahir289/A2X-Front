@@ -7,7 +7,7 @@ import { PermissionContext } from '../../../components/AuthLayout/AuthLayout';
 const VendorPayin = () => {
   const dispatch = useDispatch()
 
-  const AllowedRoles = ["ADMIN","TRANSACTIONS","MERCHANT","MERCHANT_ADMIN"]
+  const AllowedRoles = ["ADMIN","TRANSACTIONS","VENDOR","VENDOR_OPERATIONS","OPERATIONS"]
   const context = useContext(PermissionContext)
 
   useEffect(() => {
