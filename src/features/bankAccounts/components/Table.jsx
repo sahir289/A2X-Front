@@ -73,6 +73,7 @@ const TableComponent = ({
   const [verification, setVerification] = useState(false);
   const [downloadReport, setDownloadReport] = useState(false);
   const [bankName, setBankName] = useState();
+  const [bankType, setBankType] = useState();
   const [addLoading, setAddLoading] = useState(false);
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [form] = Form.useForm();
@@ -180,6 +181,8 @@ const TableComponent = ({
   };
 
   const downloadBankReport = async () => {
+    let formatSetting;
+    let totalAmount = 0;
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
 
@@ -188,43 +191,70 @@ const TableComponent = ({
     const adjustedStartDate = new Date(startDate.getTime() - istOffset);
     const adjustedEndDate = new Date(endDate.getTime() - istOffset);
 
-    const data = {
-      bankName: bankName,
-      startDate: formatDateToISTString(adjustedStartDate),
-      endDate: formatDateToISTString(adjustedEndDate),
-    };
-    const res = await getApi("/get-bank-message", data);
+    if (bankType === 'payIn') {
+      const data = {
+        bankName: bankName,
+        startDate: formatDateToISTString(adjustedStartDate),
+        endDate: formatDateToISTString(adjustedEndDate),
+      };
+      const res = await getApi("/get-bank-message", data);
 
-    const uniqueUTRs = new Set();
-    let totalAmount = 0;
+      const uniqueUTRs = new Set();
 
-    res?.data?.data?.forEach((data) => {
-      if (!uniqueUTRs.has(data.utr)) {
-        uniqueUTRs.add(data.utr);
-        totalAmount += Number(data.amount);
-      }
-    });
+      res?.data?.data?.forEach((data) => {
+        if (!uniqueUTRs.has(data.utr)) {
+          uniqueUTRs.add(data.utr);
+          totalAmount += Number(data.amount);
+        }
+      });
 
-    res?.data?.data.push({
-      sno: "",
-      updatedAt: "",
-      status: "",
-      bankName: "",
-      amount_code: "",
-      amount: `Total Amount = ${totalAmount.toFixed(2)}`,
-      utr: "",
-      is_used: "",
-    });
-    const formatSetting = res?.data?.data?.map((record) => ({
-      SNO: record.sno || "",
-      "Date": record.updatedAt ? formatDate1(record.updatedAt) : "" || "",
-      Status: record.status || "",
-      Bank: record.bankName || "",
-      "Amount Code": record.amount_code || "",
-      Amount: record.amount || "",
-      UTR: record.utr || "",
-      "Used/Unused": record.is_used === true ? "Used" : record.is_used === false ? "Unused" : "" || "",
-    }));
+      res?.data?.data.push({
+        sno: "",
+        updatedAt: "",
+        status: "",
+        amount_code: "",
+        amount: `Total Amount = ${totalAmount.toFixed(2)}`,
+        utr: "",
+        is_used: "",
+      });
+      formatSetting = res?.data?.data?.map((record) => ({
+        SNO: record.sno || "",
+        "Date": record.updatedAt ? formatDate1(record.updatedAt) : "" || "",
+        Status: record.status || "",
+        "Amount Code": record.amount_code || "",
+        Amount: record.amount || "",
+        UTR: record.utr || "",
+        "Used/Unused": record.is_used === true ? "Used" : record.is_used === false ? "Unused" : "" || "",
+      }));
+    }
+    else {
+      const data = {
+        bankName: bankName,
+        startDate: formatDateToISTString(adjustedStartDate),
+        endDate: formatDateToISTString(adjustedEndDate),
+      };
+
+      const res = await postApi("/get-bank-payouts", data);
+
+      res?.data?.data?.forEach((data) => {
+        totalAmount = data.status === "SUCCESS" ? totalAmount - Number(data.amount) : totalAmount + Number(data.amount)
+      });
+
+      res?.data?.data.push({
+        sno: "",
+        updatedAt: "",
+        status: "",
+        amount: `Total Amount = ${totalAmount.toFixed(2)}`,
+        utr: "",
+      });
+      formatSetting = res?.data?.data?.map((record) => ({
+        SNO: record.sno || "",
+        "Date": record.status === 'SUCCESS' ? formatDate1(record.approved_at) || "" : record.status === 'REJECTED' ? formatDate1(record.rejected_at) || "" : "",
+        Status: record.status === 'SUCCESS' ? "Debited" || "" : record.status === 'REJECTED' ? "Credited" || "" : "",
+        Amount: record.amount || "",
+        UTR: record.utr || "",
+      }));
+    }
     try {
       const csv = await json2csv(formatSetting);
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -848,6 +878,7 @@ const TableComponent = ({
                       onClick={() => {
                         setDownloadReport(true);
                         setBankName(record.ac_name);
+                        setBankType(record.bank_used_for);
                       }}
                     />
                   </div>
