@@ -60,7 +60,13 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           );
         }
         else {
-          const vendorCodes = await getApi("/getall-vendor");
+          let vendorCodes;
+          if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+            vendorCodes = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+          }
+          else {
+            vendorCodes = await getApi("/getall-vendor")
+          }
 
           const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
             ? vendorCodes?.data?.data?.map((vendor) => ({
