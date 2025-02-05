@@ -236,8 +236,9 @@ const TableComponent = ({
 
       const res = await postApi("/get-bank-payouts", data);
 
+      res?.data?.data.sort((a, b) => a.sno - b.sno);
       res?.data?.data?.forEach((data) => {
-        totalAmount = data.status === "SUCCESS" ? totalAmount - Number(data.amount) : totalAmount + Number(data.amount)
+        totalAmount = data.status === "SUCCESS" ? totalAmount - Number(data.amount) : totalAmount + Number(0)
       });
 
       res?.data?.data.push({
@@ -245,14 +246,14 @@ const TableComponent = ({
         updatedAt: "",
         status: "",
         amount: `Total Amount = ${totalAmount.toFixed(2)}`,
-        utr: "",
+        utr_id: "",
       });
       formatSetting = res?.data?.data?.map((record) => ({
         SNO: record.sno || "",
         "Date": record.status === 'SUCCESS' ? formatDate1(record.approved_at) || "" : record.status === 'REJECTED' ? formatDate1(record.rejected_at) || "" : "",
         Status: record.status === 'SUCCESS' ? "Debited" || "" : record.status === 'REJECTED' ? "Credited" || "" : "",
         Amount: record.amount || "",
-        UTR: record.utr || "",
+        UTR: record.utr_id || "",
       }));
     }
     try {
@@ -636,8 +637,9 @@ const TableComponent = ({
               payInBalanceCount += 1;
             });
 
+            record.payOutData?.sort((a, b) => a.sno - b.sno);
             record.payOutData?.forEach((data) => {
-              payOutBalance = data.status === "SUCCESS" ? payOutBalance - Number(data.amount) : payOutBalance + Number(data.amount)
+              payOutBalance = data.status === "SUCCESS" ? payOutBalance - Number(data.amount) : payOutBalance + Number(0)
               payOutBalanceCount += 1;
             });
 
