@@ -194,8 +194,8 @@ const TableComponent = ({
     if (bankType === 'payIn') {
       const data = {
         bankName: bankName,
-        startDate: formatDateToISTString(adjustedStartDate),
-        endDate: formatDateToISTString(adjustedEndDate),
+        startDate: adjustedStartDate,
+        endDate: adjustedEndDate,
       };
       const res = await getApi("/get-bank-message", data);
 
