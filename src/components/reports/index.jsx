@@ -61,7 +61,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
         }
         else {
           let vendorCodes;
-          if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATION") {
+          if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATIONS") {
             vendorCodes = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
           }
           else {
