@@ -628,10 +628,17 @@ const TableComponent = ({
           render={(_, record) => {
             let payInBalance = 0;
             let payInBalanceCount = 0;
+            let payOutBalance = 0;
+            let payOutBalanceCount = 0;
 
             record.payInData?.forEach((data) => {
               payInBalance += Number(data?.amount);
               payInBalanceCount += 1;
+            });
+
+            record.payOutData?.forEach((data) => {
+              payOutBalance = data.status === "SUCCESS" ? payOutBalance - Number(data.amount) : payOutBalance + Number(data.amount)
+              payOutBalanceCount += 1;
             });
 
             const handleStatusChangeDebounced = debounce(handleStatusChange, 300);
@@ -649,10 +656,10 @@ const TableComponent = ({
                 {record.bank_used_for === "payIn"
                   ? formatCurrency(payInBalance)
                   : record.bank_used_for === "payOut"
-                    ? formatCurrency(record.balance)
+                    ? formatCurrency(payOutBalance)
                     : formatCurrency(0)}
                 <br />
-                {payInBalanceCount ? `( ${payInBalanceCount} )` : ""}
+                {payInBalanceCount ? `( ${payInBalanceCount} )` : `( ${payOutBalanceCount} )`}
               </>
             );
           }}
