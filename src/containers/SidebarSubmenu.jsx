@@ -38,6 +38,9 @@ function SidebarSubmenu({ submenu, name, icon }) {
               else if ((context?.role === 'MERCHANT' || context?.role === 'MERCHANT_ADMIN' || context?.role === 'MERCHANT_OPERATIONS') && m.name === 'Vendor Accounts') {
                 return false;
               }
+              else if ((context?.role === 'VENDOR' || context?.role === 'VENDOR_OPERATIONS') && (m.name === 'Accounts' || m.name === 'Payins' || m.name === 'Payouts')) {
+                return false;
+              }
               return true;
             })
             .map((m, k) => (

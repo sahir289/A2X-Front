@@ -618,7 +618,7 @@ const TableComponent = ({
               <>
                 {record.bank_used_for === "payIn"
                   ? formatCurrency(payInBalance)
-                  : record.bank_used_for === "payout"
+                  : record.bank_used_for === "payOut"
                     ? formatCurrency(record.balance)
                     : formatCurrency(0)}
                 <br />

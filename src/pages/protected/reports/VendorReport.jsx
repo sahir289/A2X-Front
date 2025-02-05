@@ -15,8 +15,7 @@ const VendorReport = () => {
   }, [])
 
   return (
-    <>{
-      AllowedRoles.includes(context.role) && <ReportComponent />} </>
+    <>{AllowedRoles.includes(context.role) && <ReportComponent />} </>
   )
 }
 
