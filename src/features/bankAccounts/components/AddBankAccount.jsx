@@ -45,7 +45,7 @@ const AddBankAccount = ({
       const response = await axios.get(`https://ifsc.razorpay.com/${ifsc}`);
       return response.data;
     } catch (error) {
-      return null; // If invalid IFSC or error in each API request
+      return null; // If invalid IFSC or error in API request
     }
   };
 
