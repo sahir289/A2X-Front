@@ -98,8 +98,8 @@ function VendorBoard() {
     const { startUTC, endUTC } = calculateISTDateRange();
 
     setDateRange({
-      startDate: formatDateToISTString(startUTC),
-      endDate: formatDateToISTString(endUTC),
+      startDate: startUTC,
+      endDate: endUTC,
     });
   }, []);
   const dispatch = useDispatch();

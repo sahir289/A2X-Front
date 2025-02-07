@@ -13,6 +13,8 @@ const Table = ({
   type,
   userData,
   setSelectedData,
+  setTotalAmount,
+  setEKOWithdrawalIDs,
   selectedData,
   selectdatapayout,
   setVerification,
@@ -22,28 +24,31 @@ const Table = ({
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   // const [selectedPayout, setSelectedPayout] = useState([]);
   const handleCheckboxChange = (row, isChecked) => {
-    const rowData = [row.id, row.amount];
-
     if (isChecked) {
-      setSelectedRowKeys((prev) => [...prev, rowData]);
-      setSelectedData((prev) => [...prev, rowData]);
+      setSelectedRowKeys((prev) => [...prev, row.id]);
+      setSelectedData((prev) => [...prev, row.id]);
+      setEKOWithdrawalIDs((prev) => [...prev, row.id]);
+      setTotalAmount((prev) => Number(prev) + (Number(row.amount) || 0));
+
     } else {
-      setSelectedRowKeys((prev) => prev.filter((key) => key[0] !== row.id));
-      setSelectedData((prev) => prev.filter((key) => key[0] !== row.id));
+      setSelectedRowKeys((prev) => prev.filter((key) => key !== row.id));
+      setSelectedData((prev) => prev.filter((key) => key !== row.id));
+      setEKOWithdrawalIDs((prev) => prev.filter((key) => key !== row.id));
+      setTotalAmount((prev) => Number(prev) - (Number(row.amount) || 0));
     }
   };
 
   const handleSelectAllChange = (isChecked) => {
     if (isChecked) {
-      const selectableRows = data
-        .filter((row) => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED") || row.status === "INITIATED")
-        .map((row) => [row.id, row.amount]);
-
-      setSelectedRowKeys(selectableRows);
-      setSelectedData(selectableRows);
+      setSelectedRowKeys(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
+      setSelectedData(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
+      setEKOWithdrawalIDs(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
+      setTotalAmount(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).reduce((sum, item) => Number(sum) + (Number(item.amount )|| 0), 0));
     } else {
       setSelectedRowKeys([]);
       setSelectedData([]);
+      setEKOWithdrawalIDs([]);
+      setTotalAmount(0);
     }
   };
 
@@ -51,7 +56,6 @@ const Table = ({
     selectedRowKeys,
     onChange: (selectedRowKeys) => setSelectedRowKeys(selectedRowKeys),
   };
-  
   useEffect(()=>{
     setSelectedRowKeys(selectedData?.length ? selectedData : [])
   },[selectedData,selectdatapayout])
@@ -72,8 +76,11 @@ const Table = ({
             if ((!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED"))||(r.status==="INITIATED")) {
               return (
                 <Checkbox
-                checked={selectedRowKeys.some((item) => item[0] === r.id && item[1] === r.amount)}
-                  onChange={(e) => handleCheckboxChange(r, e.target.checked)}
+                  checked={selectedRowKeys.includes(r.id)}
+                  onChange={(e) => {
+                    handleCheckboxChange(r, e.target.checked);
+                  }}
+
                   />
               );
             }
