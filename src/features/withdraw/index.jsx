@@ -48,9 +48,12 @@ const Withdraw = ({ type }) => {
   const [addWithdraw, setAddWithdraw] = useState(false);
   const [addVendor, setAddVendor] = useState(false);
   const [editWithdraw, setEditWithdraw] = useState(null);
+  const [editEKOWithdraw, setEditEKOWithdraw] = useState(null);
   const [selectedUTRMethod, setSelectedUTRMethod] = useState("manual");
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
+  const [totalAmount, setTotalAmount] = useState([]);
+  const [ekoWithdrawalIDs, setEKOWithdrawalIDs] = useState([]);
   const [verification, setVerification] = useState(false);
   const [withdraws, setWithdraws] = useState({
     data: [],
@@ -323,6 +326,20 @@ const Withdraw = ({ type }) => {
       return;
     }
     setEditWithdraw(null);
+    setSelectedUTRMethod("manual");
+    handleGetWithdraws({ ...pagination, ...filters }, true);
+  };
+
+  const updateEKOWithdraw = async () => {
+    const method ='eko';
+    const data = ekoWithdrawalIDs.map(id => ({ id, method }));
+    setIsLoading(true);
+    const res = await putApi(`/update-all-payout`, data);
+    setIsLoading(false);
+    if (res.error) {
+      return;
+    }
+    setEditEKOWithdraw(false);
     setSelectedUTRMethod("manual");
     handleGetWithdraws({ ...pagination, ...filters }, true);
   };
@@ -623,6 +640,8 @@ const Withdraw = ({ type }) => {
             type={type}
             userData={userData}
             setSelectedData={handleData}
+            setTotalAmount={setTotalAmount}
+            setEKOWithdrawalIDs={setEKOWithdrawalIDs}
             selectedData={selectedData}
             setVerification={setVerification}
             setSelectedRecord={setSelectedRecord}
@@ -649,15 +668,22 @@ const Withdraw = ({ type }) => {
                 <a className="font-semibold">{selectedData.length} </a>
                 item has been selected
               </div>
-
-              <Button
-                className="mr-[10px]"
-                // icon={<PlusOutlined />}
-                type="primary"
-                onClick={handleToggleAddVendorModal}
-              >
-                Add Vendor
-              </Button>
+              <div>
+                <Button
+                  className="mr-[10px]"
+                  type="primary"
+                  onClick={() => {setEditEKOWithdraw(true); setSelectedUTRMethod("eko")}}
+                >
+                  Batch Withdrawal
+                </Button>
+                <Button
+                  className="mr-[10px]"
+                  type="primary"
+                  onClick={handleToggleAddVendorModal}
+                >
+                  Add Vendor
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -679,7 +705,7 @@ const Withdraw = ({ type }) => {
           layout="vertical"
           onFinish={updateWithdraw}
           initialValues={{
-            method: selectedUTRMethod, // Set initial value for the "method" field
+            method: 'eko', // Set initial value for the "method" field
           }}
         >
           {editWithdraw?.key == "approve" && (
@@ -756,6 +782,43 @@ const Withdraw = ({ type }) => {
             }
           >
             {editWithdraw?.key == "approve" ? "Approve" : "Reject"}
+          </Button>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Withdraw"
+        open={editEKOWithdraw}
+        onCancel={() => {
+          setEditEKOWithdraw(false);
+          setSelectedUTRMethod("manual");
+        }}
+        footer={false}
+        destroyOnClose
+        getContainer={false}
+
+      >
+        <Form
+          layout="vertical"
+          onFinish={updateEKOWithdraw}
+        >
+          <Form.Item label="Available Balance">
+            <Input disabled={true} value={ekoBalance} />
+            {totalAmount > ekoBalance && (
+              <span className="text-red-600">
+                Insufficient Balance!
+              </span>
+            )}
+          </Form.Item>
+          <Button
+            type="primary"
+            loading={isLoading}
+            htmlType="submit"
+            disabled={
+              totalAmount > ekoBalance
+            }
+          >
+            Approve
           </Button>
         </Form>
       </Modal>

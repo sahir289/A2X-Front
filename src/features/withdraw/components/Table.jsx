@@ -14,6 +14,8 @@ const Table = ({
   type,
   userData,
   setSelectedData,
+  setTotalAmount,
+  setEKOWithdrawalIDs,
   selectedData,
   setVerification,
   setSelectedRecord,
@@ -25,10 +27,14 @@ const Table = ({
     if (isChecked) {
       setSelectedRowKeys((prev) => [...prev, row.id]);
       setSelectedData((prev) => [...prev, row.id]);
+      setEKOWithdrawalIDs((prev) => [...prev, row.id]);
+      setTotalAmount((prev) => Number(prev) + (Number(row.amount) || 0));
 
     } else {
       setSelectedRowKeys((prev) => prev.filter((key) => key !== row.id));
       setSelectedData((prev) => prev.filter((key) => key !== row.id));
+      setEKOWithdrawalIDs((prev) => prev.filter((key) => key !== row.id));
+      setTotalAmount((prev) => Number(prev) - (Number(row.amount) || 0));
     }
   };
 
@@ -36,9 +42,13 @@ const Table = ({
     if (isChecked) {
       setSelectedRowKeys(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
       setSelectedData(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
+      setEKOWithdrawalIDs(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
+      setTotalAmount(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).reduce((sum, item) => Number(sum) + (Number(item.amount )|| 0), 0));
     } else {
       setSelectedRowKeys([]);
       setSelectedData([]);
+      setEKOWithdrawalIDs([]);
+      setTotalAmount(0);
     }
   };
 
@@ -68,7 +78,10 @@ const Table = ({
 
                 <Checkbox
                   checked={selectedRowKeys.includes(r.id)}
-                  onChange={(e) => handleCheckboxChange(r, e.target.checked)}
+                  onChange={(e) => {
+                    handleCheckboxChange(r, e.target.checked);
+                  }}
+
                   />
               );
             }
