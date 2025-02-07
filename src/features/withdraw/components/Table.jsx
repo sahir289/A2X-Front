@@ -1,7 +1,6 @@
 import { Table as AntTable, Checkbox } from "antd";
 import React, { useEffect, useState } from "react";
 import { Columns } from "./Columns";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
 const Table = ({
   loading,
   data,
@@ -17,12 +16,13 @@ const Table = ({
   setTotalAmount,
   setEKOWithdrawalIDs,
   selectedData,
+  selectdatapayout,
   setVerification,
   setSelectedRecord,
   form
 }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([])
-
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // const [selectedPayout, setSelectedPayout] = useState([]);
   const handleCheckboxChange = (row, isChecked) => {
     if (isChecked) {
       setSelectedRowKeys((prev) => [...prev, row.id]);
@@ -58,7 +58,7 @@ const Table = ({
   };
   useEffect(()=>{
     setSelectedRowKeys(selectedData?.length ? selectedData : [])
-  },[selectedData])
+  },[selectedData,selectdatapayout])
 
   return (
     <AntTable
@@ -73,9 +73,8 @@ const Table = ({
         width="80px"
         render={(v, r, i) => {
           if (i) {
-            if (!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED")) {
+            if ((!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED"))||(r.status==="INITIATED")) {
               return (
-
                 <Checkbox
                   checked={selectedRowKeys.includes(r.id)}
                   onChange={(e) => {
@@ -86,7 +85,7 @@ const Table = ({
               );
             }
           }
-          return null; // Render nothing in the header row
+          return null;
         }}
       />}
       {Columns(
