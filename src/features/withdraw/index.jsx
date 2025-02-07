@@ -72,7 +72,6 @@ const Withdraw = ({ type }) => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const labelCol = { span: 10 };
-
   useEffect(() => {
     let isMounted = true; // To avoid state updates on unmounted components
     const fetchMerchants = async () => {
@@ -184,6 +183,8 @@ const Withdraw = ({ type }) => {
     }
   }, []);
 
+
+
   useEffect(() => {
     setPagination({
       page: 1,
@@ -286,6 +287,7 @@ const Withdraw = ({ type }) => {
     const query = getQueryFromObject(queryObject);
     setIsLoading(true);
     const res = await getApi(`/getall-payout${query}`);
+
     setIsLoading(false);
     if (res?.error?.error?.response?.status === 401) {
       NotificationManager.error(res?.error?.message, 401);
@@ -524,6 +526,7 @@ const Withdraw = ({ type }) => {
     fetchData();
   }, [selectedUTRMethod]);
 
+
   //reset search fields
   const handleResetSearchFields = () => {
     setFilters({});
@@ -705,7 +708,7 @@ const Withdraw = ({ type }) => {
           layout="vertical"
           onFinish={updateWithdraw}
           initialValues={{
-            method: 'eko', // Set initial value for the "method" field
+            method: 'manual',
           }}
         >
           {editWithdraw?.key == "approve" && (
