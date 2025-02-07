@@ -30,8 +30,8 @@ const VendorPayinComponent = () => {
 
     const completeData = {
       ...data,
-      startDate: formatDateToISTString(adjustedStartDate),
-      endDate: formatDateToISTString(adjustedEndDate),
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
       includeSubMerchant,
     };
 

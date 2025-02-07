@@ -33,11 +33,11 @@ function LeftSidebar() {
         return false;
 
       if (context?.role === "VENDOR" &&
-        (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports" || route.name === "Settlements" || route.name === "ChargeBack"))
+        (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Settlements" || route.name === "ChargeBack"))
         return false;
 
       if (context?.role === "VENDOR_OPERATIONS" &&
-        (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Reports" || route.name === "Settlements" || route.name === "User" || route.name === "ChargeBack"))
+        (route.name === "Dashboard" || route.name === "Merchant" || route.name === "Vendor" || route.name === "Add data" || route.name === "Settlements" || route.name === "User" || route.name === "ChargeBack"))
         return false;
 
       // Allow "Add data" for all other roles, including ADMIN

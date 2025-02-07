@@ -35,7 +35,16 @@ function SidebarSubmenu({ submenu, name, icon }) {
               if (context?.role === 'OPERATIONS' && (m.name === 'Accounts' || (m.name === 'Vendor Accounts'))) {
                 return false;
               }
-              else if ((context?.role === 'MERCHANT' || context?.role === 'MERCHANT_ADMIN' || context?.role === 'MERCHANT_OPERATIONS') && m.name === 'Vendor Accounts') {
+              else if ((context?.role === 'MERCHANT' || context?.role === 'MERCHANT_ADMIN') && (m.name === 'Vendor Accounts' || m.name === 'Vendor Payins' || m.name === 'Vendor Payouts')) {
+                return false;
+              }
+              else if ((context?.role === 'MERCHANT_OPERATIONS') && (m.name === 'Accounts' || m.name === 'Vendor Accounts' || m.name === 'Vendor Payins' || m.name === 'Vendor Payouts')) {
+                return false;
+              }
+              else if ((context?.role === 'VENDOR') && (m.name === 'Accounts' || m.name === 'Payins' || m.name === 'Payouts')) {
+                return false;
+              }
+              else if ((context?.role === 'VENDOR_OPERATIONS') && (m.name === 'Accounts' || m.name === 'Payins' || m.name === 'Payouts' || m.name === 'Vendor Accounts')) {
                 return false;
               }
               return true;
