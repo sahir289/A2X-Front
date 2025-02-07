@@ -1,7 +1,6 @@
 import { Table as AntTable, Checkbox } from "antd";
 import React, { useEffect, useState } from "react";
 import { Columns } from "./Columns";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
 const Table = ({
   loading,
   data,
@@ -15,27 +14,33 @@ const Table = ({
   userData,
   setSelectedData,
   selectedData,
+  selectdatapayout,
   setVerification,
   setSelectedRecord,
   form
 }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([])
-
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // const [selectedPayout, setSelectedPayout] = useState([]);
   const handleCheckboxChange = (row, isChecked) => {
-    if (isChecked) {
-      setSelectedRowKeys((prev) => [...prev, row.id]);
-      setSelectedData((prev) => [...prev, row.id]);
+    const rowData = [row.id, row.amount];
 
+    if (isChecked) {
+      setSelectedRowKeys((prev) => [...prev, rowData]);
+      setSelectedData((prev) => [...prev, rowData]);
     } else {
-      setSelectedRowKeys((prev) => prev.filter((key) => key !== row.id));
-      setSelectedData((prev) => prev.filter((key) => key !== row.id));
+      setSelectedRowKeys((prev) => prev.filter((key) => key[0] !== row.id));
+      setSelectedData((prev) => prev.filter((key) => key[0] !== row.id));
     }
   };
 
   const handleSelectAllChange = (isChecked) => {
     if (isChecked) {
-      setSelectedRowKeys(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
-      setSelectedData(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
+      const selectableRows = data
+        .filter((row) => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED") || row.status === "INITIATED")
+        .map((row) => [row.id, row.amount]);
+
+      setSelectedRowKeys(selectableRows);
+      setSelectedData(selectableRows);
     } else {
       setSelectedRowKeys([]);
       setSelectedData([]);
@@ -46,9 +51,14 @@ const Table = ({
     selectedRowKeys,
     onChange: (selectedRowKeys) => setSelectedRowKeys(selectedRowKeys),
   };
+  // if(!selectdatapayout){
+  //   setSelectedRowKeys([]);
+  //   setSelectedData([]);
+  // }
   useEffect(()=>{
     setSelectedRowKeys(selectedData?.length ? selectedData : [])
-  },[selectedData])
+    // console.log(selectedData,"hi from the selected data")
+  },[selectedData,selectdatapayout])
 
   return (
     <AntTable
@@ -63,17 +73,16 @@ const Table = ({
         width="80px"
         render={(v, r, i) => {
           if (i) {
-            if (!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED")) {
+            if ((!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED"))||(r.status==="INITIATED")) {
               return (
-
                 <Checkbox
-                  checked={selectedRowKeys.includes(r.id)}
+                checked={selectedRowKeys.some((item) => item[0] === r.id && item[1] === r.amount)}
                   onChange={(e) => handleCheckboxChange(r, e.target.checked)}
                   />
               );
             }
           }
-          return null; // Render nothing in the header row
+          return null;
         }}
       />}
       {Columns(
