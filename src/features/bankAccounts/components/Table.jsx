@@ -219,7 +219,7 @@ const TableComponent = ({
       });
       formatSetting = res?.data?.data?.map((record) => ({
         SNO: record.sno || "",
-        "Date": record.updatedAt ? formatDate1(record.updatedAt) : "" || "",
+        "Date": record.createdAt ? formatDate1(record.createdAt) : "" || "",
         Status: record.status || "",
         "Amount Code": record.amount_code || "",
         Amount: record.amount || "",
@@ -247,6 +247,7 @@ const TableComponent = ({
         Status: record.status === 'SUCCESS' ? "Debited" || "" : record.status === 'REJECTED' ? "Credited" || "" : "",
         Amount: record.amount || "",
         UTR: record.utr_id || "",
+        Reversed: record.rejected_at || "",
       }));
     }
     try {
