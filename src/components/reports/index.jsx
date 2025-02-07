@@ -12,8 +12,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
   const userData = useContext(PermissionContext);
   const [includeSubMerchant, setIncludeSubMerchant] = useState(false);
   const [merchantOptions, setMerchantOptions] = useState([]);
-  const [methodOptions, setMethodOptions] = useState([]);
-
+  // const [methodOptions, setMethodOptions] = useState([]);
   const [vendorOptions, setVendorOptions] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
 
@@ -60,25 +59,18 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           );
         }
         else {
-          let vendorCodes;
-          if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATIONS") {
-            vendorCodes = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
-          }
-          else {
-            vendorCodes = await getApi("/getall-vendor")
-          }
-
-          const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
-            ? vendorCodes?.data?.data?.map((vendor) => ({
+          console.log(title,"title")
+          const vendorCodes = await getApi("/getall-vendor");
+        const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
+          ? vendorCodes?.data?.data?.map((vendor) => ({
               label: vendor.vendor_code,
               value: vendor.vendor_code,
-            })) : [];
+            }))
+          : [];
 
-          setVendorOptions(
-            [...formattedVendorCodes].sort((a, b) =>
-              a.label.localeCompare(b.label)
-            )
-          );
+        setVendorOptions([...formattedVendorCodes].sort((a, b) =>
+          a.label.localeCompare(b.label)
+        ));
         }
       } catch (error) {
         if (title !== "Vendor Report") {
@@ -90,7 +82,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
     };
 
     fetchMerchantCodes();
-  }, [includeSubMerchant, userData]);
+  }, [includeSubMerchant, userData,title]);
 
   const onCalendarChange = (dates) => {
     setSelectedDates(dates);
@@ -154,7 +146,7 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           />
 
         </Form.Item>)}
-        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && (title !== "Vendor Report" && title !== "Vendor Payins" && title !== "Vendor Payouts")) && (
+        {((userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS' || userData.role === 'MERCHANT_ADMIN') && (title !== "Vendor Report" && title !== "Vendor Payouts")) && (
           <Checkbox
             onClick={() => {
               setIncludeSubMerchant((prevState) => !prevState);
@@ -173,17 +165,17 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
             <Select placeholder="Please select" options={statusOptions} />
           </Form.Item>
         )}
-        {(title === "Payouts" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
+
+        {((title === "Payouts") && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
           name="method"
           label="Methods"
         >
           <Select
-            placeholder="Please select"
-            options={withdrawlMethods}
-            mode="single"
-            allowClear
-          />
-
+  placeholder="Please select"
+  options={withdrawlMethods}
+  mode="single"
+  allowClear
+/>
         </Form.Item>)}
         {(title === "Payins" && (userData.role === 'ADMIN' || userData.role === 'TRANSACTIONS' || userData.role === 'OPERATIONS')) && (<Form.Item
           name="method"

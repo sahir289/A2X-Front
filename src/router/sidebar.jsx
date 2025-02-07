@@ -180,6 +180,7 @@ const routes = [
         icon: <UserCircleIcon className={submenuIconClasses} />, // icon component
         name: "Vendor Accounts", // name that appear in Sidebar
       },
+
     ],
   },
 ];

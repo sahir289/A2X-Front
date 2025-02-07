@@ -5,7 +5,7 @@ import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 import { getApi } from "../../redux/api";
 import { showNotification } from "../../redux/slice/headerSlice";
 import { calculateISTDateRange, formatCurrency, formatDateToISTString } from "../../utils/utils";
-import BarChart from "./components/BarChart";
+import PieChart from "./components/PieChart";
 import VendorBoardStats from "./components/VendorBoardStats";
 import VendorBoardTopBar from "./components/VendorBoardTopBar";
 import VendorCodeSelectBox from "./components/VendorCodeSelectBox";
@@ -22,7 +22,8 @@ dayjs.tz.setDefault("Asia/Kolkata");
 
 function VendorBoard() {
   const context = useContext(PermissionContext);
-
+  const [statusData,setStatusData] = useState([]);
+  const [statusDataPayout,setStatusDataPayout] = useState([]);
   const [selectedVendorCode, setSelectedVendorCode] = useState([]);
   const [addLoading, setAddLoading] = useState(false);
   const [payInOutData, setPayInOutData] = useState([
@@ -186,6 +187,177 @@ function VendorBoard() {
       );
       const netBalance = await getApi(`/get-vendors-net-balance?${query}`);
 
+      //for piechart 
+      const payInOutDataAll = await getApi(
+        `/get-payInDataVendorALL?${query}`,
+        dateRange
+      );
+      //  console.log(payInOutData?.data?.data?.payInOutData?.payOutData)
+      const countMethodsForSuccessPayin = (data) => {
+      let Success = [0, 0];
+      let Rejected = [0, 0];
+      let Pending = [0, 0];
+      let Failed = [0, 0];
+      let Assigned = [0, 0];
+      let Dropped = [0, 0];
+      let Dispute = [0, 0];
+      let Duplicate = [0, 0];
+      let BankMismatch = [0, 0];
+       let Initial = [0,0];
+      data?.forEach((item) => {
+          const isManual = item.method === null ? 0 : 1;
+          switch (item.status) {
+              case "SUCCESS":
+                  Success[isManual]++;
+                  break;
+              case "PENDING":
+                  Pending[isManual]++;
+                  break;
+              case "REJECTED":
+                  Rejected[isManual]++;
+                  break;
+              case "FAILED":
+                  Failed[isManual]++;
+                  break;
+              case "ASSIGNED":
+                  Assigned[isManual]++;
+                  break;
+              case "DROPPED":
+                  Dropped[isManual]++;
+                  break;
+              case "DISPUTE":
+                  Dispute[isManual]++;
+                  break;
+              case "DUPLICATE":
+                  Duplicate[isManual]++;
+                  break;
+              case "BANK_MISMATCH":
+                  BankMismatch[isManual]++;
+                  break;
+              case "INITIAL":
+                    Initial[isManual]++;
+                    break;
+              default:
+                  break;
+          }
+      });
+      const totalSuccess = Success[0] + Success[1];
+      const totalTransactions = totalSuccess + Rejected[0] + Rejected[1] +
+                                Pending[0] + Pending[1] + Failed[0] + Failed[1] + Assigned[0] + Assigned[1] +
+                                Dropped[0]+Dropped[1]+Dispute[0]+Dispute[1]+Duplicate[0]+Duplicate[1]+BankMismatch[0]+BankMismatch[1]
+                                ;
+
+      const successRatio = totalTransactions > 0 ? (totalSuccess / totalTransactions) * 100 : 0;
+      Success.push(successRatio.toFixed(2));
+      return {
+          Success,
+          Initial,
+          successRatio,
+          Rejected,
+          Pending,
+          Failed,
+          Assigned,
+          Dropped,
+          Dispute,
+          Duplicate,
+          BankMismatch
+      };
+      };
+
+      const countMethodsForSuccessPayout = (data) => {
+      let Success = [0, 0];
+      let Rejected = [0, 0];
+      let Initial = [0, 0];
+      let Reversed = [0, 0];
+
+      data?.forEach((item) => {
+        const isManual = item.method === null ? 0 : 1;
+        console.log(item.status);
+        switch (item.status) {
+            case "SUCCESS":
+                Success[isManual]++;
+                break;
+            case "REJECTED":
+                Rejected[isManual]++;
+                break;
+            case "INITIAL":
+                Initial[isManual]++;
+                break;
+            case "REVERSED":
+                Reversed[isManual]++;
+                break;
+            default:
+                break;
+        }
+      });
+      const totalSuccess = Success[0] + Success[1];
+      const totalTransactions = totalSuccess + Rejected[0] + Rejected[1] +
+                              Initial[0] + Initial[1] + Reversed[0] + Reversed[1];
+
+      const successRatio = totalTransactions > 0 ? (totalSuccess / totalTransactions) * 100 : 0;
+      Success.push(successRatio.toFixed(2));
+      return { Success, Rejected, Initial, Reversed, successRatio};
+      };
+
+      const payInResults = countMethodsForSuccessPayin(payInOutDataAll?.data?.data?.payInOutData?.payInData || []);
+      const payOutResults = countMethodsForSuccessPayout(payInOutDataAll?.data?.data?.payInOutData?.payOutData || []);
+      setStatusDataPayout([
+        {
+          title: "SUCCESS",
+          value: payOutResults.Success,
+        },
+        {
+          title: "INITIAL",
+          value: payOutResults.Initial,
+        },
+        {
+          title: "REJECTED",
+          value: payOutResults.Rejected,
+        },
+        {
+          title: "REVERSED",
+          value: payOutResults.Reversed,
+        }
+
+      ]);
+      setStatusData([
+        {
+          title: "SUCCESS",
+           value: payInResults.Success,
+        },
+        {
+          title: "INITIAL",
+          value: payInResults.Initial,
+        }
+        ,{
+          title: "FAILED",
+          value: payInResults.Failed,
+        },
+        {
+          title: "DROPPED",
+          value: payInResults.Dropped,
+        },
+        {
+          title: "PENDING",
+          value: payInResults.Pending,
+        },
+        {
+          title: "ASSIGNED",
+          value: payInResults.Assigned,
+        },
+        {
+          title: "BANK-MIS_MATCH",
+          value: payInResults.BankMismatch,
+        },
+        {
+          title: "DUPLICATE",
+          value: payInResults.Duplicate,
+        },
+        {
+          title: "DISPUTE",
+          value: payInResults.Dispute,
+        }
+      ]);
       if (payInOutData.error) {
         setAddLoading(false);
         return;
@@ -301,6 +473,7 @@ function VendorBoard() {
     } finally {
       setAddLoading(false);
     }
+
   };
 
   return (
@@ -424,20 +597,14 @@ function VendorBoard() {
         </div>
       </div>
 
-      <BarChart
-        title={`Deposit`}
-        data={depositData}
-        interval={intervalDeposit}
-        setInterval={setIntervalDeposit}
-        currentCateRange={dateRange}
-      />
-      <BarChart
-        title={`Withdraw`}
-        data={withdrawData}
-        interval={intervalWithdraw}
-        setInterval={setIntervalWithdraw}
-        currentCateRange={dateRange}
-      />
+      <div className="flex flex-col md:flex-row justify-between space-y-6 md:space-y-0 md:space-x-6">
+  <div className="w-full md:w-1/2">
+  <PieChart pieValues={statusData} title="Deposit Status" />
+  </div>
+  <div className="w-full md:w-1/2">
+    <PieChart pieValues={statusDataPayout} title="Withdraw Status" />
+  </div>
+</div>
     </>
   );
 }

@@ -1,17 +1,16 @@
 import { CaretDownOutlined, CaretRightOutlined, CopyOutlined, DeleteOutlined, EditOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Switch, Table, Select } from "antd";
+import { Button, Form, Input, Modal, Select, Switch, Table } from "antd";
 import Column from "antd/es/table/Column";
 import React, { useContext, useState } from "react";
 import { NotificationManager } from 'react-notifications';
+import { useSelector } from "react-redux";
 import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
 import { postApi } from "../../../redux/api";
 import { PlusIcon, Reload } from "../../../utils/constants";
-import { formatCurrency } from "../../../utils/utils";
+import { formatCurrency, formatDate } from "../../../utils/utils";
 import AddMerchant from "./AddMerchant";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
-import { useSelector } from "react-redux";
-import { formatDate } from "../../../utils/utils";
 
 const TableComponent = ({
   data,
@@ -84,11 +83,13 @@ const TableComponent = ({
     setDeleteRecord(deleteData);
   };
 
-  const showModal = async (record) => {
-    setVerification(true); //Password verification while edit and delete merchant
-    setUpdateRecord(record);
+  // const showModal = async (record) => {
+  //   setVerification(true); //Password verification while edit and delete merchant
+  //   setUpdateRecord(record);
+  // };
+  const showModalU = async (record) => { //Password verification while edit and delete merchant
+   setUpdateRecord(record);
   };
-
   // added handle copy functionality for merchant code and API key column
   const handleCopy = (values) => {
     navigator.clipboard.writeText(values);
@@ -112,9 +113,8 @@ const TableComponent = ({
     if (res?.data?.statusCode === 200) {
       if (actionValue === "DELETE") {
         setIsDeletePanelOpen(true);
-      } else if (actionValue === "UPDATE") {
-        setIsAddMerchantModalOpen(true);
       }
+
       handleToggleModal();
     }
     else {
@@ -353,7 +353,7 @@ const TableComponent = ({
                             type="text"
                             icon={<EditOutlined />}
                             title="Edit"
-                            onClick={() => { setActionValue("UPDATE"); showModal(record) }} // Password verification while edit and delete merchant
+                            onClick={() => { setActionValue("UPDATE"); showModalU(record) }} // Password verification while edit and delete merchant
                           />
 
                           <Button
@@ -554,7 +554,7 @@ const TableComponent = ({
                   type="text"
                   icon={<EditOutlined />}
                   title="Edit"
-                  onClick={() => { setActionValue("UPDATE"); showModal(record) }} // Password verification while edit and delete merchant
+                  onClick={()=>{setIsAddMerchantModalOpen(true);showModalU(record)}} // Password verification while edit and delete merchant
                 />
 
                 <Button

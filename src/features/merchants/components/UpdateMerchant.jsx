@@ -1,3 +1,4 @@
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import {
   Button,
   Form,
@@ -7,22 +8,35 @@ import {
   notification,
   Switch
 } from "antd";
-import React, { useEffect, useState } from "react";
-import { putApi } from "../../../redux/api";
-
-
+import React, { useContext, useEffect, useState } from "react";
+import { NotificationManager } from 'react-notifications';
+import { PermissionContext } from "../../../components/AuthLayout/AuthLayout";
+import { postApi, putApi } from "../../../redux/api";
+// import {  Table, Select } from "antd";
 const UpdateMerchant = ({
   record,
   isAddMerchantModalOpen,
   setIsAddMerchantModalOpen,
   handleTableChange,
 }) => {
+  const userData = useContext(PermissionContext);
+  const [verification, setVerification] = useState(false);
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [minPayin, setMinPayin] = useState(0);
   const [minPayout, setMinPayout] = useState(0);
   const [fields, setFields] = useState([]);
+  const [Data,setdata]=useState();
+  // const [actionValue, setActionValue] = useState();
+  const labelCol = { span: 10 };
+  const [addLoading, setAddLoading] = useState(false);
+  const RequiredRule = [
+    {
+      required: true,
+      message: "${label} is Required!",
+    }
+  ]
 
   useEffect(() => {
     setFields([
@@ -86,14 +100,72 @@ const UpdateMerchant = ({
   const handleModalCancel = () => {
     handleTableChange({ current: 1, pageSize: 100 });
     setIsAddMerchantModalOpen(false);
-    form.resetFields();
+
   };
 
+  const handleToggleModal = () => {
+    setVerification(!verification);
+  };
+  // const onFinish = async (values) => {
+  //   setLoading(true);
+  //   const formData = {
+  //     id: record?.id,
+  //     site_url: `${values.site_url}`,
+  //     notify_url: `${values.notify_url}`,
+  //     return_url: `${values.return_url}`,
+  //     payout_notify_url: `${values.payout_notify_url}`,
+  //     payin_commission: values.payin_commission,
+  //     payout_commission: values.payout_commission,
+  //     min_payin: `${values.min_payin}`,
+  //     max_payin: `${values.max_payin}`,
+  //     min_payout: `${values.min_payout}`,
+  //     max_payout: `${values.max_payout}`,
+  //     is_test_mode: !!values.is_test_mode,
+  //     allow_intent: !!values.allow_intent,
+  //     balance: Number(record?.balance),
+  //   };
+
+  //   // Call update API after password verification
+  //   const res = await putApi("/update-merchant", formData);
+  //   if (res.error) {
+  //     api.error({
+  //       description: `Error: ${res.error.message}`,
+  //     });
+  //     return;
+  //   }
+
+  //   notification.success({
+  //     message: 'Merchant updated successfully!',
+  //   });
+
+  //   setLoading(false);
+  //   setIsAddMerchantModalOpen(false);
+  //   handleTableChange({ current: 1, pageSize: 100 });
+  //   form.resetFields();
+  // };
+
+  // const verifyPassword = async (data) => {
+  //   setAddLoading(true);
+  //   const verifyPasswordData = {
+  //     userName: userData.userName,
+  //     password: data.password,
+  //   };
+  //   const res = await postApi("/verify-password", verifyPasswordData);
+  //   setAddLoading(false);
+
+  //   if (res?.data?.statusCode === 200) {
+  //     // Password verified, now proceed with updating the merchant
+  //     handleToggleModal(); // Close the password modal
+  //     onFinish(form.getFieldsValue()); // Proceed to update the merchant
+  //   } else {
+  //     NotificationManager.error(res?.error?.message);
+  //   }
+  // };
+
   const onFinish = async (values) => {
-    setLoading(true)
+    setVerification(true);
     const formData = {
       id: record?.id,
-      // code: values.code,
       site_url: `${values.site_url}`,
       notify_url: `${values.notify_url}`,
       return_url: `${values.return_url}`,
@@ -108,22 +180,37 @@ const UpdateMerchant = ({
       allow_intent: !!values.allow_intent,
       balance: Number(record?.balance),
     };
+    setdata(formData);
+  };
 
-    const UpdateMerchant = await putApi("/update-merchant", formData).then((res) => {
-      if (res.error) {
+  const verifyPassword = async (data) => {
+    setAddLoading(true);
+    const verifyPasswordData = {
+      userName: userData.userName,
+      password: data.password,
+    };
+    const res = await postApi("/verify-password", verifyPasswordData);
+
+    setAddLoading(false);
+    if (res?.data?.statusCode === 200) {
+      setVerification(false);
+      setIsAddMerchantModalOpen(false);
+      const resp = await putApi("/update-merchant", Data);
+      console.log(resp,"data")
+      if (resp.error) {
         api.error({
-          description: `Error: ${res.error.message}`,
+          description: `Error: ${resp.error.message}`,
         });
+        setLoading(false);
         return;
       }
-    }).catch((err) => {
-      console.log("🚀 ~ UpdateMerchant ~ err:", err)
-    }).finally(() => {
-      setLoading(false)
-      setIsAddMerchantModalOpen(false);
-      handleTableChange({ current: 1, pageSize: 100 });
+      setLoading(false);
+      handleTableChange({ current: 1, pageSize: 100 })
+      handleToggleModal();
       form.resetFields();
-    });
+    } else {
+      NotificationManager.error(res?.error?.message);
+    }
   };
 
   return (
@@ -344,10 +431,44 @@ const UpdateMerchant = ({
               </Button>
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading}>
+              <Button type="primary" htmlType="submit"  >
                 Update
               </Button>
             </Form.Item>
+          </div>
+        </Form>
+      </Modal>
+      <Modal
+        title="Password Verification"
+        onCancel={handleToggleModal}
+        open={verification}
+        footer={false}>
+        <Form
+          form={form}
+          className='pt-[10px]'
+          labelAlign='left'
+          labelCol={labelCol}
+          onFinish={verifyPassword}
+        >
+          <Form.Item
+            name="password"
+            label="Enter your password"
+            rules={RequiredRule}
+          >
+            <Input.Password
+              type="password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Form.Item>
+          <div className='flex justify-end'>
+            <Button type='primary'
+              loading={addLoading}
+              htmlType='submit'
+            >
+              Verify
+            </Button>
           </div>
         </Form>
       </Modal>
