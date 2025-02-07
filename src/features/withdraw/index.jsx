@@ -114,7 +114,7 @@ const Withdraw = ({ type }) => {
                 label: merchant.code,
                 value: merchant.code,
               }))
-              .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+              .sort((a, b) => a.label.localeCompare(b.label));
           }
           else {
             options = merchant?.data?.data?.merchants
@@ -127,10 +127,10 @@ const Withdraw = ({ type }) => {
                 label: merchant.code,
                 value: merchant.code,
               }))
-              .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by the label
+              .sort((a, b) => a.label.localeCompare(b.label));
           }
 
-          setMerchantOptions(options); // Update state
+          setMerchantOptions(options); 
         }
       } catch (error) {
         console.error("Error fetching merchants:", error);
@@ -723,14 +723,14 @@ const Withdraw = ({ type }) => {
                 type="primary"
                 onClick={handleToggleAddVendorModal}
               >
-                Add Vendor
+              Add Vendor
               </Button>
             </div>
             </div>
           </div>
         </div>
       ) : null}
-     <Modal
+  <Modal
   title="Withdraw"
   open={editWithdrawALL}
   onCancel={() => {

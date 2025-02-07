@@ -87,8 +87,8 @@ const Table = ({
       />}
       {Columns(
         merchantOptions,
-        vendorOptions, // sending options of vendors
-        payOutBankOptions, // sending options of payout banks
+        vendorOptions,
+        payOutBankOptions, 
         filters,
         onFilterChange,
         updateWithdraw,
