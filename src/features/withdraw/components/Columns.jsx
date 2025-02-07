@@ -2,8 +2,8 @@ import { BellTwoTone, CheckSquareTwoTone, CloseSquareTwoTone, CopyOutlined, Edit
 import { Button, Input, Select, Tag, Tooltip } from "antd";
 import Column from "antd/es/table/Column";
 import { NotificationManager } from 'react-notifications';
-import { formatCurrency, formatDate, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
 import { postApi } from "../../../redux/api";
+import { formatCurrency, formatDate, WithDrawAllOptions, WithDrawCompletedOptions, WithDrawInProgressOptions } from "../../../utils/utils";
 
 
 const renderStatusTag = (status) => {
@@ -87,8 +87,6 @@ export const Columns = (
     setSelectedRecord(record);
     setVerification(true);
   };
-
-
   const setNotified = async (data) => {
     const response = await postApi(`/update-payment-notified-status/${data}`, { type: 'payout' })
     if (response.data.statusCode === 200) {
@@ -137,6 +135,7 @@ export const Columns = (
           title="Action"
           width="155px"
           render={(v, r, i) => {
+            // console.log(r,"hi from r")
             if (!i) {
               return null;
             }

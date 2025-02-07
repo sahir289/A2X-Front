@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import {
   Button,
+  Checkbox,
   DatePicker,
   Empty,
   Form,
@@ -16,8 +17,7 @@ import {
   Select,
   Switch,
   Table,
-  Tooltip,
-  Checkbox
+  Tooltip
 } from "antd";
 import Column from "antd/es/table/Column";
 import axios from "axios";
@@ -25,6 +25,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { json2csv } from "json-2-csv";
+import { debounce } from 'lodash';
 import React, { useContext, useEffect, useState } from "react";
 import {
   NotificationContainer,
@@ -38,7 +39,6 @@ import { formatCurrency, formatDate, formatDate1, formatDateToISTString } from "
 import AddBankAccount from "./AddBankAccount";
 import DeleteModal from "./DeleteModal";
 import UpdateMerchant from "./UpdateMerchant";
-import { debounce } from 'lodash';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

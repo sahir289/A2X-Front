@@ -16,7 +16,6 @@ ChartJS.register(ArcElement, Tooltip, Legend,
     Legend);
 
 function DoughnutChart(){
-
     const options = {
         responsive: true,
         plugins: {
@@ -25,9 +24,9 @@ function DoughnutChart(){
           },
         },
       };
-      
+
       const labels = ['Electronics', 'Home Applicances', 'Beauty', 'Furniture', 'Watches', 'Apparel'];
-      
+
       const data = {
         labels,
         datasets: [

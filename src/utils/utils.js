@@ -146,7 +146,10 @@ export const payoutInOutStatusOptions = [
 export const withdrawlMethods = [
   { value: "manual", label: "Manual", key: "manual" },
   { value: "eko", label: "Eko", key: "eko" },
-   // { value: "blazepe", label: "BlazePe", key: "blazepe" },
+  //  { value: "blazepe", label: "BlazePe", key: "blazepe" },
+  //  { value: "razorpay", label: "RazorPay", key: "razorpay" },
+  // { value: "null", label: "Cashfree", key: "null" },
+  // { value: "payu", label: "PayU", key: "payu" }
 ]
 
 export const PayoutMethods = [
