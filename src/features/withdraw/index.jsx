@@ -710,7 +710,7 @@ const Withdraw = ({ type }) => {
           initialValues={{
             method: 'manual',
           }}
-        >ç
+        >
           {editWithdraw?.key == "approve" && (
             <>
               <Form.Item
