@@ -51,13 +51,9 @@ const Table = ({
     selectedRowKeys,
     onChange: (selectedRowKeys) => setSelectedRowKeys(selectedRowKeys),
   };
-  // if(!selectdatapayout){
-  //   setSelectedRowKeys([]);
-  //   setSelectedData([]);
-  // }
+  
   useEffect(()=>{
     setSelectedRowKeys(selectedData?.length ? selectedData : [])
-    // console.log(selectedData,"hi from the selected data")
   },[selectedData,selectdatapayout])
 
   return (

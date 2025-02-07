@@ -318,11 +318,9 @@ const Withdraw = ({ type }) => {
 
  },[selectedData])
   const updateWithdrawALL = async (data) => {
-    // console.log(data, "dta from modal");
-    // console.log(editWithdrawALL?.record, "ids from editWithdrawALL");
+
     const withdrawIds = editWithdrawALL?.record;
     if (!withdrawIds) {
-      // console.log("No withdrawIds found");
       return;
     }
     const result = withdrawIds.map(item => ({
@@ -330,7 +328,6 @@ const Withdraw = ({ type }) => {
       method: "eko"
     }));
 
-    // console.log(result, "Formatted result for API");
 
     setIsLoading(true);
 
@@ -338,10 +335,8 @@ const Withdraw = ({ type }) => {
       const res = await putApi("/update-all-payout", result);
       setIsLoading(false);
 
-      // console.log(res, "response from API");
 
       if (res && !res.error) {
-        console.log("Successfully updated payout");
         setSelectdatapayout(true);
         setEditWithdrawALL(null);
         setSelectedData([]);
@@ -563,8 +558,6 @@ const Withdraw = ({ type }) => {
   const AmountEko = selectedData.reduce((sum, item) => sum + parseFloat(item[1]), 0);
   ///selected ids
   const idsArray = selectedData.map(item => item[0]);
-//   console.log(idsArray,"id from eko");
-// console.log(AmountEko,"sum from eko");
   const handleEditSubmit = async () => {
     setAddLoading(true);
     try {

@@ -133,7 +133,6 @@ export const Columns = (
           title="Action"
           width="155px"
           render={(v, r, i) => {
-            // console.log(r,"hi from r")
             if (!i) {
               return null;
             }
