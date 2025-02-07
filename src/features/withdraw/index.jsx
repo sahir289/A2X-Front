@@ -532,6 +532,14 @@ const Withdraw = ({ type }) => {
     setSelectedUTRMethod(selectedMethod);
   };
 
+  const handleApproveBatch=(ids,Amount)=>{
+    setSelectedUTRMethod("eko");
+    setEditWithdrawALL({
+      record: ids,
+      key: "approve",
+      amount: Amount,
+    });
+  }
   useEffect(() => {
     const fetchData = async () => {
       if (selectedUTRMethod === "eko") {
@@ -700,11 +708,7 @@ const Withdraw = ({ type }) => {
               // icon={<PlusOutlined />}
               type="primary"
               onClick={() => {
-                setEditWithdrawALL({
-                  record: idsArray,
-                  key: "approve",
-                  amount: AmountEko,
-                });
+                handleApproveBatch(idsArray,AmountEko)
               }}
             >
               Approve
@@ -728,7 +732,7 @@ const Withdraw = ({ type }) => {
   open={editWithdrawALL}
   onCancel={() => {
     setEditWithdrawALL(null);
-    setSelectedUTRMethod("eko");
+    setSelectedUTRMethod("manual");
   }}
   footer={false}
   destroyOnClose
@@ -737,28 +741,18 @@ const Withdraw = ({ type }) => {
   <Form
     layout="vertical"
     onFinish={updateWithdrawALL}
-    initialValues={{
-      // Do not include method here
-    }}
+    
   >
     {editWithdrawALL?.key === "approve" && (
       <>
         <Form.Item
           name="method"
           label="Method"
-          rules={[
-            {
-              required: true,
-              message: "Please select Withdrawal Method",
-            },
-          ]}
         >
-          <Select
-            options={methodOptions.filter(option => option.value === "eko")} // Filter to only show "eko"
-            onChange={handleSelectUTRMethod}
-          />
+       <Select value="eko" disabled placeholder="Eko">
+  <Select.Option value="eko">Eko</Select.Option>
+</Select>
         </Form.Item>
-
         {selectedUTRMethod === "eko" && (
           <>
             <Form.Item label="Available Balance">
