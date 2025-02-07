@@ -55,7 +55,7 @@ const TableComponent = ({
     setFilterValues({
       loggedInUserRole: userData.role,
       sno: "",
-      status: "/success",
+      status: "",
       amount: "",
       amount_code: "",
       utr: "",
@@ -192,6 +192,7 @@ const TableComponent = ({
                 >
                   <Select.Option value="">Select</Select.Option>
                   <Select.Option value="/success">Success</Select.Option>
+                  <Select.Option value="/repeated">Repeated</Select.Option>
                 </Select>
               </>
             }

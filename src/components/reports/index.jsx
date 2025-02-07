@@ -59,10 +59,23 @@ const PayDesign = ({ handleFinish, setIncludeSubMerchantFlag, title, loading, st
           );
         }
         else {
+<<<<<<< HEAD
           console.log(title,"title")
           const vendorCodes = await getApi("/getall-vendor");
         const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
           ? vendorCodes?.data?.data?.map((vendor) => ({
+=======
+          let vendorCodes;
+          if (userData.role === "VENDOR" || userData.role === "VENDOR_OPERATIONS") {
+            vendorCodes = await getApi(`/getall-vendor?vendor_code=${userData.vendorCode}`)
+          }
+          else {
+            vendorCodes = await getApi("/getall-vendor")
+          }
+
+          const formattedVendorCodes = Array.isArray(vendorCodes?.data?.data)
+            ? vendorCodes?.data?.data?.map((vendor) => ({
+>>>>>>> a3e5167482190782a5fa058c270ffdee14f05c9f
               label: vendor.vendor_code,
               value: vendor.vendor_code,
             }))
