@@ -342,6 +342,8 @@ const Withdraw = ({ type }) => {
       return;
     }
     setEditEKOWithdraw(false);
+    setEKOWithdrawalIDs([]);
+    setSelectedData([]);
     setSelectedUTRMethod("manual");
     handleGetWithdraws({ ...pagination, ...filters }, true);
   };
@@ -663,7 +665,7 @@ const Withdraw = ({ type }) => {
           />
         </div>
       </div>
-      {hasSelected ? (
+      {hasSelected && selectedData.length>0 ? (
         <div className="fixed bottom-0 w-full z-99" style={style}>
           <div className="bg-white p-[8px] font-serif">
             <div className="flex justify-between">
