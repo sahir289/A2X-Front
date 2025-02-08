@@ -15,7 +15,7 @@ export const statusOptions = [
     label: el.toLowerCase(),
   }))
 
-export const methodOptions = ["BANK", "CASH", "AED", "CRYPTO"]
+export const methodOptions = ["BANK", "CASH", "AED", "CRYPTO", "INTERNAL_BANK_TRANSFER", "INTERNAL_QR_TRANSFER"]
   .map(el => ({
     value: el,
     label: el.toLowerCase(),

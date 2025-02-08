@@ -364,7 +364,7 @@ export default function Settlement() {
             />
           </Form.Item>
           {
-            method === "BANK" &&
+            (method === "BANK" || method === "INTERNAL_BANK_TRANSFER") &&
             <>
               <Form.Item name="acc_name" label="Name" rules={RequiredRule}>
                 <Input />
