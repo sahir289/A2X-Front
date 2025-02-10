@@ -1,13 +1,13 @@
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, notification, Pagination, Select } from 'antd';
+import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { useNavigate } from "react-router-dom";
+import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 import { getApi, postApi, putApi } from "../../redux/api";
 import { getQueryFromObject, reasonOptions, RequiredRule } from "../../utils/utils";
 import TableComponent, { methodOptions } from './components/Table';
-import { useNavigate } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
-import axios from "axios";
 
 export default function Settlement() {
 
@@ -130,7 +130,6 @@ export default function Settlement() {
   };
   const handleSubmit = async (data) => {
     setAddLoading(true);
-
     if (data.method === 'BANK') {
       // Validate the IFSC code before proceeding
       const ifscValidation = true;
@@ -153,7 +152,6 @@ export default function Settlement() {
     setAddLoading(false);
     handleToggleModal();
     getSettlementList();
-
   }
 
   const onFilterChange = async (name, value) => {
@@ -197,6 +195,7 @@ export default function Settlement() {
     if (editSettlement?.key == "approve" && editSettlement?.method !== "BANK") {
       data = { refrence_id: " " };
     }
+
     const res = await putApi(`/update-vendorsettlement/${settlementId}`, data);
     setIsLoading(false);
     if (res.error) {
@@ -378,8 +377,8 @@ export default function Settlement() {
           }
          { (method === "INTERNAL_BANK_TRANSFER" || method === "INTERNAL_QR_TRANSFER") &&
         <>
-          <Form.Item name="utr" label="UTR" rules={RequiredRule}>
-                <Input />
+          <Form.Item name="refrence_id" label="UTR" rules={RequiredRule}>
+                <Input className="utr"  type="number"/>
               </Form.Item>
         </>
 
