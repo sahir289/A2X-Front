@@ -9,7 +9,6 @@ import { NotificationContainer, NotificationManager } from 'react-notifications'
 import { PermissionContext } from "../../components/AuthLayout/AuthLayout";
 import axios from "axios";
 
-
 export default function Settlement() {
 
   const [form] = Form.useForm();
@@ -377,6 +376,14 @@ export default function Settlement() {
               </Form.Item>
             </>
           }
+         { (method === "INTERNAL_BANK_TRANSFER" || method === "INTERNAL_QR_TRANSFER") &&
+        <>
+          <Form.Item name="utr" label="UTR" rules={RequiredRule}>
+                <Input />
+              </Form.Item>
+        </>
+
+         }
           {
             method === "CRYPTO" &&
             <>
