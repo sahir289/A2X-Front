@@ -376,14 +376,14 @@ export default function Settlement() {
               </Form.Item>
             </>
           }
-         { (method === "INTERNAL_BANK_TRANSFER" || method === "INTERNAL_QR_TRANSFER") &&
-        <>
-          <Form.Item name="refrence_id" label="UTR" rules={RequiredRule}>
+          {(method === "INTERNAL_BANK_TRANSFER" || method === "INTERNAL_QR_TRANSFER") &&
+            <>
+              <Form.Item name="refrence_id" label="UTR" rules={RequiredRule}>
                 <Input />
               </Form.Item>
-        </>
+            </>
 
-         }
+          }
           {
             method === "CRYPTO" &&
             <>

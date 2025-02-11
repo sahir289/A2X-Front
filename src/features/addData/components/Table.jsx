@@ -52,7 +52,7 @@ const TableComponent = ({
   const handleTableChange = ({ current, pageSize }) => {
     setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
   };
-  
+
   const handleResetSearchFields = () => {
     setFilterValues({
       loggedInUserRole: userData.role,
@@ -194,6 +194,7 @@ const TableComponent = ({
                   <Select.Option value="">Select</Select.Option>
                   <Select.Option value="/success">Success</Select.Option>
                   <Select.Option value="/repeated">Repeated</Select.Option>
+                  <Select.Option value="/internalTransfer">Internal Transfer</Select.Option>
                 </Select>
               </>
             }
