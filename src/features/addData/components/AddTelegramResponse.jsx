@@ -14,7 +14,6 @@ const AddTelegramResponse = ({ handleTableChange }) => {
     })
 
   }
-
   useEffect(() => {
     fetchAllPayInBank()
   }, [])

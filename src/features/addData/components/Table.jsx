@@ -24,12 +24,14 @@ const TableComponent = ({
   const [form] = Form.useForm();
   const userData = useContext(PermissionContext)
   const labelCol = { span: 10 };
+
   const RequiredRule = [
     {
       required: true,
       message: "${label} is Required!",
     }
   ]
+
   const handleFilterValuesChange = (value, fieldName) => {
     setFilterValues((prev) => ({ ...prev, [fieldName]: value }));
   };
@@ -50,7 +52,7 @@ const TableComponent = ({
   const handleTableChange = ({ current, pageSize }) => {
     setFilterValues((prev) => ({ ...prev, page: current, pageSize }));
   };
-  //reset search fields
+  
   const handleResetSearchFields = () => {
     setFilterValues({
       loggedInUserRole: userData.role,
@@ -66,12 +68,12 @@ const TableComponent = ({
   }
 
   const passwordVerificationModal = async (record) => {
-    setVerification(true); //Password verification while edit and delete merchant
+    setVerification(true);
     setEntryResetData(record);
   };
 
   const createdAt = (record) => {
-    return formatDate(record?.createdAt) || "N/A"; // Safely access nested property
+    return formatDate(record?.createdAt) || "N/A";
   };
 
   const handleToggleModal = () => {
@@ -151,7 +153,6 @@ const TableComponent = ({
           dataSource={data.botRes}
           rowKey={(item) => item.id}
           scroll={{
-            // y: 240,
             x: "70vw",
           }}
           className="font-serif px-3"
