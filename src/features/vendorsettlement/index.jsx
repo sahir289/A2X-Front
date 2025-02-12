@@ -148,6 +148,7 @@ export default function Settlement() {
     const res = await postApi("/create-vendorsettlement", data)
     if (res?.error) {
       api.error({ description: res.error.message });
+      setAddLoading(false);
       return;
     }
     setAddLoading(false);
