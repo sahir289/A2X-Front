@@ -348,13 +348,6 @@ export default function Settlement() {
             />
           </Form.Item>
           <Form.Item
-            name="amount"
-            label="Amount"
-            rules={RequiredRule}
-          >
-            <Input type="number" addonAfter="₹" />
-          </Form.Item>
-          <Form.Item
             name="method"
             label="Method"
             rules={RequiredRule}
@@ -362,6 +355,27 @@ export default function Settlement() {
             <Select
               options={methodOptions}
             />
+          </Form.Item>
+          <Form.Item
+            name="amount"
+            label="Amount"
+            rules={[
+              ...RequiredRule,
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const method = getFieldValue("method");
+                  if (
+                    ["INTERNAL_BANK_TRANSFER", "INTERNAL_QR_TRANSFER"].includes(method) &&
+                    value >= 0
+                  ) {
+                    return Promise.reject(new Error("Amount must be negative for selected method"));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <Input type="number" addonAfter="₹" />
           </Form.Item>
           {
             (method === "BANK" || method === "INTERNAL_BANK_TRANSFER") &&
