@@ -174,6 +174,7 @@ export const Columns = (
               <>
                 <Button
                   disabled={r.status === "REJECTED"}
+                  hidden={(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS")}
                   onClick={() =>
                     updateWithdraw({
                       record: r,
