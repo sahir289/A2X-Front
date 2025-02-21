@@ -234,6 +234,28 @@ export const Columns = (
             );
           }}
         />}
+      {(userData?.role === "ADMIN" ||
+        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
+        <Column
+          title="Vendor"
+          dataIndex="vendor_code"
+          width="140px"
+          ellipsis
+          render={(v, r, i) => {
+            if (i) {
+              return v;
+            }
+            return (
+              <ColumnSelect
+                name="vendor_code"
+                options={vendorOptions}
+                onChange={onChange}
+                filters={filters}
+              />
+            );
+          }}
+        />
+        : " "}
       <Column
         title="Bank Details"
         dataIndex="acc_no"
@@ -405,28 +427,6 @@ export const Columns = (
           );
         }}
       /> : " "}
-      {(userData?.role === "ADMIN" ||
-        userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ?
-        <Column
-          title="Vendor"
-          dataIndex="vendor_code"
-          width="140px"
-          ellipsis
-          render={(v, r, i) => {
-            if (i) {
-              return v;
-            }
-            return (
-              <ColumnSelect
-                name="vendor_code"
-                options={vendorOptions}
-                onChange={onChange}
-                filters={filters}
-              />
-            );
-          }}
-        />
-        : " "}
       {/* Colunm to display the selected payout bank and it's filter */}
       {(userData?.role === "ADMIN" ||
         userData?.role === "TRANSACTIONS" || userData?.role === "OPERATIONS") ? <Column
