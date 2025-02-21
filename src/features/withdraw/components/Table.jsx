@@ -1,6 +1,7 @@
 import { Table as AntTable, Checkbox } from "antd";
 import React, { useEffect, useState } from "react";
 import { Columns } from "./Columns";
+import './Table.css'
 const Table = ({
   loading,
   data,
@@ -66,6 +67,7 @@ const Table = ({
       dataSource={[{}, ...(Array.isArray(data) ? data : [])]}
       pagination={false}
       loading={loading}
+      rowClassName={(record) => (record.vendor_code ? "highlight-row" : "")}
     >
      {!(userData?.role=="VENDOR" || userData?.role=="VENDOR_OPERATIONS"|| userData?.role=="MERCHANT" || userData?.role=="MERCHANT_OPERATIONS"  || userData?.role=="MERCHANT_ADMIN")&& <AntTable.Column
         title={<Checkbox onChange={(e) => handleSelectAllChange(e.target.checked)} />}
@@ -73,10 +75,10 @@ const Table = ({
         width="80px"
         render={(v, r, i) => {
           if (i) {
-            if ((!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED"))||(r.status==="INITIATED")) {
+            if (!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED")) {
               return (
                 <Checkbox
-                  checked={selectedRowKeys.includes(r.id)}
+                  checked={selectedRowKeys.some((item) => item[0] === r.id && item[1] === r.amount)}
                   onChange={(e) => {
                     handleCheckboxChange(r, e.target.checked);
                   }}
