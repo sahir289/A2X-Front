@@ -144,21 +144,21 @@ export const Columns = (
                     style={{
                       fontSize: '40px',
                       marginRight: '7px',
-                      color: (r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? '#d9d9d9' : '#52c41a', // Greyed out if disabled
-                      cursor: (r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? 'not-allowed' : 'pointer',
+                      color: (r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? '#d9d9d9' : '#52c41a', // Greyed out if disabled
+                      cursor: (r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? 'not-allowed' : 'pointer',
                     }}
-                    twoToneColor={(r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? "#d9d9d9" : "#52c41a"} // Adjust color when disabled
-                    onClick={(r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? null : () => updateWithdraw({ record: r, key: "approve" })}
+                    twoToneColor={(r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? "#d9d9d9" : "#52c41a"} // Adjust color when disabled
+                    onClick={(r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? null : () => updateWithdraw({ record: r, key: "approve" })}
                   />
                   <CloseSquareTwoTone
                     style={{
                       fontSize: '40px',
                       marginLeft: '7px',
-                      color: (r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? '#d9d9d9' : '#ff0000', // Greyed out if disabled
-                      cursor: (r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? 'not-allowed' : 'pointer',
+                      color: (r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? '#d9d9d9' : '#ff0000', // Greyed out if disabled
+                      cursor: (r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? 'not-allowed' : 'pointer',
                     }}
-                    twoToneColor={(r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? "#d9d9d9" : "#ff0000"} // Adjust color when disabled
-                    onClick={(r.vendor_code && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")) ? null : () => updateWithdraw({ record: r, key: "reject" })}
+                    twoToneColor={(r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? "#d9d9d9" : "#ff0000"} // Adjust color when disabled
+                    onClick={(r.vendor_code && (userData?.role !== "ADMIN" && userData?.role !== "VENDOR" && userData?.role !== "VENDOR_OPERATIONS")) ? null : () => updateWithdraw({ record: r, key: "reject" })}
                   />
                 </>
               );
@@ -166,7 +166,7 @@ export const Columns = (
             return (
               <>
                 <Button
-                  disabled={(r.status === "REJECTED" || r.vendor_code) && (userData?.role !== "ADMIN" || userData?.role !== "VENDOR" || userData?.role !== "VENDOR_operations")}
+                  disabled={(r.status === "REJECTED" || r.vendor_code) && (userData?.role !== "ADMIN")}
                   hidden={(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS")}
                   onClick={() =>
                     updateWithdraw({

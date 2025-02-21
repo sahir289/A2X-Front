@@ -67,7 +67,7 @@ const Table = ({
       dataSource={[{}, ...(Array.isArray(data) ? data : [])]}
       pagination={false}
       loading={loading}
-      rowClassName={(record) => (record.vendor_code ? "highlight-row" : "")}
+      rowClassName={(record) => ((record.vendor_code && !(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS")) ? "highlight-row" : "")}
     >
       {!(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS" || userData?.role === "MERCHANT" || userData?.role === "MERCHANT_OPERATIONS" || userData?.role === "MERCHANT_ADMIN") && <AntTable.Column
         title={<Checkbox onChange={(e) => handleSelectAllChange(e.target.checked)} />}
