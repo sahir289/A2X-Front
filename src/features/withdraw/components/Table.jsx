@@ -44,7 +44,7 @@ const Table = ({
       setSelectedRowKeys(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
       setSelectedData(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
       setEKOWithdrawalIDs(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).map((row) => row.id));
-      setTotalAmount(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).reduce((sum, item) => Number(sum) + (Number(item.amount )|| 0), 0));
+      setTotalAmount(data.filter((row => !(row.vendor_code || row.status === "SUCCESS" || row.status === "REJECTED"))).reduce((sum, item) => Number(sum) + (Number(item.amount) || 0), 0));
     } else {
       setSelectedRowKeys([]);
       setSelectedData([]);
@@ -57,9 +57,9 @@ const Table = ({
     selectedRowKeys,
     onChange: (selectedRowKeys) => setSelectedRowKeys(selectedRowKeys),
   };
-  useEffect(()=>{
+  useEffect(() => {
     setSelectedRowKeys(selectedData?.length ? selectedData : [])
-  },[selectedData,selectdatapayout])
+  }, [selectedData, selectdatapayout])
 
   return (
     <AntTable
@@ -69,7 +69,7 @@ const Table = ({
       loading={loading}
       rowClassName={(record) => (record.vendor_code ? "highlight-row" : "")}
     >
-     {!(userData?.role=="VENDOR" || userData?.role=="VENDOR_OPERATIONS"|| userData?.role=="MERCHANT" || userData?.role=="MERCHANT_OPERATIONS"  || userData?.role=="MERCHANT_ADMIN")&& <AntTable.Column
+      {!(userData?.role === "VENDOR" || userData?.role === "VENDOR_OPERATIONS" || userData?.role === "MERCHANT" || userData?.role === "MERCHANT_OPERATIONS" || userData?.role === "MERCHANT_ADMIN") && <AntTable.Column
         title={<Checkbox onChange={(e) => handleSelectAllChange(e.target.checked)} />}
         dataIndex="id"
         width="80px"
@@ -78,12 +78,11 @@ const Table = ({
             if (!(r.vendor_code || r.status === "SUCCESS" || r.status === "REJECTED")) {
               return (
                 <Checkbox
-                  checked={selectedRowKeys.some((item) => item[0] === r.id && item[1] === r.amount)}
+                checked={selectedRowKeys.includes(r.id)}
                   onChange={(e) => {
                     handleCheckboxChange(r, e.target.checked);
                   }}
-
-                  />
+                />
               );
             }
           }
