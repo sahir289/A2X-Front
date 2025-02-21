@@ -329,6 +329,7 @@ const Withdraw = ({ type }) => {
     }
     setEditWithdraw(null);
     setSelectedUTRMethod("manual");
+    setSelectedData("");
     handleGetWithdraws({ ...pagination, ...filters }, true);
   };
 
