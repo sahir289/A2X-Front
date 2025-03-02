@@ -63,17 +63,17 @@ const AddBankAccount = ({
       return;
     }
 
-    const bankNameNotAvailable = await getApi(`/find-bank-nickname?nick_name=${values.ac_name}`)
-    if (bankNameNotAvailable?.data?.message && bankNameNotAvailable?.data?.data !== null) {
-      setLoading(false)
-      api.error({
-        message: "Bank Account Name already exists",
-        description: "Please choose a different name for your bank account.",
-        duration: 10
-      });
-      return;
-    }
-    else {
+    // const bankNameNotAvailable = await getApi(`/find-bank-nickname?nick_name=${values.ac_name}`)
+    // if (bankNameNotAvailable?.data?.message && bankNameNotAvailable?.data?.data !== null) {
+    //   setLoading(false)
+    //   api.error({
+    //     message: "Bank Account Name already exists",
+    //     description: "Please choose a different name for your bank account.",
+    //     duration: 10
+    //   });
+    //   return;
+    // }
+    // else {
       // Proceed with form data submission after IFSC validation
       const formData = {
         upi_id: values.upi_id,
@@ -111,7 +111,7 @@ const AddBankAccount = ({
         handleTableChange({ current: 1, pageSize: 20 });
         form.resetFields();
       });
-    }
+    // }
   };
 
   return (
